@@ -41,13 +41,14 @@ html, body { height: 100%; }
   --navy-mid:   #1e4d6b;
   --green:      #5f9d30;
   --green-dark: #4d8225;
+  --green2:     #7cc63e;
   --green-bg:   rgba(95,157,48,0.14);
-  --bg:         #f0f2f5;
+  --bg:         #eef0ee;
   --surface:    #ffffff;
   --text-1:     #0d1b2a;
   --text-2:     #4a5a68;
   --text-3:     #8fa3b0;
-  --border:     #e2e8ed;
+  --border:     #e0e8ed;
   --radius:     16px;
   --t:          0.2s;
   --ease:       cubic-bezier(0.4, 0, 0.2, 1);
@@ -64,15 +65,22 @@ body {
   overflow: hidden;
 }
 
+/* ─── PAGE ENTRY ANIMATION ─────────────────── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
 /* ═══════════════════════════════════════════
    SIDEBAR
 ═══════════════════════════════════════════ */
 .sidebar {
-  background: var(--navy-deep);
+  background: linear-gradient(180deg, #0d1b2a 0%, #0f2234 100%);
   display: flex;
   flex-direction: column;
   padding: 0 12px;
   overflow: hidden;
+  box-shadow: 1px 0 0 rgba(255,255,255,0.04), 4px 0 24px rgba(0,0,0,0.2);
 }
 
 /* Brand */

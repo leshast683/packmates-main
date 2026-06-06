@@ -829,6 +829,25 @@
 
     .toast--visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* ── BENTO ENTRY ANIMATIONS ── */
+    @keyframes bentoIn {
+      from { opacity:0; transform:translateY(18px) scale(0.98); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+
+    .bc { animation: bentoIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+    .bc-hero      { animation-delay: 0.05s; }
+    .bc-countdown { animation-delay: 0.1s; }
+    .bc-progress  { animation-delay: 0.15s; }
+    .bc-weather   { animation-delay: 0.2s; }
+    .bc-tip       { animation-delay: 0.25s; }
+    .bc-actions   { animation-delay: 0.3s; }
+
+    .bento-section { animation: bentoIn 0.5s 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+    .trips-grid-wrap { animation: bentoIn 0.5s 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+
+    .dash-header { animation: bentoIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+
     /* ── RESPONSIVE BENTO ── */
     @media (max-width: 1200px) {
       .bc-hero { grid-column: 1 / 9; }
