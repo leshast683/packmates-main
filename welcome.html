@@ -1,50 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <title>PackMates | Login</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Packmates — Pack Smarter. Travel Together.</title>
+  <style>
+    @font-face {
+      font-family: 'Blauer Nue';
+      src: url('font/Blauer-Nue-Heavy-iF6626350c62afa.otf') format('opentype');
+      font-weight: 700;
+    }
+    @font-face {
+      font-family: 'Blauer Nue';
+      src: url('font/Blauer-Nue-Light-iF6626350c6db36.otf') format('opentype');
+      font-weight: 300;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('font/Montserrat-Regular.ttf') format('truetype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('font/Montserrat-Medium.ttf') format('truetype');
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('font/Montserrat-ExtraBold.ttf') format('truetype');
+      font-weight: 800;
+    }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #113a58;
+      --navy-deep: #0a1e2c;
+      --green:     #5f9d30;
+      --green-dk:  #4d8225;
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--navy-deep);
+      color: #fff;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* ════════════════════════════
+       LEFT PANEL
+    ════════════════════════════ */
+    .left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 44px 10% 44px;
+      position: relative;
+      z-index: 1;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* Logo row */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .logo-row img {
+      width: 30px; height: 30px;
+      border-radius: 7px;
+      object-fit: contain;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    }
+
+    .logo-name {
+      font-family: 'Blauer Nue', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    /* Headline block */
+    .headline {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 36px 0;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 22px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 22px; height: 1.5px;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    .main-title {
+      font-family: 'Blauer Nue', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.6rem, 3.6vw, 4.2rem);
+      line-height: 1.0;
+      letter-spacing: -0.025em;
+      color: #fff;
+      margin-bottom: 22px;
+    }
+
+    .main-title em {
+      font-style: normal;
+      color: var(--green);
+    }
+
+    .rule {
+      width: 36px; height: 1.5px;
+      background: rgba(255,255,255,0.18);
+      margin-bottom: 20px;
+    }
+
+    .sub {
+      font-size: 0.84rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.7;
+      max-width: 320px;
+    }
+
+    /* Feature list */
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .feature-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    /* CTA buttons */
+    .ctas {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-solid {
+      padding: 14px 32px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.22s, transform 0.22s, box-shadow 0.22s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn-solid:hover {
+      background: var(--green-dk);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(95,157,48,0.38);
+    }
+
+    .btn-ghost {
+      padding: 13px 30px;
+      background: transparent;
+      color: rgba(255,255,255,0.65);
+      border: 1.5px solid rgba(255,255,255,0.18);
+      border-radius: 3px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.22s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.5);
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Footer */
+    .left-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 28px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.18);
+    }
+
+    .left-footer a {
+      color: rgba(255,255,255,0.25);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .left-footer a:hover { color: rgba(255,255,255,0.6); }
+
+    .left-footer-links {
+      display: flex;
+      gap: 18px;
+    }
+
+    /* ════════════════════════════
+       RIGHT PANEL
+    ════════════════════════════ */
+    .right {
+      background: var(--navy);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 44px 10%;
+    }
+
+    /* Big typographic watermark */
+    .bg-text {
+      position: absolute;
+      top: -60px; right: -60px;
+      font-family: 'Blauer Nue', sans-serif;
+      font-weight: 700;
+      font-size: 38vw;
+      line-height: 0.75;
+      color: rgba(255,255,255,0.022);
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      transform: rotate(-12deg);
+    }
+
+    /* Glow decorations */
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .glow-1 {
+      width: 360px; height: 360px;
+      top: -100px; right: -80px;
+      background: radial-gradient(circle, rgba(95,157,48,0.09), transparent 70%);
+    }
+
+    .glow-2 {
+      width: 240px; height: 240px;
+      bottom: 80px; left: -60px;
+      background: radial-gradient(circle, rgba(17,58,88,0.5), transparent 70%);
+    }
+
+    /* Mockup card */
+    .mockup-wrap {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 36px;
+    }
+
+    .mockup-card {
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 5px;
+      padding: 22px 24px;
+      max-width: 270px;
+    }
+
+    .mockup-label {
+      font-size: 0.55rem;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 9px;
+    }
+
+    .mockup-dest {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 3px;
+    }
+
+    .mockup-date {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.06em;
+      margin-bottom: 18px;
+    }
+
+    .mockup-bar-track {
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 99px;
+      margin-bottom: 7px;
+      overflow: hidden;
+    }
+
+    .mockup-bar-fill {
+      height: 100%;
+      width: 65%;
+      background: var(--green);
+      border-radius: 99px;
+    }
+
+    .mockup-bar-label {
+      font-size: 0.58rem;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.04em;
+    }
+
+    .mockup-bar-label strong {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .mockup-tags {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .mockup-tag {
+      padding: 3px 9px;
+      background: rgba(95,157,48,0.12);
+      border: 1px solid rgba(95,157,48,0.22);
+      border-radius: 2px;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: rgba(95,157,48,0.9);
+      text-transform: uppercase;
+    }
+
+    /* Stats row */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 28px;
+    }
+
+    .stat-num {
+      display: block;
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.025em;
+    }
+
+    .stat-lbl {
+      display: block;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-top: 2px;
+    }
+
+    /* ════════════════════════════
+       MOBILE
+    ════════════════════════════ */
+    @media (max-width: 768px) {
+      html, body { overflow: auto; }
+      body { grid-template-columns: 1fr; }
+      .right { display: none; }
+      .left { padding: 40px 8%; min-height: 100vh; }
+      .main-title { font-size: 2.8rem; }
+    }
+  </style>
+</head>
 <body>
 
-  <div class="login-card">
+  <!-- ════ LEFT ════ -->
+  <div class="left">
 
-    <div class="logo">Pm</div>
-    <h1>Welcome Back!</h1>
-
-    <form class="login-form">
-
-      <input type="email" placeholder="Enter your email">
-      <input type="password" placeholder="Enter your password">
-
-      <div class="remember-wrapper">
-        <label class="remember">
-          <input type="checkbox">
-          <span>Remember Password</span>
-        </label>
-      </div>
-
-      <button type="reset" onclick="location.href='index.html'" class="login-btn">Sign In</button>
-
-    </form>
-
-    <div class="divider">or continue with</div>
-
-    <div class="socials">
-      <div class="social">G</div>
-      <div class="social">f</div>
-      <div class="social"></div>
+    <div class="logo-row">
+      <img src="img/appIcon.png" alt="Packmates logo">
+      <span class="logo-name">Packmates</span>
     </div>
 
-    <div class="switch">
-      Don’t have an account?
-      <a href="signup.html">Sign up</a>
+    <div class="headline">
+      <div class="eyebrow">Your Travel Companion</div>
+
+      <h1 class="main-title">
+        Pack<br>Smarter.<br><em>Travel</em><br>Together.
+      </h1>
+
+      <div class="rule"></div>
+
+      <p class="sub">Your intelligent packing companion. Smart lists, trip planning, and a community of fellow explorers — all in one place.</p>
+
+      <div class="features">
+        <div class="feature"><span class="feature-dot"></span>AI-powered packing lists tailored to your trip</div>
+        <div class="feature"><span class="feature-dot"></span>Real-time collaboration with travel partners</div>
+        <div class="feature"><span class="feature-dot"></span>Weather-aware suggestions before you depart</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="ctas">
+        <a href="login.html" class="btn-solid">Sign In</a>
+        <a href="signup.html" class="btn-ghost">Create Account</a>
+      </div>
+      <div class="left-footer">
+        <span>© 2025 Packmates</span>
+        <div class="left-footer-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Support</a>
+        </div>
+      </div>
     </div>
 
   </div>
 
-</body>
+  <!-- ════ RIGHT ════ -->
+  <div class="right">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="bg-text">P</div>
 
+    <div class="mockup-wrap">
+      <div class="mockup-card">
+        <div class="mockup-label">Upcoming Trip</div>
+        <div class="mockup-dest">Santorini</div>
+        <div class="mockup-date">Aug 14 — Aug 24, 2025</div>
+        <div class="mockup-bar-track">
+          <div class="mockup-bar-fill"></div>
+        </div>
+        <div class="mockup-bar-label"><strong>13 of 20</strong> items packed</div>
+        <div class="mockup-tags">
+          <span class="mockup-tag">Beach</span>
+          <span class="mockup-tag">Photography</span>
+          <span class="mockup-tag">Dining</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div>
+        <span class="stat-num">12K+</span>
+        <span class="stat-lbl">Travelers</span>
+      </div>
+      <div>
+        <span class="stat-num">48K</span>
+        <span class="stat-lbl">Trips Planned</span>
+      </div>
+      <div>
+        <span class="stat-num">4.9 ★</span>
+        <span class="stat-lbl">Rating</span>
+      </div>
+    </div>
+  </div>
+
+</body>
 </html>

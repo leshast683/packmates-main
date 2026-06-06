@@ -1,545 +1,1272 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Packmates</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* ── Allow hero to break out of main's side padding ── */
-        main { overflow-x: clip; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Packmates — Home</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ═══════════════════════════════════════════════════
+       DASHBOARD HEADER
+    ═══════════════════════════════════════════════════ */
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
 
-        /* ── Hero card — full-width ── */
-        .hero-card {
-            position: relative;
-            border-radius: 0 0 24px 24px;
-            overflow: hidden;
-            height: 240px;
-            background: #113a58;
-            /* Break out of main's 10% side padding (10%/80% = 12.5% of content width) */
-            margin: 16px -12.5% 24px;
-            width: calc(100% + 25%);
-            cursor: pointer;
-            box-shadow: 0 6px 28px rgba(0,0,0,0.18);
-        }
-        .hero-card-bg {
-            position: absolute;
-            /* Slightly oversized so parallax shift doesn't reveal edges */
-            inset: -8%;
-            background-size: cover;
-            background-position: center;
-            transition: transform 0.12s ease-out;
-        }
-        .hero-card-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(to right, rgba(17,58,88,0.93) 45%, rgba(17,58,88,0.3));
-        }
-        .hero-card-body {
-            position: relative; z-index: 1;
-            padding: 22px 24px;
-            height: 100%;
-            display: flex;
-            gap: 16px;
-        }
-        /* Left column */
-        .hero-left {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-width: 0;
-        }
-        .hero-card-title {
-            font-family: 'Blauer Nue', sans-serif;
-            font-size: 1.65rem;
-            color: #fff;
-            margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .hero-card-dates {
-            font-size: 0.74rem;
-            color: rgba(255,255,255,0.65);
-            margin-top: 3px;
-        }
-        .hero-badges {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .hero-card-countdown {
-            background: #5f9d30;
-            color: #fff;
-            font-size: 0.68rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 999px;
-            white-space: nowrap;
-        }
-        .hero-weather-badge {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(6px);
-            border-radius: 999px;
-            padding: 3px 10px;
-            color: #fff;
-            font-size: 0.68rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .hero-chips {
-            display: flex; gap: 5px; flex-wrap: wrap;
-        }
-        .hero-chip {
-            font-size: 0.6rem;
-            background: rgba(255,255,255,0.13);
-            color: #fff;
-            padding: 2px 7px;
-            border-radius: 999px;
-        }
-        .hero-share-btn {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: #fff;
-            border-radius: 999px;
-            padding: 5px 12px;
-            font-size: 0.68rem;
-            font-family: inherit;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: background 0.2s;
-            align-self: flex-start;
-        }
-        .hero-share-btn:hover { background: rgba(255,255,255,0.25); }
+    .dash-greeting { line-height: 1.2; }
 
-        /* Right column — progress ring */
-        .hero-right {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            gap: 4px;
-        }
-        .progress-ring-label {
-            font-size: 0.6rem;
-            color: rgba(255,255,255,0.65);
-            text-align: center;
-            white-space: nowrap;
-        }
+    .dash-greeting h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-1);
+    }
 
-        /* ── Empty state ── */
-        .empty-state {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            text-align: center; padding: 48px 20px; gap: 10px;
-            background: #fff; border-radius: 18px;
-            margin: 20px 0 20px; border: 2px dashed #cdd6de;
-        }
-        .empty-state-icon { font-size: 3rem; line-height: 1; }
-        .empty-state h3 { font-size: 1.05rem; color: #113a58; margin: 4px 0 0; }
-        .empty-state p { font-size: 0.82rem; color: #6b7f8e; max-width: 280px; line-height: 1.5; margin: 0; }
+    .dash-greeting .sub {
+      font-size: 0.75rem;
+      color: var(--text-3);
+      font-weight: 500;
+      margin-top: 2px;
+    }
 
-        /* ── Tip card ── */
-        .tip-card {
-            background: linear-gradient(135deg, #113a58, #1a5480);
-            border-radius: 14px; padding: 14px 18px;
-            display: flex; align-items: center; gap: 14px;
-            margin-bottom: 20px; color: #fff;
-        }
-        .tip-icon { font-size: 1.6rem; flex-shrink: 0; }
-        .tip-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; opacity: 0.65; margin-bottom: 3px; }
-        .tip-text { font-size: 0.8rem; line-height: 1.45; }
+    .dash-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        /* ── Explore strip ── */
-        .explore-section { margin-bottom: 4px; }
-        .explore-section h2 { margin-bottom: 10px; }
-        .explore-strip {
-            display: flex; gap: 12px; overflow-x: auto;
-            padding: 4px 2px 12px; scrollbar-width: none;
-        }
-        .explore-strip::-webkit-scrollbar { display: none; }
-        .explore-card {
-            flex-shrink: 0; width: 110px; height: 75px;
-            border-radius: 12px; cursor: pointer; position: relative;
-            overflow: hidden; transition: transform 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-        }
-        .explore-card:hover { transform: scale(1.05); }
-        .explore-card-bg {
-            position: absolute; inset: 0;
-            background-size: cover; background-position: center;
-            transition: transform 0.3s;
-        }
-        .explore-card:hover .explore-card-bg { transform: scale(1.08); }
-        .explore-card-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.65) 50%, transparent);
-        }
-        .explore-card-label {
-            position: absolute; bottom: 6px; left: 8px;
-            color: #fff; font-size: 0.68rem; font-weight: 700; z-index: 1;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
-        }
-        .explore-card-emoji {
-            position: absolute; top: 6px; right: 7px;
-            font-size: 1rem; z-index: 1;
-        }
+    /* Search */
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0 14px;
+      height: 40px;
+      min-width: 220px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-        /* ── Others also packed ── */
-        .packed-section { margin-bottom: 20px; }
-        .packed-section h2 { margin-bottom: 10px; }
-        .packed-items {
-            display: flex; flex-wrap: wrap; gap: 8px;
-        }
-        .packed-item-chip {
-            display: flex; align-items: center; gap: 6px;
-            background: #fff; border: 1.5px solid #dde6ee;
-            border-radius: 999px; padding: 5px 12px;
-            font-size: 0.75rem; color: #4b5a66;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        }
-        .packed-item-bar {
-            height: 3px; border-radius: 999px; background: #e8f5e0;
-            width: 40px; overflow: hidden; flex-shrink: 0;
-        }
-        .packed-item-bar-fill {
-            height: 100%; background: #5f9d30; border-radius: 999px;
-        }
-        .packed-item-pct {
-            font-size: 0.65rem; color: #5f9d30; font-weight: 700;
-        }
+    .search-box:focus-within {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(17,58,88,0.08);
+    }
 
-        /* ── Toast ── */
-        .toast {
-            position: fixed; bottom: 28px; left: 50%;
-            transform: translateX(-50%) translateY(16px);
-            background: #113a58; color: #fff;
-            padding: 10px 22px; border-radius: 999px;
-            font-size: 0.82rem; opacity: 0;
-            transition: all 0.25s; z-index: 999; white-space: nowrap;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-        }
-        .toast--visible { opacity: 1; transform: translateX(-50%) translateY(0); }
-    </style>
+    .search-box svg {
+      width: 15px; height: 15px;
+      flex-shrink: 0;
+      stroke: var(--text-3);
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.8;
+    }
+
+    .search-box input {
+      border: none !important;
+      outline: none !important;
+      background: transparent !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      font-size: 0.82rem !important;
+      color: var(--text-1) !important;
+      width: 100% !important;
+      box-shadow: none !important;
+    }
+
+    .search-box input::placeholder { color: var(--text-3); }
+
+    /* New trip button */
+    .btn-new-trip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 18px;
+      height: 40px;
+      background: var(--navy-deep);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-new-trip:hover {
+      background: var(--navy);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(13,27,42,0.25);
+    }
+
+    .btn-new-trip svg {
+      width: 15px; height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-width: 2.2;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       BENTO GRID
+    ═══════════════════════════════════════════════════ */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    /* base bento card */
+    .bc {
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── HERO CARD ── */
+    .bc-hero {
+      grid-column: 1 / 9;
+      grid-row: 1 / 3;
+      background: var(--navy-deep);
+      min-height: 400px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .bc-hero-img {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.6s ease;
+    }
+
+    .bc-hero:hover .bc-hero-img { transform: scale(1.03); }
+
+    .bc-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top,
+        rgba(10,27,44,0.92) 0%,
+        rgba(10,27,44,0.55) 45%,
+        rgba(10,27,44,0.15) 100%);
+    }
+
+    .bc-hero-body {
+      position: relative;
+      z-index: 2;
+      padding: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+
+    .bc-hero-left { min-width: 0; flex: 1; }
+
+    .bc-hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(95,157,48,0.25);
+      border: 1px solid rgba(95,157,48,0.4);
+      color: #7dd94a;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .bc-hero-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #7dd94a;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .bc-hero-dest {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bc-hero-dates {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 14px;
+    }
+
+    .bc-hero-chips {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+
+    .bc-hero-chip {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.75);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 6px;
+    }
+
+    .bc-hero-actions {
+      display: flex; gap: 8px; align-items: center;
+    }
+
+    .bc-hero-btn {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.85);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 5px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .bc-hero-btn:hover { background: rgba(255,255,255,0.22); color: #fff; }
+
+    .bc-hero-weather {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.75);
+      font-weight: 600;
+    }
+
+    /* Right side: progress ring */
+    .bc-hero-right {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding-bottom: 4px;
+    }
+
+    .bc-hero-ring-label {
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* ── COUNTDOWN CARD ── */
+    .bc-countdown {
+      grid-column: 9 / 13;
+      grid-row: 1;
+      background: var(--surface);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05);
+    }
+
+    .bc-label {
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bc-label-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .bc-countdown-num {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 4rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--green);
+      line-height: 1;
+    }
+
+    .bc-countdown-unit {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-top: 2px;
+    }
+
+    .bc-countdown-dest {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-2);
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bc-countdown-dest svg {
+      width: 13px; height: 13px;
+      stroke: var(--text-3);
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.8;
+      flex-shrink: 0;
+    }
+
+    /* ── PACKING PROGRESS CARD ── */
+    .bc-progress {
+      grid-column: 9 / 13;
+      grid-row: 2;
+      background: var(--navy-deep);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .bc-progress-label {
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .bc-progress-inner {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .bc-progress-text { flex: 1; }
+
+    .bc-progress-pct {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 3.2rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .bc-progress-sub {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.45);
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    .bc-progress-bar-track {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bc-progress-bar-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 99px;
+      transition: width 0.8s var(--ease);
+    }
+
+    /* ── ROW 3: WEATHER CARD ── */
+    .bc-weather {
+      grid-column: 1 / 5;
+      background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 160px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .bc-weather-label {
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .bc-weather-main {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .bc-weather-icon { font-size: 2.4rem; line-height: 1; }
+
+    .bc-weather-temp {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .bc-weather-details { display: flex; flex-direction: column; gap: 1px; }
+
+    .bc-weather-city {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .bc-weather-cond {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.45);
+    }
+
+    /* ── ROW 3: TIP CARD ── */
+    .bc-tip {
+      grid-column: 5 / 9;
+      background: var(--green);
+      padding: 22px 24px;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(95,157,48,0.25);
+    }
+
+    .bc-tip::before {
+      content: '💡';
+      position: absolute;
+      bottom: -10px; right: 10px;
+      font-size: 5rem;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .bc-tip-label {
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .bc-tip-icon { font-size: 1.5rem; line-height: 1; }
+
+    .bc-tip-text {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.5;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── ROW 3: ACTIONS CARD ── */
+    .bc-actions {
+      grid-column: 9 / 13;
+      background: var(--surface);
+      padding: 20px 22px;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05);
+    }
+
+    .bc-actions-title {
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 4px;
+    }
+
+    .bc-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-1);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      width: 100%;
+      text-align: left;
+    }
+
+    .bc-action-btn:hover {
+      background: var(--navy-deep);
+      color: #fff;
+      border-color: var(--navy-deep);
+      transform: translateX(2px);
+    }
+
+    .bc-action-btn:hover .bca-icon { stroke: #fff; }
+
+    .bc-action-btn:hover .bca-arrow { opacity: 1; transform: translateX(0); }
+
+    .bca-icon {
+      width: 16px; height: 16px;
+      stroke: var(--text-2);
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.8;
+      flex-shrink: 0;
+      transition: stroke 0.18s;
+    }
+
+    .bca-label { flex: 1; }
+
+    .bca-arrow {
+      font-size: 0.8rem;
+      color: var(--text-3);
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: all 0.18s ease;
+    }
+
+    /* ── EXPLORE SECTION ── */
+    .bento-section {
+      margin-bottom: 14px;
+    }
+
+    .bento-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .bento-section-header h2 { margin: 0; }
+
+    .bento-section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .explore-strip {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px 2px 12px;
+      scrollbar-width: none;
+    }
+
+    .explore-strip::-webkit-scrollbar { display: none; }
+
+    .explore-card {
+      flex-shrink: 0;
+      width: 120px; height: 80px;
+      border-radius: 14px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.22s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .explore-card:hover { transform: scale(1.06) translateY(-2px); }
+
+    .explore-card-bg {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.35s ease;
+    }
+
+    .explore-card:hover .explore-card-bg { transform: scale(1.1); }
+
+    .explore-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 35%, transparent);
+    }
+
+    .explore-card-label {
+      position: absolute;
+      bottom: 7px; left: 9px;
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 700;
+      z-index: 1;
+      letter-spacing: 0.03em;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+
+    .explore-card-emoji {
+      position: absolute;
+      top: 7px; right: 8px;
+      font-size: 1.1rem;
+      z-index: 1;
+    }
+
+    /* ── TRIPS GRID ── */
+    .trips-grid-wrap { margin-bottom: 28px; }
+
+    .trips-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .trip-card {
+      background: var(--surface);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      cursor: pointer;
+    }
+
+    .trip-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    }
+
+    .trip-card-img {
+      height: 140px;
+      background: var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .trip-card-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .trip-card:hover .trip-card-img img { transform: scale(1.06); }
+
+    .trip-card-body { padding: 14px 16px 16px; }
+
+    .trip-card-title {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-1);
+      margin-bottom: 3px;
+    }
+
+    .trip-card-dates {
+      font-size: 0.7rem;
+      color: var(--text-3);
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .trip-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── EMPTY STATE ── */
+    .bento-empty {
+      grid-column: 1 / 13;
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 60px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      border: 2px dashed var(--border);
+      min-height: 400px;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .bento-empty-icon {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, #e8f5e0, #d4edbc);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+
+    .bento-empty h3 {
+      font-size: 1.3rem;
+      color: var(--text-1);
+      letter-spacing: -0.01em;
+    }
+
+    .bento-empty p {
+      font-size: 0.82rem;
+      color: var(--text-3);
+      max-width: 300px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .bento-empty .btn-empty {
+      margin-top: 8px;
+      padding: 11px 26px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .bento-empty .btn-empty:hover {
+      background: var(--green-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(95,157,48,0.35);
+    }
+
+    /* ── PACKED ITEMS STRIP ── */
+    .packed-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .packed-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 11px;
+      font-size: 0.72rem;
+      color: var(--text-2);
+      font-weight: 500;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+
+    .packed-chip:hover { border-color: var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+    .packed-chip-bar { width: 36px; height: 3px; background: #e4ede8; border-radius: 99px; overflow: hidden; flex-shrink: 0; }
+    .packed-chip-fill { height: 100%; background: var(--green); border-radius: 99px; }
+    .packed-chip-pct { font-size: 0.62rem; color: var(--green); font-weight: 700; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--navy-deep);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.25s;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .toast--visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── RESPONSIVE BENTO ── */
+    @media (max-width: 1200px) {
+      .bc-hero { grid-column: 1 / 9; }
+      .bc-hero-dest { font-size: 2.2rem; }
+    }
+
+    @media (max-width: 900px) {
+      .bento { grid-template-columns: 1fr 1fr; }
+      .bc-hero { grid-column: 1 / 3; grid-row: 1; min-height: 280px; }
+      .bc-countdown { grid-column: 1; grid-row: 2; }
+      .bc-progress { grid-column: 2; grid-row: 2; }
+      .bc-weather { grid-column: 1; }
+      .bc-tip { grid-column: 2; }
+      .bc-actions { grid-column: 1 / 3; }
+      .trips-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
 </head>
 
 <body>
-    <nav class="sidebar">
-        <div class="brand">
-            <img src="img/appIcon.png" alt="Packmates" class="icon">
-            <span>Packmates</span>
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <nav class="sidebar">
+    <div class="brand">
+      <img src="img/appIcon.png" alt="Packmates" class="icon">
+      <span>Packmates</span>
+    </div>
+
+    <span class="nav-label">Main Menu</span>
+
+    <div class="nav-buttons">
+      <button type="button" onclick="location.href='index.html'" class="active">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </button>
+      <button type="button" onclick="location.href='discover.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span>Discover</span>
+      </button>
+      <button type="button" onclick="location.href='packing-list.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        <span>Packing List</span>
+      </button>
+      <button type="button" onclick="location.href='notifications.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span>Notifications</span>
+      </button>
+      <button type="button" onclick="location.href='profile.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </div>
+
+    <div class="nav-bottom">
+      <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7dd94a;margin-bottom:4px">
+        <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7dd94a"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>New Trip</span>
+      </button>
+      <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <main>
+
+    <!-- Header -->
+    <div class="dash-header">
+      <div class="dash-greeting">
+        <h1 id="greetingText">Good Morning</h1>
+        <div class="sub" id="dateText"></div>
+      </div>
+      <div class="dash-header-right">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search destinations…">
         </div>
-        <div class="nav-buttons">
-            <button type="reset" onclick="location.href='index.html'"><img src="img/home.png" alt="" class="icon"><span>Home</span></button>
-            <button type="reset" onclick="location.href='discover.html'"><img src="img/calendar.png" alt="" class="icon"><span>Discover</span></button>
-            <button type="reset" onclick="location.href='notifications.html'"><img src="img/notif.png" alt="" class="icon"><span>Notifications</span></button>
-            <button type="reset" onclick="location.href='profile.html'"><img src="img/profile.png" alt="" class="icon"><span>Profile</span></button>
+        <button class="btn-new-trip" onclick="location.href='newTrip.html'">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Trip
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════ BENTO GRID ══════════ -->
+    <div class="bento" id="bentoGrid">
+      <!-- rendered by JS -->
+    </div>
+
+    <!-- Others Also Packed -->
+    <div class="bento-section" id="packedSection">
+      <div class="bento-section-header">
+        <h2>Others Also Packed</h2>
+        <div class="bento-section-line"></div>
+      </div>
+      <div class="packed-strip" id="packedStrip"></div>
+    </div>
+
+    <!-- Explore Destinations -->
+    <div class="bento-section">
+      <div class="bento-section-header">
+        <h2>Explore Destinations</h2>
+        <div class="bento-section-line"></div>
+      </div>
+      <div class="explore-strip" id="exploreStrip"></div>
+    </div>
+
+    <!-- Your Trips -->
+    <div class="trips-grid-wrap" id="tripsSection">
+      <div class="bento-section-header">
+        <h2>Your Trips</h2>
+        <div class="bento-section-line"></div>
+      </div>
+      <div class="trips-grid" id="tripsGrid"></div>
+    </div>
+
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="auth.js"></script>
+  <script>
+    /* ── Auth guard ── */
+    Auth.requireAuth('welcome.html');
+
+    /* ── Greeting ── */
+    const session = Auth.getSession();
+    const firstName = session?.name?.split(' ')[0] || 'Traveler';
+    const h = new Date().getHours();
+    const greetWord = h < 12 ? 'Good Morning' : h < 18 ? 'Good Afternoon' : 'Good Evening';
+    document.getElementById('greetingText').textContent = `${greetWord}, ${firstName} 👋`;
+    document.getElementById('dateText').textContent =
+      new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+    /* ── Helpers ── */
+    const fmt = d => { if (!d) return ''; const [y,m,day] = d.split('-'); return `${+m}/${+day}/${y}`; };
+    const daysTo = s => s ? Math.ceil((new Date(s) - Date.now()) / 86400000) : null;
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg; el.classList.add('toast--visible');
+      setTimeout(() => el.classList.remove('toast--visible'), 2600);
+    }
+
+    const AVATAR_COLORS = ['#5f9d30','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c'];
+
+    /* ── Weather ── */
+    const WMO = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+    async function fetchWeather(city) {
+      try {
+        const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)).json();
+        if (!g.results?.[0]) return null;
+        const {latitude:lat, longitude:lon} = g.results[0];
+        const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`)).json();
+        const cw = w.current_weather;
+        return { temp: Math.round(cw.temperature), icon: WMO[cw.weathercode] || '🌡️', code: cw.weathercode };
+      } catch { return null; }
+    }
+
+    /* ── Progress ring ── */
+    function ring(pct, size=80, stroke=6) {
+      const r = (size - stroke) / 2;
+      const circ = 2 * Math.PI * r;
+      const dash = (pct / 100) * circ;
+      return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="${stroke}"/>
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#5f9d30" stroke-width="${stroke}"
+          stroke-dasharray="${dash} ${circ - dash}" stroke-dashoffset="${circ/4}"
+          stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>
+        <text x="${size/2}" y="${size/2 + 5}" text-anchor="middle" fill="white" font-size="14" font-weight="700" font-family="Montserrat,sans-serif">${pct}%</text>
+      </svg>`;
+    }
+
+    /* ── Data ── */
+    const trip = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+    const packState = JSON.parse(localStorage.getItem('packingState') || '{}');
+    const bento = document.getElementById('bentoGrid');
+
+    if (!trip?.destination) {
+      /* ── EMPTY STATE ── */
+      bento.innerHTML = `
+        <div class="bc bento-empty">
+          <div class="bento-empty-icon">✈️</div>
+          <h3>No trips planned yet</h3>
+          <p>Pack smarter — create your first trip and get a personalized packing list in seconds.</p>
+          <button class="btn-empty" onclick="location.href='newTrip.html'">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Plan Your First Trip
+          </button>
+        </div>`;
+      document.getElementById('tripsSection').style.display = 'none';
+    } else {
+      /* ── BENTO WITH TRIP DATA ── */
+      const days = daysTo(trip.fromDate);
+      const countdownText = days === null ? '–' : days > 0 ? days : days === 0 ? '0' : '✓';
+      const countdownUnit = days === null ? '' : days > 0 ? 'days away' : days === 0 ? 'today!' : 'underway';
+
+      const allKeys = Object.keys(packState);
+      const packedKeys = allKeys.filter(k => packState[k]);
+      const pct = allKeys.length ? Math.round(packedKeys.length / allKeys.length * 100) : 0;
+      const chips = (trip.activityCategories || []).slice(0,5).map(a => `<span class="bc-hero-chip">${a}</span>`).join('');
+
+      bento.innerHTML = `
+        <!-- HERO -->
+        <div class="bc bc-hero" id="heroCard">
+          <div class="bc-hero-img" id="heroBg" ${trip.imageUrl ? `style="background-image:url('${trip.imageUrl}')"` : ''}></div>
+          <div class="bc-hero-overlay"></div>
+          <div class="bc-hero-body">
+            <div class="bc-hero-left">
+              <div class="bc-hero-tag">Active Trip</div>
+              <div class="bc-hero-dest">${trip.destination}</div>
+              <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : 'Dates not set'}</div>
+              ${chips ? `<div class="bc-hero-chips">${chips}</div>` : ''}
+              <div class="bc-hero-actions">
+                <button class="bc-hero-btn" id="shareBtn">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  Share
+                </button>
+                <span class="bc-hero-weather" id="weatherBadge">🌡 —</span>
+              </div>
+            </div>
+            <div class="bc-hero-right">
+              ${allKeys.length ? ring(pct) : ''}
+              ${allKeys.length ? `<div class="bc-hero-ring-label">${packedKeys.length} of ${allKeys.length}<br>items packed</div>` : ''}
+            </div>
+          </div>
         </div>
-        <div class="nav-bottom">
-            <hr>
-            <button class="logout" type="reset" onclick="location.href='welcome.html'"><img src="img/home.png" alt="" class="icon"><span>Logout</span></button>
+
+        <!-- COUNTDOWN -->
+        <div class="bc bc-countdown">
+          <div class="bc-label"><span class="bc-label-dot"></span>Departure</div>
+          <div>
+            <div class="bc-countdown-num">${countdownText}</div>
+            <div class="bc-countdown-unit">${countdownUnit}</div>
+          </div>
+          <div class="bc-countdown-dest">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ${trip.fromDate ? fmt(trip.fromDate) : 'Date not set'}
+          </div>
         </div>
-    </nav>
 
-    <main>
-        <header>
-            <div><h1 id="homeGreeting">Welcome, Traveler!</h1></div>
-            <button class="primary" type="button" onclick="location.href='newTrip.html'">+ Create New Trip</button>
-        </header>
+        <!-- PROGRESS -->
+        <div class="bc bc-progress">
+          <div class="bc-progress-label">Packing Progress</div>
+          <div class="bc-progress-inner">
+            <div class="bc-progress-text">
+              <div class="bc-progress-pct">${pct}%</div>
+              <div class="bc-progress-sub">${packedKeys.length} of ${allKeys.length || '–'} items</div>
+            </div>
+            ${allKeys.length ? ring(pct, 72, 5) : ''}
+          </div>
+          <div class="bc-progress-bar-track">
+            <div class="bc-progress-bar-fill" style="width:${pct}%"></div>
+          </div>
+        </div>
 
-        <input type="text" placeholder="Search Destinations...">
+        <!-- WEATHER -->
+        <div class="bc bc-weather">
+          <div class="bc-weather-label">Destination Weather</div>
+          <div class="bc-weather-main" id="weatherMain">
+            <div class="bc-weather-icon">🌡</div>
+            <div>
+              <div class="bc-weather-temp" id="weatherTemp">—°F</div>
+              <div class="bc-weather-details">
+                <div class="bc-weather-city">${trip.destination}</div>
+                <div class="bc-weather-cond" id="weatherCond">Loading…</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <div id="heroArea"></div>
-        <div id="tipArea"></div>
+        <!-- TIP -->
+        <div class="bc bc-tip" id="tipCard">
+          <div class="bc-tip-label">Packing Tip</div>
+          <div class="bc-tip-icon" id="tipIcon">💡</div>
+          <div class="bc-tip-text" id="tipText">Loading tip…</div>
+        </div>
 
-        <section class="packed-section">
-            <h2>Others Also Packed</h2>
-            <div class="packed-items" id="packedItems"></div>
-        </section>
+        <!-- ACTIONS -->
+        <div class="bc bc-actions">
+          <div class="bc-actions-title">Quick Actions</div>
+          <button class="bc-action-btn" onclick="location.href='newTrip.html'">
+            <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span class="bca-label">New Trip</span>
+            <span class="bca-arrow">›</span>
+          </button>
+          <button class="bc-action-btn" onclick="location.href='packing-list.html'">
+            <svg class="bca-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+            <span class="bca-label">Packing List</span>
+            <span class="bca-arrow">›</span>
+          </button>
+          <button class="bc-action-btn" onclick="location.href='tripPreview.html'">
+            <svg class="bca-icon" viewBox="0 0 24 24"><path d="M1 6s+0-2 2-2 3 2 4 2 3-2 4-2 3 2 4 2 3-2 4-2+0 2 0 2v14s-0 2-2 2-3-2-4-2-3 2-4 2-3-2-4-2-3 2-4 2+0-2 0-2z"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+            <span class="bca-label">Trip Details</span>
+            <span class="bca-arrow">›</span>
+          </button>
+          <button class="bc-action-btn" onclick="location.href='discover.html'">
+            <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            <span class="bca-label">Discover</span>
+            <span class="bca-arrow">›</span>
+          </button>
+        </div>`;
 
-        <section class="explore-section">
-            <h2>Explore Destinations</h2>
-            <div class="explore-strip" id="exploreStrip"></div>
-        </section>
+      /* ── Hero click + parallax ── */
+      document.getElementById('heroCard').addEventListener('click', e => {
+        if (!e.target.closest('#shareBtn')) location.href = 'tripPreview.html';
+      });
 
-        <section class="trips">
-            <h2>Your Trips</h2>
-            <div class="grid" id="tripsGrid"></div>
-        </section>
-    </main>
+      document.getElementById('shareBtn').addEventListener('click', async e => {
+        e.stopPropagation();
+        const text = `✈️ Heading to ${trip.destination}!\n📅 ${fmt(trip.fromDate)} – ${fmt(trip.toDate)}\n🎒 Packed with Packmates`;
+        if (navigator.share) { try { await navigator.share({ title: trip.destination + ' Trip', text }); } catch {} }
+        else { try { await navigator.clipboard.writeText(text); toast('Trip details copied!'); } catch { toast('Could not copy'); } }
+      });
 
-    <script>
-        // ── Greeting ──
-        const hour = new Date().getHours();
-        const greetingEl = document.getElementById('homeGreeting');
-        if (hour < 12)      greetingEl.textContent = '☀️ Good morning, Traveler!';
-        else if (hour < 18) greetingEl.textContent = '⛅ Good afternoon, Traveler!';
-        else                greetingEl.textContent = '🌙 Good evening, Traveler!';
+      const bg = document.getElementById('heroBg');
+      document.getElementById('heroCard').addEventListener('mousemove', e => {
+        const r = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        if (bg) bg.style.transform = `scale(1.06) translate(${x*14}px,${y*8}px)`;
+      });
+      document.getElementById('heroCard').addEventListener('mouseleave', () => {
+        if (bg) bg.style.transform = 'scale(1)';
+      });
 
-        // ── Helpers ──
-        function formatDate(d) {
-            if (!d) return '';
-            const [y, m, day] = d.split('-');
-            return `${parseInt(m)}/${parseInt(day)}/${y}`;
-        }
-        function daysUntil(dateStr) {
-            if (!dateStr) return null;
-            return Math.ceil((new Date(dateStr) - new Date()) / 86400000);
-        }
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.className = 'toast'; t.textContent = msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.classList.add('toast--visible'), 10);
-            setTimeout(() => { t.classList.remove('toast--visible'); setTimeout(() => t.remove(), 300); }, 2500);
-        }
+      /* ── Weather ── */
+      fetchWeather(trip.destination).then(w => {
+        if (!w) { document.getElementById('weatherCond').textContent = 'Unavailable'; return; }
+        document.querySelector('#weatherMain .bc-weather-icon').textContent = w.icon;
+        document.getElementById('weatherTemp').textContent = w.temp + '°F';
+        document.getElementById('weatherCond').textContent = 'Current conditions';
+        document.getElementById('weatherBadge').textContent = `${w.icon} ${w.temp}°F`;
+      });
 
-        const AVATAR_COLORS = ['#5f9d30','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c'];
+      /* ── Trip card in grid ── */
+      const tripsGrid = document.getElementById('tripsGrid');
+      tripsGrid.innerHTML = `
+        <div class="trip-card" onclick="location.href='tripPreview.html'">
+          <div class="trip-card-img">
+            <img src="${trip.imageUrl || 'img/placeholderTrip.png'}" alt="${trip.destination}">
+          </div>
+          <div class="trip-card-body">
+            <div class="trip-card-title">${trip.destination}</div>
+            <div class="trip-card-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} – ${fmt(trip.toDate)}` : 'Dates not set'}</div>
+            <div class="trip-card-footer">
+              <div class="avatars" id="cardAvatars"></div>
+              <button class="arrow" onclick="event.stopPropagation();location.href='tripPreview.html'">›</button>
+            </div>
+          </div>
+        </div>`;
 
-        // ── Weather ──
-        const WMO_ICONS = {
-            0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',
-            51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',
-            71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',
-            95:'⛈️',96:'⛈️',99:'⛈️',
-        };
-        async function fetchWeather(city) {
-            try {
-                const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
-                const { results } = await geo.json();
-                if (!results?.[0]) return null;
-                const { latitude, longitude } = results[0];
-                const wx = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit`);
-                const { current_weather: cw } = await wx.json();
-                return { temp: Math.round(cw.temperature), icon: WMO_ICONS[cw.weathercode] || '🌡️' };
-            } catch { return null; }
-        }
+      const av = document.getElementById('cardAvatars');
+      for (let i = 0; i < Math.min(parseInt(trip.travelers)||1, 5); i++) {
+        const s = document.createElement('span');
+        s.style.background = AVATAR_COLORS[i % AVATAR_COLORS.length];
+        s.textContent = '✦'; s.style.fontSize = '0.45rem';
+        av.appendChild(s);
+      }
+    }
 
-        // ── Progress ring SVG ──
-        function progressRing(pct) {
-            const filled = pct;
-            const empty  = 100 - pct;
-            return `
-            <svg viewBox="0 0 36 36" width="72" height="72">
-                <circle cx="18" cy="18" r="15.9" fill="none"
-                    stroke="rgba(255,255,255,0.15)" stroke-width="3"/>
-                <circle cx="18" cy="18" r="15.9" fill="none"
-                    stroke="#5f9d30" stroke-width="3"
-                    stroke-dasharray="${filled} ${empty}"
-                    stroke-dashoffset="25"
-                    stroke-linecap="round"/>
-                <text x="18" y="21" text-anchor="middle"
-                    fill="#fff" font-size="8" font-weight="700"
-                    font-family="Montserrat,sans-serif">${pct}%</text>
-            </svg>`;
-        }
+    /* ── Tip of the day ── */
+    const TIPS = [
+      { icon:'🎽', text:'Roll clothes instead of folding — saves up to 30% more bag space.' },
+      { icon:'💊', text:'Always pack medications in your carry-on, never checked luggage.' },
+      { icon:'🔌', text:'A universal adapter works in 150+ countries — one for every trip.' },
+      { icon:'📱', text:'Download offline maps before you leave — WiFi isn\'t guaranteed.' },
+      { icon:'🧦', text:'Stuff socks inside shoes to save space and maintain shoe shape.' },
+      { icon:'💧', text:'Bring an empty reusable bottle — fill it after airport security.' },
+      { icon:'📋', text:'Photo your important documents and email them to yourself.' },
+      { icon:'🌙', text:'Sleep mask + earplugs make any flight or noisy hotel bearable.' },
+      { icon:'🧴', text:'Solid toiletries (shampoo bar, solid sunscreen) beat TSA limits.' },
+      { icon:'👟', text:'Wear your heaviest shoes on travel day to free up bag space.' },
+      { icon:'🏷️', text:'Tie a bright ribbon to your bag — spot it instantly on carousels.' },
+      { icon:'🔋', text:'10,000 mAh power bank = 2–3 full phone charges while traveling.' },
+    ];
+    const tip = TIPS[Math.floor(Date.now() / 86400000) % TIPS.length];
+    const tipIconEl = document.getElementById('tipIcon');
+    const tipTextEl = document.getElementById('tipText');
+    if (tipIconEl) tipIconEl.textContent = tip.icon;
+    if (tipTextEl) tipTextEl.textContent = tip.text;
 
-        // ── Hero area ──
-        const tripData     = JSON.parse(localStorage.getItem('currentTrip') || 'null');
-        const packingState = JSON.parse(localStorage.getItem('packingState') || '{}');
-        const heroArea     = document.getElementById('heroArea');
-        const tripsGrid    = document.getElementById('tripsGrid');
+    /* ── Others Also Packed ── */
+    const POPULAR = {
+      'Beach':           [['Sunscreen',90],['Swimsuit',88],['Beach Towel',85],['Sunglasses',82],['Flip Flops',78]],
+      'Hiking':          [['Hiking Boots',92],['Water Bottle',89],['Backpack',87],['Insect Repellent',75],['Snacks',72]],
+      'Camping':         [['Tent',95],['Sleeping Bag',93],['Camp Stove',80],['Insect Repellent',77],['Flashlight',74]],
+      'Road Trip':       [['Snacks',91],['Car Charger',88],['Travel Pillow',82],['Sunglasses',79],['Water Bottle',76]],
+      'Snow Sports':     [['Ski Jacket',94],['Gloves',91],['Thermal Base Layer',88],['Goggles',85],['Wool Socks',80]],
+      'Business Trip':   [['Laptop',96],['Business Cards',85],['Dress Shirts',84],['Blazer',81],['Notebook',76]],
+      'City Sightseeing':[['Camera',89],['Comfortable Shoes',87],['Backpack',84],['Water Bottle',78],['Travel Guidebook',70]],
+      '_default':        [['Passport',97],['Phone Charger',95],['Power Bank',90],['Comfortable Shoes',85],['Travel Adapter',80]],
+    };
 
-        if (!tripData || !tripData.destination) {
-            heroArea.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">🌍</div>
-                    <h3>No trips planned yet</h3>
-                    <p>Pack smarter — create your first trip and get a personalized packing list in seconds.</p>
-                    <button class="primary" style="margin-top:8px" onclick="location.href='newTrip.html'">✈️ Plan Your First Trip</button>
-                </div>`;
-        } else {
-            const days = daysUntil(tripData.fromDate);
-            const countdown = days === null ? '' :
-                days > 0  ? `${days} day${days !== 1 ? 's' : ''} away` :
-                days === 0 ? '🎉 Today!' : 'Trip ongoing';
+    const activities = trip?.activityCategories?.length ? trip.activityCategories : ['_default'];
+    const seen = new Set();
+    const popularItems = [];
+    activities.forEach(act => {
+      (POPULAR[act] || POPULAR['_default']).forEach(([name, pct]) => {
+        if (!seen.has(name)) { seen.add(name); popularItems.push([name, pct]); }
+      });
+    });
 
-            const allKeys    = Object.keys(packingState);
-            const packedKeys = allKeys.filter(k => packingState[k]);
-            const pct        = allKeys.length ? Math.round(packedKeys.length / allKeys.length * 100) : 0;
-            const chips      = (tripData.activityCategories || []).slice(0, 4).map(a => `<span class="hero-chip">${a}</span>`).join('');
+    document.getElementById('packedStrip').innerHTML = popularItems.slice(0,8).map(([name, pct]) => `
+      <div class="packed-chip">
+        <span>${name}</span>
+        <div class="packed-chip-bar"><div class="packed-chip-fill" style="width:${pct}%"></div></div>
+        <span class="packed-chip-pct">${pct}%</span>
+      </div>`).join('');
 
-            heroArea.innerHTML = `
-                <div class="hero-card" id="heroCard">
-                    <div class="hero-card-bg" ${tripData.imageUrl ? `style="background-image:url('${tripData.imageUrl}')"` : ''}></div>
-                    <div class="hero-card-overlay"></div>
-                    <div class="hero-card-body">
-                        <div class="hero-left">
-                            <div>
-                                <div class="hero-card-title">${tripData.destination}</div>
-                                <div class="hero-card-dates">${tripData.fromDate && tripData.toDate ? `${formatDate(tripData.fromDate)} – ${formatDate(tripData.toDate)}` : ''}</div>
-                            </div>
-                            <div class="hero-badges">
-                                ${countdown ? `<span class="hero-card-countdown">${countdown}</span>` : ''}
-                                <span class="hero-weather-badge" id="weatherBadge">🌡️ ...</span>
-                            </div>
-                            ${chips ? `<div class="hero-chips">${chips}</div>` : ''}
-                            <button class="hero-share-btn" id="shareBtn">↗ Share Trip</button>
-                        </div>
-                        <div class="hero-right">
-                            ${allKeys.length ? progressRing(pct) : ''}
-                            ${allKeys.length ? `<div class="progress-ring-label">${packedKeys.length}/${allKeys.length}<br>packed</div>` : ''}
-                        </div>
-                    </div>
-                </div>`;
+    /* ── Explore ── */
+    const DESTS = [
+      {name:'Paris',     emoji:'🗼', bg:'linear-gradient(135deg,#4a6fa5,#2c3e50)'},
+      {name:'Bali',      emoji:'🌺', bg:'linear-gradient(135deg,#e67e22,#c0392b)'},
+      {name:'New York',  emoji:'🗽', bg:'linear-gradient(135deg,#2c3e50,#3498db)'},
+      {name:'Tokyo',     emoji:'⛩️', bg:'linear-gradient(135deg,#c0392b,#8e44ad)'},
+      {name:'Cancun',    emoji:'🏖️', bg:'linear-gradient(135deg,#00b09b,#0099cc)'},
+      {name:'Dubai',     emoji:'🏙️', bg:'linear-gradient(135deg,#f7971e,#ffd200)'},
+      {name:'Rome',      emoji:'🏛️', bg:'linear-gradient(135deg,#d35400,#e74c3c)'},
+      {name:'Santorini', emoji:'🌊', bg:'linear-gradient(135deg,#1a78c2,#00c6ff)'},
+      {name:'Maldives',  emoji:'🐠', bg:'linear-gradient(135deg,#00b4db,#0083b0)'},
+      {name:'Banff',     emoji:'🏔️', bg:'linear-gradient(135deg,#2d6a4f,#1b4332)'},
+      {name:'Barcelona', emoji:'🎨', bg:'linear-gradient(135deg,#f093fb,#c0392b)'},
+      {name:'Sydney',    emoji:'🦘', bg:'linear-gradient(135deg,#4facfe,#00f2fe)'},
+    ];
 
-            document.getElementById('heroCard').addEventListener('click', e => {
-                if (!e.target.closest('#shareBtn')) location.href = 'tripPreview.html';
-            });
-
-            // Share button
-            document.getElementById('shareBtn').addEventListener('click', async e => {
-                e.stopPropagation();
-                const text = `✈️ I'm heading to ${tripData.destination}!\n📅 ${formatDate(tripData.fromDate)} – ${formatDate(tripData.toDate)}\n🎒 Packed with Packmates`;
-                if (navigator.share) {
-                    try { await navigator.share({ title: `${tripData.destination} Trip`, text }); } catch {}
-                } else {
-                    try { await navigator.clipboard.writeText(text); showToast('✓ Trip details copied to clipboard!'); }
-                    catch { showToast('⚠️ Could not copy — try manual copy.'); }
-                }
-            });
-
-            // Weather
-            fetchWeather(tripData.destination).then(w => {
-                const badge = document.getElementById('weatherBadge');
-                if (badge) badge.textContent = w ? `${w.icon} ${w.temp}°F` : '';
-            });
-
-            // Parallax on mouse move
-            const heroBgEl = document.querySelector('.hero-card-bg');
-            document.getElementById('heroCard').addEventListener('mousemove', e => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top)  / rect.height - 0.5;
-                if (heroBgEl) heroBgEl.style.transform = `translate(${x * 18}px, ${y * 12}px)`;
-            });
-            document.getElementById('heroCard').addEventListener('mouseleave', () => {
-                if (heroBgEl) heroBgEl.style.transform = 'translate(0, 0)';
-            });
-
-            // Trip card in grid
-            tripsGrid.innerHTML = `
-                <article class="card" style="cursor:pointer" onclick="location.href='tripPreview.html'">
-                    <div class="card-img">
-                        <img src="${tripData.imageUrl || 'img/placeholderTrip.png'}" alt="${tripData.destination}" style="width:100%;height:100%;object-fit:cover;">
-                    </div>
-                    <div class="card-body">
-                        <h3>${tripData.destination}</h3>
-                        <p>${tripData.fromDate && tripData.toDate ? `${formatDate(tripData.fromDate)} – ${formatDate(tripData.toDate)}` : 'Dates not set'}</p>
-                        <footer>
-                            <div class="avatars" id="cardAvatars"></div>
-                            <button type="button" class="arrow" onclick="event.stopPropagation();location.href='tripPreview.html'">&gt;</button>
-                        </footer>
-                    </div>
-                </article>`;
-
-            const cardAvatars = document.getElementById('cardAvatars');
-            const travelers   = parseInt(tripData.travelers) || 1;
-            for (let i = 0; i < travelers; i++) {
-                const dot = document.createElement('span');
-                dot.style.background = AVATAR_COLORS[i % AVATAR_COLORS.length];
-                dot.textContent = '👤';
-                cardAvatars.appendChild(dot);
-            }
-        }
-
-        // ── Tip of the day ──
-        const TIPS = [
-            { icon: '🎽', text: 'Roll your clothes instead of folding — saves up to 30% more space in your bag.' },
-            { icon: '💊', text: 'Pack medications in your carry-on, never in checked luggage.' },
-            { icon: '🔌', text: 'A universal travel adapter works in 150+ countries — one for every trip.' },
-            { icon: '📱', text: 'Download offline maps before you leave — WiFi isn\'t always guaranteed.' },
-            { icon: '🧦', text: 'Stuff socks inside your shoes to save space and keep shoe shape.' },
-            { icon: '💧', text: 'Bring an empty reusable water bottle — fill it after airport security.' },
-            { icon: '📋', text: 'Take photos of important docs (passport, insurance) and email them to yourself.' },
-            { icon: '🌙', text: 'Pack a sleep mask and earplugs — they make any flight or hotel room better.' },
-            { icon: '🧴', text: 'Use solid toiletries (shampoo bars, solid sunscreen) to avoid liquid limits.' },
-            { icon: '👟', text: 'Wear your heaviest shoes and jacket on travel day to save bag space.' },
-            { icon: '🏷️', text: 'Label your bag with a brightly colored ribbon so it\'s easy to spot on the carousel.' },
-            { icon: '🔋', text: 'A power bank with at least 10,000mAh charges most phones 2–3 times.' },
-        ];
-        const tip = TIPS[Math.floor(Date.now() / 86400000) % TIPS.length];
-        document.getElementById('tipArea').innerHTML = `
-            <div class="tip-card">
-                <div class="tip-icon">${tip.icon}</div>
-                <div>
-                    <div class="tip-label">Packing Tip of the Day</div>
-                    <div class="tip-text">${tip.text}</div>
-                </div>
-            </div>`;
-
-        // ── Others also packed ──
-        const POPULAR = {
-            'Beach':           [['Sunscreen',90],['Swimsuit',88],['Beach Towel',85],['Sunglasses',82],['Flip Flops',78]],
-            'Hiking':          [['Hiking Boots',92],['Water Bottle',89],['Backpack',87],['Insect Repellent',75],['Snacks',72]],
-            'Camping':         [['Tent',95],['Sleeping Bag',93],['Camp Stove',80],['Insect Repellent',77],['Flashlight',74]],
-            'Road Trip':       [['Snacks',91],['Car Charger',88],['Travel Pillow',82],['Sunglasses',79],['Water Bottle',76]],
-            'Snow Sports':     [['Ski Jacket',94],['Gloves',91],['Thermal Base Layer',88],['Goggles',85],['Wool Socks',80]],
-            'Business Trip':   [['Laptop',96],['Business Cards',85],['Dress Shirts',84],['Blazer',81],['Notebook',76]],
-            'Night Out':       [['Dress',87],['Heels',82],['Perfume/Cologne',79],['Clutch Purse',75],['Makeup Kit',73]],
-            'Baby':            [['Diapers',98],['Baby Wipes',96],['Baby Bottle',90],['Stroller',85],['Baby Blanket',82]],
-            'Theme Park':      [['Fanny Pack',88],['Comfortable Shoes',86],['Sunscreen',81],['Water Bottle',79],['Camera',74]],
-            'Festival':        [['Tent',83],['Fanny Pack',80],['Raincoat',77],['Sunglasses',75],['Power Bank',73]],
-            'City Sightseeing':[['Camera',89],['Comfortable Shoes',87],['Backpack',84],['Water Bottle',78],['Travel Guidebook',70]],
-            'Dining':          [['Dress Shoes',88],['Blazer',84],['Dress',80],['Button-Down Shirts',76],['Tie',65]],
-            'Gym':             [['Workout Clothes',95],['Sports Shoes',92],['Gym Towel',87],['Water Bottle',84],['Earbuds',79]],
-            'Swimming':        [['Swimsuit',96],['Goggles',88],['Towel',85],['Swim Cap',76],['Flip Flops',74]],
-            '_default':        [['Passport',97],['Phone Charger',95],['Power Bank',90],['Comfortable Shoes',85],['Travel Adapter',80]],
-        };
-
-        const activities = tripData?.activityCategories?.length ? tripData.activityCategories : ['_default'];
-        const seen = new Set();
-        const popularItems = [];
-        activities.forEach(act => {
-            (POPULAR[act] || POPULAR['_default']).forEach(([name, pct]) => {
-                if (!seen.has(name)) { seen.add(name); popularItems.push([name, pct]); }
-            });
-        });
-        const top6 = popularItems.slice(0, 6);
-
-        document.getElementById('packedItems').innerHTML = top6.map(([name, pct]) => `
-            <div class="packed-item-chip">
-                <span>${name}</span>
-                <div class="packed-item-bar"><div class="packed-item-bar-fill" style="width:${pct}%"></div></div>
-                <span class="packed-item-pct">${pct}%</span>
-            </div>`).join('');
-
-        // ── Explore destinations ──
-        const DESTINATIONS = [
-            { name: 'Paris',      emoji: '🗼', bg: 'linear-gradient(135deg,#4a6fa5,#2c3e50)' },
-            { name: 'Bali',       emoji: '🌺', bg: 'linear-gradient(135deg,#e67e22,#c0392b)' },
-            { name: 'New York',   emoji: '🗽', bg: 'linear-gradient(135deg,#2c3e50,#3498db)' },
-            { name: 'Tokyo',      emoji: '⛩️', bg: 'linear-gradient(135deg,#c0392b,#8e44ad)' },
-            { name: 'Cancun',     emoji: '🏖️', bg: 'linear-gradient(135deg,#00b09b,#0099cc)' },
-            { name: 'Dubai',      emoji: '🏙️', bg: 'linear-gradient(135deg,#f7971e,#ffd200)' },
-            { name: 'Rome',       emoji: '🏛️', bg: 'linear-gradient(135deg,#d35400,#e74c3c)' },
-            { name: 'Santorini',  emoji: '🌊', bg: 'linear-gradient(135deg,#1a78c2,#00c6ff)' },
-            { name: 'Maldives',   emoji: '🐠', bg: 'linear-gradient(135deg,#00b4db,#0083b0)' },
-            { name: 'Banff',      emoji: '🏔️', bg: 'linear-gradient(135deg,#2d6a4f,#1b4332)' },
-            { name: 'Barcelona',  emoji: '🎨', bg: 'linear-gradient(135deg,#f093fb,#c0392b)' },
-            { name: 'Sydney',     emoji: '🦘', bg: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
-        ];
-        const strip = document.getElementById('exploreStrip');
-        DESTINATIONS.forEach(dest => {
-            const card = document.createElement('div');
-            card.className = 'explore-card';
-            card.innerHTML = `
-                <div class="explore-card-bg" style="background:${dest.bg}"></div>
-                <div class="explore-card-overlay"></div>
-                <div class="explore-card-emoji">${dest.emoji}</div>
-                <div class="explore-card-label">${dest.name}</div>`;
-            card.addEventListener('click', () => {
-                localStorage.setItem('exploreDestination', dest.name);
-                location.href = 'newTrip.html';
-            });
-            strip.appendChild(card);
-        });
-    </script>
+    const strip = document.getElementById('exploreStrip');
+    DESTS.forEach(d => {
+      const c = document.createElement('div');
+      c.className = 'explore-card';
+      c.innerHTML = `
+        <div class="explore-card-bg" style="background:${d.bg}"></div>
+        <div class="explore-card-overlay"></div>
+        <div class="explore-card-emoji">${d.emoji}</div>
+        <div class="explore-card-label">${d.name}</div>`;
+      c.addEventListener('click', () => { localStorage.setItem('exploreDestination', d.name); location.href = 'newTrip.html'; });
+      strip.appendChild(c);
+    });
+  </script>
 </body>
-
 </html>

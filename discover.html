@@ -9,26 +9,35 @@
 </head>
 
 <body>
-   <!--Side Navbar (keep on all pages)-->
    <nav class="sidebar">
       <div class="brand">
          <img src="img/appIcon.png" alt="Packmates" class="icon">
          <span>Packmates</span>
       </div>
+      <span class="nav-label">Navigate</span>
       <div class="nav-buttons">
-         <button type="reset" onclick="location.href='index.html'"><img src="img/home.png" alt=""
-               class="icon"><span>Home</span></button>
-         <button type="reset" onclick="location.href='discover.html'"><img src="img/calendar.png" alt=""
-               class="icon"><span>Discover</span></button>
-         <button type="reset" onclick="location.href='notifications.html'"><img src="img/notif.png" alt=""
-               class="icon"><span>Notifications</span></button>
-         <button type="reset" onclick="location.href='profile.html'"><img src="img/profile.png" alt=""
-               class="icon"><span>Profile</span></button>
+         <button type="button" onclick="location.href='index.html'">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+         </button>
+         <button type="button" onclick="location.href='discover.html'" class="active">
+            <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            <span>Discover</span>
+         </button>
+         <button type="button" onclick="location.href='notifications.html'">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <span>Alerts</span>
+         </button>
+         <button type="button" onclick="location.href='profile.html'">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+         </button>
       </div>
       <div class="nav-bottom">
-         <hr>
-         <button class="logout" type="reset" onclick="location.href='welcome.html'"><img src="img/home.png" alt=""
-               class="icon"><span>Logout</span></button>
+         <button class="logout" type="button" onclick="location.href='welcome.html'">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Sign Out</span>
+         </button>
       </div>
    </nav>
 

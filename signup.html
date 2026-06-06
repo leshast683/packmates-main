@@ -348,6 +348,8 @@
 
   <script src="auth.js"></script>
   <script>
+    if (Auth.isLoggedIn()) location.replace('index.html');
+
     function togglePassword(id, btn) {
       const input = document.getElementById(id);
       const showing = input.type === 'text';
@@ -372,12 +374,12 @@
       label.textContent = val.length ? labels[score - 1] || '' : '';
     }
 
-    async function handleSignup(e) {
+    function handleSignup(e) {
       e.preventDefault();
-      const msg    = document.getElementById('msg');
-      const name   = document.getElementById('name').value.trim();
-      const email  = document.getElementById('email').value.trim();
-      const pw     = document.getElementById('password').value;
+      const msg     = document.getElementById('msg');
+      const name    = document.getElementById('name').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const pw      = document.getElementById('password').value;
       const confirm = document.getElementById('confirm').value;
 
       msg.className = 'msg';
@@ -388,17 +390,12 @@
         msg.textContent = 'Passwords do not match.';
         return;
       }
-      if (pw.length < 8) {
-        msg.className = 'msg error';
-        msg.textContent = 'Password must be at least 8 characters.';
-        return;
-      }
 
-      const result = await Auth.register(name, email, pw);
+      const result = Auth.register(name, email, pw);
       if (result.success) {
         msg.className = 'msg success';
         msg.textContent = 'Account created! Redirecting…';
-        setTimeout(() => location.href = 'index.html', 1200);
+        setTimeout(() => location.href = 'index.html', 900);
       } else {
         msg.className = 'msg error';
         msg.textContent = result.error;
