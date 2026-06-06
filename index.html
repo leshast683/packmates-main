@@ -1003,147 +1003,146 @@
     }
 
     /* ── Data ── */
-    const trip = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+    const trip      = JSON.parse(localStorage.getItem('currentTrip') || 'null');
     const packState = JSON.parse(localStorage.getItem('packingState') || '{}');
-    const bento = document.getElementById('bentoGrid');
+    const hasTrip   = !!trip?.destination;
+    const bento     = document.getElementById('bentoGrid');
 
-    if (!trip?.destination) {
-      /* ── EMPTY STATE ── */
-      bento.innerHTML = `
-        <div class="bc bento-empty">
-          <div class="bento-empty-icon">✈️</div>
-          <h3>No trips planned yet</h3>
-          <p>Pack smarter — create your first trip and get a personalized packing list in seconds.</p>
-          <button class="btn-empty" onclick="location.href='newTrip.html'">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Plan Your First Trip
-          </button>
-        </div>`;
-      document.getElementById('tripsSection').style.display = 'none';
-    } else {
-      /* ── BENTO WITH TRIP DATA ── */
-      const days = daysTo(trip.fromDate);
-      const countdownText = days === null ? '–' : days > 0 ? days : days === 0 ? '0' : '✓';
-      const countdownUnit = days === null ? '' : days > 0 ? 'days away' : days === 0 ? 'today!' : 'underway';
+    const allKeys    = Object.keys(packState);
+    const packedKeys = allKeys.filter(k => packState[k]);
+    const pct        = allKeys.length ? Math.round(packedKeys.length / allKeys.length * 100) : 0;
 
-      const allKeys = Object.keys(packState);
-      const packedKeys = allKeys.filter(k => packState[k]);
-      const pct = allKeys.length ? Math.round(packedKeys.length / allKeys.length * 100) : 0;
-      const chips = (trip.activityCategories || []).slice(0,5).map(a => `<span class="bc-hero-chip">${a}</span>`).join('');
+    const days         = hasTrip ? daysTo(trip.fromDate) : null;
+    const countdownNum = !hasTrip ? '—' : days === null ? '—' : days > 0 ? days : days === 0 ? '0' : '✓';
+    const countdownUnit= !hasTrip ? 'no trip yet' : days === null ? '' : days > 0 ? 'days away' : days === 0 ? 'today!' : 'underway';
+    const chips        = hasTrip ? (trip.activityCategories||[]).slice(0,5).map(a=>`<span class="bc-hero-chip">${a}</span>`).join('') : '';
 
-      bento.innerHTML = `
-        <!-- HERO -->
-        <div class="bc bc-hero" id="heroCard">
-          <div class="bc-hero-img" id="heroBg" ${trip.imageUrl ? `style="background-image:url('${trip.imageUrl}')"` : ''}></div>
-          <div class="bc-hero-overlay"></div>
-          <div class="bc-hero-body">
-            <div class="bc-hero-left">
-              <div class="bc-hero-tag">Active Trip</div>
-              <div class="bc-hero-dest">${trip.destination}</div>
-              <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : 'Dates not set'}</div>
-              ${chips ? `<div class="bc-hero-chips">${chips}</div>` : ''}
-              <div class="bc-hero-actions">
-                <button class="bc-hero-btn" id="shareBtn">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                  Share
-                </button>
-                <span class="bc-hero-weather" id="weatherBadge">🌡 —</span>
-              </div>
-            </div>
-            <div class="bc-hero-right">
-              ${allKeys.length ? ring(pct) : ''}
-              ${allKeys.length ? `<div class="bc-hero-ring-label">${packedKeys.length} of ${allKeys.length}<br>items packed</div>` : ''}
-            </div>
-          </div>
-        </div>
+    /* ── Always render full bento ── */
+    bento.innerHTML = `
+      <!-- HERO -->
+      <div class="bc bc-hero" id="heroCard" style="cursor:${hasTrip?'pointer':'default'}">
+        ${hasTrip && trip.imageUrl ? `<div class="bc-hero-img" id="heroBg" style="background-image:url('${trip.imageUrl}')"></div>` : '<div class="bc-hero-img" id="heroBg"></div>'}
+        <div class="bc-hero-overlay"></div>
 
-        <!-- COUNTDOWN -->
-        <div class="bc bc-countdown">
-          <div class="bc-label"><span class="bc-label-dot"></span>Departure</div>
+        ${!hasTrip ? `
+        <!-- Empty hero -->
+        <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center;">
+          <div style="width:64px;height:64px;background:rgba(95,157,48,0.2);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">✈️</div>
           <div>
-            <div class="bc-countdown-num">${countdownText}</div>
-            <div class="bc-countdown-unit">${countdownUnit}</div>
+            <div style="font-family:'Blauer Nue',sans-serif;font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:6px;">Plan your next adventure</div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);max-width:280px;line-height:1.6;">Create a trip and get a smart packing list tailored to your destination and activities.</div>
           </div>
-          <div class="bc-countdown-dest">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            ${trip.fromDate ? fmt(trip.fromDate) : 'Date not set'}
-          </div>
-        </div>
-
-        <!-- PROGRESS -->
-        <div class="bc bc-progress">
-          <div class="bc-progress-label">Packing Progress</div>
-          <div class="bc-progress-inner">
-            <div class="bc-progress-text">
-              <div class="bc-progress-pct">${pct}%</div>
-              <div class="bc-progress-sub">${packedKeys.length} of ${allKeys.length || '–'} items</div>
-            </div>
-            ${allKeys.length ? ring(pct, 72, 5) : ''}
-          </div>
-          <div class="bc-progress-bar-track">
-            <div class="bc-progress-bar-fill" style="width:${pct}%"></div>
-          </div>
-        </div>
-
-        <!-- WEATHER -->
-        <div class="bc bc-weather">
-          <div class="bc-weather-label">Destination Weather</div>
-          <div class="bc-weather-main" id="weatherMain">
-            <div class="bc-weather-icon">🌡</div>
-            <div>
-              <div class="bc-weather-temp" id="weatherTemp">—°F</div>
-              <div class="bc-weather-details">
-                <div class="bc-weather-city">${trip.destination}</div>
-                <div class="bc-weather-cond" id="weatherCond">Loading…</div>
-              </div>
+          <button onclick="location.href='newTrip.html'" style="padding:12px 28px;background:var(--green);color:#fff;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background 0.2s,transform 0.2s;" onmouseover="this.style.background='#4d8225';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#5f9d30';this.style.transform=''">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Create First Trip
+          </button>
+        </div>` : `
+        <!-- Active trip hero -->
+        <div class="bc-hero-body">
+          <div class="bc-hero-left">
+            <div class="bc-hero-tag">Active Trip</div>
+            <div class="bc-hero-dest">${trip.destination}</div>
+            <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : 'Dates not set'}</div>
+            ${chips ? `<div class="bc-hero-chips">${chips}</div>` : ''}
+            <div class="bc-hero-actions">
+              <button class="bc-hero-btn" id="shareBtn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Share
+              </button>
+              <span class="bc-hero-weather" id="weatherBadge">🌡 —</span>
             </div>
           </div>
+          <div class="bc-hero-right">
+            ${allKeys.length ? ring(pct) : ring(0)}
+            <div class="bc-hero-ring-label">${allKeys.length ? `${packedKeys.length} of ${allKeys.length}<br>items packed` : 'No items yet'}</div>
+          </div>
+        </div>`}
+      </div>
+
+      <!-- COUNTDOWN -->
+      <div class="bc bc-countdown">
+        <div class="bc-label"><span class="bc-label-dot"></span>Departure</div>
+        <div>
+          <div class="bc-countdown-num" style="${!hasTrip?'color:var(--text-3)':''}">
+            ${countdownNum}
+          </div>
+          <div class="bc-countdown-unit">${countdownUnit}</div>
         </div>
-
-        <!-- TIP -->
-        <div class="bc bc-tip" id="tipCard">
-          <div class="bc-tip-label">Packing Tip</div>
-          <div class="bc-tip-icon" id="tipIcon">💡</div>
-          <div class="bc-tip-text" id="tipText">Loading tip…</div>
+        <div class="bc-countdown-dest">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${hasTrip && trip.fromDate ? fmt(trip.fromDate) : 'No trip planned'}
         </div>
+      </div>
 
-        <!-- ACTIONS -->
-        <div class="bc bc-actions">
-          <div class="bc-actions-title">Quick Actions</div>
-          <button class="bc-action-btn" onclick="location.href='newTrip.html'">
-            <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-            <span class="bca-label">New Trip</span>
-            <span class="bca-arrow">›</span>
-          </button>
-          <button class="bc-action-btn" onclick="location.href='packing-list.html'">
-            <svg class="bca-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-            <span class="bca-label">Packing List</span>
-            <span class="bca-arrow">›</span>
-          </button>
-          <button class="bc-action-btn" onclick="location.href='tripPreview.html'">
-            <svg class="bca-icon" viewBox="0 0 24 24"><path d="M1 6s+0-2 2-2 3 2 4 2 3-2 4-2 3 2 4 2 3-2 4-2+0 2 0 2v14s-0 2-2 2-3-2-4-2-3 2-4 2-3-2-4-2-3 2-4 2+0-2 0-2z"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
-            <span class="bca-label">Trip Details</span>
-            <span class="bca-arrow">›</span>
-          </button>
-          <button class="bc-action-btn" onclick="location.href='discover.html'">
-            <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-            <span class="bca-label">Discover</span>
-            <span class="bca-arrow">›</span>
-          </button>
-        </div>`;
+      <!-- PROGRESS -->
+      <div class="bc bc-progress">
+        <div class="bc-progress-label">Packing Progress</div>
+        <div class="bc-progress-inner">
+          <div class="bc-progress-text">
+            <div class="bc-progress-pct">${pct}%</div>
+            <div class="bc-progress-sub">${allKeys.length ? `${packedKeys.length} of ${allKeys.length} items` : 'Create a trip to start'}</div>
+          </div>
+          ${ring(pct, 72, 5)}
+        </div>
+        <div class="bc-progress-bar-track">
+          <div class="bc-progress-bar-fill" style="width:${pct}%"></div>
+        </div>
+      </div>
 
-      /* ── Hero click + parallax ── */
+      <!-- WEATHER -->
+      <div class="bc bc-weather">
+        <div class="bc-weather-label">Destination Weather</div>
+        <div class="bc-weather-main" id="weatherMain">
+          <div class="bc-weather-icon" id="wIcon">${hasTrip ? '🌡' : '🌍'}</div>
+          <div>
+            <div class="bc-weather-temp" id="weatherTemp">${hasTrip ? '—°F' : '—'}</div>
+            <div class="bc-weather-details">
+              <div class="bc-weather-city">${hasTrip ? trip.destination : 'No destination'}</div>
+              <div class="bc-weather-cond" id="weatherCond">${hasTrip ? 'Loading…' : 'Plan a trip first'}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIP -->
+      <div class="bc bc-tip">
+        <div class="bc-tip-label">Packing Tip</div>
+        <div class="bc-tip-icon" id="tipIcon">💡</div>
+        <div class="bc-tip-text" id="tipText">Loading tip…</div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="bc bc-actions">
+        <div class="bc-actions-title">Quick Actions</div>
+        <button class="bc-action-btn" onclick="location.href='newTrip.html'">
+          <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span class="bca-label">New Trip</span><span class="bca-arrow">›</span>
+        </button>
+        <button class="bc-action-btn" onclick="location.href='packing-list.html'">
+          <svg class="bca-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+          <span class="bca-label">Packing List</span><span class="bca-arrow">›</span>
+        </button>
+        <button class="bc-action-btn" onclick="location.href='${hasTrip ? 'tripPreview.html' : 'newTrip.html'}'">
+          <svg class="bca-icon" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span class="bca-label">${hasTrip ? 'Trip Details' : 'Plan a Trip'}</span><span class="bca-arrow">›</span>
+        </button>
+        <button class="bc-action-btn" onclick="location.href='discover.html'">
+          <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          <span class="bca-label">Discover</span><span class="bca-arrow">›</span>
+        </button>
+      </div>`;
+
+    /* ── Hero interactions (only when trip exists) ── */
+    if (hasTrip) {
       document.getElementById('heroCard').addEventListener('click', e => {
         if (!e.target.closest('#shareBtn')) location.href = 'tripPreview.html';
       });
-
       document.getElementById('shareBtn').addEventListener('click', async e => {
         e.stopPropagation();
         const text = `✈️ Heading to ${trip.destination}!\n📅 ${fmt(trip.fromDate)} – ${fmt(trip.toDate)}\n🎒 Packed with Packmates`;
         if (navigator.share) { try { await navigator.share({ title: trip.destination + ' Trip', text }); } catch {} }
         else { try { await navigator.clipboard.writeText(text); toast('Trip details copied!'); } catch { toast('Could not copy'); } }
       });
-
       const bg = document.getElementById('heroBg');
       document.getElementById('heroCard').addEventListener('mousemove', e => {
         const r = e.currentTarget.getBoundingClientRect();
@@ -1154,18 +1153,20 @@
       document.getElementById('heroCard').addEventListener('mouseleave', () => {
         if (bg) bg.style.transform = 'scale(1)';
       });
-
-      /* ── Weather ── */
       fetchWeather(trip.destination).then(w => {
         if (!w) { document.getElementById('weatherCond').textContent = 'Unavailable'; return; }
-        document.querySelector('#weatherMain .bc-weather-icon').textContent = w.icon;
+        document.getElementById('wIcon').textContent = w.icon;
         document.getElementById('weatherTemp').textContent = w.temp + '°F';
         document.getElementById('weatherCond').textContent = 'Current conditions';
-        document.getElementById('weatherBadge').textContent = `${w.icon} ${w.temp}°F`;
+        const wb = document.getElementById('weatherBadge');
+        if (wb) wb.textContent = `${w.icon} ${w.temp}°F`;
       });
+    }
 
-      /* ── Trip card in grid ── */
-      const tripsGrid = document.getElementById('tripsGrid');
+    /* ── Trip card in grid ── */
+    const tripsGrid = document.getElementById('tripsGrid');
+    if (hasTrip) {
+      document.getElementById('tripsSection').style.display = '';
       tripsGrid.innerHTML = `
         <div class="trip-card" onclick="location.href='tripPreview.html'">
           <div class="trip-card-img">
@@ -1180,7 +1181,6 @@
             </div>
           </div>
         </div>`;
-
       const av = document.getElementById('cardAvatars');
       for (let i = 0; i < Math.min(parseInt(trip.travelers)||1, 5); i++) {
         const s = document.createElement('span');
@@ -1188,6 +1188,8 @@
         s.textContent = '✦'; s.style.fontSize = '0.45rem';
         av.appendChild(s);
       }
+    } else {
+      document.getElementById('tripsSection').style.display = 'none';
     }
 
     /* ── Tip of the day ── */
