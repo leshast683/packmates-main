@@ -1,648 +1,578 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Notifications</title>
-    <link rel="stylesheet" href="style.css">
-<style>
-  :root {
-    --surface: #ffffff;
-    --text-primary: var(--text-1);
-    --text-secondary: var(--text-2);
-    --text-muted: var(--text-3);
-    --green: var(--green);
-    --green-light: rgba(95,157,48,0.08);
-    --unread-bg: rgba(95,157,48,0.06);
-    --unread-border: var(--green);
-    --dot-unread: var(--green);
-    --dot-read: var(--border);
-    --badge-bg: var(--bg);
-    --badge-text: var(--text-3);
-    --shadow: 0 2px 16px rgba(0,0,0,0.06);
-    --shadow-sm: 0 1px 4px rgba(0,0,0,0.05);
-    --radius: 16px;
-    --radius-sm: 10px;
-    --input-bg: var(--bg);
-    --accent-red: #c0392b;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications — Packmates</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body > main {
+      padding: 28px 32px 40px;
+      overflow-y: auto;
+    }
 
-  body {
-    font-family: 'Montserrat', sans-serif;
-  }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
 
-  body > main {
-    padding: 28px 32px;
-    overflow-y: auto;
-  }
+    /* ── Page header ── */
+    .notif-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.4s ease both;
+      flex-wrap: wrap;
+    }
 
-  .container {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-  }
+    .notif-header-icon {
+      width: 48px; height: 48px;
+      background: var(--green-bg);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
-  .container {
-    width: 100%;
-    max-width: 680px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+    .notif-header-icon svg {
+      width: 22px; height: 22px;
+      stroke: var(--green);
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2;
+    }
 
-  /* Header Card */
-  .header-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: var(--shadow-sm);
-  }
+    .notif-header-text { flex: 1; }
+    .notif-header-text h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+    .notif-header-text p { font-size: 0.78rem; color: var(--text-3); font-weight: 500; margin-top: 2px; }
 
-  .header-icon {
-    width: 52px;
-    height: 52px;
-    background: #f0faf0;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
+    .notif-header-actions { display: flex; align-items: center; gap: 8px; }
 
-  .header-icon svg { color: var(--green); }
+    .btn-outline {
+      padding: 8px 16px;
+      background: var(--surface);
+      color: var(--text-2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .btn-outline:hover { background: var(--bg); border-color: var(--border-2); }
 
-  .header-text { flex: 1; }
-  .header-text h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; font-family: 'Blauer Nue', sans-serif; }
-  .header-text p {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-top: 2px;
-    font-weight: 400;
-  }
+    .btn-danger-outline {
+      padding: 8px 16px;
+      background: var(--surface);
+      color: #c0392b;
+      border: 1.5px solid rgba(192,57,43,0.25);
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .btn-danger-outline:hover { background: rgba(192,57,43,0.06); border-color: rgba(192,57,43,0.45); }
 
-  .header-actions { display: flex; align-items: center; gap: 8px; }
+    /* ── Content wrapper ── */
+    .notif-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 720px;
+    }
 
-  .btn {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 9px 18px;
-    border-radius: 50px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    white-space: nowrap;
-  }
+    /* ── Section ── */
+    .notif-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0,0,0,0.04);
+      animation: fadeUp 0.4s ease both;
+    }
 
-  .btn-outline {
-    background: var(--input-bg);
-    color: var(--text-primary);
-    border: 1.5px solid var(--border);
-  }
-  .btn-outline:hover { background: var(--border); }
+    .notif-section:nth-child(1) { animation-delay: 0.05s; }
+    .notif-section:nth-child(2) { animation-delay: 0.10s; }
 
-  .btn-danger {
-    background: #fdecea;
-    color: var(--accent-red);
-    border: 1.5px solid #f5c0c0;
-  }
-  .btn-danger:hover { background: #fad4d4; }
+    .notif-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
 
-  .icon-btn {
-    width: 38px;
-    height: 38px;
-    background: var(--input-bg);
-    border: 1.5px solid var(--border);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.15s;
-    color: var(--text-secondary);
-  }
-  .icon-btn:hover { background: var(--border); }
+    .notif-section-header:hover { background: var(--surface-2, #f8f9fc); }
 
-  /* Section */
-  .section {
-    background: var(--surface);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-  }
+    .notif-section-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 24px 14px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .section-header:hover { background: #f5f3ef; }
+    .notif-section-title {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-1);
+    }
 
-  .section-header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+    .notif-badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid rgba(95,157,48,0.2);
+      border-radius: 6px;
+      padding: 2px 8px;
+    }
 
-  .section-title {
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    color: var(--text-primary);
-    font-family: 'Blauer Nue', sans-serif;
-  }
+    .notif-section-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  .section-header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+    .collapse-chevron {
+      width: 24px; height: 24px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.25s var(--ease), background 0.15s;
+      flex-shrink: 0;
+    }
 
-  .section-badge {
-    font-family: 'DM Sans', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    color: var(--badge-text);
-    background: var(--badge-bg);
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    text-transform: uppercase;
-  }
+    .collapse-chevron svg {
+      width: 12px; height: 12px;
+      stroke: var(--text-3);
+      fill: none;
+      stroke-linecap: round;
+      stroke-width: 2.2;
+    }
 
-  .collapse-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--input-bg);
-    border: 1.5px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    transition: background 0.15s, transform 0.25s ease;
-    flex-shrink: 0;
-  }
+    .notif-section.collapsed .collapse-chevron { transform: rotate(-90deg); }
 
-  .section.collapsed .collapse-btn {
-    transform: rotate(-90deg);
-  }
+    /* ── Collapsible list ── */
+    .notif-list-wrap {
+      overflow: hidden;
+      max-height: 2000px;
+      transition: max-height 0.35s ease, opacity 0.25s ease;
+      opacity: 1;
+    }
 
-  /* Collapsible list */
-  .notif-list-wrapper {
-    overflow: hidden;
-    max-height: 1000px;
-    transition: max-height 0.35s ease, opacity 0.25s ease;
-    opacity: 1;
-  }
+    .notif-section.collapsed .notif-list-wrap {
+      max-height: 0;
+      opacity: 0;
+    }
 
-  .section.collapsed .notif-list-wrapper {
-    max-height: 0;
-    opacity: 0;
-  }
+    .notif-list { display: flex; flex-direction: column; }
 
-  /* Notification Items */
-  .notif-list { display: flex; flex-direction: column; gap: 0; }
+    /* ── Notification item ── */
+    .notif-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-top: 1px solid var(--border);
+      position: relative;
+    }
 
-  .notif-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 24px 14px 16px;
-    cursor: pointer;
-    transition: background 0.15s ease;
-    border-left: 3.5px solid transparent;
-    position: relative;
-  }
+    .notif-item:first-child { border-top: none; }
 
-  .notif-item.unread {
-    background: var(--unread-bg);
-    border-left-color: var(--unread-border);
-  }
+    .notif-item.unread { background: rgba(95,157,48,0.035); }
 
-  .notif-item:hover { filter: brightness(0.97); }
+    .notif-item.unread::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--green);
+      border-radius: 0 2px 2px 0;
+    }
 
-  .notif-item + .notif-item {
-    border-top: 1px solid var(--border);
-  }
+    .notif-item:hover { background: var(--bg); }
+    .notif-item.unread:hover { background: rgba(95,157,48,0.06); }
 
-  .notif-icon {
-    width: 42px;
-    height: 42px;
-    background: var(--input-bg);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.15s;
-  }
+    /* Icon chip */
+    .notif-icon-chip {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
-  .notif-item.unread .notif-icon { background: #e8f5e9; }
+    .notif-icon-chip svg {
+      width: 18px; height: 18px;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2;
+    }
 
-  .notif-body { flex: 1; min-width: 0; }
+    .chip-blue   { background: rgba(91,142,245,0.12);  }
+    .chip-blue svg { stroke: #5b8ef5; }
+    .chip-pink   { background: rgba(224,92,122,0.12); }
+    .chip-pink svg { stroke: #e05c7a; }
+    .chip-purple { background: rgba(155,110,245,0.12); }
+    .chip-purple svg { stroke: #9b6ef5; }
+    .chip-green  { background: var(--green-bg); }
+    .chip-green svg { stroke: var(--green); }
+    .chip-orange { background: rgba(245,130,50,0.12); }
+    .chip-orange svg { stroke: #f58232; }
 
-  .notif-text {
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--text-primary);
-    line-height: 1.4;
-  }
+    /* Item body */
+    .notif-body { flex: 1; min-width: 0; }
 
-  .notif-item:not(.unread) .notif-text {
-    font-weight: 400;
-    color: var(--text-secondary);
-  }
+    .notif-text {
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--text-2);
+      line-height: 1.45;
+    }
 
-  .notif-text strong { font-weight: 700; color: var(--text-primary); }
+    .notif-item.unread .notif-text { font-weight: 600; color: var(--text-1); }
+    .notif-text strong { font-weight: 700; color: var(--text-1); }
 
-  .notif-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
+    .notif-time {
+      font-size: 0.7rem;
+      color: var(--text-3);
+      font-weight: 500;
+      margin-top: 3px;
+      display: block;
+    }
 
-  .notif-time {
-    font-size: 11.5px;
-    color: var(--text-muted);
-    font-weight: 400;
-    white-space: nowrap;
-  }
+    /* Unread dot */
+    .notif-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border-2);
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
 
-  .notif-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--dot-read);
-    flex-shrink: 0;
-    transition: background 0.3s ease, transform 0.3s ease;
-  }
+    .notif-item.unread .notif-dot {
+      background: var(--green);
+      box-shadow: 0 0 0 3px rgba(95,157,48,0.18);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
 
-  .notif-item.unread .notif-dot {
-    background: var(--dot-unread);
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.18);
-    animation: pulse 2s infinite;
-  }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(95,157,48,0.18); }
+      50%       { box-shadow: 0 0 0 6px rgba(95,157,48,0.06); }
+    }
 
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 3px rgba(76,175,80,0.18); }
-    50% { box-shadow: 0 0 0 6px rgba(76,175,80,0.06); }
-  }
+    /* ── Empty state ── */
+    .notif-empty {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1.5px dashed var(--border);
+      padding: 56px 24px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+      animation: fadeUp 0.4s ease both;
+    }
 
-  /* Empty state */
-  .empty-state {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 56px 24px;
-    gap: 12px;
-    color: var(--text-muted);
-  }
+    .notif-empty.visible { display: flex; }
 
-  .empty-state svg { opacity: 0.35; }
-  .empty-state p { font-size: 14px; font-weight: 500; }
+    .notif-empty-icon {
+      width: 56px; height: 56px;
+      background: var(--bg);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
 
-  .container.empty .section { display: none; }
-  .container.empty .empty-state { display: flex; }
-  .container.empty .empty-card { display: block; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+    .notif-empty-icon svg {
+      width: 26px; height: 26px;
+      stroke: var(--text-3);
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.6;
+    }
 
-  /* Animate removal */
-  .notif-item.removing {
-    animation: slideOut 0.28s ease forwards;
-  }
-
-  @keyframes slideOut {
-    to { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; overflow: hidden; }
-  }
-
-  .section.hiding { animation: fadeOut 0.3s ease forwards; }
-  @keyframes fadeOut { to { opacity: 0; transform: scale(0.98); } }
-</style>
+    .notif-empty h3 { font-size: 1rem; font-weight: 700; color: var(--text-1); }
+    .notif-empty p { font-size: 0.78rem; color: var(--text-3); font-weight: 400; }
+  </style>
 </head>
 <body>
-    <nav class="sidebar">
-      <div class="brand">
-        <img src="img/appIcon.png" alt="Packmates" class="icon">
-        <span>Packmates</span>
-      </div>
-      <span class="nav-label">Main Menu</span>
-      <div class="nav-buttons">
-        <button type="button" onclick="location.href='index.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          <span>Home</span>
-        </button>
-        <button type="button" onclick="location.href='discover.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-          <span>Discover</span>
-        </button>
-        <button type="button" onclick="location.href='packing-list.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-          <span>Packing List</span>
-        </button>
-        <button type="button" onclick="location.href='notifications.html'" class="active">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-          <span>Notifications</span>
-        </button>
-        <button type="button" onclick="location.href='profile.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Profile</span>
-        </button>
-      </div>
-      <div class="nav-bottom">
-        <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
-          <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          <span>New Trip</span>
-        </button>
-        <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          <span>Sign Out</span>
-        </button>
-      </div>
-    </nav>
-    <main>
-<div class="container" id="app">
-
-  <!-- Header -->
-  <div class="header-card">
-    <div class="header-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-        <polyline points="22 4 12 14.01 9 11.01"/>
-      </svg>
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar">
+    <div class="brand">
+      <img src="img/appIcon.png" alt="Packmates" class="icon">
+      <span>Packmates</span>
     </div>
-    <div class="header-text">
-      <h1>Notifications</h1>
-      <p id="unread-count-text">You have 4 unread notifications</p>
-    </div>
-    <div class="header-actions">
-      <button class="btn btn-outline" onclick="markAllRead()">Mark all read</button>
-      <button class="btn btn-danger" onclick="clearAll()">Clear all</button>
-      <button class="icon-btn" title="Filter">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-        </svg>
+    <span class="nav-label">Main Menu</span>
+    <div class="nav-buttons">
+      <button type="button" onclick="location.href='index.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </button>
+      <button type="button" onclick="location.href='discover.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span>Discover</span>
+      </button>
+      <button type="button" onclick="location.href='packing-list.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        <span>Packing List</span>
+      </button>
+      <button type="button" onclick="location.href='notifications.html'" class="active">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span>Notifications</span>
+      </button>
+      <button type="button" onclick="location.href='profile.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
       </button>
     </div>
-  </div>
+    <div class="nav-bottom">
+      <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
+        <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>New Trip</span>
+      </button>
+      <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </nav>
 
-  <!-- Today Section -->
-  <div class="section" id="section-today">
-    <div class="section-header" onclick="toggleSection('today')">
-      <div class="section-header-left">
-        <span class="section-title">Today</span>
+  <!-- ══ MAIN ══ -->
+  <main>
+
+    <!-- Header -->
+    <div class="notif-header">
+      <div class="notif-header-icon">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       </div>
-      <div class="section-header-right">
-        <span class="section-badge" id="badge-today">3 Unread</span>
-        <div class="collapse-btn">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </div>
+      <div class="notif-header-text">
+        <h1>Notifications</h1>
+        <p id="unread-count-text">Loading…</p>
+      </div>
+      <div class="notif-header-actions">
+        <button class="btn-outline" onclick="markAllRead()">Mark all read</button>
+        <button class="btn-danger-outline" onclick="clearAll()">Clear all</button>
       </div>
     </div>
-    <div class="notif-list-wrapper" id="wrapper-today">
-    <div class="notif-list" id="list-today">
 
-      <div class="notif-item unread" data-id="1" onclick="markRead(this)">
-        <div class="notif-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b8ef5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
+    <!-- Notifications -->
+    <div class="notif-content" id="app">
+
+      <!-- Today -->
+      <div class="notif-section" id="section-today">
+        <div class="notif-section-header" onclick="toggleSection('today')">
+          <div class="notif-section-left">
+            <span class="notif-section-title">Today</span>
+            <span class="notif-badge" id="badge-today">3 unread</span>
+          </div>
+          <div class="notif-section-right">
+            <div class="collapse-chevron">
+              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
         </div>
-        <div class="notif-body">
-          <div class="notif-text">Remember to finish packing for <strong>Miami!</strong></div>
-        </div>
-        <div class="notif-meta">
-          <span class="notif-time">2 hours ago</span>
-          <span class="notif-dot"></span>
+        <div class="notif-list-wrap" id="wrapper-today">
+          <div class="notif-list" id="list-today">
+
+            <div class="notif-item unread" data-id="1" onclick="markRead(this)">
+              <div class="notif-icon-chip chip-blue">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="notif-body">
+                <div class="notif-text">Remember to finish packing for <strong>Miami!</strong></div>
+                <span class="notif-time">2 hours ago</span>
+              </div>
+              <div class="notif-dot"></div>
+            </div>
+
+            <div class="notif-item unread" data-id="2" onclick="markRead(this)">
+              <div class="notif-icon-chip chip-pink">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              </div>
+              <div class="notif-body">
+                <div class="notif-text"><strong>Ellie</strong> liked your list — <strong>Denver Trip</strong></div>
+                <span class="notif-time">4 hours ago</span>
+              </div>
+              <div class="notif-dot"></div>
+            </div>
+
+            <div class="notif-item unread" data-id="3" onclick="markRead(this)">
+              <div class="notif-icon-chip chip-purple">
+                <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              </div>
+              <div class="notif-body">
+                <div class="notif-text">You've been added as a Packmate — <strong>Denver Trip</strong></div>
+                <span class="notif-time">6 hours ago</span>
+              </div>
+              <div class="notif-dot"></div>
+            </div>
+
+          </div>
         </div>
       </div>
 
-      <div class="notif-item unread" data-id="2" onclick="markRead(this)">
-        <div class="notif-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e05c7a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
+      <!-- This Week -->
+      <div class="notif-section" id="section-week">
+        <div class="notif-section-header" onclick="toggleSection('week')">
+          <div class="notif-section-left">
+            <span class="notif-section-title">This Week</span>
+            <span class="notif-badge" id="badge-week">1 unread</span>
+          </div>
+          <div class="notif-section-right">
+            <div class="collapse-chevron">
+              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
         </div>
-        <div class="notif-body">
-          <div class="notif-text">Your Packmate, <strong>Ellie</strong>, liked your list — <strong>Denver Trip</strong></div>
-        </div>
-        <div class="notif-meta">
-          <span class="notif-time">4 hours ago</span>
-          <span class="notif-dot"></span>
+        <div class="notif-list-wrap" id="wrapper-week">
+          <div class="notif-list" id="list-week">
+
+            <div class="notif-item unread" data-id="4" onclick="markRead(this)">
+              <div class="notif-icon-chip chip-green">
+                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              </div>
+              <div class="notif-body">
+                <div class="notif-text">You've packed <strong>5 items</strong> for your Miami Trip 🎉</div>
+                <span class="notif-time">2 days ago</span>
+              </div>
+              <div class="notif-dot"></div>
+            </div>
+
+            <div class="notif-item" data-id="5" onclick="markRead(this)">
+              <div class="notif-icon-chip chip-pink">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              </div>
+              <div class="notif-body">
+                <div class="notif-text"><strong>Mark</strong> liked your trip to <strong>New York</strong></div>
+                <span class="notif-time">3 days ago</span>
+              </div>
+              <div class="notif-dot"></div>
+            </div>
+
+            <div class="notif-item" data-id="6" onclick="markRead(this)">
+              <div class="notif-icon-chip chip-orange">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="notif-body">
+                <div class="notif-text">Your trip to <strong>New York</strong> starts today — check your packing list!</div>
+                <span class="notif-time">5 days ago</span>
+              </div>
+              <div class="notif-dot"></div>
+            </div>
+
+          </div>
         </div>
       </div>
 
-      <div class="notif-item unread" data-id="3" onclick="markRead(this)">
-        <div class="notif-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9b6ef5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <line x1="19" y1="8" x2="19" y2="14"/>
-            <line x1="22" y1="11" x2="16" y2="11"/>
-          </svg>
+      <!-- Empty state -->
+      <div class="notif-empty" id="empty-card">
+        <div class="notif-empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
         </div>
-        <div class="notif-body">
-          <div class="notif-text">You've been added as a Packmate — <strong>Denver Trip</strong></div>
-        </div>
-        <div class="notif-meta">
-          <span class="notif-time">6 hours ago</span>
-          <span class="notif-dot"></span>
-        </div>
-      </div>
-
-    </div>
-    </div><!-- end wrapper-today -->
-  </div>
-
-  <!-- This Week Section -->
-  <div class="section" id="section-week">
-    <div class="section-header" onclick="toggleSection('week')">
-      <div class="section-header-left">
-        <span class="section-title">This Week</span>
-      </div>
-      <div class="section-header-right">
-        <span class="section-badge" id="badge-week">1 Unread</span>
-        <div class="collapse-btn">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-    <div class="notif-list-wrapper" id="wrapper-week">
-    <div class="notif-list" id="list-week">
-
-      <div class="notif-item unread" data-id="4" onclick="markRead(this)">
-        <div class="notif-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="8" y1="6" x2="21" y2="6"/>
-            <line x1="8" y1="12" x2="21" y2="12"/>
-            <line x1="8" y1="18" x2="21" y2="18"/>
-            <line x1="3" y1="6" x2="3.01" y2="6"/>
-            <line x1="3" y1="12" x2="3.01" y2="12"/>
-            <line x1="3" y1="18" x2="3.01" y2="18"/>
-          </svg>
-        </div>
-        <div class="notif-body">
-          <div class="notif-text">Congratulations on packing <strong>5 items!</strong> — Miami Trip!</div>
-        </div>
-        <div class="notif-meta">
-          <span class="notif-time">2 days ago</span>
-          <span class="notif-dot"></span>
-        </div>
-      </div>
-
-      <div class="notif-item" data-id="5" onclick="markRead(this)">
-        <div class="notif-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e05c7a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <div class="notif-body">
-          <div class="notif-text">Your Packmate, <strong>Mark</strong>, liked your recent trip to: <strong>New York</strong></div>
-        </div>
-        <div class="notif-meta">
-          <span class="notif-time">3 days ago</span>
-          <span class="notif-dot"></span>
-        </div>
-      </div>
-
-      <div class="notif-item" data-id="6" onclick="markRead(this)">
-        <div class="notif-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b8ef5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
-        </div>
-        <div class="notif-body">
-          <div class="notif-text">Your trip is today — <strong>New York</strong>. Double check your list!</div>
-        </div>
-        <div class="notif-meta">
-          <span class="notif-time">5 days ago</span>
-          <span class="notif-dot"></span>
-        </div>
+        <h3>You're all caught up!</h3>
+        <p>No notifications right now. We'll let you know when something happens.</p>
       </div>
 
     </div>
-    </div><!-- end wrapper-week -->
-  </div>
+  </main>
 
-  <!-- Empty state card (hidden until all cleared) -->
-  <div class="empty-card" style="display:none;" id="empty-card">
-    <div class="empty-state" style="display:flex;">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-      </svg>
-      <p>You're all caught up!</p>
-    </div>
-  </div>
+  <script src="auth.js"></script>
+  <script>
+    Auth.requireAuth('welcome.html');
 
-</div>
-
-<script src="auth.js"></script>
-<script>
-  Auth.requireAuth('welcome.html');
-
-  function updateUnreadCount() {
-    const unread = document.querySelectorAll('.notif-item.unread').length;
-    const total = document.querySelectorAll('.notif-item').length;
-    const countText = document.getElementById('unread-count-text');
-
-    if (total === 0) {
-      countText.textContent = 'No notifications';
-    } else if (unread === 0) {
-      countText.textContent = 'All caught up!';
-    } else {
-      countText.textContent = `You have ${unread} unread notification${unread !== 1 ? 's' : ''}`;
+    function updateUnreadCount() {
+      const unread = document.querySelectorAll('.notif-item.unread').length;
+      const total  = document.querySelectorAll('.notif-item').length;
+      const el     = document.getElementById('unread-count-text');
+      if (total === 0)    el.textContent = 'No notifications';
+      else if (unread===0)el.textContent = 'All caught up!';
+      else                el.textContent = `${unread} unread notification${unread!==1?'s':''}`;
     }
-  }
 
-  function updateSectionBadges() {
-    ['today', 'week'].forEach(id => {
-      const list = document.getElementById(`list-${id}`);
-      const section = document.getElementById(`section-${id}`);
-      const badge = document.getElementById(`badge-${id}`);
-      if (!list) return;
+    function updateSectionBadges() {
+      ['today','week'].forEach(id => {
+        const list    = document.getElementById(`list-${id}`);
+        const section = document.getElementById(`section-${id}`);
+        const badge   = document.getElementById(`badge-${id}`);
+        if (!list) return;
+        const total  = list.querySelectorAll('.notif-item').length;
+        const unread = list.querySelectorAll('.notif-item.unread').length;
+        if (unread > 0) {
+          badge.textContent = `${unread} unread`;
+          badge.style.display = '';
+        } else {
+          badge.style.display = 'none';
+        }
+        section.style.display = total === 0 ? 'none' : '';
+      });
 
-      const totalCount = list.querySelectorAll('.notif-item').length;
-      const unreadCount = list.querySelectorAll('.notif-item.unread').length;
+      const anyVisible = ['today','week'].some(id =>
+        document.getElementById(`section-${id}`)?.style.display !== 'none'
+      );
+      const empty = document.getElementById('empty-card');
+      if (anyVisible) empty.classList.remove('visible');
+      else            empty.classList.add('visible');
+    }
 
-      if (unreadCount > 0) {
-        badge.textContent = `${unreadCount} Unread`;
-        badge.style.background = 'var(--unread-bg)';
-        badge.style.color = '#3a9a3e';
-        badge.style.borderColor = '#b6e5b6';
-        badge.style.display = '';
-      } else {
-        badge.style.display = 'none';
+    function markRead(el) {
+      if (el.classList.contains('unread')) {
+        el.classList.remove('unread');
+        updateUnreadCount();
+        updateSectionBadges();
       }
+    }
 
-      if (totalCount === 0) section.style.display = 'none';
-      else section.style.display = '';
-    });
-
-    const todayVisible = document.getElementById('section-today').style.display !== 'none';
-    const weekVisible = document.getElementById('section-week').style.display !== 'none';
-    document.getElementById('empty-card').style.display = (!todayVisible && !weekVisible) ? 'block' : 'none';
-  }
-
-  function markRead(el) {
-    if (el.classList.contains('unread')) {
-      el.classList.remove('unread');
+    function markAllRead() {
+      document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
       updateUnreadCount();
       updateSectionBadges();
     }
-  }
 
-  function markAllRead() {
-    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
-    updateUnreadCount();
-    updateSectionBadges();
-  }
-
-  function clearAll() {
-    const items = document.querySelectorAll('.notif-item');
-    let delay = 0;
-    items.forEach(item => {
-      setTimeout(() => {
-        item.style.transition = 'all 0.25s ease';
-        item.style.opacity = '0';
-        item.style.maxHeight = item.offsetHeight + 'px';
+    function clearAll() {
+      const items = document.querySelectorAll('.notif-item');
+      let delay = 0;
+      items.forEach(item => {
         setTimeout(() => {
-          item.style.maxHeight = '0';
-          item.style.padding = '0 24px 0 16px';
-          item.style.overflow = 'hidden';
-        }, 50);
-        setTimeout(() => item.remove(), 280);
-      }, delay);
-      delay += 60;
-    });
+          item.style.transition = 'opacity 0.22s, max-height 0.28s, padding 0.28s';
+          item.style.opacity = '0';
+          item.style.maxHeight = item.offsetHeight + 'px';
+          setTimeout(() => { item.style.maxHeight = '0'; item.style.padding = '0 20px'; item.style.overflow = 'hidden'; }, 50);
+          setTimeout(() => item.remove(), 300);
+        }, delay);
+        delay += 55;
+      });
+      setTimeout(() => { updateSectionBadges(); updateUnreadCount(); }, delay + 350);
+    }
 
-    setTimeout(() => {
-      updateSectionBadges();
-      updateUnreadCount();
-    }, delay + 300);
-  }
+    function toggleSection(id) {
+      document.getElementById(`section-${id}`).classList.toggle('collapsed');
+    }
 
-  function toggleSection(id) {
-    const section = document.getElementById(`section-${id}`);
-    section.classList.toggle('collapsed');
-  }
-
-  // Init
-  updateSectionBadges();
-  updateUnreadCount();
-</script>
-    </main>
+    updateSectionBadges();
+    updateUnreadCount();
+  </script>
 </body>
 </html>
