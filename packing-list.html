@@ -1,134 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Packing List | Packmates</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="packing-list.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Packing List — Packmates</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="packing-list.css">
 </head>
-
 <body>
-    <!--Side Navbar -->
-    <nav class="sidebar">
-        <div class="brand">
-            <img src="img/appIcon.png" alt="Packmates" class="icon">
-            <span>Packmates</span>
-        </div>
-        <div class="nav-buttons">
-            <button type="reset" onclick="location.href='index.html'"><img src="img/home.png" alt=""
-                    class="icon"><span>Home</span></button>
-            <button type="reset" onclick="location.href='discover.html'"><img src="img/calendar.png" alt=""
-                    class="icon"><span>Discover</span></button>
-            <button type="reset" onclick="location.href='notifications.html'"><img src="img/notif.png" alt=""
-                    class="icon"><span>Notifications</span></button>
-            <button type="reset" onclick="location.href='profile.html'"><img src="img/profile.png" alt=""
-                    class="icon"><span>Profile</span></button>
-        </div>
-        <div class="nav-bottom">
-            <hr>
-            <button class="logout" type="reset" onclick="location.href='welcome.html'"><img src="img/home.png" alt=""
-                    class="icon"><span>Logout</span></button>
-        </div>
-    </nav>
 
-    <main>
-        <div id="cityBanner" class="city-banner"></div>
-        <header>
-            <h1 id="packingListTitle">Packing List</h1>
-            <button class="primary" type="button" onclick="location.href='tripPreview.html'">
-                ← Back to Trip
-            </button>
-        </header>
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar">
+    <div class="brand">
+      <img src="img/appIcon.png" alt="Packmates" class="icon">
+      <span>Packmates</span>
+    </div>
+    <span class="nav-label">Main Menu</span>
+    <div class="nav-buttons">
+      <button type="button" onclick="location.href='index.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </button>
+      <button type="button" onclick="location.href='discover.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span>Discover</span>
+      </button>
+      <button type="button" onclick="location.href='packing-list.html'" class="active">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        <span>Packing List</span>
+      </button>
+      <button type="button" onclick="location.href='notifications.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span>Notifications</span>
+      </button>
+      <button type="button" onclick="location.href='profile.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </div>
+    <div class="nav-bottom">
+      <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
+        <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>New Trip</span>
+      </button>
+      <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </nav>
 
-        <section class="trips packing-screen">
-            <!-- Trip summary -->
-            <div class="packing-summary">
-                <div>
-                    <h2 id="packingSummaryTitle">Trip</h2>
-                    <p class="packing-sub" id="packingSummaryMeta"></p>
-                </div>
-                <div class="packing-summary-count">
-                    <span class="packing-count-main" id="packedCount">0/0 packed</span>
-                    <span class="packing-count-sub" id="unpackedCount">0 items left</span>
-                </div>
-            </div>
+  <!-- ══ MAIN ══ -->
+  <main>
 
-            <!-- Filters + Add item -->
-            <div class="packing-controls">
-                <div class="packing-filters">
-                    <button class="packing-filter-btn packing-filter-btn--active" data-filter="all">All</button>
-                    <button class="packing-filter-btn" data-filter="not-packed">Not packed</button>
-                    <button class="packing-filter-btn" data-filter="packed">Packed</button>
-                </div>
-                <button class="packing-add-btn" id="openAddItemModal">+ Add item</button>
-            </div>
-
-            <!-- Packing list items (rendered by JS, grouped by category) -->
-            <div class="packing-list" id="packingListBody" aria-label="Packing items">
-            </div>
-        </section>
-    </main>
-
-    <!-- Add item modal -->
-    <div class="packing-modal-backdrop" id="addItemModal" aria-hidden="true">
-        <div class="packing-modal" role="dialog" aria-modal="true" aria-labelledby="addItemTitle">
-            <div class="packing-modal-header">
-                <h2 id="addItemTitle">Add item</h2>
-                <button class="packing-modal-close" id="closeAddItemModal" aria-label="Close">✕</button>
-            </div>
-
-            <form class="packing-form" id="addItemForm">
-                <label class="packing-field">
-                    <span>Item name</span>
-                    <input type="text" id="newItemName" placeholder="e.g. Sneakers">
-                </label>
-
-                <label class="packing-field">
-                    <span>Category</span>
-                    <select id="newItemCategory">
-                        <option>Essentials</option>
-                        <option>Toiletries</option>
-                        <option>Clothing</option>
-                        <option>Shoes</option>
-                        <option>Electronics</option>
-                        <option>Business Trip</option>
-                        <option>Gym</option>
-                        <option>Beach</option>
-                        <option>Swimming</option>
-                        <option>Snow Sports</option>
-                        <option>Hiking</option>
-                        <option>Camping</option>
-                        <option>Night Out</option>
-                        <option>Baby</option>
-                        <option>Theme Park</option>
-                        <option>Festival</option>
-                        <option>Road Trip</option>
-                        <option>City Sightseeing</option>
-                        <option>Dining</option>
-                        <option>Rainy Weather</option>
-                        <option>Hot &amp; Sunny Weather</option>
-                        <option>Snowy Weather</option>
-                        <option>Windy Weather</option>
-                        <option>Cold Weather</option>
-                    </select>
-                </label>
-
-                <label class="packing-field packing-field--inline">
-                    <span>Quantity</span>
-                    <input type="number" id="newItemQty" min="1" value="1">
-                </label>
-
-                <div class="packing-modal-actions">
-                    <button type="button" class="packing-btn-secondary" id="cancelAddItem">Cancel</button>
-                    <button type="submit" class="packing-btn-primary">Add Item</button>
-                </div>
-            </form>
-        </div>
+    <!-- Page header -->
+    <div class="pl-header">
+      <div>
+        <h1 id="packingListTitle">Packing List</h1>
+        <div class="pl-sub" id="packingSummaryMeta">Loading…</div>
+      </div>
+      <div class="pl-header-right">
+        <button class="pl-back-btn" onclick="location.href='tripPreview.html'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to Trip
+        </button>
+        <button class="pl-add-btn" id="openAddItemModal">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Item
+        </button>
+      </div>
     </div>
 
-    <script src="packing-list.js"></script>
-</body>
+    <!-- Stats bar -->
+    <div class="pl-stats-bar">
+      <div class="pl-stat">
+        <span class="pl-stat-num" id="packedCount">0</span>
+        <span class="pl-stat-lbl">Packed</span>
+      </div>
+      <div class="pl-stat-divider"></div>
+      <div class="pl-stat">
+        <span class="pl-stat-num" id="totalCount">0</span>
+        <span class="pl-stat-lbl">Total</span>
+      </div>
+      <div class="pl-stat-divider"></div>
+      <div class="pl-stat">
+        <span class="pl-stat-num" id="unpackedCount">0</span>
+        <span class="pl-stat-lbl">Remaining</span>
+      </div>
+      <div class="pl-progress-wrap">
+        <div class="pl-progress-track">
+          <div class="pl-progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <span class="pl-progress-pct" id="progressPct">0%</span>
+      </div>
+    </div>
 
+    <!-- Suggested banner -->
+    <div class="pl-banner" id="suggestedBanner" style="display:none">
+      <div class="pl-banner-icon">✨</div>
+      <div>
+        <strong id="suggestedBannerTitle">Suggested for your trip</strong>
+        <span id="suggestedBannerBody">Based on your destination and activities</span>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="pl-controls">
+      <div class="pl-filters">
+        <button class="pl-filter active" data-filter="all">All</button>
+        <button class="pl-filter" data-filter="not-packed">To Pack</button>
+        <button class="pl-filter" data-filter="packed">Packed ✓</button>
+      </div>
+      <div class="pl-search-wrap">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="plSearch" placeholder="Search items…">
+      </div>
+    </div>
+
+    <!-- List body -->
+    <div class="pl-list" id="packingListBody"></div>
+
+  </main>
+
+  <!-- ══ ADD ITEM MODAL ══ -->
+  <div class="pl-modal-backdrop" id="addItemModal">
+    <div class="pl-modal">
+      <div class="pl-modal-header">
+        <h2>Add Item</h2>
+        <button class="pl-modal-close" id="closeAddItemModal" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form class="pl-form" id="addItemForm">
+        <div class="pl-field">
+          <label for="newItemName">Item Name</label>
+          <input type="text" id="newItemName" placeholder="e.g. Sneakers" autocomplete="off">
+        </div>
+
+        <div class="pl-field">
+          <label for="newItemCategory">Category</label>
+          <select id="newItemCategory">
+            <option>Essentials</option>
+            <option>Toiletries</option>
+            <option>Clothing</option>
+            <option>Shoes</option>
+            <option>Electronics</option>
+            <option>Business Trip</option>
+            <option>Gym</option>
+            <option>Beach</option>
+            <option>Swimming</option>
+            <option>Snow Sports</option>
+            <option>Hiking</option>
+            <option>Camping</option>
+            <option>Night Out</option>
+            <option>Baby</option>
+            <option>Theme Park</option>
+            <option>Festival</option>
+            <option>Road Trip</option>
+            <option>City Sightseeing</option>
+            <option>Dining</option>
+            <option>Rainy Weather</option>
+            <option>Hot &amp; Sunny Weather</option>
+            <option>Snowy Weather</option>
+            <option>Windy Weather</option>
+            <option>Cold Weather</option>
+          </select>
+        </div>
+
+        <div class="pl-field pl-field--sm">
+          <label for="newItemQty">Quantity</label>
+          <input type="number" id="newItemQty" min="1" value="1">
+        </div>
+
+        <div class="pl-modal-actions">
+          <button type="button" class="pl-btn-ghost" id="cancelAddItem">Cancel</button>
+          <button type="submit" class="pl-btn-primary">Add Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    Auth.requireAuth('welcome.html');
+  </script>
+  <script src="packing-list.js"></script>
+</body>
 </html>

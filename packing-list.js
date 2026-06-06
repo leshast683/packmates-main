@@ -386,13 +386,13 @@ function saveState() {
 }
 
 // ── Header ──
-document.getElementById('packingListTitle').textContent   = destination + ' – Packing List';
-document.getElementById('packingSummaryTitle').textContent = destination;
+document.getElementById('packingListTitle').textContent = destination + ' – Packing List';
 const metaParts = [];
 if (fromDate && toDate) metaParts.push(`${formatDate(fromDate)} – ${formatDate(toDate)}`);
 if (days)               metaParts.push(`${days} day${days !== 1 ? 's' : ''}`);
 metaParts.push(`${travelers} traveler${travelers !== 1 ? 's' : ''}`);
-document.getElementById('packingSummaryMeta').textContent = metaParts.join(' · ');
+const metaEl = document.getElementById('packingSummaryMeta');
+if (metaEl) metaEl.textContent = metaParts.join(' · ');
 
 // ── Profile badge ──
 const profileBadges = [];
@@ -436,8 +436,19 @@ function updateCounts() {
     const all    = getSuggestedKeys();
     const packed = all.filter(k => itemState[k]?.packed).length;
     const left   = all.length - packed;
-    document.getElementById('packedCount').textContent   = `${packed}/${all.length} packed`;
-    document.getElementById('unpackedCount').textContent = `${left} item${left !== 1 ? 's' : ''} left`;
+    const pct    = all.length ? Math.round(packed / all.length * 100) : 0;
+
+    const packedEl   = document.getElementById('packedCount');
+    const totalEl    = document.getElementById('totalCount');
+    const unpackedEl = document.getElementById('unpackedCount');
+    const fillEl     = document.getElementById('progressFill');
+    const pctEl      = document.getElementById('progressPct');
+
+    if (packedEl)   packedEl.textContent   = packed;
+    if (totalEl)    totalEl.textContent    = all.length;
+    if (unpackedEl) unpackedEl.textContent = left;
+    if (fillEl)     fillEl.style.width     = pct + '%';
+    if (pctEl)      pctEl.textContent      = pct + '%';
 }
 
 // ── Render ──
@@ -604,14 +615,22 @@ function renderList() {
 }
 
 // ── Filters ──
-document.querySelectorAll('.packing-filter-btn').forEach(btn => {
+document.querySelectorAll('.pl-filter, .packing-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.packing-filter-btn').forEach(b => b.classList.remove('packing-filter-btn--active'));
-        btn.classList.add('packing-filter-btn--active');
+        document.querySelectorAll('.pl-filter, .packing-filter-btn').forEach(b => {
+            b.classList.remove('active', 'packing-filter-btn--active');
+        });
+        btn.classList.add('active', 'packing-filter-btn--active');
         currentFilter = btn.dataset.filter;
         renderList();
     });
 });
+
+// ── Search filter ──
+const plSearch = document.getElementById('plSearch');
+if (plSearch) {
+    plSearch.addEventListener('input', () => renderList());
+}
 
 // ── Add item modal ──
 const modal = document.getElementById('addItemModal');
