@@ -40,10 +40,10 @@
 
         .tripPreviewMain {
             flex: 1;
-            min-height: 0;          /* key: allows flex child to shrink & scroll */
+            min-height: 0;
             overflow-y: auto;
             padding: 24px 32px 32px;
-            background: #f1f5f8;
+            background: var(--bg);
         }
 
         .tripPreviewHeader {
@@ -67,14 +67,14 @@
 
         .tripPreviewHeader .avatars p {
             font-size: 0.8rem;
-            color: #6b7f8e;
+            color: var(--text-3);
             margin: 0;
         }
 
         .tripDivider {
             height: 4px;
             border: none;
-            background: #dde6ee;
+            background: var(--border);
             border-radius: 10px;
             margin: 14px 0;
         }
@@ -95,7 +95,7 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            background: #fff;
+            background: var(--surface);
             border-radius: 14px;
             padding: 10px 14px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -116,7 +116,7 @@
 
         .itineraryItemInfo p {
             font-size: 0.75rem;
-            color: #6b7f8e;
+            color: var(--text-3);
         }
 
         /* Add Activity button */
@@ -124,7 +124,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: #fff;
+            background: var(--surface);
             border: 2px dashed #cdd6de;
             border-radius: 14px;
             padding: 10px 14px;
@@ -137,7 +137,7 @@
         }
 
         .addActivityBtn:hover {
-            border-color: #5f9d30;
+            border-color: var(--green);
             background: #f6fdf0;
         }
 
@@ -150,20 +150,20 @@
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
-            color: #5f9d30;
+            color: var(--green);
             flex-shrink: 0;
         }
 
         .addActivityLabel {
             font-size: 0.9rem;
             font-weight: 600;
-            color: #5f9d30;
+            color: var(--green);
         }
 
         /* ── RIGHT PANEL ── */
         .tripPreviewRight {
-            background: #fff;
-            border-left: 1px solid #dde6ee;
+            background: var(--surface);
+            border-left: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -172,7 +172,7 @@
 
         .packingPanelHeader {
             padding: 18px 20px 12px;
-            border-bottom: 1px solid #dde6ee;
+            border-bottom: 1px solid var(--border);
             flex-shrink: 0;
         }
 
@@ -183,7 +183,7 @@
 
         .packingPanelMeta {
             font-size: 0.72rem;
-            color: #6b7f8e;
+            color: var(--text-3);
         }
 
         .packingPanelProgress {
@@ -196,28 +196,28 @@
         .packingProgressBar {
             flex: 1;
             height: 6px;
-            background: #dde6ee;
+            background: var(--border);
             border-radius: 999px;
             overflow: hidden;
         }
 
         .packingProgressFill {
             height: 100%;
-            background: #5f9d30;
+            background: var(--green);
             border-radius: 999px;
             transition: width 0.3s;
         }
 
         .packingProgressText {
             font-size: 0.72rem;
-            color: #5f9d30;
+            color: var(--green);
             font-weight: 600;
             white-space: nowrap;
         }
 
         .packingPanelFilters {
             padding: 10px 16px;
-            border-bottom: 1px solid #dde6ee;
+            border-bottom: 1px solid var(--border);
             flex-shrink: 0;
         }
 
@@ -233,7 +233,7 @@
         .packingSuggestedBanner {
             font-size: 0.7rem;
             font-weight: 700;
-            color: #5f9d30;
+            color: var(--green);
             background: #f0fbe8;
             border-radius: 8px;
             padding: 5px 10px;
@@ -263,7 +263,7 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: #5f9d30;
+            background: var(--green);
             flex-shrink: 0;
         }
 
@@ -277,7 +277,7 @@
         }
 
         .packingPanelItem:hover {
-            background: #f1f5f8;
+            background: var(--bg);
         }
 
         .packingPanelCheck {
@@ -294,8 +294,8 @@
         }
 
         .packingPanelCheck--checked {
-            background: #5f9d30;
-            border-color: #5f9d30;
+            background: var(--green);
+            border-color: var(--green);
         }
 
         .packingPanelCheck--checked::after {
@@ -317,7 +317,7 @@
 
         .packingPanelFooter {
             padding: 12px 16px;
-            border-top: 1px solid #dde6ee;
+            border-top: 1px solid var(--border);
             flex-shrink: 0;
         }
 
@@ -337,7 +337,7 @@
         }
 
         .activityModalBox {
-            background: #fff;
+            background: var(--surface);
             border-radius: 14px;
             width: 360px;
             padding: 20px;
@@ -391,7 +391,7 @@
 
         .activityField input:focus,
         .activityField select:focus {
-            border-color: #5f9d30;
+            border-color: var(--green);
         }
 
         .activityModalActions {
@@ -405,25 +405,43 @@
 
 <body>
     <nav class="sidebar">
-        <div class="brand">
-            <img src="img/appIcon.png" alt="Packmates" class="icon">
-            <span>Packmates</span>
-        </div>
-        <div class="nav-buttons">
-            <button type="reset" onclick="location.href='index.html'"><img src="img/home.png" alt=""
-                    class="icon"><span>Home</span></button>
-            <button type="reset" onclick="location.href='discover.html'"><img src="img/calendar.png" alt=""
-                    class="icon"><span>Discover</span></button>
-            <button type="reset" onclick="location.href='notifications.html'"><img src="img/notif.png" alt=""
-                    class="icon"><span>Notifications</span></button>
-            <button type="reset" onclick="location.href='profile.html'"><img src="img/profile.png" alt=""
-                    class="icon"><span>Profile</span></button>
-        </div>
-        <div class="nav-bottom">
-            <hr>
-            <button class="logout" type="reset" onclick="location.href='welcome.html'"><img src="img/home.png" alt=""
-                    class="icon"><span>Logout</span></button>
-        </div>
+      <div class="brand">
+        <img src="img/appIcon.png" alt="Packmates" class="icon">
+        <span>Packmates</span>
+      </div>
+      <span class="nav-label">Main Menu</span>
+      <div class="nav-buttons">
+        <button type="button" onclick="location.href='index.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
+        </button>
+        <button type="button" onclick="location.href='discover.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          <span>Discover</span>
+        </button>
+        <button type="button" onclick="location.href='packing-list.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+          <span>Packing List</span>
+        </button>
+        <button type="button" onclick="location.href='notifications.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span>Notifications</span>
+        </button>
+        <button type="button" onclick="location.href='profile.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Profile</span>
+        </button>
+      </div>
+      <div class="nav-bottom">
+        <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
+          <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span>New Trip</span>
+        </button>
+        <button class="logout" type="button" onclick="Auth&&Auth.logout();location.href='welcome.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
     </nav>
 
     <div class="tripPreviewSplit">
@@ -529,7 +547,10 @@
         </div>
     </div>
 
+    <script src="auth.js"></script>
     <script>
+        if (typeof Auth !== 'undefined') Auth.requireAuth('welcome.html');
+
         // ── Item database (same logic as packing-list.js) ──
         const ITEM_DB = {
             'Essentials': [
@@ -787,7 +808,7 @@
         }
 
         // ── Traveler avatar circles ──
-        const AVATAR_COLORS = ['#5f9d30','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c','#f39c12','#2980b9'];
+        const AVATAR_COLORS = ['var(--green)','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c','#f39c12','#2980b9'];
         const avatarsEl = document.getElementById('travelerAvatars');
         for (let i = 0; i < travelers; i++) {
             const dot = document.createElement('span');

@@ -830,23 +830,56 @@
     .toast--visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* ── BENTO ENTRY ANIMATIONS ── */
-    @keyframes bentoIn {
-      from { opacity:0; transform:translateY(18px) scale(0.98); }
-      to   { opacity:1; transform:translateY(0) scale(1); }
+    .bc { animation: bentoIn 0.5s var(--spring, cubic-bezier(0.22,1,0.36,1)) both; }
+    .bc-hero      { animation-delay: 0.04s; }
+    .bc-countdown { animation-delay: 0.09s; }
+    .bc-progress  { animation-delay: 0.14s; }
+    .bc-weather   { animation-delay: 0.19s; }
+    .bc-tip       { animation-delay: 0.24s; }
+    .bc-actions   { animation-delay: 0.28s; }
+
+    .bento-section   { animation: bentoIn 0.5s 0.32s var(--spring, cubic-bezier(0.22,1,0.36,1)) both; }
+    .trips-grid-wrap { animation: bentoIn 0.5s 0.36s var(--spring, cubic-bezier(0.22,1,0.36,1)) both; }
+    .dash-header     { animation: bentoIn 0.45s var(--spring, cubic-bezier(0.22,1,0.36,1)) both; }
+
+    /* ── Better countdown card ── */
+    .bc-countdown {
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05)) !important;
+      border: 1px solid rgba(0,0,0,0.04) !important;
     }
 
-    .bc { animation: bentoIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
-    .bc-hero      { animation-delay: 0.05s; }
-    .bc-countdown { animation-delay: 0.1s; }
-    .bc-progress  { animation-delay: 0.15s; }
-    .bc-weather   { animation-delay: 0.2s; }
-    .bc-tip       { animation-delay: 0.25s; }
-    .bc-actions   { animation-delay: 0.3s; }
+    /* ── Better progress card ── */
+    .bc-progress {
+      background: linear-gradient(140deg, #0b1929 0%, #112236 100%) !important;
+    }
 
-    .bento-section { animation: bentoIn 0.5s 0.35s cubic-bezier(0.22,1,0.36,1) both; }
-    .trips-grid-wrap { animation: bentoIn 0.5s 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+    /* ── Better weather card ── */
+    .bc-weather {
+      background: linear-gradient(140deg, #0f3460 0%, #0b1f3a 100%) !important;
+    }
 
-    .dash-header { animation: bentoIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+    /* ── Better tip card ── */
+    .bc-tip {
+      background: linear-gradient(140deg, #4a8220 0%, #5f9d30 60%, #6db035 100%) !important;
+    }
+
+    /* ── Better action card ── */
+    .bc-actions {
+      border: 1px solid rgba(0,0,0,0.04) !important;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05)) !important;
+    }
+
+    /* ── Better explore cards ── */
+    .explore-card { border-radius: 14px !important; }
+
+    /* ── Better trip cards ── */
+    .trip-card {
+      border: 1px solid rgba(0,0,0,0.04) !important;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05)) !important;
+    }
+    .trip-card:hover {
+      box-shadow: var(--shadow-lg, 0 12px 40px rgba(0,0,0,0.12)) !important;
+    }
 
     /* ── RESPONSIVE BENTO ── */
     @media (max-width: 1200px) {
