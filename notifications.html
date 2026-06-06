@@ -4,60 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Notifications</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #ECEAE5;
     --surface: #ffffff;
-    --text-primary: #1A1A1A;
-    --text-secondary: #666;
-    --text-muted: #999;
-    --green: #2D8C4E;
-    --green-light: #f0faf0;
-    --green-border: #2D8C4E;
-    --unread-bg: #f0faf3;
-    --unread-border: #2D8C4E;
-    --dot-unread: #2D8C4E;
-    --dot-read: #d0d8e8;
-    --badge-bg: #F5F3EF;
-    --badge-text: #666;
-    --shadow: 0 2px 16px rgba(0,0,0,0.07);
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
-    --radius: 18px;
-    --radius-sm: 12px;
-    --border: #E0DDD8;
-    --input-bg: #F5F3EF;
-    --accent-green: #2D8C4E;
-    --accent-red: #A51C1C;
+    --text-primary: var(--text-1);
+    --text-secondary: var(--text-2);
+    --text-muted: var(--text-3);
+    --green: var(--green);
+    --green-light: rgba(95,157,48,0.08);
+    --unread-bg: rgba(95,157,48,0.06);
+    --unread-border: var(--green);
+    --dot-unread: var(--green);
+    --dot-read: var(--border);
+    --badge-bg: var(--bg);
+    --badge-text: var(--text-3);
+    --shadow: 0 2px 16px rgba(0,0,0,0.06);
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.05);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --input-bg: var(--bg);
+    --accent-red: #c0392b;
   }
 
   body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    min-height: 100vh;
-    color: var(--text-primary);
-    margin: 0;
+    font-family: 'Montserrat', sans-serif;
   }
 
-  .sidebar {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 200px;
-    z-index: 100;
+  body > main {
+    padding: 28px 32px;
     overflow-y: auto;
-  }
-
-  main {
-    margin-left: 200px;
-    padding: 40px 48px;
-    min-height: 100vh;
-    background: var(--bg);
-    box-sizing: border-box;
   }
 
   .container {
@@ -99,7 +75,7 @@
   .header-icon svg { color: var(--green); }
 
   .header-text { flex: 1; }
-  .header-text h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; font-family: 'Syne', sans-serif; }
+  .header-text h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; font-family: 'Blauer Nue', sans-serif; }
   .header-text p {
     font-size: 13px;
     color: var(--text-secondary);
@@ -110,7 +86,7 @@
   .header-actions { display: flex; align-items: center; gap: 8px; }
 
   .btn {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 13px;
     font-weight: 600;
     padding: 9px 18px;
@@ -179,7 +155,7 @@
     font-weight: 700;
     letter-spacing: 0.01em;
     color: var(--text-primary);
-    font-family: 'Syne', sans-serif;
+    font-family: 'Blauer Nue', sans-serif;
   }
 
   .section-header-right {
@@ -353,22 +329,44 @@
 </style>
 </head>
 <body>
-    <!--Side Navbar-->
     <nav class="sidebar">
-        <div class="brand">
-            <img src="img/appIcon.png" alt="Packmates" class="icon">
-            <span>Packmates</span>
-        </div>
-        <div class="nav-buttons">
-            <button type="reset" onclick="location.href='index.html'"><img src="img/home.png" alt="" class="icon"><span>Home</span></button>
-            <button type="reset" onclick="location.href='discover.html'"><img src="img/calendar.png" alt="" class="icon"><span>Discover</span></button>
-            <button type="reset" onclick="location.href='notifications.html'"><img src="img/notif.png" alt="" class="icon"><span>Notifications</span></button>
-            <button type="reset" onclick="location.href='profile.html'"><img src="img/profile.png" alt="" class="icon"><span>Profile</span></button>
-        </div>
-        <div class="nav-bottom">
-            <hr>
-            <button class="logout" type="reset" onclick="location.href='welcome.html'"><img src="img/home.png" alt="" class="icon"><span>Logout</span></button>
-        </div>
+      <div class="brand">
+        <img src="img/appIcon.png" alt="Packmates" class="icon">
+        <span>Packmates</span>
+      </div>
+      <span class="nav-label">Main Menu</span>
+      <div class="nav-buttons">
+        <button type="button" onclick="location.href='index.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
+        </button>
+        <button type="button" onclick="location.href='discover.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          <span>Discover</span>
+        </button>
+        <button type="button" onclick="location.href='packing-list.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+          <span>Packing List</span>
+        </button>
+        <button type="button" onclick="location.href='notifications.html'" class="active">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span>Notifications</span>
+        </button>
+        <button type="button" onclick="location.href='profile.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Profile</span>
+        </button>
+      </div>
+      <div class="nav-bottom">
+        <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
+          <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span>New Trip</span>
+        </button>
+        <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
     </nav>
     <main>
 <div class="container" id="app">
@@ -551,7 +549,10 @@
 
 </div>
 
+<script src="auth.js"></script>
 <script>
+  Auth.requireAuth('welcome.html');
+
   function updateUnreadCount() {
     const unread = document.querySelectorAll('.notif-item.unread').length;
     const total = document.querySelectorAll('.notif-item').length;
