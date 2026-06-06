@@ -1,201 +1,804 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Packmates</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .activity-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 10px 0 20px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Trip — Packmates</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body > main {
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .activity-chip {
-            padding: 6px 14px;
-            border-radius: 999px;
-            border: 1.5px solid #cdd6de;
-            background: #f7fafc;
-            cursor: pointer;
-            font-size: 0.82rem;
-            font-family: inherit;
-            color: #4b5a66;
-            transition: all 0.15s;
-            margin: 0;
-            width: auto;
-        }
+    /* ══════════════════════════
+       TWO-PANEL LAYOUT
+    ══════════════════════════ */
+    .nt-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      height: 100%;
+      overflow: hidden;
+    }
 
-        .activity-chip.selected {
-            background: #e8f5e0;
-            border-color: #5f9d30;
-            color: #3a6b1a;
-            font-weight: 600;
-        }
+    /* ── Left: form panel ── */
+    .nt-form-panel {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+      background: var(--bg);
+      padding: 32px 40px 40px;
+    }
 
-        .activity-chip:hover:not(.selected) {
-            border-color: #99a8b4;
-            background: #edf2f7;
-        }
-    </style>
+    .nt-form-panel::-webkit-scrollbar { width: 4px; }
+    .nt-form-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+    /* Page header */
+    .nt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .nt-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nt-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px;
+      height: 38px;
+      background: var(--surface);
+      color: var(--text-2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.18s;
+    }
+    .nt-back-btn:hover { background: var(--bg); border-color: var(--border-2, #c8d4db); }
+
+    /* Section label */
+    .nt-section {
+      margin-bottom: 22px;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .nt-section:nth-child(2)  { animation-delay: 0.04s; }
+    .nt-section:nth-child(3)  { animation-delay: 0.07s; }
+    .nt-section:nth-child(4)  { animation-delay: 0.10s; }
+    .nt-section:nth-child(5)  { animation-delay: 0.13s; }
+    .nt-section:nth-child(6)  { animation-delay: 0.16s; }
+    .nt-section:nth-child(7)  { animation-delay: 0.19s; }
+
+    .nt-label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 8px;
+    }
+
+    /* Input with icon */
+    .nt-input-wrap {
+      position: relative;
+    }
+
+    .nt-input-wrap svg {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      stroke: var(--text-3);
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.8;
+      pointer-events: none;
+      flex-shrink: 0;
+    }
+
+    .nt-input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-1);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin: 0;
+    }
+
+    .nt-input::placeholder { color: var(--text-3); }
+
+    .nt-input:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(17,58,88,0.07);
+    }
+
+    .nt-input.no-icon {
+      padding-left: 16px;
+    }
+
+    /* Date row */
+    .nt-dates {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .nt-date-field { display: flex; flex-direction: column; gap: 8px; }
+
+    .nt-date-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .nt-date-input {
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.875rem;
+      color: var(--text-1);
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin: 0;
+    }
+
+    .nt-date-input:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(17,58,88,0.07);
+    }
+
+    /* Traveler counter */
+    .nt-counter {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      width: fit-content;
+    }
+
+    .nt-counter-btn {
+      width: 44px; height: 44px;
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s, color 0.18s;
+      flex-shrink: 0;
+    }
+    .nt-counter-btn:hover { background: var(--bg); color: var(--text-1); }
+    .nt-counter-btn:active { background: var(--border); }
+
+    .nt-counter-val {
+      min-width: 52px;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-1);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      padding: 0 10px;
+      line-height: 44px;
+    }
+
+    /* Activity chips */
+    .nt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .activity-chip {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      color: var(--text-2);
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+
+    .activity-chip:hover:not(.selected) {
+      border-color: var(--border-2, #c8d4db);
+      background: var(--bg);
+      color: var(--text-1);
+    }
+
+    .activity-chip.selected {
+      background: var(--green-bg, rgba(95,157,48,0.12));
+      border-color: var(--green);
+      color: var(--green-dark, #4d8225);
+    }
+
+    /* Notes textarea */
+    .nt-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.875rem;
+      color: var(--text-1);
+      outline: none;
+      resize: none;
+      height: 96px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin: 0;
+    }
+
+    .nt-textarea::placeholder { color: var(--text-3); }
+
+    .nt-textarea:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(17,58,88,0.07);
+    }
+
+    /* Action row */
+    .nt-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.4s 0.22s ease both;
+    }
+
+    .nt-cancel-btn {
+      padding: 0 24px;
+      height: 44px;
+      background: transparent;
+      color: var(--text-2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .nt-cancel-btn:hover { background: var(--bg); border-color: var(--border-2, #c8d4db); }
+
+    .nt-save-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 28px;
+      height: 44px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .nt-save-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .nt-save-btn:hover::before { opacity: 1; }
+    .nt-save-btn:hover {
+      background: var(--green-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(95,157,48,0.35);
+    }
+    .nt-save-btn:disabled {
+      background: var(--border);
+      color: var(--text-3);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── Right: preview panel ── */
+    .nt-preview-panel {
+      background: var(--navy-deep);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nt-preview-bg {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: background-image 0.6s ease;
+    }
+
+    .nt-preview-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top,
+        rgba(10,27,42,0.97) 0%,
+        rgba(10,27,42,0.75) 40%,
+        rgba(10,27,42,0.35) 100%);
+    }
+
+    .nt-preview-body {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+      padding: 32px;
+    }
+
+    .nt-preview-eyebrow {
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(95,157,48,0.9);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nt-preview-eyebrow::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .nt-preview-dest {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 8px;
+      transition: all 0.3s;
+    }
+
+    .nt-preview-dest.placeholder {
+      color: rgba(255,255,255,0.2);
+      font-style: italic;
+    }
+
+    .nt-preview-dates {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+      margin-bottom: 16px;
+      letter-spacing: 0.04em;
+    }
+
+    .nt-preview-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+      min-height: 28px;
+    }
+
+    .nt-preview-chip {
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.04em;
+    }
+
+    .nt-preview-travelers {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.45);
+      font-weight: 500;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nt-preview-travelers svg {
+      width: 14px; height: 14px;
+      stroke: rgba(255,255,255,0.35);
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.8;
+    }
+
+    .nt-preview-hint {
+      margin-top: 20px;
+      background: rgba(95,157,48,0.12);
+      border: 1px solid rgba(95,157,48,0.2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.55;
+    }
+
+    .nt-preview-hint strong {
+      color: rgba(95,157,48,0.9);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 2px;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+  </style>
 </head>
-
 <body>
-    <!--Side Navbar-->
-    <nav class="sidebar">
-        <div class="brand">
-            <img src="img/appIcon.png" alt="Packmates" class="icon">
-            <span>Packmates</span>
-        </div>
-        <div class="nav-buttons">
-            <button type="reset" onclick="location.href='index.html'"><img src="img/home.png" alt=""
-                    class="icon"><span>Home</span></button>
-            <button type="reset" onclick="location.href='discover.html'"><img src="img/calendar.png" alt=""
-                    class="icon"><span>Discover</span></button>
-            <button type="reset" onclick="location.href='notifications.html'"><img src="img/notif.png" alt=""
-                    class="icon"><span>Notifications</span></button>
-            <button type="reset" onclick="location.href='profile.html'"><img src="img/profile.png" alt=""
-                    class="icon"><span>Profile</span></button>
-        </div>
-        <div class="nav-bottom">
-            <hr>
-            <button class="logout" type="reset" onclick="location.href='welcome.html'"><img src="img/home.png" alt=""
-                    class="icon"><span>Logout</span></button>
-        </div>
-    </nav>
 
-    <div class="gridNewTrip">
-        <div class="newTripMenu">
-            <header class="bottomMargin">
-                <h1>Create a New Trip</h1>
-                <a href="index.html">
-                    <img src="img/back.png" height="30px" width="30px">
-                </a>
-            </header>
-
-            <form id="newTripForm">
-                <h3>Destination</h3>
-                <input id="tripDestination" class="bottomMargin" type="text" placeholder="Search Destinations...">
-
-                <div class="sideBySide">
-                    <div>
-                        <h3>From</h3>
-                        <input id="tripFromDate" class="dateInput" type="date">
-                    </div>
-                    <div>
-                        <h3>To</h3>
-                        <input id="tripToDate" class="dateInput" type="date">
-                    </div>
-                </div>
-
-                <h3>Travelers</h3>
-                <input id="tripTravelers" class="bottomMargin" type="number" min="1" value="1" placeholder="Number of travelers">
-
-                <h3>Trip Type & Activities</h3>
-                <div class="activity-chips" id="activityChips">
-                    <button type="button" class="activity-chip" data-category="Beach">🏖️ Beach</button>
-                    <button type="button" class="activity-chip" data-category="Hiking">🥾 Hiking</button>
-                    <button type="button" class="activity-chip" data-category="Camping">⛺ Camping</button>
-                    <button type="button" class="activity-chip" data-category="Gym">💪 Gym</button>
-                    <button type="button" class="activity-chip" data-category="Swimming">🏊 Swimming</button>
-                    <button type="button" class="activity-chip" data-category="Snow Sports">⛷️ Snow Sports</button>
-                    <button type="button" class="activity-chip" data-category="Business Trip">💼 Business</button>
-                    <button type="button" class="activity-chip" data-category="Night Out">🌙 Night Out</button>
-                    <button type="button" class="activity-chip" data-category="Baby">👶 Baby</button>
-                    <button type="button" class="activity-chip" data-category="Theme Park">🎢 Theme Park</button>
-                    <button type="button" class="activity-chip" data-category="Festival">🎪 Festival</button>
-                    <button type="button" class="activity-chip" data-category="Road Trip">🚗 Road Trip</button>
-                    <button type="button" class="activity-chip" data-category="City Sightseeing">🏙️ City Sightseeing</button>
-                    <button type="button" class="activity-chip" data-category="Dining">🍽️ Dining</button>
-                </div>
-
-                <h3>Itinerary Activities</h3>
-                <input id="tripActivities" class="bottomMargin" type="text" placeholder="e.g. Central Park, Times Square (comma separated)">
-
-                <h3>Notes</h3>
-                <textarea id="tripNotes" placeholder="Add Any Additional Info..."></textarea>
-
-                <div class="cancelSaveButtons">
-                    <button class="cancel" type="button" onclick="location.href='index.html'">Cancel Trip</button>
-                    <button class="save" type="button" id="saveTripBtn">Save Trip</button>
-                </div>
-            </form>
-        </div>
-        <div class="mapArea"></div>
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar">
+    <div class="brand">
+      <img src="img/appIcon.png" alt="Packmates" class="icon">
+      <span>Packmates</span>
     </div>
+    <span class="nav-label">Main Menu</span>
+    <div class="nav-buttons">
+      <button type="button" onclick="location.href='index.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </button>
+      <button type="button" onclick="location.href='discover.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span>Discover</span>
+      </button>
+      <button type="button" onclick="location.href='packing-list.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        <span>Packing List</span>
+      </button>
+      <button type="button" onclick="location.href='notifications.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span>Notifications</span>
+      </button>
+      <button type="button" onclick="location.href='profile.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </div>
+    <div class="nav-bottom">
+      <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </nav>
 
-    <script>
-        const PEXELS_KEY = 'vnk5OqRIBUtBdRV9LUp1oaAn2QiAB5lO0HL8GwM5WrRRQZt5GOaFlVIq';
+  <!-- ══ MAIN ══ -->
+  <main>
+    <div class="nt-layout">
 
-        async function fetchCityImage(city) {
-            try {
-                const res = await fetch(
-                    `https://api.pexels.com/v1/search?query=${encodeURIComponent(city)}+downtown+skyline&orientation=landscape&per_page=15&size=large`,
-                    { headers: { Authorization: PEXELS_KEY } }
-                );
-                const data = await res.json();
-                const photos = data.photos || [];
-                if (!photos.length) return null;
-                const best = photos.reduce((a, b) => (a.width * a.height >= b.width * b.height ? a : b));
-                return best.src.original || null;
-            } catch (e) {
-                console.warn('City image fetch failed:', e);
-                return null;
-            }
-        }
+      <!-- ── Form panel ── -->
+      <div class="nt-form-panel">
 
-        // Pre-fill destination from explore strip
-        const exploreDest = localStorage.getItem('exploreDestination');
-        if (exploreDest) {
-            document.getElementById('tripDestination').value = exploreDest;
-            localStorage.removeItem('exploreDestination');
-        }
+        <div class="nt-header">
+          <div>
+            <h1>Plan a New Trip</h1>
+            <div style="font-size:0.75rem;color:var(--text-3);margin-top:3px;font-weight:500;">Fill in the details and get a smart packing list</div>
+          </div>
+          <a href="index.html" class="nt-back-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </a>
+        </div>
 
-        // Activity chip toggle
-        document.querySelectorAll('.activity-chip').forEach(chip => {
-            chip.addEventListener('click', () => chip.classList.toggle('selected'));
-        });
+        <form id="newTripForm">
 
-        document.getElementById('saveTripBtn').addEventListener('click', async function () {
-            const destination = document.getElementById('tripDestination').value.trim();
-            const fromDate = document.getElementById('tripFromDate').value;
-            const toDate = document.getElementById('tripToDate').value;
-            const travelers = parseInt(document.getElementById('tripTravelers').value) || 1;
-            const activitiesRaw = document.getElementById('tripActivities').value;
-            const notes = document.getElementById('tripNotes').value;
+          <!-- Destination -->
+          <div class="nt-section">
+            <label class="nt-label" for="tripDestination">Destination</label>
+            <div class="nt-input-wrap">
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <input class="nt-input" id="tripDestination" type="text" placeholder="Where are you going?" autocomplete="off">
+            </div>
+          </div>
 
-            if (!destination) { alert('Please enter a destination.'); return; }
+          <!-- Dates -->
+          <div class="nt-section">
+            <div class="nt-dates">
+              <div class="nt-date-field">
+                <span class="nt-date-label">Departure</span>
+                <input class="nt-date-input" id="tripFromDate" type="date">
+              </div>
+              <div class="nt-date-field">
+                <span class="nt-date-label">Return</span>
+                <input class="nt-date-input" id="tripToDate" type="date">
+              </div>
+            </div>
+          </div>
 
-            this.textContent = 'Saving...';
-            this.disabled = true;
+          <!-- Travelers -->
+          <div class="nt-section">
+            <label class="nt-label">Travelers</label>
+            <div class="nt-counter">
+              <button type="button" class="nt-counter-btn" id="decTravelers">−</button>
+              <span class="nt-counter-val" id="travelersDisplay">1</span>
+              <button type="button" class="nt-counter-btn" id="incTravelers">+</button>
+            </div>
+            <input type="hidden" id="tripTravelers" value="1">
+          </div>
 
-            // Selected activity category chips
-            const activityCategories = Array.from(document.querySelectorAll('.activity-chip.selected'))
-                .map(el => el.dataset.category);
+          <!-- Activities -->
+          <div class="nt-section">
+            <label class="nt-label">Trip Type & Activities</label>
+            <div class="nt-chips" id="activityChips">
+              <button type="button" class="activity-chip" data-category="Beach">🏖️ Beach</button>
+              <button type="button" class="activity-chip" data-category="Hiking">🥾 Hiking</button>
+              <button type="button" class="activity-chip" data-category="Camping">⛺ Camping</button>
+              <button type="button" class="activity-chip" data-category="Swimming">🏊 Swimming</button>
+              <button type="button" class="activity-chip" data-category="Snow Sports">⛷️ Snow Sports</button>
+              <button type="button" class="activity-chip" data-category="Gym">💪 Gym</button>
+              <button type="button" class="activity-chip" data-category="Business Trip">💼 Business</button>
+              <button type="button" class="activity-chip" data-category="Night Out">🌙 Night Out</button>
+              <button type="button" class="activity-chip" data-category="Baby">👶 Baby</button>
+              <button type="button" class="activity-chip" data-category="Theme Park">🎢 Theme Park</button>
+              <button type="button" class="activity-chip" data-category="Festival">🎪 Festival</button>
+              <button type="button" class="activity-chip" data-category="Road Trip">🚗 Road Trip</button>
+              <button type="button" class="activity-chip" data-category="City Sightseeing">🏙️ Sightseeing</button>
+              <button type="button" class="activity-chip" data-category="Dining">🍽️ Dining</button>
+            </div>
+          </div>
 
-            // Free-text itinerary activities
-            const activities = activitiesRaw
-                .split(',')
-                .map(a => a.trim())
-                .filter(a => a.length > 0)
-                .map(name => ({ name, type: 'Activity' }));
+          <!-- Itinerary -->
+          <div class="nt-section">
+            <label class="nt-label" for="tripActivities">Itinerary Highlights</label>
+            <div class="nt-input-wrap">
+              <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+              <input class="nt-input" id="tripActivities" type="text" placeholder="e.g. Eiffel Tower, Louvre (comma separated)">
+            </div>
+          </div>
 
-            const tripData = { destination, fromDate, toDate, travelers, activityCategories, activities, notes };
+          <!-- Notes -->
+          <div class="nt-section">
+            <label class="nt-label" for="tripNotes">Notes</label>
+            <textarea class="nt-textarea" id="tripNotes" placeholder="Anything else to remember…"></textarea>
+          </div>
 
-            const imageUrl = await fetchCityImage(destination);
-            if (imageUrl) tripData.imageUrl = imageUrl;
+          <!-- Actions -->
+          <div class="nt-actions">
+            <button type="button" class="nt-cancel-btn" onclick="location.href='index.html'">Cancel</button>
+            <button type="button" class="nt-save-btn" id="saveTripBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Create Trip
+            </button>
+          </div>
 
-            localStorage.setItem('currentTrip', JSON.stringify(tripData));
-            // Clear packing state from any previous trip
-            localStorage.removeItem('packingItemState');
-            localStorage.removeItem('packingDismissed');
-            localStorage.removeItem('packingCustomItems');
-            localStorage.removeItem('packingState');
-            location.href = 'tripPreview.html';
-        });
-    </script>
+        </form>
+      </div>
+
+      <!-- ── Preview panel ── -->
+      <div class="nt-preview-panel">
+        <div class="nt-preview-bg" id="previewBg"></div>
+        <div class="nt-preview-overlay"></div>
+        <div class="nt-preview-body">
+
+          <div class="nt-preview-eyebrow">Trip Preview</div>
+
+          <div class="nt-preview-dest placeholder" id="previewDest">Your destination</div>
+          <div class="nt-preview-dates" id="previewDates">Set your travel dates</div>
+
+          <div class="nt-preview-chips" id="previewChips"></div>
+
+          <div class="nt-preview-travelers" id="previewTravelers">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            1 traveler
+          </div>
+
+          <div class="nt-preview-hint">
+            <strong>✦ Smart Packing</strong>
+            Your packing list will be automatically personalized based on your destination, activities, and travel dates.
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    Auth.requireAuth('welcome.html');
+
+    const PEXELS_KEY = 'vnk5OqRIBUtBdRV9LUp1oaAn2QiAB5lO0HL8GwM5WrRRQZt5GOaFlVIq';
+
+    /* ── City image ── */
+    async function fetchCityImage(city) {
+      try {
+        const res = await fetch(
+          `https://api.pexels.com/v1/search?query=${encodeURIComponent(city)}+city+travel&orientation=landscape&per_page=10&size=large`,
+          { headers: { Authorization: PEXELS_KEY } }
+        );
+        const data = await res.json();
+        const photos = data.photos || [];
+        if (!photos.length) return null;
+        const best = photos.reduce((a, b) => a.width * a.height >= b.width * b.height ? a : b);
+        return best.src.large2x || best.src.original || null;
+      } catch { return null; }
+    }
+
+    /* ── Pre-fill from explore ── */
+    const exploreDest = localStorage.getItem('exploreDestination');
+    if (exploreDest) {
+      document.getElementById('tripDestination').value = exploreDest;
+      localStorage.removeItem('exploreDestination');
+      updatePreview();
+      fetchCityImage(exploreDest).then(url => {
+        if (url) document.getElementById('previewBg').style.backgroundImage = `url('${url}')`;
+      });
+    }
+
+    /* ── Traveler counter ── */
+    let travelers = 1;
+    function setTravelers(n) {
+      travelers = Math.max(1, Math.min(20, n));
+      document.getElementById('tripTravelers').value = travelers;
+      document.getElementById('travelersDisplay').textContent = travelers;
+      document.getElementById('previewTravelers').innerHTML = `
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        ${travelers} traveler${travelers !== 1 ? 's' : ''}`;
+    }
+    document.getElementById('incTravelers').addEventListener('click', () => setTravelers(travelers + 1));
+    document.getElementById('decTravelers').addEventListener('click', () => setTravelers(travelers - 1));
+
+    /* ── Activity chips ── */
+    document.querySelectorAll('.activity-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('selected');
+        updatePreview();
+      });
+    });
+
+    /* ── Live preview update ── */
+    let imageDebounce;
+
+    function updatePreview() {
+      const dest     = document.getElementById('tripDestination').value.trim();
+      const fromDate = document.getElementById('tripFromDate').value;
+      const toDate   = document.getElementById('tripToDate').value;
+
+      const destEl = document.getElementById('previewDest');
+      if (dest) {
+        destEl.textContent = dest;
+        destEl.classList.remove('placeholder');
+      } else {
+        destEl.textContent = 'Your destination';
+        destEl.classList.add('placeholder');
+      }
+
+      if (fromDate || toDate) {
+        const fmt = d => { if (!d) return '—'; const [y,m,day] = d.split('-'); return `${+m}/${+day}/${y}`; };
+        document.getElementById('previewDates').textContent = `${fmt(fromDate)} — ${fmt(toDate)}`;
+      } else {
+        document.getElementById('previewDates').textContent = 'Set your travel dates';
+      }
+
+      const selected = Array.from(document.querySelectorAll('.activity-chip.selected'));
+      document.getElementById('previewChips').innerHTML = selected
+        .map(c => `<span class="nt-preview-chip">${c.textContent}</span>`)
+        .join('');
+    }
+
+    /* Debounce image fetch on destination input */
+    document.getElementById('tripDestination').addEventListener('input', () => {
+      updatePreview();
+      clearTimeout(imageDebounce);
+      const dest = document.getElementById('tripDestination').value.trim();
+      if (dest.length >= 3) {
+        imageDebounce = setTimeout(() => {
+          fetchCityImage(dest).then(url => {
+            document.getElementById('previewBg').style.backgroundImage = url ? `url('${url}')` : '';
+          });
+        }, 800);
+      } else {
+        document.getElementById('previewBg').style.backgroundImage = '';
+      }
+    });
+
+    document.getElementById('tripFromDate').addEventListener('change', updatePreview);
+    document.getElementById('tripToDate').addEventListener('change', updatePreview);
+
+    /* ── Save ── */
+    document.getElementById('saveTripBtn').addEventListener('click', async function () {
+      const destination    = document.getElementById('tripDestination').value.trim();
+      const fromDate       = document.getElementById('tripFromDate').value;
+      const toDate         = document.getElementById('tripToDate').value;
+      const activitiesRaw  = document.getElementById('tripActivities').value;
+      const notes          = document.getElementById('tripNotes').value;
+
+      if (!destination) {
+        document.getElementById('tripDestination').focus();
+        document.getElementById('tripDestination').style.borderColor = '#c0392b';
+        document.getElementById('tripDestination').style.boxShadow   = '0 0 0 3px rgba(192,57,43,0.12)';
+        setTimeout(() => {
+          document.getElementById('tripDestination').style.borderColor = '';
+          document.getElementById('tripDestination').style.boxShadow   = '';
+        }, 2000);
+        return;
+      }
+
+      this.disabled  = true;
+      this.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0"/></svg> Saving…`;
+
+      const activityCategories = Array.from(document.querySelectorAll('.activity-chip.selected'))
+        .map(el => el.dataset.category);
+
+      const activities = activitiesRaw
+        .split(',').map(a => a.trim()).filter(a => a.length)
+        .map(name => ({ name, type: 'Activity' }));
+
+      const tripData = { destination, fromDate, toDate, travelers, activityCategories, activities, notes };
+
+      const imageUrl = await fetchCityImage(destination);
+      if (imageUrl) tripData.imageUrl = imageUrl;
+
+      localStorage.setItem('currentTrip', JSON.stringify(tripData));
+      localStorage.removeItem('packingItemState');
+      localStorage.removeItem('packingDismissed');
+      localStorage.removeItem('packingCustomItems');
+      localStorage.removeItem('packingState');
+      location.href = 'tripPreview.html';
+    });
+
+    /* spinner keyframe */
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+  </script>
 </body>
-
 </html>
