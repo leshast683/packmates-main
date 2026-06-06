@@ -1,151 +1,574 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Packmates</title>
-   <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Packmates — Discover</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Page layout ── */
+    body > main { padding: 28px 28px 40px; }
+
+    /* ── Header ── */
+    .discover-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .discover-header h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .discover-header .sub {
+      font-size: 0.75rem;
+      color: var(--text-3);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0 14px;
+      height: 40px;
+      min-width: 220px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-box:focus-within {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(17,58,88,0.08);
+    }
+    .search-box svg {
+      width: 15px; height: 15px; flex-shrink: 0;
+      stroke: var(--text-3); fill: none;
+      stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8;
+    }
+    .search-box input {
+      border: none !important; outline: none !important;
+      background: transparent !important; padding: 0 !important;
+      margin: 0 !important; font-size: 0.82rem !important;
+      color: var(--text-1) !important; width: 100% !important;
+      box-shadow: none !important;
+    }
+    .search-box input::placeholder { color: var(--text-3); }
+
+    /* ── Section wrapper ── */
+    .discover-section {
+      margin-bottom: 32px;
+      animation: fadeUp 0.4s ease both;
+    }
+    .discover-section:nth-child(2) { animation-delay: 0.05s; }
+    .discover-section:nth-child(3) { animation-delay: 0.1s;  }
+    .discover-section:nth-child(4) { animation-delay: 0.15s; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .section-head h2 { margin: 0; white-space: nowrap; }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
+    .section-link {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--green);
+      text-decoration: none;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+      transition: opacity 0.2s;
+    }
+    .section-link:hover { opacity: 0.7; }
+
+    /* ── Destination strip ── */
+    .dest-strip {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 4px 2px 12px;
+      scrollbar-width: none;
+    }
+    .dest-strip::-webkit-scrollbar { display: none; }
+
+    .dest-card {
+      flex-shrink: 0;
+      width: 160px; height: 110px;
+      border-radius: 16px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .dest-card:hover {
+      transform: scale(1.05) translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.16);
+    }
+    .dest-card-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      transition: transform 0.4s ease;
+    }
+    .dest-card:hover .dest-card-bg { transform: scale(1.08); }
+    .dest-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 35%, transparent);
+    }
+    .dest-card-emoji {
+      position: absolute; top: 9px; right: 10px;
+      font-size: 1.2rem; z-index: 1;
+    }
+    .dest-card-name {
+      position: absolute; bottom: 9px; left: 11px;
+      color: #fff; font-size: 0.78rem; font-weight: 700;
+      z-index: 1; letter-spacing: 0.02em;
+    }
+    .dest-card-trips {
+      position: absolute; bottom: 9px; right: 10px;
+      color: rgba(255,255,255,0.6); font-size: 0.6rem;
+      font-weight: 600; z-index: 1; letter-spacing: 0.04em;
+    }
+
+    /* ── Traveler cards ── */
+    .travelers-strip {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 4px 2px 12px;
+      scrollbar-width: none;
+    }
+    .travelers-strip::-webkit-scrollbar { display: none; }
+
+    .traveler-card {
+      flex-shrink: 0;
+      width: 150px;
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 20px 16px 16px;
+      text-align: center;
+      border: 1.5px solid var(--border);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s;
+      cursor: pointer;
+    }
+    .traveler-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.09);
+      border-color: transparent;
+    }
+
+    .traveler-avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      font-family: 'Blauer Nue', sans-serif;
+    }
+
+    .traveler-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-1);
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .traveler-city {
+      font-size: 0.65rem;
+      color: var(--text-3);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .traveler-stats {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .traveler-stat-num {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-1);
+      display: block;
+    }
+
+    .traveler-stat-lbl {
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      display: block;
+    }
+
+    .follow-btn {
+      display: block;
+      width: 100%;
+      padding: 7px;
+      background: var(--green-bg);
+      color: var(--green);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      margin-top: 10px;
+    }
+    .follow-btn:hover { background: var(--green); color: #fff; }
+
+    /* ── Shared trips grid ── */
+    .shared-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .shared-card {
+      background: var(--surface);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+    .shared-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+      border-color: transparent;
+    }
+
+    .shared-card-img {
+      height: 130px;
+      overflow: hidden;
+      position: relative;
+    }
+    .shared-card-img img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.5s ease;
+    }
+    .shared-card:hover .shared-card-img img { transform: scale(1.06); }
+
+    .shared-card-badge {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .shared-card-body { padding: 14px 16px 16px; }
+
+    .shared-card-dest {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -0.01em;
+      margin-bottom: 3px;
+    }
+
+    .shared-card-dates {
+      font-size: 0.7rem;
+      color: var(--text-3);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .shared-card-tags {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .shared-tag {
+      padding: 2px 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text-2);
+    }
+
+    .shared-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .shared-card-author {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+
+    .shared-author-avatar {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .shared-likes {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      color: var(--text-3);
+      font-weight: 600;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1100px) {
+      .shared-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .shared-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-
 <body>
-   <nav class="sidebar">
-      <div class="brand">
-         <img src="img/appIcon.png" alt="Packmates" class="icon">
-         <span>Packmates</span>
-      </div>
-      <span class="nav-label">Navigate</span>
-      <div class="nav-buttons">
-         <button type="button" onclick="location.href='index.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span>Home</span>
-         </button>
-         <button type="button" onclick="location.href='discover.html'" class="active">
-            <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-            <span>Discover</span>
-         </button>
-         <button type="button" onclick="location.href='notifications.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-            <span>Alerts</span>
-         </button>
-         <button type="button" onclick="location.href='profile.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Profile</span>
-         </button>
-      </div>
-      <div class="nav-bottom">
-         <button class="logout" type="button" onclick="location.href='welcome.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <span>Sign Out</span>
-         </button>
-      </div>
-   </nav>
 
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar">
+    <div class="brand">
+      <img src="img/appIcon.png" alt="Packmates" class="icon">
+      <span>Packmates</span>
+    </div>
+    <span class="nav-label">Main Menu</span>
+    <div class="nav-buttons">
+      <button type="button" onclick="location.href='index.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </button>
+      <button type="button" onclick="location.href='discover.html'" class="active">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span>Discover</span>
+      </button>
+      <button type="button" onclick="location.href='packing-list.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        <span>Packing List</span>
+      </button>
+      <button type="button" onclick="location.href='notifications.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span>Notifications</span>
+      </button>
+      <button type="button" onclick="location.href='profile.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </div>
+    <div class="nav-bottom">
+      <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
+        <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>New Trip</span>
+      </button>
+      <button class="logout" type="button" onclick="Auth&&Auth.logout();location.href='welcome.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </nav>
 
-   <div class="gridTripPreview">
-      <main>
-         <div class="discoverProfiles">
-            <h1>Discover</h1>
-            <div class="scrollingProfiles">
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
-               <a href="profile.html" class="profileSquare">
-                  <img src="img/profile.png" alt="Profile">
-               </a>
+  <!-- ══ MAIN ══ -->
+  <main>
+
+    <!-- Header -->
+    <div class="discover-header">
+      <div>
+        <h1>Discover</h1>
+        <div class="sub">Explore destinations and connect with fellow travelers</div>
+      </div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search destinations, travelers…">
+      </div>
+    </div>
+
+    <!-- Trending Destinations -->
+    <section class="discover-section">
+      <div class="section-head">
+        <h2>Trending Destinations</h2>
+        <div class="section-line"></div>
+        <a href="#" class="section-link">See all →</a>
+      </div>
+      <div class="dest-strip" id="destStrip"></div>
+    </section>
+
+    <!-- Community Travelers -->
+    <section class="discover-section">
+      <div class="section-head">
+        <h2>Community Travelers</h2>
+        <div class="section-line"></div>
+        <a href="#" class="section-link">See all →</a>
+      </div>
+      <div class="travelers-strip" id="travelersStrip"></div>
+    </section>
+
+    <!-- Shared Trips -->
+    <section class="discover-section">
+      <div class="section-head">
+        <h2>Shared Trips</h2>
+        <div class="section-line"></div>
+        <a href="#" class="section-link">Browse all →</a>
+      </div>
+      <div class="shared-grid" id="sharedGrid"></div>
+    </section>
+
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    Auth.requireAuth('welcome.html');
+
+    /* ── Trending Destinations ── */
+    const DESTS = [
+      { name:'Santorini',  emoji:'🌊', bg:'linear-gradient(135deg,#1a78c2,#00c6ff)', trips:'2.4k' },
+      { name:'Bali',       emoji:'🌺', bg:'linear-gradient(135deg,#e67e22,#c0392b)', trips:'3.1k' },
+      { name:'Tokyo',      emoji:'⛩️', bg:'linear-gradient(135deg,#c0392b,#8e44ad)', trips:'4.2k' },
+      { name:'Paris',      emoji:'🗼', bg:'linear-gradient(135deg,#4a6fa5,#2c3e50)', trips:'5.8k' },
+      { name:'Maldives',   emoji:'🐠', bg:'linear-gradient(135deg,#00b4db,#0083b0)', trips:'1.9k' },
+      { name:'New York',   emoji:'🗽', bg:'linear-gradient(135deg,#2c3e50,#3498db)', trips:'6.2k' },
+      { name:'Dubai',      emoji:'🏙️', bg:'linear-gradient(135deg,#f7971e,#ffd200)', trips:'2.7k' },
+      { name:'Rome',       emoji:'🏛️', bg:'linear-gradient(135deg,#d35400,#e74c3c)', trips:'3.5k' },
+      { name:'Banff',      emoji:'🏔️', bg:'linear-gradient(135deg,#2d6a4f,#1b4332)', trips:'1.4k' },
+      { name:'Barcelona',  emoji:'🎨', bg:'linear-gradient(135deg,#f093fb,#c0392b)', trips:'3.9k' },
+      { name:'Sydney',     emoji:'🦘', bg:'linear-gradient(135deg,#4facfe,#00f2fe)', trips:'2.2k' },
+      { name:'Cancun',     emoji:'🏖️', bg:'linear-gradient(135deg,#00b09b,#0099cc)', trips:'2.8k' },
+    ];
+
+    const destStrip = document.getElementById('destStrip');
+    DESTS.forEach(d => {
+      const c = document.createElement('div');
+      c.className = 'dest-card';
+      c.innerHTML = `
+        <div class="dest-card-bg" style="background:${d.bg}"></div>
+        <div class="dest-card-overlay"></div>
+        <div class="dest-card-emoji">${d.emoji}</div>
+        <div class="dest-card-name">${d.name}</div>
+        <div class="dest-card-trips">${d.trips}</div>`;
+      c.addEventListener('click', () => {
+        localStorage.setItem('exploreDestination', d.name);
+        location.href = 'newTrip.html';
+      });
+      destStrip.appendChild(c);
+    });
+
+    /* ── Community Travelers ── */
+    const TRAVELERS = [
+      { name:'Sofia M.',    city:'New York',    trips:14, countries:9,  avatar:'SM', color:'linear-gradient(135deg,#667eea,#764ba2)' },
+      { name:'James R.',    city:'London',      trips:22, countries:18, avatar:'JR', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+      { name:'Aiko T.',     city:'Tokyo',       trips:9,  countries:7,  avatar:'AT', color:'linear-gradient(135deg,#4facfe,#00f2fe)' },
+      { name:'Carlos V.',   city:'Barcelona',   trips:31, countries:24, avatar:'CV', color:'linear-gradient(135deg,#f7971e,#ffd200)' },
+      { name:'Emma L.',     city:'Paris',       trips:17, countries:12, avatar:'EL', color:'linear-gradient(135deg,#a8edea,#fed6e3)' },
+      { name:'Noah K.',     city:'Sydney',      trips:26, countries:20, avatar:'NK', color:'linear-gradient(135deg,#d4fc79,#96e6a1)' },
+      { name:'Priya S.',    city:'Mumbai',      trips:11, countries:8,  avatar:'PS', color:'linear-gradient(135deg,#fa709a,#fee140)' },
+      { name:'Liam B.',     city:'Toronto',     trips:19, countries:15, avatar:'LB', color:'linear-gradient(135deg,#43e97b,#38f9d7)' },
+    ];
+
+    const travelersStrip = document.getElementById('travelersStrip');
+    TRAVELERS.forEach(t => {
+      const c = document.createElement('div');
+      c.className = 'traveler-card';
+      c.innerHTML = `
+        <div class="traveler-avatar" style="background:${t.color}">${t.avatar}</div>
+        <div class="traveler-name">${t.name}</div>
+        <div class="traveler-city">📍 ${t.city}</div>
+        <div class="traveler-stats">
+          <div>
+            <span class="traveler-stat-num">${t.trips}</span>
+            <span class="traveler-stat-lbl">Trips</span>
+          </div>
+          <div>
+            <span class="traveler-stat-num">${t.countries}</span>
+            <span class="traveler-stat-lbl">Countries</span>
+          </div>
+        </div>
+        <button class="follow-btn" onclick="this.textContent=this.textContent==='Follow'?'Following ✓':'Follow';this.style.background=this.textContent.includes('✓')?'var(--green)':'';this.style.color=this.textContent.includes('✓')?'#fff':''">Follow</button>`;
+      travelersStrip.appendChild(c);
+    });
+
+    /* ── Shared Trips ── */
+    const SHARED = [
+      { dest:'Amalfi Coast', dates:'Jul 3 – Jul 12', tags:['Hiking','Dining','Beach'], author:'Sofia M.', authorInit:'SM', authorColor:'linear-gradient(135deg,#667eea,#764ba2)', likes:128 },
+      { dest:'Kyoto',        dates:'Oct 15 – Oct 22', tags:['Culture','Photography','Food'], author:'Aiko T.', authorInit:'AT', authorColor:'linear-gradient(135deg,#4facfe,#00f2fe)', likes:94 },
+      { dest:'Patagonia',    dates:'Dec 1 – Dec 14',  tags:['Hiking','Camping','Snow'], author:'Liam B.', authorInit:'LB', authorColor:'linear-gradient(135deg,#43e97b,#38f9d7)', likes:201 },
+      { dest:'Marrakech',    dates:'Mar 8 – Mar 15',  tags:['Culture','Dining','Shopping'], author:'Carlos V.', authorInit:'CV', authorColor:'linear-gradient(135deg,#f7971e,#ffd200)', likes:76 },
+      { dest:'Iceland',      dates:'Feb 20 – Mar 2',  tags:['Snow Sports','Photography'], author:'Emma L.', authorInit:'EL', authorColor:'linear-gradient(135deg,#a8edea,#fed6e3)', likes:312 },
+      { dest:'Costa Rica',   dates:'Apr 5 – Apr 16',  tags:['Beach','Hiking','Surfing'], author:'Noah K.', authorInit:'NK', authorColor:'linear-gradient(135deg,#d4fc79,#96e6a1)', likes:157 },
+    ];
+
+    const sharedGrid = document.getElementById('sharedGrid');
+    SHARED.forEach(s => {
+      const tags = s.tags.map(t => `<span class="shared-tag">${t}</span>`).join('');
+      const c = document.createElement('div');
+      c.className = 'shared-card';
+      c.innerHTML = `
+        <div class="shared-card-img">
+          <img src="img/tripPreviewBanner.jpg" alt="${s.dest}">
+          <div class="shared-card-badge">Public</div>
+        </div>
+        <div class="shared-card-body">
+          <div class="shared-card-dest">${s.dest}</div>
+          <div class="shared-card-dates">${s.dates}</div>
+          <div class="shared-card-tags">${tags}</div>
+          <div class="shared-card-footer">
+            <div class="shared-card-author">
+              <div class="shared-author-avatar" style="background:${s.authorColor}">${s.authorInit}</div>
+              ${s.author}
             </div>
-
-         </div>
-      </main>
-
-
-      <main>
-         <hr>
-         <article>
-            <h1>Shared Trips</h1>
-            <ul>
-               <a href="tripPreview.html">
-                  <li>
-                     <img src="img/tripPreviewBanner.jpg" height="150px" width="150px">
-                     <div>
-                        <a href="tripPreview.html">
-                           <h2>NYC Trip</h2>
-                        </a>
-                        <div class="avatars"><span></span><span></span>
-                           <p>4/13/2026 - 12/25/2026</p>
-                        </div>
-                     </div>
-                  </li>
-               </a>
-               <a href="tripPreview.html">
-                  <li>
-                     <img src="img/tripPreviewBanner.jpg" height="150px" width="150px">
-                     <div>
-                        <a href="tripPreview.html">
-                           <h2>NYC Trip</h2>
-                        </a>
-                        <div class="avatars"><span></span><span></span>
-                           <p>4/13/2026 - 12/25/2026</p>
-                        </div>
-                     </div>
-                  </li>
-               </a>
-               <a href="tripPreview.html">
-                  <li>
-                     <img src="img/tripPreviewBanner.jpg" height="150px" width="150px">
-                     <div>
-                        <a href="tripPreview.html">
-                           <h2>NYC Trip</h2>
-                        </a>
-                        <div class="avatars"><span></span><span></span>
-                           <p>4/13/2026 - 12/25/2026</p>
-                        </div>
-                     </div>
-                  </li>
-               </a>
-            </ul>
-
-
-         </article>
-      </main>
-
-
-   </div>
-
-
-
-
-
+            <div class="shared-likes">♥ ${s.likes}</div>
+          </div>
+        </div>`;
+      c.addEventListener('click', () => location.href = 'tripPreview.html');
+      sharedGrid.appendChild(c);
+    });
+  </script>
 </body>
-
 </html>
