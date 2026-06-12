@@ -56,7 +56,45 @@
       height: 40px;
       min-width: 220px;
       transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
     }
+
+    .home-search-dd {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0; right: 0;
+      background: var(--surface, #fff);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.07);
+      z-index: 9999;
+      overflow: hidden;
+      min-width: 260px;
+    }
+
+    .home-ac-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-bottom: 1px solid var(--border);
+    }
+    .home-ac-item:last-child { border-bottom: none; }
+    .home-ac-item:hover { background: var(--bg); }
+
+    .home-ac-pin {
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      background: var(--teal-a-bg, rgba(12,122,122,0.10));
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .home-ac-pin svg { width:12px;height:12px;stroke:var(--teal-a,#0c7a7a);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2; }
+
+    .home-ac-main { font-size: 0.82rem; font-weight: 600; color: var(--text-1); }
+    .home-ac-sub  { font-size: 0.68rem; color: var(--text-3); font-weight: 500; margin-top: 1px; }
 
     .search-box:focus-within {
       border-color: var(--teal-a, #0c7a7a);
@@ -1195,7 +1233,8 @@
       <div class="dash-header-right">
         <div class="search-box">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search destinations…">
+          <input type="text" id="homeSearchInput" placeholder="Search destinations…" autocomplete="off">
+          <div class="home-search-dd" id="homeSearchDd" style="display:none"></div>
         </div>
         <button class="btn-new-trip" onclick="location.href='newTrip.html'">
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1256,6 +1295,61 @@
     document.getElementById('greetingText').innerHTML = `${greetWord}, <span class="greeting-name">${firstName}</span>`;
     document.getElementById('dateText').textContent =
       new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+    /* ── Home search autocomplete ── */
+    let homeAcTimer;
+
+    async function homeFetchSuggestions(q) {
+      try {
+        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=12&language=en&format=json`);
+        const data = await res.json();
+        return (data.results || [])
+          .filter(r => { const fc = r.feature_code || ''; return fc.startsWith('PPL') || fc === 'PPLC'; })
+          .slice(0, 6);
+      } catch { return []; }
+    }
+
+    function homeShowDd(results) {
+      const dd = document.getElementById('homeSearchDd');
+      if (!results.length) { dd.style.display = 'none'; return; }
+      dd.innerHTML = results.map(r => {
+        const sub = [r.admin1, r.country].filter(Boolean).join(', ');
+        return `<div class="home-ac-item" onmousedown="homePickDest('${r.name.replace(/'/g, "\\'")}')">
+          <div class="home-ac-pin"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="home-ac-main">${r.name}</div>${sub ? `<div class="home-ac-sub">${sub}</div>` : ''}</div>
+        </div>`;
+      }).join('');
+      dd.style.display = '';
+    }
+
+    function homeHideDd() {
+      const dd = document.getElementById('homeSearchDd');
+      if (dd) dd.style.display = 'none';
+    }
+
+    function homePickDest(name) {
+      localStorage.setItem('exploreDestination', name);
+      location.href = 'newTrip.html';
+    }
+    window.homePickDest = homePickDest;
+
+    document.getElementById('homeSearchInput').addEventListener('input', e => {
+      const q = e.target.value.trim();
+      clearTimeout(homeAcTimer);
+      if (!q) { homeHideDd(); return; }
+      homeAcTimer = setTimeout(async () => {
+        const results = await homeFetchSuggestions(q);
+        homeShowDd(results);
+      }, 260);
+    });
+
+    document.getElementById('homeSearchInput').addEventListener('blur', () => {
+      setTimeout(homeHideDd, 160);
+    });
+
+    document.getElementById('homeSearchInput').addEventListener('keydown', e => {
+      if (e.key === 'Escape') homeHideDd();
+    });
 
     /* ── Helpers ── */
     const fmt = d => { if (!d) return ''; const [y,m,day] = d.split('-'); return `${+m}/${+day}/${y}`; };
