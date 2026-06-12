@@ -492,6 +492,44 @@
     }
     @keyframes weatherPulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
 
+    /* ── Destination autocomplete ── */
+    .nt-autocomplete {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0; right: 0;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      z-index: 100;
+      overflow: hidden;
+      animation: fadeUp 0.15s ease both;
+    }
+
+    .nt-ac-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-bottom: 1px solid var(--border);
+    }
+    .nt-ac-item:last-child { border-bottom: none; }
+    .nt-ac-item:hover, .nt-ac-item.focused { background: var(--bg); }
+
+    .nt-ac-pin {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: var(--teal-a-bg, rgba(12,122,122,0.10));
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .nt-ac-pin svg { width:13px;height:13px;stroke:var(--teal-a,#0c7a7a);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2; }
+
+    .nt-ac-main { font-size: 0.84rem; font-weight: 600; color: var(--text-1); }
+    .nt-ac-sub  { font-size: 0.7rem; color: var(--text-3); font-weight: 500; margin-top: 1px; }
+
     .nt-weather-tag {
       display: inline-flex;
       align-items: center;
@@ -573,9 +611,10 @@
           <!-- Destination -->
           <div class="nt-section">
             <label class="nt-label" for="tripDestination">Destination</label>
-            <div class="nt-input-wrap">
+            <div class="nt-input-wrap" style="position:relative">
               <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <input class="nt-input" id="tripDestination" type="text" placeholder="Where are you going?" autocomplete="off">
+              <div class="nt-autocomplete" id="destDropdown" style="display:none"></div>
             </div>
           </div>
 
@@ -706,6 +745,75 @@
         return best.src.large2x || best.src.original || null;
       } catch { return null; }
     }
+
+    /* ── Destination autocomplete ── */
+    let acDebounce;
+    let focusedIdx = -1;
+
+    async function fetchSuggestions(query) {
+      try {
+        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`);
+        const data = await res.json();
+        return data.results || [];
+      } catch { return []; }
+    }
+
+    function showDropdown(results) {
+      const dd = document.getElementById('destDropdown');
+      if (!results.length) { dd.style.display = 'none'; return; }
+      focusedIdx = -1;
+      dd.innerHTML = results.map((r, i) => {
+        const sub = [r.admin1, r.country].filter(Boolean).join(', ');
+        return `<div class="nt-ac-item" data-idx="${i}" data-name="${r.name}" data-sub="${sub}"
+                  onmousedown="selectSuggestion(event,this)">
+          <div class="nt-ac-pin"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="nt-ac-main">${r.name}</div>${sub ? `<div class="nt-ac-sub">${sub}</div>` : ''}</div>
+        </div>`;
+      }).join('');
+      dd.style.display = '';
+    }
+
+    function hideDropdown() {
+      document.getElementById('destDropdown').style.display = 'none';
+      focusedIdx = -1;
+    }
+
+    function selectSuggestion(e, el) {
+      e.preventDefault();
+      const name = el.dataset.name;
+      const full = el.dataset.sub ? `${name}, ${el.dataset.sub}` : name;
+      document.getElementById('tripDestination').value = name;
+      hideDropdown();
+      updatePreview();
+      scheduleWeatherFetch();
+      clearTimeout(imageDebounce);
+      fetchCityImage(name).then(url => {
+        document.getElementById('previewBg').style.backgroundImage = url ? `url('${url}')` : '';
+      });
+    }
+    window.selectSuggestion = selectSuggestion;
+
+    /* Keyboard navigation for dropdown */
+    document.addEventListener('keydown', e => {
+      const dd = document.getElementById('destDropdown');
+      if (dd.style.display === 'none') return;
+      const items = dd.querySelectorAll('.nt-ac-item');
+      if (!items.length) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        focusedIdx = Math.min(focusedIdx + 1, items.length - 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        focusedIdx = Math.max(focusedIdx - 1, 0);
+      } else if (e.key === 'Enter' && focusedIdx >= 0) {
+        e.preventDefault();
+        items[focusedIdx].dispatchEvent(new MouseEvent('mousedown', {bubbles:true}));
+        return;
+      } else if (e.key === 'Escape') {
+        hideDropdown(); return;
+      } else { return; }
+      items.forEach((el, i) => el.classList.toggle('focused', i === focusedIdx));
+    });
 
     /* ── Weather: Open-Meteo geocode + forecast/historical ── */
     async function geocodeLookup(city) {
@@ -877,11 +985,23 @@
         .join('');
     }
 
-    /* Debounce image fetch on destination input */
+    /* Debounce image fetch + autocomplete on destination input */
     document.getElementById('tripDestination').addEventListener('input', () => {
       updatePreview();
-      clearTimeout(imageDebounce);
       const dest = document.getElementById('tripDestination').value.trim();
+
+      /* autocomplete */
+      clearTimeout(acDebounce);
+      if (dest.length >= 2) {
+        acDebounce = setTimeout(() => {
+          fetchSuggestions(dest).then(showDropdown);
+        }, 260);
+      } else {
+        hideDropdown();
+      }
+
+      /* city image */
+      clearTimeout(imageDebounce);
       if (dest.length >= 3) {
         imageDebounce = setTimeout(() => {
           fetchCityImage(dest).then(url => {
@@ -892,6 +1012,15 @@
         document.getElementById('previewBg').style.backgroundImage = '';
       }
       scheduleWeatherFetch();
+    });
+
+    document.getElementById('tripDestination').addEventListener('blur', () => {
+      setTimeout(hideDropdown, 150);
+    });
+
+    document.getElementById('tripDestination').addEventListener('focus', () => {
+      const dest = document.getElementById('tripDestination').value.trim();
+      if (dest.length >= 2) fetchSuggestions(dest).then(showDropdown);
     });
 
     document.getElementById('tripFromDate').addEventListener('change', () => { updatePreview(); scheduleWeatherFetch(); });
