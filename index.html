@@ -439,7 +439,59 @@
       gap: 14px;
     }
 
-    .bc-weather-icon { font-size: 2.4rem; line-height: 1; }
+    .bc-weather-icon {
+      font-size: 3.8rem;
+      line-height: 1;
+      display: block;
+      transition: transform 0.4s var(--ease);
+      will-change: transform;
+      transform-origin: center center;
+      user-select: none;
+    }
+
+    /* ── Weather icon animations ── */
+    @keyframes wx-spin {
+      0%   { transform: rotate(0deg) scale(1); }
+      50%  { transform: rotate(180deg) scale(1.08); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    @keyframes wx-glow-pulse {
+      0%, 100% { filter: drop-shadow(0 0 0px rgba(255,220,60,0)); transform: scale(1); }
+      50%       { filter: drop-shadow(0 0 10px rgba(255,220,60,0.6)); transform: scale(1.1); }
+    }
+    @keyframes wx-float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-6px); }
+    }
+    @keyframes wx-rain {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50%       { transform: translateY(5px) rotate(4deg); }
+    }
+    @keyframes wx-snow {
+      0%   { transform: rotate(0deg) scale(1); }
+      25%  { transform: rotate(15deg) scale(1.05); }
+      75%  { transform: rotate(-15deg) scale(1.05); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+    @keyframes wx-storm {
+      0%, 90%, 100% { transform: translate(0,0) scale(1); }
+      92%           { transform: translate(-3px, 2px) scale(1.06); }
+      94%           { transform: translate(3px,-2px) scale(1.06); }
+      96%           { transform: translate(-2px, 1px) scale(1.08); }
+      98%           { transform: translate(2px,-1px) scale(1.06); }
+    }
+    @keyframes wx-fog {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.6; transform: scale(0.95); }
+    }
+
+    .wx-sunny  { animation: wx-glow-pulse 3s ease-in-out infinite; }
+    .wx-cloudy { animation: wx-float 4s ease-in-out infinite; }
+    .wx-rainy  { animation: wx-rain  2.2s ease-in-out infinite; }
+    .wx-snowy  { animation: wx-snow  3.5s ease-in-out infinite; }
+    .wx-stormy { animation: wx-storm 3s ease-in-out infinite; }
+    .wx-foggy  { animation: wx-fog   3s ease-in-out infinite; }
+    .wx-idle   { animation: wx-float 5s ease-in-out infinite; }
 
     .bc-weather-temp {
       font-family: 'Blauer Nue', sans-serif;
@@ -1034,6 +1086,18 @@
 
     /* ── Weather ── */
     const WMO = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+
+    function wxAnimClass(code) {
+      if (code === 0 || code === 1)                          return 'wx-sunny';
+      if (code === 2 || code === 3)                          return 'wx-cloudy';
+      if (code === 45 || code === 48)                        return 'wx-foggy';
+      if (code >= 51 && code <= 67)                          return 'wx-rainy';
+      if (code >= 71 && code <= 77)                          return 'wx-snowy';
+      if (code >= 80 && code <= 82)                          return 'wx-rainy';
+      if (code >= 95 && code <= 99)                          return 'wx-stormy';
+      return 'wx-idle';
+    }
+
     async function fetchWeather(city) {
       try {
         const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)).json();
@@ -1150,7 +1214,7 @@
       <div class="bc bc-weather">
         <div class="bc-weather-label">Destination Weather</div>
         <div class="bc-weather-main" id="weatherMain">
-          <div class="bc-weather-icon" id="wIcon">${hasTrip ? '🌡' : '🌍'}</div>
+          <div class="bc-weather-icon wx-idle" id="wIcon">${hasTrip ? '🌡' : '🌍'}</div>
           <div>
             <div class="bc-weather-temp" id="weatherTemp">${hasTrip ? '—°F' : '—'}</div>
             <div class="bc-weather-details">
@@ -1216,7 +1280,9 @@
       });
       fetchWeather(trip.destination).then(w => {
         if (!w) { document.getElementById('weatherCond').textContent = 'Unavailable'; return; }
-        document.getElementById('wIcon').textContent = w.icon;
+        const iconEl = document.getElementById('wIcon');
+        iconEl.textContent = w.icon;
+        iconEl.className = 'bc-weather-icon ' + wxAnimClass(w.code);
         document.getElementById('weatherTemp').textContent = w.temp + '°F';
         document.getElementById('weatherCond').textContent = 'Current conditions';
         const wb = document.getElementById('weatherBadge');
