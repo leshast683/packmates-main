@@ -1035,43 +1035,78 @@
 
     .bc-countdown-dest svg { stroke: rgba(255,255,255,0.28) !important; }
 
-    /* ══ REDESIGNED TIP CARD ══ */
+    /* ══ REDESIGNED TIP CARD — side-tab layout ══ */
     .bc-tip {
-      background: #111827 !important;
-      border-top: none !important;
-      border-left: 3px solid var(--green, #5f9d30) !important;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.22) !important;
-      padding: 22px 24px !important;
-      justify-content: space-between !important;
+      background: #fefcf8 !important;
+      border: 1px solid rgba(0,0,0,0.06) !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+      padding: 0 !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: stretch !important;
+      overflow: hidden !important;
     }
 
-    /* Remove old gradient pseudo-elements */
     .bc-tip::before { display: none !important; }
     .bc-tip::after  { display: none !important; }
 
-    .bc-tip-label {
-      color: var(--green, #5f9d30) !important;
-      font-size: 0.58rem !important;
-      letter-spacing: 0.2em !important;
-      margin-bottom: 10px;
+    .bc-tip-side {
+      width: 34px;
+      background: linear-gradient(180deg, #2d6a10 0%, var(--green, #5f9d30) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    .bc-tip-quote-mark {
+    .bc-tip-side-label {
+      font-size: 0.55rem;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.88);
+      white-space: nowrap;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+    }
+
+    .bc-tip-content {
+      flex: 1;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Faint large quote mark on the light background */
+    .bc-tip-content::after {
+      content: '❝';
       position: absolute;
-      bottom: -14px; right: 16px;
-      font-size: 9rem;
-      font-family: Georgia, 'Times New Roman', serif;
-      color: rgba(255,255,255,0.04);
+      bottom: -18px; right: 12px;
+      font-size: 7rem;
+      font-family: Georgia, serif;
+      color: rgba(0,0,0,0.04);
       line-height: 1;
       pointer-events: none;
       user-select: none;
-      z-index: 0;
+    }
+
+    .bc-tip-label {
+      font-size: 0.58rem !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.18em !important;
+      text-transform: uppercase !important;
+      color: var(--green, #5f9d30) !important;
+      margin-bottom: 0 !important;
     }
 
     .bc-tip-text {
       font-size: 0.88rem !important;
       font-weight: 600 !important;
-      color: rgba(255,255,255,0.82) !important;
+      color: var(--text-1) !important;
       line-height: 1.6 !important;
       position: relative;
       z-index: 1;
@@ -1483,9 +1518,13 @@
 
       <!-- TIP -->
       <div class="bc bc-tip">
-        <div class="bc-tip-label">Packing Tip</div>
-        <div class="bc-tip-text" id="tipText">Loading tip…</div>
-        <div class="bc-tip-quote-mark">❝</div>
+        <div class="bc-tip-side">
+          <span class="bc-tip-side-label">Packing Tip</span>
+        </div>
+        <div class="bc-tip-content">
+          <div class="bc-tip-label">Today's Tip</div>
+          <div class="bc-tip-text" id="tipText">Loading tip…</div>
+        </div>
       </div>
 
       <!-- ACTIONS -->
