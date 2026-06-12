@@ -1590,9 +1590,16 @@
             <span class="bc-board-bag-val">${airline.checked.weight}</span>
             <span class="bc-board-bag-fee">${airline.checked.fee}</span>
           </div>` : `
-          <div class="bc-board-bag-row" style="color:var(--text-3);font-size:0.7rem;">
-            No airline selected — add one when planning your trip
-          </div>`;
+          <div class="bc-board-bag-row">
+            <span class="bc-board-bag-label">Carry-on</span>
+            <span class="bc-board-bag-val">56×36×23 cm</span>
+          </div>
+          <div class="bc-board-bag-row">
+            <span class="bc-board-bag-label">Checked</span>
+            <span class="bc-board-bag-val">23 kg / 50 lbs</span>
+            <span class="bc-board-bag-fee" style="background:rgba(0,0,0,0.04);color:var(--text-3);">typical</span>
+          </div>
+          <div style="font-size:0.6rem;color:var(--text-3);margin-top:2px;">Add airline for exact limits</div>`;
         return `
           <div class="bc-board-top">
             <div>
