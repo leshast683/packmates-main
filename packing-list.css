@@ -239,9 +239,38 @@ body > main {
 .pl-filter:hover { color: var(--text-2); }
 
 .pl-filter.active {
-  background: var(--navy-deep);
+  background: var(--teal-a);
   color: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  box-shadow: 0 1px 4px rgba(12,122,122,0.2);
+}
+
+/* packing-filter-btn — used in tripPreview.html panel */
+.packing-filters {
+  display: inline-flex;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+.packing-filter-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+}
+.packing-filter-btn:hover { color: var(--text-2); }
+.packing-filter-btn--active {
+  background: var(--teal-a);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(12,122,122,0.2);
 }
 
 .pl-search-wrap {
@@ -258,8 +287,8 @@ body > main {
 }
 
 .pl-search-wrap:focus-within {
-  border-color: var(--navy);
-  box-shadow: 0 0 0 3px rgba(17,58,88,0.07);
+  border-color: var(--teal-a);
+  box-shadow: 0 0 0 3px rgba(12,122,122,0.12);
 }
 
 .pl-search-wrap svg {
@@ -614,9 +643,9 @@ body > main {
 
 .pl-field input:focus,
 .pl-field select:focus {
-  border-color: var(--navy);
+  border-color: var(--teal-a);
   background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(17,58,88,0.07);
+  box-shadow: 0 0 0 3px rgba(12,122,122,0.12);
 }
 
 .pl-field--sm { max-width: 140px; }

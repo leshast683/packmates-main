@@ -130,8 +130,8 @@
     .nt-input::placeholder { color: var(--text-3); }
 
     .nt-input:focus {
-      border-color: var(--navy);
-      box-shadow: 0 0 0 3px rgba(17,58,88,0.07);
+      border-color: var(--teal-a);
+      box-shadow: 0 0 0 3px rgba(12,122,122,0.12);
     }
 
     .nt-input.no-icon {
@@ -170,8 +170,8 @@
     }
 
     .nt-date-input:focus {
-      border-color: var(--navy);
-      box-shadow: 0 0 0 3px rgba(17,58,88,0.07);
+      border-color: var(--teal-a);
+      box-shadow: 0 0 0 3px rgba(12,122,122,0.12);
     }
 
     /* Traveler counter */
@@ -268,8 +268,8 @@
     .nt-textarea::placeholder { color: var(--text-3); }
 
     .nt-textarea:focus {
-      border-color: var(--navy);
-      box-shadow: 0 0 0 3px rgba(17,58,88,0.07);
+      border-color: var(--teal-a);
+      box-shadow: 0 0 0 3px rgba(12,122,122,0.12);
     }
 
     /* Action row */
@@ -479,6 +479,36 @@
       from { opacity:0; transform:translateY(16px); }
       to   { opacity:1; transform:translateY(0); }
     }
+
+    /* ── Weather tags ── */
+    .nt-preview-weather { margin-bottom: 14px; min-height: 20px; }
+
+    .nt-weather-loading {
+      font-size: 0.63rem;
+      color: rgba(255,255,255,0.3);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      animation: weatherPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes weatherPulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+    .nt-weather-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+    .wt-warm { background: rgba(251,191,36,0.18); color: #fcd34d; border: 1px solid rgba(251,191,36,0.25); }
+    .wt-cold { background: rgba(96,165,250,0.15); color: #93c5fd; border: 1px solid rgba(96,165,250,0.25); }
+    .wt-rain { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.2); }
+    .wt-snow { background: rgba(226,232,240,0.12); color: #e2e8f0; border: 1px solid rgba(226,232,240,0.18); }
+    .wt-wind { background: rgba(156,163,175,0.1); color: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.1); }
   </style>
 </head>
 <body>
@@ -633,6 +663,11 @@
           <div class="nt-preview-dest placeholder" id="previewDest">Your destination</div>
           <div class="nt-preview-dates" id="previewDates">Set your travel dates</div>
 
+          <div class="nt-preview-weather" id="previewWeather">
+            <div id="weatherLoading" style="display:none" class="nt-weather-loading">Checking weather…</div>
+            <div id="weatherTagsEl"></div>
+          </div>
+
           <div class="nt-preview-chips" id="previewChips"></div>
 
           <div class="nt-preview-travelers" id="previewTravelers">
@@ -670,6 +705,114 @@
         const best = photos.reduce((a, b) => a.width * a.height >= b.width * b.height ? a : b);
         return best.src.large2x || best.src.original || null;
       } catch { return null; }
+    }
+
+    /* ── Weather: Open-Meteo geocode + forecast/historical ── */
+    async function geocodeLookup(city) {
+      try {
+        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
+        const data = await res.json();
+        return data.results?.[0] || null;
+      } catch { return null; }
+    }
+
+    async function fetchWeatherData(lat, lon, startDate, endDate) {
+      try {
+        const tripStart = new Date(startDate);
+        const cutoff    = new Date(); cutoff.setDate(cutoff.getDate() + 15);
+        let url;
+        if (tripStart <= cutoff) {
+          url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,precipitation,rain,snowfall,wind_speed_10m&start_date=${startDate}&end_date=${endDate}`;
+        } else {
+          const s = new Date(startDate), e = new Date(endDate);
+          const dur = Math.round((e - s) / 86400000);
+          const hE = new Date(e); hE.setFullYear(hE.getFullYear() - 1);
+          const hS = new Date(hE); hS.setDate(hS.getDate() - dur);
+          const fmt = d => d.toISOString().split('T')[0];
+          url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation,rain,snowfall,wind_speed_10m&start_date=${fmt(hS)}&end_date=${fmt(hE)}`;
+        }
+        const res  = await fetch(url);
+        const data = await res.json();
+        const h    = data.hourly;
+        if (!h) return null;
+        const nn = arr => (arr||[]).filter(v => v !== null);
+        const temps = nn(h.temperature_2m), winds = nn(h.wind_speed_10m);
+        const rain  = nn(h.rain), snow = nn(h.snowfall), prob = nn(h.precipitation_probability);
+        return {
+          tempMax:       temps.length ? Math.max(...temps) : null,
+          tempMin:       temps.length ? Math.min(...temps) : null,
+          windMax:       winds.length ? Math.max(...winds) : null,
+          totalRainMm:   rain.reduce((a,b) => a+b, 0),
+          totalSnowCm:   snow.reduce((a,b) => a+b, 0),
+          avgPrecipProb: prob.length ? prob.reduce((a,b) => a+b, 0) / prob.length : null,
+        };
+      } catch { return null; }
+    }
+
+    function weatherToTags(w) {
+      const tags = [];
+      if (w.tempMax !== null && w.tempMax > 28) tags.push('warm');
+      if ((w.tempMin !== null && w.tempMin < 10) || w.totalSnowCm > 0) tags.push('cold');
+      if (w.totalRainMm > 0.5 || (w.avgPrecipProb !== null && w.avgPrecipProb > 50)) tags.push('rain');
+      if (w.totalSnowCm > 0.25) tags.push('snow');
+      if (w.windMax !== null && w.windMax >= 38) tags.push('wind');
+      return tags;
+    }
+
+    const TAG_META = {
+      warm: { label: '🌡️ Warm',  cls: 'wt-warm' },
+      cold: { label: '🧊 Cold',  cls: 'wt-cold' },
+      rain: { label: '🌧️ Rain',  cls: 'wt-rain' },
+      snow: { label: '❄️ Snow',  cls: 'wt-snow' },
+      wind: { label: '💨 Windy', cls: 'wt-wind' },
+    };
+
+    let weatherTags = [];
+    let weatherDebounce;
+
+    async function fetchAndShowWeather() {
+      const dest = document.getElementById('tripDestination').value.trim();
+      const from = document.getElementById('tripFromDate').value;
+      const to   = document.getElementById('tripToDate').value;
+      if (!dest || !from || !to) return;
+
+      document.getElementById('weatherLoading').style.display = '';
+      document.getElementById('weatherTagsEl').innerHTML = '';
+      weatherTags = [];
+
+      const place = await geocodeLookup(dest);
+      if (!place) { document.getElementById('weatherLoading').style.display = 'none'; return; }
+
+      const w = await fetchWeatherData(place.latitude, place.longitude, from, to);
+      document.getElementById('weatherLoading').style.display = 'none';
+      if (!w) return;
+
+      weatherTags = weatherToTags(w);
+      document.getElementById('weatherTagsEl').innerHTML = weatherTags
+        .map(t => `<span class="nt-weather-tag ${TAG_META[t].cls}">${TAG_META[t].label}</span>`)
+        .join('');
+    }
+
+    function scheduleWeatherFetch() {
+      clearTimeout(weatherDebounce);
+      weatherDebounce = setTimeout(fetchAndShowWeather, 900);
+    }
+
+    /* ── Invite code generator ── */
+    function generateInviteCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const seg   = () => Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+      return `${seg()}-${seg()}`;
+    }
+
+    /* ── Notifications helper ── */
+    function pushNotification(type, text, tripName) {
+      const session = Auth.getSession();
+      if (!session) return;
+      const key    = `pm_notifications_${session.email}`;
+      const notifs = JSON.parse(localStorage.getItem(key) || '[]');
+      notifs.unshift({ id: Date.now(), type, text, tripName, time: new Date().toISOString(), read: false });
+      localStorage.setItem(key, JSON.stringify(notifs));
     }
 
     /* ── Pre-fill from explore ── */
@@ -748,10 +891,11 @@
       } else {
         document.getElementById('previewBg').style.backgroundImage = '';
       }
+      scheduleWeatherFetch();
     });
 
-    document.getElementById('tripFromDate').addEventListener('change', updatePreview);
-    document.getElementById('tripToDate').addEventListener('change', updatePreview);
+    document.getElementById('tripFromDate').addEventListener('change', () => { updatePreview(); scheduleWeatherFetch(); });
+    document.getElementById('tripToDate').addEventListener('change',   () => { updatePreview(); scheduleWeatherFetch(); });
 
     /* ── Save ── */
     document.getElementById('saveTripBtn').addEventListener('click', async function () {
@@ -782,16 +926,30 @@
         .split(',').map(a => a.trim()).filter(a => a.length)
         .map(name => ({ name, type: 'Activity' }));
 
-      const tripData = { destination, fromDate, toDate, travelers, activityCategories, activities, notes };
+      const inviteCode = generateInviteCode();
+      const tripId     = Date.now().toString(36);
+
+      const tripData = {
+        id: tripId, destination, fromDate, toDate, travelers,
+        activityCategories, activities, notes,
+        inviteCode, weatherTags, createdAt: new Date().toISOString(),
+      };
 
       const imageUrl = await fetchCityImage(destination);
       if (imageUrl) tripData.imageUrl = imageUrl;
+
+      /* save to trips registry so joinTrip can find it by code */
+      const allTrips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+      allTrips.push(tripData);
+      localStorage.setItem('pm_trips', JSON.stringify(allTrips));
 
       localStorage.setItem('currentTrip', JSON.stringify(tripData));
       localStorage.removeItem('packingItemState');
       localStorage.removeItem('packingDismissed');
       localStorage.removeItem('packingCustomItems');
       localStorage.removeItem('packingState');
+
+      pushNotification('trip', `Your trip to ${destination} has been created!`, destination);
       location.href = 'tripPreview.html';
     });
 

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join a Trip — Packmates</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body > main {
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .jt-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      padding: 40px;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .jt-icon {
+      width: 56px; height: 56px;
+      background: var(--teal-a-bg, rgba(12,122,122,0.10));
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .jt-icon svg { width:26px;height:26px;stroke:var(--teal-a, #0c7a7a);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2; }
+
+    .jt-card h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .jt-card p {
+      font-size: 0.82rem;
+      color: var(--text-3);
+      font-weight: 400;
+      margin-bottom: 28px;
+      line-height: 1.55;
+    }
+
+    .jt-label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 8px;
+    }
+
+    .jt-input-wrap { position: relative; margin-bottom: 20px; }
+    .jt-input-wrap svg {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 17px; height: 17px; stroke: var(--text-3); fill: none;
+      stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8;
+      pointer-events: none;
+    }
+    .jt-input {
+      width: 100%;
+      padding: 13px 16px 13px 44px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-1);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .jt-input::placeholder { color: var(--text-3); font-weight: 500; letter-spacing: 0.04em; text-transform: none; }
+    .jt-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(17,58,88,0.07); }
+    .jt-input.error { border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+
+    .jt-error {
+      display: none;
+      font-size: 0.78rem;
+      color: #c0392b;
+      font-weight: 600;
+      margin-top: -12px;
+      margin-bottom: 16px;
+    }
+    .jt-error.visible { display: block; }
+
+    .jt-btn {
+      width: 100%;
+      height: 48px;
+      background: var(--teal-a, #0c7a7a);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .jt-btn:hover:not(:disabled) {
+      background: var(--teal-a-dark, #096464);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(12,122,122,0.28);
+    }
+    .jt-btn:disabled { background: var(--border); color: var(--text-3); cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .jt-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0;
+      font-size: 0.7rem; color: var(--text-3); font-weight: 600; letter-spacing: 0.08em;
+    }
+    .jt-divider::before, .jt-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    .jt-back {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      color: var(--text-3); font-size: 0.78rem; font-weight: 600; text-decoration: none;
+      transition: color 0.18s;
+    }
+    .jt-back:hover { color: var(--text-2); }
+    .jt-back svg { width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-width:2.2; }
+
+    /* ── Trip preview card (shown after valid code) ── */
+    .jt-preview {
+      display: none;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      animation: fadeUp 0.3s ease both;
+    }
+    .jt-preview.visible { display: block; }
+    .jt-preview-dest { font-size: 1.1rem; font-weight: 800; color: var(--text-1); margin-bottom: 4px; }
+    .jt-preview-meta { font-size: 0.74rem; color: var(--text-3); font-weight: 500; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar">
+    <div class="brand">
+      <img src="img/appIcon.png" alt="Packmates" class="icon">
+      <span>Packmates</span>
+    </div>
+    <span class="nav-label">Main Menu</span>
+    <div class="nav-buttons">
+      <button type="button" onclick="location.href='index.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </button>
+      <button type="button" onclick="location.href='discover.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span>Discover</span>
+      </button>
+      <button type="button" onclick="location.href='packing-list.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        <span>Packing List</span>
+      </button>
+      <button type="button" onclick="location.href='notifications.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span>Notifications</span>
+      </button>
+      <button type="button" onclick="location.href='profile.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </div>
+    <div class="nav-bottom">
+      <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
+        <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>New Trip</span>
+      </button>
+      <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══ MAIN ══ -->
+  <main>
+    <div class="jt-card">
+      <div class="jt-icon">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      </div>
+      <h1>Join a Trip</h1>
+      <p>Enter the invite code shared by your packmate to join their trip and sync your packing list.</p>
+
+      <label class="jt-label" for="codeInput">Invite Code</label>
+      <div class="jt-input-wrap">
+        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        <input class="jt-input" id="codeInput" type="text" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      </div>
+      <div class="jt-error" id="codeError">Invalid invite code. Double-check and try again.</div>
+
+      <!-- Trip preview (shown when code resolves) -->
+      <div class="jt-preview" id="tripPreviewCard">
+        <div class="jt-preview-dest" id="previewDest"></div>
+        <div class="jt-preview-meta" id="previewMeta"></div>
+      </div>
+
+      <button class="jt-btn" id="joinBtn" type="button" onclick="joinTrip()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        Join Trip
+      </button>
+
+      <div class="jt-divider">or</div>
+      <a href="newTrip.html" class="jt-back">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Create your own trip
+      </a>
+    </div>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    Auth.requireAuth('welcome.html');
+
+    const input = document.getElementById('codeInput');
+    let foundTrip = null;
+
+    /* format input as user types: uppercase + insert hyphen after 4 chars */
+    input.addEventListener('input', () => {
+      let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (val.length > 4) val = val.slice(0, 4) + '-' + val.slice(4, 8);
+      input.value = val;
+      input.classList.remove('error');
+      document.getElementById('codeError').classList.remove('visible');
+      lookupCode(val);
+    });
+
+    function lookupCode(code) {
+      const allTrips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+      foundTrip = allTrips.find(t => t.inviteCode === code) || null;
+
+      const preview = document.getElementById('tripPreviewCard');
+      if (foundTrip) {
+        const fmt = d => { if (!d) return ''; const [y,m,day] = d.split('-'); return `${+m}/${+day}/${y}`; };
+        document.getElementById('previewDest').textContent = foundTrip.destination;
+        const parts = [];
+        if (foundTrip.fromDate && foundTrip.toDate) parts.push(`${fmt(foundTrip.fromDate)} – ${fmt(foundTrip.toDate)}`);
+        if (foundTrip.travelers) parts.push(`${foundTrip.travelers} traveler${foundTrip.travelers !== 1 ? 's' : ''}`);
+        document.getElementById('previewMeta').textContent = parts.join(' · ');
+        preview.classList.add('visible');
+      } else {
+        preview.classList.remove('visible');
+      }
+    }
+
+    function pushNotification(type, text, tripName) {
+      const session = Auth.getSession();
+      if (!session) return;
+      const key    = `pm_notifications_${session.email}`;
+      const notifs = JSON.parse(localStorage.getItem(key) || '[]');
+      notifs.unshift({ id: Date.now(), type, text, tripName, time: new Date().toISOString(), read: false });
+      localStorage.setItem(key, JSON.stringify(notifs));
+    }
+
+    function joinTrip() {
+      const code = input.value.trim();
+      if (!foundTrip) {
+        input.classList.add('error');
+        document.getElementById('codeError').classList.add('visible');
+        return;
+      }
+
+      const btn = document.getElementById('joinBtn');
+      btn.disabled  = true;
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0"/></svg> Joining…`;
+
+      /* load the trip as the active trip */
+      localStorage.setItem('currentTrip', JSON.stringify(foundTrip));
+      localStorage.removeItem('packingItemState');
+      localStorage.removeItem('packingDismissed');
+      localStorage.removeItem('packingCustomItems');
+      localStorage.removeItem('packingState');
+
+      pushNotification('join', `You joined the trip to ${foundTrip.destination}!`, foundTrip.destination);
+
+      setTimeout(() => { location.href = 'tripPreview.html'; }, 400);
+    }
+
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

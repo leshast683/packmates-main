@@ -15,14 +15,19 @@
     html, body { height:100%; }
 
     :root {
-      --navy:  #0d1b2a;
+      --teal-1:    #082233;
+      --teal-2:    #0d3347;
+      --teal-3:    #113a58;
+      --teal-4:    #1a5878;
+      --navy:      #113a58;
+      --navy-deep: #0d3347;
       --green: #5f9d30;
       --green2:#7cc63e;
     }
 
     body {
       font-family:'Montserrat', sans-serif;
-      background: var(--navy);
+      background: var(--teal-2);
       color:#fff;
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -40,21 +45,21 @@
       z-index:0;
     }
     .orb-1 {
-      width:600px; height:600px;
+      width:700px; height:700px;
       top:-200px; left:-100px;
-      background:radial-gradient(circle, rgba(17,58,88,0.7), transparent 70%);
+      background:radial-gradient(circle, rgba(26,88,120,0.55), transparent 70%);
       animation:drift1 18s ease-in-out infinite;
     }
     .orb-2 {
       width:500px; height:500px;
       bottom:-150px; right:45%;
-      background:radial-gradient(circle, rgba(95,157,48,0.12), transparent 70%);
+      background:radial-gradient(circle, rgba(95,157,48,0.14), transparent 70%);
       animation:drift2 22s ease-in-out infinite;
     }
     .orb-3 {
-      width:400px; height:400px;
+      width:450px; height:450px;
       top:30%; right:-50px;
-      background:radial-gradient(circle, rgba(17,58,88,0.5), transparent 70%);
+      background:radial-gradient(circle, rgba(34,114,160,0.35), transparent 70%);
       animation:drift3 26s ease-in-out infinite;
     }
 
@@ -91,7 +96,8 @@
       flex-direction:column;
       justify-content:space-between;
       padding:44px 10%;
-      border-right:1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(160deg, var(--teal-2) 0%, var(--teal-1) 100%);
+      border-right:1px solid rgba(255,255,255,0.07);
     }
 
     /* Logo */
@@ -280,7 +286,7 @@
       align-items:center;
       justify-content:center;
       padding:44px 10%;
-      background:rgba(255,255,255,0.015);
+      background: linear-gradient(160deg, var(--teal-3) 0%, var(--teal-4) 100%);
     }
 
     .cards-scene {

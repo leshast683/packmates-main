@@ -18,33 +18,48 @@ html, body { height:100%; }
    DESIGN TOKENS
 ───────────────────────────────────────────── */
 :root {
-  /* Brand */
-  --navy:        #113a58;
-  --navy-deep:   #0b1929;
-  --navy-mid:    #1a4f70;
+  /* Teal palette — primary brand colors */
+  --teal-1:      #082233;   /* deepest teal */
+  --teal-2:      #0d3347;   /* dark teal (sidebar, dark cards) */
+  --teal-3:      #113a58;   /* mid teal (primary brand) */
+  --teal-4:      #1a5878;   /* accent teal */
+  --teal-5:      #2272a0;   /* light teal */
+  --teal-bg:     rgba(17,58,88,0.08); /* teal tint for hover/bg */
+
+  /* Aliases used across the codebase */
+  --navy:        #113a58;   /* = teal-3 */
+  --navy-deep:   #0d3347;   /* = teal-2 */
+  --navy-mid:    #1a5878;   /* = teal-4 */
+
+  /* Dark teal accent */
+  --teal-a:      #0c7a7a;   /* dark teal — secondary accent */
+  --teal-a-dark: #096464;   /* hover/pressed state */
+  --teal-a-bg:   rgba(12,122,122,0.10); /* tint for hover/bg/chips */
+
+  /* Green accent */
   --green:       #5f9d30;
   --green-dark:  #4d8225;
   --green2:      #7cc63e;
   --green-bg:    rgba(95,157,48,0.12);
 
   /* Surfaces */
-  --bg:          #f0f1f5;
+  --bg:          #eef1f5;
   --surface:     #ffffff;
-  --surface-2:   #f8f9fc;
+  --surface-2:   #f4f7fa;
 
   /* Text */
-  --text-1:      #0c1b27;
-  --text-2:      #4a5a6a;
-  --text-3:      #8fa3b2;
+  --text-1:      #0a1f2e;
+  --text-2:      #3d5a70;
+  --text-3:      #7a9aad;
 
   /* Borders */
-  --border:      #e0e8ef;
-  --border-2:    #c8d5de;
+  --border:      #d8e5ee;
+  --border-2:    #b8cede;
 
-  /* Shadows */
-  --shadow-sm:   0 0 0 1px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.05);
-  --shadow-md:   0 0 0 1px rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.08);
-  --shadow-lg:   0 0 0 1px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.12);
+  /* Teal-tinted shadows */
+  --shadow-sm:   0 0 0 1px rgba(13,51,71,0.06), 0 2px 8px rgba(13,51,71,0.06);
+  --shadow-md:   0 0 0 1px rgba(13,51,71,0.06), 0 4px 20px rgba(13,51,71,0.1);
+  --shadow-lg:   0 0 0 1px rgba(13,51,71,0.06), 0 12px 40px rgba(13,51,71,0.14);
 
   /* Shape */
   --radius:      16px;
@@ -73,31 +88,29 @@ body {
    SIDEBAR
 ───────────────────────────────────────────── */
 .sidebar {
-  background: var(--navy-deep);
+  background: linear-gradient(180deg, var(--teal-2) 0%, var(--teal-1) 100%);
   display: flex;
   flex-direction: column;
   padding: 0 10px;
   position: relative;
   overflow: hidden;
-  /* Subtle right border */
-  box-shadow: inset -1px 0 0 rgba(255,255,255,0.04);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.04), 2px 0 24px rgba(8,34,51,0.18);
 }
 
-/* Top accent strip */
+/* Top teal-to-green accent strip */
 .sidebar::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--green), var(--green2), transparent);
-  opacity: 0.7;
+  background: linear-gradient(90deg, var(--teal-a), #4ecece, var(--green), transparent);
 }
 
-/* Subtle gradient overlay */
+/* Inner highlight on left edge */
 .sidebar::after {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 40%);
+  background: linear-gradient(135deg, rgba(34,114,160,0.12) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -182,13 +195,14 @@ body {
 .sidebar button:active { transform: scale(0.98); }
 
 .sidebar button.active {
-  background: var(--green-bg);
+  background: var(--teal-a-bg);
   color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(12,122,122,0.25);
 }
 
 .sidebar button.active .nav-icon {
-  color: var(--green);
-  stroke: var(--green);
+  color: #4ecece;
+  stroke: #4ecece;
 }
 
 /* ── SVG nav icons ── */
@@ -258,7 +272,7 @@ button.primary {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: var(--navy-deep);
+  background: var(--teal-a);
   color: #fff;
   border: none;
   padding: 10px 22px;
@@ -278,14 +292,14 @@ button.primary {
 button.primary::before {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent 60%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 60%);
   pointer-events: none;
 }
 
 button.primary:hover {
-  background: var(--navy);
+  background: var(--teal-a-dark);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(11,25,41,0.22);
+  box-shadow: 0 6px 20px rgba(12,122,122,0.28);
 }
 
 button.primary:active { transform: none; box-shadow: none; }
@@ -310,8 +324,8 @@ input {
 input::placeholder { color: var(--text-3); }
 
 input:focus {
-  border-color: var(--navy);
-  box-shadow: 0 0 0 3px rgba(17,58,88,0.08);
+  border-color: var(--teal-a);
+  box-shadow: 0 0 0 3px rgba(12,122,122,0.12);
 }
 
 /* ─────────────────────────────────────────────
@@ -422,7 +436,7 @@ button.card-button { background: transparent; border: none; }
 ───────────────────────────────────────────── */
 .arrow {
   width: 28px; height: 28px;
-  background: var(--navy-deep);
+  background: var(--teal-a);
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -434,7 +448,7 @@ button.card-button { background: transparent; border: none; }
   transition: background var(--t) var(--ease), transform var(--t) var(--ease);
 }
 
-.arrow:hover { background: var(--green); transform: scale(1.1); }
+.arrow:hover { background: var(--teal-a-dark); transform: scale(1.1); }
 
 /* ─────────────────────────────────────────────
    NEW TRIP PAGE
@@ -453,8 +467,8 @@ textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(17,58,88,0.
 .cancelSaveButtons { display:flex; justify-content:space-between; gap:12px; margin-top:auto; padding-top:20px; border-top:1px solid var(--border); }
 .cancel { background:transparent; color:#c0392b; border:1.5px solid rgba(192,57,43,0.3); border-radius:var(--radius-sm); width:30%; padding:11px; font-family:'Montserrat',sans-serif; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all var(--t) var(--ease); }
 .cancel:hover { background:#c0392b; color:#fff; border-color:#c0392b; }
-.save { background:var(--navy-deep); color:#fff; border:none; border-radius:var(--radius-sm); width:30%; padding:11px; font-family:'Montserrat',sans-serif; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all var(--t) var(--ease); margin-left:auto; }
-.save:hover { background:var(--green); transform:translateY(-1px); }
+.save { background:var(--teal-a); color:#fff; border:none; border-radius:var(--radius-sm); width:30%; padding:11px; font-family:'Montserrat',sans-serif; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all var(--t) var(--ease); margin-left:auto; }
+.save:hover { background:var(--teal-a-dark); transform:translateY(-1px); }
 
 /* ─────────────────────────────────────────────
    TRIP PREVIEW PAGE (split handled inline)
@@ -499,7 +513,7 @@ textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(17,58,88,0.
 .desktop .group-6 { width:193px; margin-top:29px; height:41px; margin-left:20px; position:relative; }
 .desktop .text-wrapper-4 { position:absolute; top:0; left:64px; font-family:'Blauer Nue',sans-serif; font-weight:700; color:var(--text-1); font-size:16px; white-space:nowrap; }
 .desktop .text-wrapper-5 { position:absolute; top:24px; left:64px; font-family:'Montserrat',sans-serif; font-weight:500; color:var(--text-3); font-size:11px; }
-.desktop .rectangle-4 { position:absolute; top:0; left:0; width:41px; height:41px; background:linear-gradient(135deg, var(--navy-deep), var(--navy-mid)); border-radius:10px; }
+.desktop .rectangle-4 { position:absolute; top:0; left:0; width:41px; height:41px; background:linear-gradient(135deg, var(--teal-a-dark), var(--teal-a)); border-radius:10px; }
 .desktop .group-7 { position:absolute; top:833px; left:416px; width:842px; height:85px; }
 .desktop .rectangle-5 { position:absolute; top:0; left:0; width:840px; height:85px; background:linear-gradient(135deg,#7a1a1a,#c0392b); border-radius:var(--radius); }
 .desktop .text-wrapper-6 { position:absolute; top:calc(50% - 10px); left:calc(50% - 54px); font-family:'Montserrat',sans-serif; font-weight:700; color:#fff; font-size:11px; letter-spacing:.14em; text-transform:uppercase; white-space:nowrap; }

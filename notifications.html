@@ -227,8 +227,8 @@
       stroke-width: 2;
     }
 
-    .chip-blue   { background: rgba(91,142,245,0.12);  }
-    .chip-blue svg { stroke: #5b8ef5; }
+    .chip-blue   { background: var(--teal-a-bg, rgba(12,122,122,0.10)); }
+    .chip-blue svg { stroke: var(--teal-a, #0c7a7a); }
     .chip-pink   { background: rgba(224,92,122,0.12); }
     .chip-pink svg { stroke: #e05c7a; }
     .chip-purple { background: rgba(155,110,245,0.12); }
@@ -395,42 +395,7 @@
           </div>
         </div>
         <div class="notif-list-wrap" id="wrapper-today">
-          <div class="notif-list" id="list-today">
-
-            <div class="notif-item unread" data-id="1" onclick="markRead(this)">
-              <div class="notif-icon-chip chip-blue">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              </div>
-              <div class="notif-body">
-                <div class="notif-text">Remember to finish packing for <strong>Miami!</strong></div>
-                <span class="notif-time">2 hours ago</span>
-              </div>
-              <div class="notif-dot"></div>
-            </div>
-
-            <div class="notif-item unread" data-id="2" onclick="markRead(this)">
-              <div class="notif-icon-chip chip-pink">
-                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-              </div>
-              <div class="notif-body">
-                <div class="notif-text"><strong>Ellie</strong> liked your list — <strong>Denver Trip</strong></div>
-                <span class="notif-time">4 hours ago</span>
-              </div>
-              <div class="notif-dot"></div>
-            </div>
-
-            <div class="notif-item unread" data-id="3" onclick="markRead(this)">
-              <div class="notif-icon-chip chip-purple">
-                <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-              </div>
-              <div class="notif-body">
-                <div class="notif-text">You've been added as a Packmate — <strong>Denver Trip</strong></div>
-                <span class="notif-time">6 hours ago</span>
-              </div>
-              <div class="notif-dot"></div>
-            </div>
-
-          </div>
+          <div class="notif-list" id="list-today"></div>
         </div>
       </div>
 
@@ -448,42 +413,7 @@
           </div>
         </div>
         <div class="notif-list-wrap" id="wrapper-week">
-          <div class="notif-list" id="list-week">
-
-            <div class="notif-item unread" data-id="4" onclick="markRead(this)">
-              <div class="notif-icon-chip chip-green">
-                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-              </div>
-              <div class="notif-body">
-                <div class="notif-text">You've packed <strong>5 items</strong> for your Miami Trip 🎉</div>
-                <span class="notif-time">2 days ago</span>
-              </div>
-              <div class="notif-dot"></div>
-            </div>
-
-            <div class="notif-item" data-id="5" onclick="markRead(this)">
-              <div class="notif-icon-chip chip-pink">
-                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-              </div>
-              <div class="notif-body">
-                <div class="notif-text"><strong>Mark</strong> liked your trip to <strong>New York</strong></div>
-                <span class="notif-time">3 days ago</span>
-              </div>
-              <div class="notif-dot"></div>
-            </div>
-
-            <div class="notif-item" data-id="6" onclick="markRead(this)">
-              <div class="notif-icon-chip chip-orange">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              </div>
-              <div class="notif-body">
-                <div class="notif-text">Your trip to <strong>New York</strong> starts today — check your packing list!</div>
-                <span class="notif-time">5 days ago</span>
-              </div>
-              <div class="notif-dot"></div>
-            </div>
-
-          </div>
+          <div class="notif-list" id="list-week"></div>
         </div>
       </div>
 
@@ -503,13 +433,100 @@
   <script>
     Auth.requireAuth('welcome.html');
 
+    /* ── Notification storage helpers ── */
+    function getStorageKey() {
+      const s = Auth.getSession();
+      return s ? `pm_notifications_${s.email}` : null;
+    }
+
+    function loadNotifs() {
+      const key = getStorageKey();
+      if (!key) return getDefaultNotifs();
+      const stored = localStorage.getItem(key);
+      if (stored) return JSON.parse(stored);
+      /* first visit: seed with demo notifications */
+      const defaults = getDefaultNotifs();
+      localStorage.setItem(key, JSON.stringify(defaults));
+      return defaults;
+    }
+
+    function saveNotifs(notifs) {
+      const key = getStorageKey();
+      if (key) localStorage.setItem(key, JSON.stringify(notifs));
+    }
+
+    function getDefaultNotifs() {
+      const now = Date.now();
+      return [
+        { id: now-1, type:'reminder', text:'Remember to finish packing for <strong>your next trip!</strong>', tripName:'', time: new Date(now - 2*3600000).toISOString(), read:false },
+        { id: now-2, type:'like',     text:'<strong>Ellie</strong> liked your packing list', tripName:'', time: new Date(now - 4*3600000).toISOString(), read:false },
+        { id: now-3, type:'join',     text:"You've been added as a Packmate", tripName:'', time: new Date(now - 6*3600000).toISOString(), read:false },
+        { id: now-4, type:'packing',  text:"You've packed <strong>5 items</strong> for your trip!", tripName:'', time: new Date(now - 2*86400000).toISOString(), read:false },
+        { id: now-5, type:'like',     text:'<strong>Mark</strong> liked your trip plan', tripName:'', time: new Date(now - 3*86400000).toISOString(), read:true },
+        { id: now-6, type:'alert',    text:'Your trip starts soon — check your packing list!', tripName:'', time: new Date(now - 5*86400000).toISOString(), read:true },
+      ];
+    }
+
+    /* ── Map type → icon chip ── */
+    const TYPE_ICON = {
+      trip:     { cls:'chip-green',  svg:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+      join:     { cls:'chip-purple', svg:'<path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>' },
+      packing:  { cls:'chip-green',  svg:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+      like:     { cls:'chip-pink',   svg:'<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>' },
+      reminder: { cls:'chip-blue',   svg:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' },
+      alert:    { cls:'chip-orange', svg:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' },
+    };
+
+    function timeAgo(iso) {
+      const diff = Date.now() - new Date(iso).getTime();
+      const m = Math.floor(diff / 60000);
+      if (m < 1)    return 'just now';
+      if (m < 60)   return `${m} minute${m>1?'s':''} ago`;
+      const h = Math.floor(m / 60);
+      if (h < 24)   return `${h} hour${h>1?'s':''} ago`;
+      const d = Math.floor(h / 24);
+      if (d < 7)    return `${d} day${d>1?'s':''} ago`;
+      const w = Math.floor(d / 7);
+      return `${w} week${w>1?'s':''} ago`;
+    }
+
+    function isToday(iso) {
+      return Date.now() - new Date(iso).getTime() < 86400000;
+    }
+
+    function buildItemHTML(n) {
+      const meta = TYPE_ICON[n.type] || TYPE_ICON.alert;
+      return `
+        <div class="notif-item${n.read?'':' unread'}" data-id="${n.id}" onclick="markRead(this)">
+          <div class="notif-icon-chip ${meta.cls}">
+            <svg viewBox="0 0 24 24">${meta.svg}</svg>
+          </div>
+          <div class="notif-body">
+            <div class="notif-text">${n.text}${n.tripName ? ` — <strong>${n.tripName}</strong>` : ''}</div>
+            <span class="notif-time">${timeAgo(n.time)}</span>
+          </div>
+          <div class="notif-dot"></div>
+        </div>`;
+    }
+
+    function renderNotifs() {
+      const notifs  = loadNotifs();
+      const today   = notifs.filter(n => isToday(n.time));
+      const week    = notifs.filter(n => !isToday(n.time));
+
+      document.getElementById('list-today').innerHTML = today.map(buildItemHTML).join('');
+      document.getElementById('list-week').innerHTML  = week.map(buildItemHTML).join('');
+      updateSectionBadges();
+      updateUnreadCount();
+    }
+
     function updateUnreadCount() {
       const unread = document.querySelectorAll('.notif-item.unread').length;
       const total  = document.querySelectorAll('.notif-item').length;
       const el     = document.getElementById('unread-count-text');
-      if (total === 0)    el.textContent = 'No notifications';
-      else if (unread===0)el.textContent = 'All caught up!';
-      else                el.textContent = `${unread} unread notification${unread!==1?'s':''}`;
+      if (total === 0)     el.textContent = 'No notifications';
+      else if (unread===0) el.textContent = 'All caught up!';
+      else                 el.textContent = `${unread} unread notification${unread!==1?'s':''}`;
     }
 
     function updateSectionBadges() {
@@ -520,32 +537,31 @@
         if (!list) return;
         const total  = list.querySelectorAll('.notif-item').length;
         const unread = list.querySelectorAll('.notif-item.unread').length;
-        if (unread > 0) {
-          badge.textContent = `${unread} unread`;
-          badge.style.display = '';
-        } else {
-          badge.style.display = 'none';
-        }
+        badge.textContent  = `${unread} unread`;
+        badge.style.display = unread > 0 ? '' : 'none';
         section.style.display = total === 0 ? 'none' : '';
       });
-
       const anyVisible = ['today','week'].some(id =>
         document.getElementById(`section-${id}`)?.style.display !== 'none'
       );
-      const empty = document.getElementById('empty-card');
-      if (anyVisible) empty.classList.remove('visible');
-      else            empty.classList.add('visible');
+      document.getElementById('empty-card').classList.toggle('visible', !anyVisible);
     }
 
     function markRead(el) {
-      if (el.classList.contains('unread')) {
-        el.classList.remove('unread');
-        updateUnreadCount();
-        updateSectionBadges();
-      }
+      if (!el.classList.contains('unread')) return;
+      const id     = parseInt(el.dataset.id);
+      const notifs = loadNotifs();
+      const n      = notifs.find(x => x.id === id);
+      if (n) { n.read = true; saveNotifs(notifs); }
+      el.classList.remove('unread');
+      updateUnreadCount();
+      updateSectionBadges();
     }
 
     function markAllRead() {
+      const notifs = loadNotifs();
+      notifs.forEach(n => n.read = true);
+      saveNotifs(notifs);
       document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
       updateUnreadCount();
       updateSectionBadges();
@@ -564,15 +580,18 @@
         }, delay);
         delay += 55;
       });
-      setTimeout(() => { updateSectionBadges(); updateUnreadCount(); }, delay + 350);
+      setTimeout(() => {
+        saveNotifs([]);
+        updateSectionBadges();
+        updateUnreadCount();
+      }, delay + 350);
     }
 
     function toggleSection(id) {
       document.getElementById(`section-${id}`).classList.toggle('collapsed');
     }
 
-    updateSectionBadges();
-    updateUnreadCount();
+    renderNotifs();
   </script>
 </body>
 </html>
