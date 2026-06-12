@@ -467,38 +467,69 @@
   <script>
     Auth.requireAuth('welcome.html');
 
+    const PEXELS_KEY = 'vnk5OqRIBUtBdRV9LUp1oaAn2QiAB5lO0HL8GwM5WrRRQZt5GOaFlVIq';
+    const CACHE_TTL  = 7 * 24 * 60 * 60 * 1000;
+
+    function getDestCache(name) {
+      try { const r = localStorage.getItem('pm_dest_' + name); if (!r) return null; const { url, ts } = JSON.parse(r); if (Date.now()-ts > CACHE_TTL) { localStorage.removeItem('pm_dest_'+name); return null; } return url; } catch { return null; }
+    }
+    function setDestCache(name, url) {
+      try { localStorage.setItem('pm_dest_'+name, JSON.stringify({url,ts:Date.now()})); } catch {}
+    }
+    async function fetchDestPhoto(query) {
+      try {
+        const res  = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5&size=medium`, { headers:{ Authorization:PEXELS_KEY } });
+        const data = await res.json();
+        const p = (data.photos||[])[Math.floor(Math.random()*Math.min(5,(data.photos||[]).length))];
+        return p?.src?.medium || null;
+      } catch { return null; }
+    }
+
     /* ── Trending Destinations ── */
     const DESTS = [
-      { name:'Santorini',  emoji:'🌊', bg:'linear-gradient(135deg,#1a78c2,#00c6ff)', trips:'2.4k' },
-      { name:'Bali',       emoji:'🌺', bg:'linear-gradient(135deg,#e67e22,#c0392b)', trips:'3.1k' },
-      { name:'Tokyo',      emoji:'⛩️', bg:'linear-gradient(135deg,#c0392b,#8e44ad)', trips:'4.2k' },
-      { name:'Paris',      emoji:'🗼', bg:'linear-gradient(135deg,#4a6fa5,#2c3e50)', trips:'5.8k' },
-      { name:'Maldives',   emoji:'🐠', bg:'linear-gradient(135deg,#00b4db,#0083b0)', trips:'1.9k' },
-      { name:'New York',   emoji:'🗽', bg:'linear-gradient(135deg,#2c3e50,#3498db)', trips:'6.2k' },
-      { name:'Dubai',      emoji:'🏙️', bg:'linear-gradient(135deg,#f7971e,#ffd200)', trips:'2.7k' },
-      { name:'Rome',       emoji:'🏛️', bg:'linear-gradient(135deg,#d35400,#e74c3c)', trips:'3.5k' },
-      { name:'Banff',      emoji:'🏔️', bg:'linear-gradient(135deg,#2d6a4f,#1b4332)', trips:'1.4k' },
-      { name:'Barcelona',  emoji:'🎨', bg:'linear-gradient(135deg,#f093fb,#c0392b)', trips:'3.9k' },
-      { name:'Sydney',     emoji:'🦘', bg:'linear-gradient(135deg,#4facfe,#00f2fe)', trips:'2.2k' },
-      { name:'Cancun',     emoji:'🏖️', bg:'linear-gradient(135deg,#00b09b,#0099cc)', trips:'2.8k' },
+      { name:'Santorini', emoji:'🌊', fallback:'linear-gradient(135deg,#1a78c2,#00c6ff)', query:'santorini greece blue dome', trips:'2.4k' },
+      { name:'Bali',      emoji:'🌺', fallback:'linear-gradient(135deg,#e67e22,#c0392b)', query:'bali temple rice terraces', trips:'3.1k' },
+      { name:'Tokyo',     emoji:'⛩️', fallback:'linear-gradient(135deg,#c0392b,#8e44ad)', query:'tokyo japan city night', trips:'4.2k' },
+      { name:'Paris',     emoji:'🗼', fallback:'linear-gradient(135deg,#4a6fa5,#2c3e50)', query:'paris eiffel tower', trips:'5.8k' },
+      { name:'Maldives',  emoji:'🐠', fallback:'linear-gradient(135deg,#00b4db,#0083b0)', query:'maldives turquoise water bungalow', trips:'1.9k' },
+      { name:'New York',  emoji:'🗽', fallback:'linear-gradient(135deg,#2c3e50,#3498db)', query:'new york city skyline', trips:'6.2k' },
+      { name:'Dubai',     emoji:'🏙️', fallback:'linear-gradient(135deg,#f7971e,#ffd200)', query:'dubai skyline burj khalifa', trips:'2.7k' },
+      { name:'Rome',      emoji:'🏛️', fallback:'linear-gradient(135deg,#d35400,#e74c3c)', query:'rome colosseum italy', trips:'3.5k' },
+      { name:'Banff',     emoji:'🏔️', fallback:'linear-gradient(135deg,#2d6a4f,#1b4332)', query:'banff canada mountains lake', trips:'1.4k' },
+      { name:'Barcelona', emoji:'🎨', fallback:'linear-gradient(135deg,#f093fb,#c0392b)', query:'barcelona sagrada familia', trips:'3.9k' },
+      { name:'Sydney',    emoji:'🦘', fallback:'linear-gradient(135deg,#4facfe,#00f2fe)', query:'sydney opera house', trips:'2.2k' },
+      { name:'Cancun',    emoji:'🏖️', fallback:'linear-gradient(135deg,#00b09b,#0099cc)', query:'cancun beach mexico', trips:'2.8k' },
     ];
 
     const destStrip = document.getElementById('destStrip');
     DESTS.forEach(d => {
       const c = document.createElement('div');
       c.className = 'dest-card';
+      const cached = getDestCache(d.name);
+      const bgStyle = cached ? `background:${d.fallback};background-image:url('${cached}')` : `background:${d.fallback}`;
       c.innerHTML = `
-        <div class="dest-card-bg" style="background:${d.bg}"></div>
+        <div class="dest-card-bg" id="dcbg-${d.name.replace(/\s+/g,'_')}" style="${bgStyle}"></div>
         <div class="dest-card-overlay"></div>
         <div class="dest-card-emoji">${d.emoji}</div>
         <div class="dest-card-name">${d.name}</div>
         <div class="dest-card-trips">${d.trips}</div>`;
-      c.addEventListener('click', () => {
-        localStorage.setItem('exploreDestination', d.name);
-        location.href = 'newTrip.html';
-      });
+      c.addEventListener('click', () => { localStorage.setItem('exploreDestination', d.name); location.href = 'newTrip.html'; });
       destStrip.appendChild(c);
     });
+
+    /* Fetch photos in background */
+    (async () => {
+      for (const d of DESTS) {
+        if (getDestCache(d.name)) continue;
+        const url = await fetchDestPhoto(d.query);
+        if (url) {
+          setDestCache(d.name, url);
+          const bg = document.getElementById('dcbg-'+d.name.replace(/\s+/g,'_'));
+          if (bg) { const img=new Image(); img.onload=()=>{ bg.style.backgroundImage=`url('${url}')`; }; img.src=url; }
+        }
+        await new Promise(r=>setTimeout(r,120));
+      }
+    })();
 
     /* ── Community Travelers ── */
     const TRAVELERS = [
