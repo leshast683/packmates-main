@@ -752,9 +752,16 @@
 
     async function fetchSuggestions(query) {
       try {
-        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`);
+        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=12&language=en&format=json`);
         const data = await res.json();
-        return data.results || [];
+        const all  = data.results || [];
+        /* keep only populated places — drop countries, admin regions, continents */
+        return all
+          .filter(r => {
+            const fc = r.feature_code || '';
+            return fc.startsWith('PPL') || fc.startsWith('PPLA') || fc === 'PPLC';
+          })
+          .slice(0, 6);
       } catch { return []; }
     }
 
@@ -992,7 +999,7 @@
 
       /* autocomplete */
       clearTimeout(acDebounce);
-      if (dest.length >= 2) {
+      if (dest.length >= 1) {
         acDebounce = setTimeout(() => {
           fetchSuggestions(dest).then(showDropdown);
         }, 260);
@@ -1020,7 +1027,7 @@
 
     document.getElementById('tripDestination').addEventListener('focus', () => {
       const dest = document.getElementById('tripDestination').value.trim();
-      if (dest.length >= 2) fetchSuggestions(dest).then(showDropdown);
+      if (dest.length >= 1) fetchSuggestions(dest).then(showDropdown);
     });
 
     document.getElementById('tripFromDate').addEventListener('change', () => { updatePreview(); scheduleWeatherFetch(); });
