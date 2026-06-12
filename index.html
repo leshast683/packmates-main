@@ -1049,31 +1049,11 @@
     .bc-tip::before { display: none !important; }
     .bc-tip::after  { display: none !important; }
 
-    .bc-tip-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
     .bc-tip-label {
       color: var(--green, #5f9d30) !important;
       font-size: 0.58rem !important;
       letter-spacing: 0.2em !important;
-    }
-
-    .bc-tip-icon {
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      background: rgba(95,157,48,0.12) !important;
-      border: 1px solid rgba(95,157,48,0.22) !important;
-      border-radius: 9px !important;
-      padding: 5px 9px !important;
-      font-size: 1.1rem !important;
-      line-height: 1 !important;
-      animation: none !important;
-      margin: 0 !important;
+      margin-bottom: 10px;
     }
 
     .bc-tip-quote-mark {
@@ -1503,10 +1483,7 @@
 
       <!-- TIP -->
       <div class="bc bc-tip">
-        <div class="bc-tip-top">
-          <div class="bc-tip-label">Packing Tip</div>
-          <div class="bc-tip-icon" id="tipIcon">💡</div>
-        </div>
+        <div class="bc-tip-label">Packing Tip</div>
         <div class="bc-tip-text" id="tipText">Loading tip…</div>
         <div class="bc-tip-quote-mark">❝</div>
       </div>
@@ -1614,9 +1591,7 @@
       { icon:'🔋', text:'10,000 mAh power bank = 2–3 full phone charges while traveling.' },
     ];
     const tip = TIPS[Math.floor(Date.now() / 86400000) % TIPS.length];
-    const tipIconEl = document.getElementById('tipIcon');
     const tipTextEl = document.getElementById('tipText');
-    if (tipIconEl) tipIconEl.textContent = tip.icon;
     if (tipTextEl) tipTextEl.textContent = tip.text;
 
     /* ── Others Also Packed ── */
