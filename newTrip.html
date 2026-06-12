@@ -499,6 +499,79 @@
     }
     @keyframes weatherPulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
 
+    /* ── Airline picker ── */
+    .nt-airline-wrap { position: relative; }
+
+    .nt-airline-dd {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0; right: 0;
+      background: var(--surface, #fff);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.07);
+      z-index: 490;
+      overflow: hidden;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .nt-airline-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-bottom: 1px solid var(--border);
+    }
+    .nt-airline-item:last-child { border-bottom: none; }
+    .nt-airline-item:hover, .nt-airline-item.focused { background: var(--bg); }
+
+    .nt-airline-iata {
+      width: 36px; height: 28px;
+      background: var(--teal-a-bg, rgba(12,122,122,0.08));
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em;
+      color: var(--teal-a, #0c7a7a);
+      flex-shrink: 0;
+    }
+
+    .nt-airline-name { font-size: 0.84rem; font-weight: 600; color: var(--text-1); }
+
+    .nt-airline-rules {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .nt-airline-pill {
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: var(--text-3);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+
+    .nt-airline-selected {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      background: var(--teal-a-bg, rgba(12,122,122,0.07));
+      border: 1.5px solid var(--teal-a, #0c7a7a);
+      border-radius: 12px;
+      margin-top: 8px;
+    }
+    .nt-airline-selected.visible { display: flex; }
+    .nt-airline-selected-name { font-size: 0.84rem; font-weight: 700; color: var(--teal-a, #0c7a7a); flex: 1; }
+    .nt-airline-selected-rules { font-size: 0.7rem; color: var(--text-3); }
+    .nt-airline-clear { background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 1rem; padding: 0 2px; line-height: 1; }
+    .nt-airline-clear:hover { color: #c0392b; }
+
     /* ── Destination autocomplete ── */
     .nt-autocomplete {
       position: absolute;
@@ -625,6 +698,26 @@
             </div>
           </div>
 
+          <!-- Airline -->
+          <div class="nt-section">
+            <label class="nt-label" for="airlineInput">Airline</label>
+            <div class="nt-airline-wrap">
+              <div class="nt-input-wrap">
+                <svg viewBox="0 0 24 24"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 2 16.5 3.5L13 7 4.8 5.2l-2.3 2.3 6.1 3.5-1.9 1.9-2.1-.4-1.4 1.4 2.5 1.5 1.5 2.5 1.4-1.4-.4-2.1 1.9-1.9z"/></svg>
+                <input class="nt-input" id="airlineInput" type="text" placeholder="Search airline…" autocomplete="off">
+                <div class="nt-airline-dd" id="airlineDd" style="display:none"></div>
+              </div>
+              <div class="nt-airline-selected" id="airlineSelected">
+                <div class="nt-airline-iata" id="airlineIata">—</div>
+                <div>
+                  <div class="nt-airline-selected-name" id="airlineSelName">—</div>
+                  <div class="nt-airline-selected-rules" id="airlineSelRules">—</div>
+                </div>
+                <button class="nt-airline-clear" id="airlineClearBtn" type="button" title="Clear">✕</button>
+              </div>
+            </div>
+          </div>
+
           <!-- Dates -->
           <div class="nt-section">
             <div class="nt-dates">
@@ -733,6 +826,7 @@
   </main>
 
   <script src="auth.js"></script>
+  <script src="airlines.js"></script>
   <script>
     Auth.requireAuth('welcome.html');
 
@@ -830,6 +924,71 @@
     });
 
     /* ── Weather: Open-Meteo geocode + forecast/historical ── */
+    /* ── Airline picker ── */
+    let selectedAirline = null;
+
+    function airlineRulesText(a) {
+      return `Carry-on: ${a.carry.dims}${a.carry.weight !== 'No limit' ? ' · ' + a.carry.weight : ''} · Checked: ${a.checked.weight} · ${a.checked.fee}`;
+    }
+
+    function renderAirlineDd(query) {
+      const dd = document.getElementById('airlineDd');
+      const q  = query.toLowerCase();
+      const matches = PACKMATES_AIRLINES.filter(a =>
+        a.name.toLowerCase().includes(q) || a.iata.toLowerCase().includes(q)
+      ).slice(0, 8);
+
+      if (!matches.length) { dd.style.display = 'none'; return; }
+
+      dd.innerHTML = matches.map(a => `
+        <div class="nt-airline-item" onmousedown="selectAirline('${a.iata}')">
+          <div class="nt-airline-iata">${a.iata}</div>
+          <div>
+            <div class="nt-airline-name">${a.name}</div>
+            <div class="nt-airline-rules">
+              <span class="nt-airline-pill">Carry-on ${a.carry.dims}</span>
+              <span class="nt-airline-pill">Checked ${a.checked.weight}</span>
+              <span class="nt-airline-pill">${a.checked.fee}</span>
+            </div>
+          </div>
+        </div>`).join('');
+      dd.style.display = '';
+    }
+
+    function selectAirline(iata) {
+      selectedAirline = PACKMATES_AIRLINES.find(a => a.iata === iata);
+      if (!selectedAirline) return;
+      document.getElementById('airlineInput').value = selectedAirline.name;
+      document.getElementById('airlineDd').style.display = 'none';
+      document.getElementById('airlineIata').textContent      = selectedAirline.iata;
+      document.getElementById('airlineSelName').textContent   = selectedAirline.name;
+      document.getElementById('airlineSelRules').textContent  = airlineRulesText(selectedAirline);
+      document.getElementById('airlineSelected').classList.add('visible');
+    }
+    window.selectAirline = selectAirline;
+
+    document.getElementById('airlineInput').addEventListener('input', e => {
+      const q = e.target.value.trim();
+      if (!q) { document.getElementById('airlineDd').style.display = 'none'; return; }
+      renderAirlineDd(q);
+    });
+
+    document.getElementById('airlineInput').addEventListener('focus', e => {
+      const q = e.target.value.trim();
+      if (q) renderAirlineDd(q);
+      else renderAirlineDd('');
+    });
+
+    document.getElementById('airlineInput').addEventListener('blur', () => {
+      setTimeout(() => { document.getElementById('airlineDd').style.display = 'none'; }, 160);
+    });
+
+    document.getElementById('airlineClearBtn').addEventListener('click', () => {
+      selectedAirline = null;
+      document.getElementById('airlineInput').value = '';
+      document.getElementById('airlineSelected').classList.remove('visible');
+    });
+
     async function geocodeLookup(city) {
       try {
         const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
@@ -1075,6 +1234,7 @@
       const tripData = {
         id: tripId, destination, fromDate, toDate, travelers,
         activityCategories, activities, notes,
+        airline: selectedAirline || null,
         inviteCode, weatherTags, createdAt: new Date().toISOString(),
       };
 

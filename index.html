@@ -983,57 +983,159 @@
       100% { left: 120%; }
     }
 
-    /* ══ REDESIGNED COUNTDOWN CARD ══ */
+    /* ══ BOARDING-PASS DEPARTURE CARD ══ */
     .bc-countdown {
-      background: linear-gradient(150deg, #0c1624 0%, #142035 55%, #1a2d48 100%) !important;
-      border: 1px solid rgba(255,255,255,0.06) !important;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.35) !important;
-      padding: 22px 24px !important;
+      background: #fff !important;
+      border: 1px solid rgba(0,0,0,0.08) !important;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07) !important;
+      padding: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
     }
 
-    /* Green glow bubble behind the number */
-    .bc-countdown::before {
-      content: '';
-      position: absolute;
-      top: 42%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 160px; height: 160px;
-      background: radial-gradient(circle, rgba(95,157,48,0.14) 0%, transparent 68%);
-      pointer-events: none;
+    .bc-countdown::before { display: none; }
+
+    .bc-board-top {
+      padding: 18px 20px 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .bc-countdown .bc-label {
-      color: rgba(255,255,255,0.28) !important;
+    .bc-board-airline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
-    .bc-label-dot {
-      background: #7dd94a !important;
-      box-shadow: 0 0 8px rgba(125,217,74,0.7) !important;
-      animation: dotPulse 2s ease-in-out infinite !important;
+    .bc-board-iata {
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--teal-a, #0c7a7a);
+      background: var(--teal-a-bg, rgba(12,122,122,0.08));
+      border-radius: 5px;
+      padding: 2px 7px;
+    }
+
+    .bc-board-airline-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bc-board-num-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
     }
 
     .bc-countdown-num {
-      font-size: 4.8rem !important;
-      color: #fff !important;
-      text-shadow: 0 0 40px rgba(95,157,48,0.45), 0 0 80px rgba(95,157,48,0.15) !important;
+      font-size: 4.5rem !important;
+      color: var(--text-1) !important;
+      text-shadow: none !important;
       animation: numPop 0.7s cubic-bezier(0.22,1,0.36,1) 0.4s both !important;
+      line-height: 1 !important;
+    }
+
+    .bc-countdown-unit {
+      font-size: 0.68rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.1em !important;
+      text-transform: uppercase !important;
+      color: var(--text-3) !important;
+    }
+
+    .bc-countdown-dest {
+      border-top: none !important;
+      color: var(--text-3) !important;
+      font-size: 0.72rem !important;
+      padding-top: 8px !important;
+    }
+
+    .bc-countdown-dest svg { stroke: var(--text-3) !important; }
+
+    .bc-label-dot {
+      background: var(--green) !important;
+      box-shadow: 0 0 6px rgba(95,157,48,0.5) !important;
+      animation: dotPulse 2s ease-in-out infinite !important;
+    }
+
+    /* Perforation divider */
+    .bc-board-perf {
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 0;
+      position: relative;
+    }
+
+    .bc-board-perf::before {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; top: 50%;
+      border-top: 2px dashed var(--border);
+    }
+
+    .bc-board-perf-dot {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px dashed var(--border);
+      flex-shrink: 0;
       position: relative;
       z-index: 1;
     }
 
-    .bc-countdown-unit {
-      color: rgba(255,255,255,0.35) !important;
-      font-size: 0.66rem !important;
-      letter-spacing: 0.14em !important;
+    .bc-board-perf-dot:last-child { margin-left: auto; }
+
+    /* Baggage rules strip */
+    .bc-board-baggage {
+      padding: 12px 20px 14px;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
     }
 
-    .bc-countdown-dest {
-      border-top: 1px solid rgba(255,255,255,0.08) !important;
-      color: rgba(255,255,255,0.4) !important;
-      padding-top: 13px !important;
+    .bc-board-bag-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.7rem;
+      color: var(--text-2);
+      font-weight: 500;
     }
 
-    .bc-countdown-dest svg { stroke: rgba(255,255,255,0.28) !important; }
+    .bc-board-bag-label {
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      min-width: 62px;
+    }
+
+    .bc-board-bag-val {
+      color: var(--text-1);
+      font-weight: 600;
+      font-size: 0.72rem;
+    }
+
+    .bc-board-bag-fee {
+      margin-left: auto;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--green, #5f9d30);
+      background: rgba(95,157,48,0.08);
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
 
     /* ══ REDESIGNED TIP CARD — side-tab layout ══ */
     .bc-tip {
@@ -1295,6 +1397,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="auth.js"></script>
+  <script src="airlines.js"></script>
   <script>
     const PEXELS_KEY = 'vnk5OqRIBUtBdRV9LUp1oaAn2QiAB5lO0HL8GwM5WrRRQZt5GOaFlVIq';
 
@@ -1473,20 +1576,49 @@
         </div>`}
       </div>
 
-      <!-- COUNTDOWN -->
-      <div class="bc bc-countdown">
-        <div class="bc-label"><span class="bc-label-dot"></span>Departure</div>
-        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;position:relative;z-index:1;">
-          <div class="bc-countdown-num" style="${!hasTrip?'opacity:0.3':''}">
-            ${countdownNum}
+      <!-- COUNTDOWN / BOARDING PASS -->
+      <div class="bc bc-countdown">${(() => {
+        const airline = trip?.airline || null;
+        const baggageRows = airline ? `
+          <div class="bc-board-bag-row">
+            <span class="bc-board-bag-label">Carry-on</span>
+            <span class="bc-board-bag-val">${airline.carry.dims}</span>
+            ${airline.carry.weight !== 'No limit' ? `<span class="bc-board-bag-fee">${airline.carry.weight}</span>` : ''}
           </div>
-          <div class="bc-countdown-unit">${countdownUnit}</div>
-        </div>
-        <div class="bc-countdown-dest">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${hasTrip && trip.fromDate ? fmt(trip.fromDate) : 'No trip planned'}
-        </div>
-      </div>
+          <div class="bc-board-bag-row">
+            <span class="bc-board-bag-label">Checked</span>
+            <span class="bc-board-bag-val">${airline.checked.weight}</span>
+            <span class="bc-board-bag-fee">${airline.checked.fee}</span>
+          </div>` : `
+          <div class="bc-board-bag-row" style="color:var(--text-3);font-size:0.7rem;">
+            No airline selected — add one when planning your trip
+          </div>`;
+        return `
+          <div class="bc-board-top">
+            <div>
+              <div class="bc-label"><span class="bc-label-dot"></span>Departure</div>
+              ${airline ? `<div class="bc-board-airline">
+                <span class="bc-board-iata">${airline.iata}</span>
+                <span class="bc-board-airline-name">${airline.name}</span>
+              </div>` : ''}
+            </div>
+            <div>
+              <div class="bc-board-num-row">
+                <div class="bc-countdown-num" style="${!hasTrip?'opacity:0.25':''}">${countdownNum}</div>
+                <div class="bc-countdown-unit">${countdownUnit}</div>
+              </div>
+              <div class="bc-countdown-dest">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${hasTrip && trip.fromDate ? fmt(trip.fromDate) : 'No trip planned'}
+              </div>
+            </div>
+          </div>
+          <div class="bc-board-perf">
+            <div class="bc-board-perf-dot"></div>
+            <div class="bc-board-perf-dot"></div>
+          </div>
+          <div class="bc-board-baggage">${baggageRows}</div>`;
+      })()}</div>
 
       <!-- PROGRESS -->
       <div class="bc bc-progress">
