@@ -945,19 +945,118 @@
       100% { left: 120%; }
     }
 
-    /* ── Better countdown card ── */
+    /* ══ REDESIGNED COUNTDOWN CARD ══ */
     .bc-countdown {
-      background: linear-gradient(155deg, var(--surface) 0%, #f0fff8 100%) !important;
-      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05)) !important;
-      border: 1px solid rgba(12,122,122,0.08) !important;
+      background: linear-gradient(150deg, #0c1624 0%, #142035 55%, #1a2d48 100%) !important;
+      border: 1px solid rgba(255,255,255,0.06) !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35) !important;
+      padding: 22px 24px !important;
     }
 
-    .bc-countdown-num {
-      animation: numPop 0.7s cubic-bezier(0.22,1,0.36,1) 0.4s both !important;
+    /* Green glow bubble behind the number */
+    .bc-countdown::before {
+      content: '';
+      position: absolute;
+      top: 42%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(95,157,48,0.14) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    .bc-countdown .bc-label {
+      color: rgba(255,255,255,0.28) !important;
     }
 
     .bc-label-dot {
+      background: #7dd94a !important;
+      box-shadow: 0 0 8px rgba(125,217,74,0.7) !important;
       animation: dotPulse 2s ease-in-out infinite !important;
+    }
+
+    .bc-countdown-num {
+      font-size: 4.8rem !important;
+      color: #fff !important;
+      text-shadow: 0 0 40px rgba(95,157,48,0.45), 0 0 80px rgba(95,157,48,0.15) !important;
+      animation: numPop 0.7s cubic-bezier(0.22,1,0.36,1) 0.4s both !important;
+      position: relative;
+      z-index: 1;
+    }
+
+    .bc-countdown-unit {
+      color: rgba(255,255,255,0.35) !important;
+      font-size: 0.66rem !important;
+      letter-spacing: 0.14em !important;
+    }
+
+    .bc-countdown-dest {
+      border-top: 1px solid rgba(255,255,255,0.08) !important;
+      color: rgba(255,255,255,0.4) !important;
+      padding-top: 13px !important;
+    }
+
+    .bc-countdown-dest svg { stroke: rgba(255,255,255,0.28) !important; }
+
+    /* ══ REDESIGNED TIP CARD ══ */
+    .bc-tip {
+      background: #111827 !important;
+      border-top: none !important;
+      border-left: 3px solid var(--green, #5f9d30) !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.22) !important;
+      padding: 22px 24px !important;
+      justify-content: space-between !important;
+    }
+
+    /* Remove old gradient pseudo-elements */
+    .bc-tip::before { display: none !important; }
+    .bc-tip::after  { display: none !important; }
+
+    .bc-tip-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .bc-tip-label {
+      color: var(--green, #5f9d30) !important;
+      font-size: 0.58rem !important;
+      letter-spacing: 0.2em !important;
+    }
+
+    .bc-tip-icon {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: rgba(95,157,48,0.12) !important;
+      border: 1px solid rgba(95,157,48,0.22) !important;
+      border-radius: 9px !important;
+      padding: 5px 9px !important;
+      font-size: 1.1rem !important;
+      line-height: 1 !important;
+      animation: none !important;
+      margin: 0 !important;
+    }
+
+    .bc-tip-quote-mark {
+      position: absolute;
+      bottom: -14px; right: 16px;
+      font-size: 9rem;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: rgba(255,255,255,0.04);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+
+    .bc-tip-text {
+      font-size: 0.88rem !important;
+      font-weight: 600 !important;
+      color: rgba(255,255,255,0.82) !important;
+      line-height: 1.6 !important;
+      position: relative;
+      z-index: 1;
     }
 
     /* ── Progress card — deep navy-teal ── */
@@ -1268,8 +1367,8 @@
       <!-- COUNTDOWN -->
       <div class="bc bc-countdown">
         <div class="bc-label"><span class="bc-label-dot"></span>Departure</div>
-        <div>
-          <div class="bc-countdown-num" style="${!hasTrip?'color:var(--text-3)':''}">
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;position:relative;z-index:1;">
+          <div class="bc-countdown-num" style="${!hasTrip?'opacity:0.3':''}">
             ${countdownNum}
           </div>
           <div class="bc-countdown-unit">${countdownUnit}</div>
@@ -1310,9 +1409,12 @@
 
       <!-- TIP -->
       <div class="bc bc-tip">
-        <div class="bc-tip-label">Packing Tip</div>
-        <div class="bc-tip-icon" id="tipIcon">💡</div>
+        <div class="bc-tip-top">
+          <div class="bc-tip-label">Packing Tip</div>
+          <div class="bc-tip-icon" id="tipIcon">💡</div>
+        </div>
         <div class="bc-tip-text" id="tipText">Loading tip…</div>
+        <div class="bc-tip-quote-mark">❝</div>
       </div>
 
       <!-- ACTIONS -->
