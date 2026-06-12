@@ -24,7 +24,10 @@
       font-size: 1.55rem;
       font-weight: 700;
       letter-spacing: -0.02em;
-      color: var(--text-1);
+      background: linear-gradient(135deg, var(--text-1) 30%, var(--teal-a, #0c7a7a) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .dash-greeting .sub {
@@ -55,8 +58,8 @@
     }
 
     .search-box:focus-within {
-      border-color: var(--navy);
-      box-shadow: 0 0 0 3px rgba(17,58,88,0.08);
+      border-color: var(--teal-a, #0c7a7a);
+      box-shadow: 0 0 0 3px rgba(12,122,122,0.1);
     }
 
     .search-box svg {
@@ -90,7 +93,7 @@
       gap: 7px;
       padding: 0 18px;
       height: 40px;
-      background: var(--navy-deep);
+      background: var(--teal-a, #0c7a7a);
       color: #fff;
       border: none;
       border-radius: 10px;
@@ -103,9 +106,9 @@
     }
 
     .btn-new-trip:hover {
-      background: var(--navy);
+      background: var(--teal-a-dark, #096464);
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(13,27,42,0.25);
+      box-shadow: 0 6px 20px rgba(12,122,122,0.3);
     }
 
     .btn-new-trip svg {
@@ -416,13 +419,14 @@
     /* ── ROW 3: WEATHER CARD ── */
     .bc-weather {
       grid-column: 1 / 5;
-      background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-      padding: 22px 24px;
+      background: linear-gradient(140deg, #033d3d 0%, #0c7a7a 55%, #4ecece 100%);
+      padding: 20px 24px 24px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      min-height: 160px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.08);
+      justify-content: flex-start;
+      gap: 10px;
+      min-height: 180px;
+      box-shadow: 0 2px 8px rgba(12,122,122,0.25), 0 8px 24px rgba(12,122,122,0.15);
     }
 
     .bc-weather-label {
@@ -430,19 +434,24 @@
       font-weight: 800;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.5);
     }
 
     .bc-weather-main {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 14px;
+      text-align: center;
+      gap: 4px;
+      flex: 1;
+      justify-content: center;
     }
 
     .bc-weather-icon {
-      font-size: 3.8rem;
+      font-size: 5.5rem;
       line-height: 1;
       display: block;
+      margin-bottom: 4px;
       transition: transform 0.4s var(--ease);
       will-change: transform;
       transform-origin: center center;
@@ -495,24 +504,24 @@
 
     .bc-weather-temp {
       font-family: 'Blauer Nue', sans-serif;
-      font-size: 2.5rem;
+      font-size: 2.6rem;
       font-weight: 700;
       color: #fff;
       letter-spacing: -0.03em;
       line-height: 1;
     }
 
-    .bc-weather-details { display: flex; flex-direction: column; gap: 1px; }
+    .bc-weather-details { display: flex; flex-direction: column; gap: 2px; align-items: center; }
 
     .bc-weather-city {
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-weight: 700;
-      color: rgba(255,255,255,0.85);
+      color: rgba(255,255,255,0.9);
     }
 
     .bc-weather-cond {
-      font-size: 0.68rem;
-      color: rgba(255,255,255,0.45);
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.55);
     }
 
     /* ── ROW 3: TIP CARD ── */
@@ -598,15 +607,15 @@
     }
 
     .bc-action-btn:hover {
-      background: var(--navy-deep);
-      color: #fff;
-      border-color: var(--navy-deep);
+      background: var(--teal-a-bg, rgba(12,122,122,0.08));
+      color: var(--teal-a, #0c7a7a);
+      border-color: var(--teal-a, #0c7a7a);
       transform: translateX(2px);
     }
 
-    .bc-action-btn:hover .bca-icon { stroke: #fff; }
+    .bc-action-btn:hover .bca-icon { stroke: var(--teal-a, #0c7a7a); }
 
-    .bc-action-btn:hover .bca-arrow { opacity: 1; transform: translateX(0); }
+    .bc-action-btn:hover .bca-arrow { opacity: 1; transform: translateX(0); color: var(--teal-a, #0c7a7a); }
 
     .bca-icon {
       width: 16px; height: 16px;
@@ -641,12 +650,21 @@
       margin-bottom: 12px;
     }
 
-    .bento-section-header h2 { margin: 0; }
+    .bento-section-header h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text-1);
+      white-space: nowrap;
+    }
 
     .bento-section-line {
       flex: 1;
-      height: 1px;
-      background: var(--border);
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(to right, var(--teal-a, #0c7a7a), transparent);
+      opacity: 0.4;
     }
 
     .explore-strip {
@@ -847,15 +865,19 @@
       gap: 7px;
       background: var(--surface);
       border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 6px 11px;
+      border-radius: 10px;
+      padding: 7px 12px;
       font-size: 0.72rem;
       color: var(--text-2);
-      font-weight: 500;
-      transition: border-color 0.18s, box-shadow 0.18s;
+      font-weight: 600;
+      transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
     }
 
-    .packed-chip:hover { border-color: var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .packed-chip:hover {
+      border-color: var(--teal-a, #0c7a7a);
+      box-shadow: 0 2px 10px rgba(12,122,122,0.12);
+      transform: translateY(-1px);
+    }
 
     .packed-chip-bar { width: 36px; height: 3px; background: #e4ede8; border-radius: 99px; overflow: hidden; flex-shrink: 0; }
     .packed-chip-fill { height: 100%; background: var(--green); border-radius: 99px; }
@@ -896,32 +918,40 @@
 
     /* ── Better countdown card ── */
     .bc-countdown {
+      background: linear-gradient(155deg, var(--surface) 0%, #f0fff8 100%) !important;
       box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05)) !important;
       border: 1px solid rgba(0,0,0,0.04) !important;
     }
 
-    /* ── Progress card — deep teal ── */
+    /* ── Progress card — deep navy-teal ── */
     .bc-progress {
-      background: linear-gradient(140deg, var(--teal-1, #082233) 0%, var(--teal-3, #113a58) 100%) !important;
+      background: linear-gradient(140deg, #071e2a 0%, #0d3347 50%, #134d72 100%) !important;
+      box-shadow: 0 2px 8px rgba(7,30,42,0.3), 0 8px 24px rgba(7,30,42,0.2) !important;
     }
 
-    /* ── Weather card — teal-blue ── */
+    /* ── Weather card — vibrant teal ── */
     .bc-weather {
-      background: linear-gradient(140deg, var(--teal-2, #0d3347) 0%, var(--teal-4, #1a5878) 100%) !important;
+      background: linear-gradient(140deg, #033d3d 0%, var(--teal-a, #0c7a7a) 55%, #4ecece 100%) !important;
     }
 
     /* ── Tip card — green (kept, contrasts teal) ── */
     .bc-tip {
-      background: linear-gradient(140deg, #3d7018 0%, var(--green, #5f9d30) 60%, var(--green2, #7cc63e) 100%) !important;
+      background: linear-gradient(140deg, #1e4d09 0%, #3d7018 40%, var(--green, #5f9d30) 70%, var(--green2, #7cc63e) 100%) !important;
+      box-shadow: 0 2px 8px rgba(63,120,20,0.25), 0 8px 24px rgba(63,120,20,0.15) !important;
     }
 
     /* ── Hero card empty state bg ── */
-    .bc-hero { background: linear-gradient(140deg, var(--teal-1, #082233) 0%, var(--teal-3, #113a58) 100%) !important; }
+    .bc-hero { background: linear-gradient(140deg, #071e2a 0%, #0d3347 45%, #134d72 100%) !important; }
 
     /* ── Better action card ── */
     .bc-actions {
       border: 1px solid rgba(0,0,0,0.04) !important;
       box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05)) !important;
+    }
+
+    /* ── Weather card glow on hover ── */
+    .bc-weather:hover {
+      box-shadow: 0 4px 16px rgba(12,122,122,0.35), 0 12px 36px rgba(12,122,122,0.2) !important;
     }
 
     /* ── Better explore cards ── */
@@ -1215,12 +1245,10 @@
         <div class="bc-weather-label">Destination Weather</div>
         <div class="bc-weather-main" id="weatherMain">
           <div class="bc-weather-icon wx-idle" id="wIcon">${hasTrip ? '🌡' : '🌍'}</div>
-          <div>
-            <div class="bc-weather-temp" id="weatherTemp">${hasTrip ? '—°F' : '—'}</div>
-            <div class="bc-weather-details">
-              <div class="bc-weather-city">${hasTrip ? trip.destination : 'No destination'}</div>
-              <div class="bc-weather-cond" id="weatherCond">${hasTrip ? 'Loading…' : 'Plan a trip first'}</div>
-            </div>
+          <div class="bc-weather-temp" id="weatherTemp">${hasTrip ? '—°F' : '—'}</div>
+          <div class="bc-weather-details">
+            <div class="bc-weather-city">${hasTrip ? trip.destination : 'No destination'}</div>
+            <div class="bc-weather-cond" id="weatherCond">${hasTrip ? 'Loading…' : 'Plan a trip first'}</div>
           </div>
         </div>
       </div>
