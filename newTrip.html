@@ -75,6 +75,13 @@
     .nt-section {
       margin-bottom: 22px;
       animation: fadeUp 0.4s ease both;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Destination section must sit above later sections so dropdown overlays them */
+    #newTripForm .nt-section:first-child {
+      z-index: 10;
     }
 
     .nt-section:nth-child(2)  { animation-delay: 0.04s; }
@@ -497,11 +504,11 @@
       position: absolute;
       top: calc(100% + 6px);
       left: 0; right: 0;
-      background: var(--surface);
+      background: var(--surface, #fff);
       border: 1.5px solid var(--border);
       border-radius: 12px;
-      box-shadow: var(--shadow-md);
-      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.07);
+      z-index: 500;
       overflow: hidden;
       animation: fadeUp 0.15s ease both;
     }

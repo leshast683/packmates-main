@@ -24,10 +24,11 @@
       font-size: 1.55rem;
       font-weight: 700;
       letter-spacing: -0.02em;
-      background: linear-gradient(135deg, var(--text-1) 30%, var(--teal-a, #0c7a7a) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--text-1);
+    }
+
+    .dash-greeting h1 .greeting-name {
+      color: var(--green, #5f9d30);
     }
 
     .dash-greeting .sub {
@@ -916,11 +917,47 @@
     .trips-grid-wrap { animation: bentoIn 0.5s 0.36s var(--spring, cubic-bezier(0.22,1,0.36,1)) both; }
     .dash-header     { animation: bentoIn 0.45s var(--spring, cubic-bezier(0.22,1,0.36,1)) both; }
 
+    /* ── Countdown number pop-in ── */
+    @keyframes numPop {
+      0%   { transform: scale(0.5); opacity: 0; }
+      65%  { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.5); opacity: 0.5; }
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+
+    @keyframes tipBounce {
+      0%, 100% { transform: translateY(0) rotate(-4deg) scale(1); }
+      40%       { transform: translateY(-10px) rotate(6deg) scale(1.1); }
+      60%       { transform: translateY(-6px) rotate(-2deg) scale(1.05); }
+    }
+
+    @keyframes tipShine {
+      0%   { left: -120%; }
+      100% { left: 120%; }
+    }
+
     /* ── Better countdown card ── */
     .bc-countdown {
       background: linear-gradient(155deg, var(--surface) 0%, #f0fff8 100%) !important;
       box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05)) !important;
-      border: 1px solid rgba(0,0,0,0.04) !important;
+      border: 1px solid rgba(12,122,122,0.08) !important;
+    }
+
+    .bc-countdown-num {
+      animation: numPop 0.7s cubic-bezier(0.22,1,0.36,1) 0.4s both !important;
+    }
+
+    .bc-label-dot {
+      animation: dotPulse 2s ease-in-out infinite !important;
     }
 
     /* ── Progress card — deep navy-teal ── */
@@ -938,6 +975,23 @@
     .bc-tip {
       background: linear-gradient(140deg, #1e4d09 0%, #3d7018 40%, var(--green, #5f9d30) 70%, var(--green2, #7cc63e) 100%) !important;
       box-shadow: 0 2px 8px rgba(63,120,20,0.25), 0 8px 24px rgba(63,120,20,0.15) !important;
+    }
+
+    .bc-tip-icon {
+      font-size: 1.8rem !important;
+      animation: tipBounce 3.5s ease-in-out 1s infinite !important;
+      display: inline-block !important;
+    }
+
+    /* Shine sweep across tip card */
+    .bc-tip::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -120%;
+      width: 60%; height: 100%;
+      background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.15) 50%, transparent 80%);
+      pointer-events: none;
+      animation: tipShine 4s ease-in-out 1.5s infinite;
     }
 
     /* ── Hero card empty state bg ── */
@@ -1096,10 +1150,11 @@
 
     /* ── Greeting ── */
     const session = Auth.getSession();
-    const firstName = session?.name?.split(' ')[0] || 'Traveler';
+    const rawName = session?.name?.split(' ')[0] || 'Traveler';
+    const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
     const h = new Date().getHours();
-    const greetWord = h < 12 ? 'Good Morning' : h < 18 ? 'Good Afternoon' : 'Good Evening';
-    document.getElementById('greetingText').textContent = `${greetWord}, ${firstName} 👋`;
+    const greetWord = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('greetingText').innerHTML = `${greetWord}, <span class="greeting-name">${firstName}</span>`;
     document.getElementById('dateText').textContent =
       new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
 
