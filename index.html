@@ -1879,7 +1879,7 @@
           stroke-dasharray="${circ}"
           stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"
           data-target="${targetOffset}"
-          style="stroke-dashoffset:${circ};transition:stroke-dashoffset 1.2s cubic-bezier(0.22,1,0.36,1) 0.3s"/>
+          style="stroke-dashoffset:${circ}"/>
         <text x="${size/2}" y="${cy1}" text-anchor="middle" fill="white"
           font-size="${big?15:13}" font-weight="700" font-family="Montserrat,sans-serif">${pct}%</text>
         ${big ? `<text x="${size/2}" y="${cy2}" text-anchor="middle" fill="rgba(255,255,255,0.38)"
@@ -2072,15 +2072,16 @@
         </button>
       </div>`;
 
-    /* ── Animate progress rings on load ── */
-    /* Double rAF guarantees the browser has painted the initial state before we set the target */
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        document.querySelectorAll('.ring-arc').forEach(arc => {
-          arc.style.strokeDashoffset = arc.dataset.target;
-        });
+    /* ── Animate progress rings on every load ── */
+    /* getBoundingClientRect forces a reflow so the browser commits the initial
+       stroke-dashoffset before we add the transition and set the target value */
+    setTimeout(() => {
+      document.querySelectorAll('.ring-arc').forEach(arc => {
+        arc.getBoundingClientRect();
+        arc.style.transition = 'stroke-dashoffset 1.3s cubic-bezier(0.22,1,0.36,1)';
+        arc.style.strokeDashoffset = arc.dataset.target;
       });
-    });
+    }, 80);
 
     /* ── Hero interactions (only when trip exists) ── */
     if (hasTrip) {
