@@ -166,7 +166,7 @@ const ITEM_DB = {
     'Camping': [
         { name: 'Tent',            suggest: p => p.camping },
         { name: 'Sleeping Bag',    suggest: p => p.camping },
-        { name: 'Sleeping Pad',    suggest: p => p.camping },
+
         { name: 'Camp Stove',      suggest: p => p.camping },
         { name: 'Food',            suggest: p => p.camping },
         { name: 'Insect Repellent',suggest: p => p.camping },
