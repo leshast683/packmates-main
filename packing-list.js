@@ -304,6 +304,16 @@ const ITEM_DB = {
         { name: 'Heels',              suggest: (p, g) => g !== 'male' && p.dining },
         { name: 'Tie',                suggest: (p, g) => g !== 'female' && p.dining },
     ],
+    'Cruise': [
+        { name: 'Striped Shirt',             suggest: p => p.cruise },
+        { name: 'Matching Set',              suggest: p => p.cruise },
+        { name: 'Straw Bag',                 suggest: p => p.cruise },
+        { name: 'Beach Kimono',              suggest: p => p.cruise },
+        { name: 'Floral Top',                suggest: p => p.cruise },
+        { name: 'Panama Hat',                suggest: p => p.cruise },
+        { name: 'Motion Sickness Medication', suggest: p => p.cruise },
+        { name: 'Waterproof Phone Pouch',    suggest: p => p.cruise },
+    ],
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -364,12 +374,13 @@ function buildTripProfile(tripData) {
     const roadTrip        = sel.includes('Road Trip');
     const citySightseeing = sel.includes('City Sightseeing');
     const dining          = sel.includes('Dining');
+    const cruise          = sel.includes('Cruise');
 
     // Activities can modify weather profile
     if (beach)    hot   = true;
     if (ski)    { cold  = true; snowy = true; }
 
-    return { hot, cold, snowy, rainy, windy, beach, ski, hiking, camping, swimming, gym, business, nightOut, baby, themePark, festival, roadTrip, citySightseeing, dining };
+    return { hot, cold, snowy, rainy, windy, beach, ski, hiking, camping, swimming, gym, business, nightOut, baby, themePark, festival, roadTrip, citySightseeing, dining, cruise };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -378,7 +389,7 @@ function buildTripProfile(tripData) {
 const tripData    = JSON.parse(localStorage.getItem('currentTrip') || '{}');
 const profile     = buildTripProfile(tripData);
 const userGender  = (() => { try { return JSON.parse(localStorage.getItem('pm_session') || 'null')?.gender || 'nonbinary'; } catch { return 'nonbinary'; } })();
-const _ALL_P = { hot:true, cold:true, beach:true, gym:true, business:true, hiking:true, camping:true, rainy:true, swimming:true, ski:true, snowy:true, windy:true, citySightseeing:true, dining:true, nightOut:true, baby:true, themePark:true, festival:true, roadTrip:true };
+const _ALL_P = { hot:true, cold:true, beach:true, gym:true, business:true, hiking:true, camping:true, rainy:true, swimming:true, ski:true, snowy:true, windy:true, citySightseeing:true, dining:true, nightOut:true, baby:true, themePark:true, festival:true, roadTrip:true, cruise:true };
 function getItemGender(cat, name) {
     const item = (ITEM_DB[cat] || []).find(i => i.name === name);
     if (!item) return null;
@@ -462,6 +473,7 @@ if (profile.festival)        profileBadges.push('🎪 Festival');
 if (profile.roadTrip)        profileBadges.push('🚗 Road Trip');
 if (profile.citySightseeing) profileBadges.push('🏙️ City Sightseeing');
 if (profile.dining)          profileBadges.push('🍽️ Dining');
+if (profile.cruise)          profileBadges.push('🚢 Cruise');
 
 // ── Count helpers ──
 function getSuggestedKeys() {
@@ -687,7 +699,7 @@ const CAT_FALLBACK_ICONS = {
   'Electronics':'laptop','Business Trip':'blazer','Gym':'water_bottle','Beach':'sunscreen',
   'Swimming':'goggles','Snow Sports':'goggles','Hiking':'backpack','Camping':'tent',
   'Night Out':'heels','Baby':'baby_bottle','Theme Park':'backpack','Festival':'fanny_pack',
-  'Road Trip':'water_bottle','City Sightseeing':'backpack','Dining':'blazer',
+  'Road Trip':'water_bottle','City Sightseeing':'backpack','Dining':'blazer','Cruise':'sunscreen',
   'Rainy Weather':'umbrella','Hot & Sunny Weather':'sunscreen','Snowy Weather':'boots',
   'Windy Weather':'jacket','Cold Weather':'boots',
 };

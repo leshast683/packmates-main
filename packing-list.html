@@ -120,6 +120,24 @@
     <!-- List body -->
     <div class="pl-list" id="packingListBody"></div>
 
+    <!-- Finish packing banner (shown at 100%) -->
+    <div class="pl-finish-banner" id="finishPackingBanner">
+      <div class="pl-finish-glow"></div>
+      <div class="pl-finish-left">
+        <div class="pl-finish-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <strong>You're all packed!</strong>
+          <span>Every item on your list is checked off</span>
+        </div>
+      </div>
+      <button class="pl-finish-btn" onclick="location.href='tripPreview.html'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        Back to Trip
+      </button>
+    </div>
+
   </main>
 
   <!-- ══ ADD ITEM MODAL ══ -->
@@ -160,6 +178,7 @@
             <option>Road Trip</option>
             <option>City Sightseeing</option>
             <option>Dining</option>
+            <option>Cruise</option>
             <option>Rainy Weather</option>
             <option>Hot &amp; Sunny Weather</option>
             <option>Snowy Weather</option>
@@ -186,5 +205,27 @@
     Auth.requireAuth('welcome.html');
   </script>
   <script src="packing-list.js"></script>
+  <nav class="bottom-nav">
+    <button class="bn-btn" onclick="location.href='index.html'">
+      <svg viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="bn-btn" onclick="location.href='discover.html'">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      Discover
+    </button>
+    <button class="bn-btn active" onclick="location.href='packing-list.html'">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+      Packing
+    </button>
+    <button class="bn-btn" onclick="location.href='newTrip.html'">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      New Trip
+    </button>
+    <button class="bn-btn" onclick="location.href='profile.html'">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </button>
+  </nav>
 </body>
 </html>
