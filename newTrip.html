@@ -746,16 +746,24 @@
       .nt-save-btn { width: 100%; }
       .nt-section { margin-bottom: 18px; }
       .nt-chips-wrap { gap: 8px; }
-      /* Mobile: full width, 3 columns */
-      .nt-chips { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-      .chip-icon { width: 32px; height: 32px; }
-      .activity-chip { padding: 14px 6px 12px; font-size: 0.68rem; border-radius: 12px; }
+      /* Mobile: 5 cols × 3 rows, taller cards so label fits */
+      .nt-chips { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+      .chip-icon { width: 26px; height: 26px; }
+      .activity-chip {
+        aspect-ratio: unset;
+        padding: 12px 4px 10px;
+        font-size: 0.58rem;
+        border-radius: 11px;
+        white-space: normal;
+        word-break: break-word;
+        min-height: 72px;
+      }
     }
 
     @media (max-width: 380px) {
-      .nt-chips { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-      .chip-icon { width: 26px; height: 26px; }
-      .activity-chip { padding: 10px 4px 8px; font-size: 0.6rem; border-radius: 10px; }
+      .nt-chips { grid-template-columns: repeat(5, 1fr); gap: 5px; }
+      .chip-icon { width: 22px; height: 22px; }
+      .activity-chip { padding: 10px 3px 8px; font-size: 0.54rem; min-height: 64px; }
     }
   </style>
 </head>
