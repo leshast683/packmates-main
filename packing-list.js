@@ -140,7 +140,6 @@ const ITEM_DB = {
         { name: 'Bikini',          suggest: (p, g) => g !== 'male' && p.swimming },
         { name: 'Goggles',    suggest: p => p.swimming },
         { name: 'Swim Cap',   suggest: p => p.swimming },
-        { name: 'Towel',      suggest: p => p.beach },
         { name: 'Flip Flops', suggest: p => p.swimming || p.beach },
     ],
     'Snow Sports': [
