@@ -727,6 +727,13 @@
       70%  { box-shadow: 0 0 0 14px rgba(12,122,122,0), 0 2px 8px rgba(0,0,0,0.4); }
       100% { box-shadow: 0 0 0 0 rgba(12,122,122,0), 0 2px 8px rgba(0,0,0,0.4); }
     }
+    /* Tablet: form panel narrow due to preview panel sharing space */
+    @media (max-width: 1000px) and (min-width: 641px) {
+      .nt-chips { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .chip-icon { width: 32px; height: 32px; }
+      .activity-chip { padding: 12px 6px 10px; font-size: 0.65rem; border-radius: 12px; }
+    }
+
     @media (max-width: 640px) {
       body > main { overflow-y: auto; height: 100vh; }
       .nt-layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
@@ -739,6 +746,16 @@
       .nt-save-btn { width: 100%; }
       .nt-section { margin-bottom: 18px; }
       .nt-chips-wrap { gap: 8px; }
+      /* Mobile: full width, 3 columns */
+      .nt-chips { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .chip-icon { width: 32px; height: 32px; }
+      .activity-chip { padding: 14px 6px 12px; font-size: 0.68rem; border-radius: 12px; }
+    }
+
+    @media (max-width: 380px) {
+      .nt-chips { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .chip-icon { width: 26px; height: 26px; }
+      .activity-chip { padding: 10px 4px 8px; font-size: 0.6rem; border-radius: 10px; }
     }
   </style>
 </head>
