@@ -1876,10 +1876,10 @@
         </defs>
         <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="${stroke}"/>
         <circle class="ring-arc" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#${id})" stroke-width="${stroke}"
-          stroke-dasharray="${circ}" stroke-dashoffset="${circ}"
+          stroke-dasharray="${circ}"
           stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"
           data-target="${targetOffset}"
-          style="transition: stroke-dashoffset 1.1s cubic-bezier(0.22,1,0.36,1) 0.35s"/>
+          style="stroke-dashoffset:${circ};transition:stroke-dashoffset 1.2s cubic-bezier(0.22,1,0.36,1) 0.3s"/>
         <text x="${size/2}" y="${cy1}" text-anchor="middle" fill="white"
           font-size="${big?15:13}" font-weight="700" font-family="Montserrat,sans-serif">${pct}%</text>
         ${big ? `<text x="${size/2}" y="${cy2}" text-anchor="middle" fill="rgba(255,255,255,0.38)"
@@ -2073,12 +2073,13 @@
       </div>`;
 
     /* ── Animate progress rings on load ── */
+    /* Double rAF guarantees the browser has painted the initial state before we set the target */
     requestAnimationFrame(() => {
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         document.querySelectorAll('.ring-arc').forEach(arc => {
           arc.style.strokeDashoffset = arc.dataset.target;
         });
-      }, 60);
+      });
     });
 
     /* ── Hero interactions (only when trip exists) ── */
