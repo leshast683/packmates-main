@@ -235,10 +235,8 @@ const ITEM_DB = {
         { name: 'Baby Wipes',        suggest: p => p.baby },
         { name: 'Baby Bottle',       suggest: p => p.baby },
         { name: 'Baby Clothes',      suggest: p => p.baby },
-        { name: 'Baby Blanket',      suggest: p => p.baby },
         { name: 'Diaper Bag',        suggest: p => p.baby },
         { name: 'Stroller',          suggest: p => p.baby },
-        { name: 'Baby Carrier',      suggest: p => p.baby },
         { name: 'Baby Sunscreen',    suggest: p => p.baby && p.hot },
         { name: 'Baby Food Pouches', suggest: p => p.baby },
     ],
@@ -692,6 +690,7 @@ floral_top:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image h
 beach_kimono:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/beach_kimono.png" x="0" y="0" width="20" height="20"/></svg>`,
 panama_hat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/panama_hat.png" x="0" y="0" width="20" height="20"/></svg>`,
 motion_sickness_med:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/motion_sickness_med.png" x="0" y="0" width="20" height="20"/></svg>`,
+matching_set:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/matching_set.png" x="0" y="0" width="20" height="20"/></svg>`,
 cocktail_dress:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tviL78KeLIxPWj8IfzBgmUoRVt8bOt.png" x="0" y="0" width="20" height="20"/></svg>`,
 };
 
@@ -813,6 +812,7 @@ function getItemIcon(name, cat) {
   if (n.includes('polo'))                                return PACKING_ICONS.polo;
   if (n.includes('tank top'))                            return PACKING_ICONS.tank_top;
   if (n.includes('long sleeve'))                         return PACKING_ICONS.long_sleeve;
+  if (n.includes('matching set'))                              return PACKING_ICONS.matching_set;
   if (n.includes('beach kimono') || n.includes('kimono'))     return PACKING_ICONS.beach_kimono;
   if (n.includes('floral top') || n.includes('floral shirt')) return PACKING_ICONS.floral_top;
   if (n.includes('t-shirt') || n.includes('shirt'))      return PACKING_ICONS.tshirt;
