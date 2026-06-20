@@ -694,6 +694,7 @@ jumpsuit:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image hre
 floral_top:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/floral_top.png" x="0" y="0" width="20" height="20"/></svg>`,
 beach_kimono:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/beach_kimono.png" x="0" y="0" width="20" height="20"/></svg>`,
 panama_hat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/panama_hat.png" x="0" y="0" width="20" height="20"/></svg>`,
+motion_sickness_med:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/motion_sickness_med.png" x="0" y="0" width="20" height="20"/></svg>`,
 cocktail_dress:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tviL78KeLIxPWj8IfzBgmUoRVt8bOt.png" x="0" y="0" width="20" height="20"/></svg>`,
 };
 
@@ -897,6 +898,7 @@ function getItemIcon(name, cat) {
   if (n.includes('baby carrier') || n.includes('carrier')) return PACKING_ICONS.baby_carrier;
   if (n.includes('baby cloth'))                          return PACKING_ICONS.baby_clothes;
   if (n.includes('baby'))                                return PACKING_ICONS.baby_bottle;
+  if (n.includes('motion sick'))                           return PACKING_ICONS.motion_sickness_med;
   // Food / Snacks
   if (n.includes('food pouch') || n.includes('baby food')) return PACKING_ICONS.food_pouch;
   if (n.includes('snack'))                                 return PACKING_ICONS.snacks;
