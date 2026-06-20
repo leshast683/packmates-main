@@ -691,6 +691,7 @@ cowboy_hat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image h
 jewelry:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-93uU08ntOedKehh82hj8kDnFYCfYuC.png" x="0" y="0" width="20" height="20"/></svg>`,
 pencil_skirt:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-4O7gnHvnEe3vjfgkJ4eI5m2pIKxj3z.png" x="0" y="0" width="20" height="20"/></svg>`,
 jumpsuit:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/jumpsuit.png" x="0" y="0" width="20" height="20"/></svg>`,
+floral_top:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/floral_top.png" x="0" y="0" width="20" height="20"/></svg>`,
 cocktail_dress:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tviL78KeLIxPWj8IfzBgmUoRVt8bOt.png" x="0" y="0" width="20" height="20"/></svg>`,
 };
 
@@ -811,6 +812,7 @@ function getItemIcon(name, cat) {
   if (n.includes('polo'))                                return PACKING_ICONS.polo;
   if (n.includes('tank top'))                            return PACKING_ICONS.tank_top;
   if (n.includes('long sleeve'))                         return PACKING_ICONS.long_sleeve;
+  if (n.includes('floral top') || n.includes('floral shirt')) return PACKING_ICONS.floral_top;
   if (n.includes('t-shirt') || n.includes('shirt'))      return PACKING_ICONS.tshirt;
   if (n.includes('shorts'))                              return PACKING_ICONS.shorts;
   if (n.includes('legging'))                             return PACKING_ICONS.leggings;
