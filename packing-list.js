@@ -706,10 +706,10 @@ function getItemIcon(name, cat) {
   // Electronics
   if (n.includes('laptop charger'))                      return PACKING_ICONS.laptop_charger;
   if (n.includes('laptop'))                              return PACKING_ICONS.laptop;
+  if (n.includes('headphone'))                           return PACKING_ICONS.headphones;
   if (n.includes('phone'))                               return PACKING_ICONS.phone;
   if (n.includes('action camera') || n.includes('gopro')) return PACKING_ICONS.action_camera;
   if (n.includes('camera'))                              return PACKING_ICONS.camera;
-  if (n.includes('headphone'))                           return PACKING_ICONS.headphones;
   if (n.includes('power bank'))                          return PACKING_ICONS.power_bank;
   if (n.includes('car sunshade') || n.includes('sunshade') || n.includes('windshield shade')) return PACKING_ICONS.car_sunshade;
   if (n.includes('car charger'))                         return PACKING_ICONS.car_charger;
