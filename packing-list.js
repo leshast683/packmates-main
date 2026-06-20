@@ -677,7 +677,7 @@ watch:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="
 cowboy_hat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-R2D8r79JBRWYLJGB18GgsUjN2s4Dzb.png" x="0" y="0" width="20" height="20"/></svg>`,
 jewelry:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-93uU08ntOedKehh82hj8kDnFYCfYuC.png" x="0" y="0" width="20" height="20"/></svg>`,
 pencil_skirt:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-4O7gnHvnEe3vjfgkJ4eI5m2pIKxj3z.png" x="0" y="0" width="20" height="20"/></svg>`,
-jumpsuit:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-brV7ZpTFhCNrieP7kG9FDjwvbuM4wS.png" x="0" y="0" width="20" height="20"/></svg>`,
+jumpsuit:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/jumpsuit.png" x="0" y="0" width="20" height="20"/></svg>`,
 cocktail_dress:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tviL78KeLIxPWj8IfzBgmUoRVt8bOt.png" x="0" y="0" width="20" height="20"/></svg>`,
 };
 
