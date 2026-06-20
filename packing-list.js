@@ -305,14 +305,11 @@ const ITEM_DB = {
         { name: 'Tie',                suggest: (p, g) => g !== 'female' && p.dining },
     ],
     'Cruise': [
-        { name: 'Striped Shirt',             suggest: p => p.cruise },
         { name: 'Matching Set',              suggest: p => p.cruise },
-        { name: 'Straw Bag',                 suggest: p => p.cruise },
         { name: 'Beach Kimono',              suggest: p => p.cruise },
         { name: 'Floral Top',                suggest: p => p.cruise },
         { name: 'Panama Hat',                suggest: p => p.cruise },
         { name: 'Motion Sickness Medication', suggest: p => p.cruise },
-        { name: 'Waterproof Phone Pouch',    suggest: p => p.cruise },
     ],
 };
 
