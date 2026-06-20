@@ -588,6 +588,7 @@ stroller:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image hre
 blazer:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-kMTBDO8YMouYhgo7LcVhz6KO8yiWWM.png" x="0" y="0" width="20" height="20"/></svg>`,
 tie:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ANhLFkrdwMpU4LhXbqhD0DfgddYVvj.png" x="0" y="0" width="20" height="20"/></svg>`,
 notebook:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-PBF0FeYZPH4cDOId8eP4Rb1N9kvBIY.png" x="0" y="0" width="20" height="20"/></svg>`,
+travel_guidebook:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/travel_guidebook.png" x="0" y="0" width="20" height="20"/></svg>`,
 travel_pillow:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-smLqiLswTcAJ08IJnAfs3gyvfv0hlS.png" x="0" y="0" width="20" height="20"/></svg>`,
 hand_warmers:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-n73OaxtUraodRbDA5Brm726CXkRqNO.png" x="0" y="0" width="20" height="20"/></svg>`,
 food_pouch:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-jwAc5vxJ9fw8SIBITV0G4MLATKUrC5.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -702,7 +703,8 @@ function getItemIcon(name, cat) {
   if (n.includes('sleep mask') || n.includes('eye mask')) return PACKING_ICONS.sleep_mask;
   if (n.includes('pillow'))                              return PACKING_ICONS.travel_pillow;
   if (n === 'keys' || n === 'key')                       return PACKING_ICONS.keys;
-  if (n.includes('notebook') || n.includes('guidebook') || n.includes('travel guide')) return PACKING_ICONS.notebook;
+  if (n.includes('guidebook') || n.includes('travel guide'))      return PACKING_ICONS.travel_guidebook;
+  if (n.includes('notebook'))                                      return PACKING_ICONS.notebook;
   // Electronics
   if (n.includes('laptop charger'))                      return PACKING_ICONS.laptop_charger;
   if (n.includes('laptop'))                              return PACKING_ICONS.laptop;
