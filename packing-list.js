@@ -693,6 +693,7 @@ pencil_skirt:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image
 jumpsuit:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/jumpsuit.png" x="0" y="0" width="20" height="20"/></svg>`,
 floral_top:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/floral_top.png" x="0" y="0" width="20" height="20"/></svg>`,
 beach_kimono:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/beach_kimono.png" x="0" y="0" width="20" height="20"/></svg>`,
+panama_hat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/panama_hat.png" x="0" y="0" width="20" height="20"/></svg>`,
 cocktail_dress:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tviL78KeLIxPWj8IfzBgmUoRVt8bOt.png" x="0" y="0" width="20" height="20"/></svg>`,
 };
 
@@ -768,6 +769,7 @@ function getItemIcon(name, cat) {
   if (n.includes('beret'))                               return PACKING_ICONS.beret;
   if (n.includes('headband'))                            return PACKING_ICONS.headband;
   if (n.includes('cowboy hat'))                           return PACKING_ICONS.cowboy_hat;
+  if (n.includes('panama hat') || n.includes('panama'))      return PACKING_ICONS.panama_hat;
   if (n.includes('sun hat') || (n.includes('hat') && !n.includes('beanie'))) return PACKING_ICONS.sun_hat;
   if (n.includes('beanie') || n.includes('ear muff'))    return PACKING_ICONS.beanie;
   if (n.includes('scarf'))                               return PACKING_ICONS.scarf;
