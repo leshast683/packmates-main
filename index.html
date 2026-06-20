@@ -641,7 +641,7 @@
       font-family: 'Montserrat', sans-serif;
       font-size: 0.76rem;
       font-weight: 600;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.92);
       cursor: pointer;
       width: 100%;
       text-align: left;
@@ -1214,12 +1214,12 @@
 
     .bc-board-bag-fee {
       margin-left: auto;
-      font-size: 0.6rem;
-      font-weight: 700;
-      color: #b45309;
-      background: rgba(180,83,9,0.08);
-      border-radius: 6px;
-      padding: 2px 7px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--green, #5f9d30);
+      background: rgba(95,157,48,0.1);
+      border-radius: 7px;
+      padding: 3px 10px;
     }
 
     /* ══ LUGGAGE CARD ══ */
@@ -1858,14 +1858,15 @@
     /* ── Progress ring ── */
     let _ringId = 0;
     function ring(pct, size=80, stroke=6) {
-      const id = 'rg' + (++_ringId);
-      const r  = (size - stroke) / 2;
+      const id   = 'rg' + (++_ringId);
+      const r    = (size - stroke) / 2;
       const circ = 2 * Math.PI * r;
       const dash = (pct / 100) * circ;
       const big  = size >= 90;
       const glow = big ? ' style="filter:drop-shadow(0 0 10px rgba(95,157,48,0.45))"' : '';
       const cy1  = size / 2 + (big ? -4 : 5);
       const cy2  = size / 2 + 11;
+      const targetOffset = circ - dash;
       return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"${glow}>
         <defs>
           <linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
@@ -1874,9 +1875,11 @@
           </linearGradient>
         </defs>
         <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="${stroke}"/>
-        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#${id})" stroke-width="${stroke}"
-          stroke-dasharray="${dash} ${circ-dash}" stroke-dashoffset="${circ/4}"
-          stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>
+        <circle class="ring-arc" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#${id})" stroke-width="${stroke}"
+          stroke-dasharray="${circ}" stroke-dashoffset="${circ}"
+          stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"
+          data-target="${targetOffset}"
+          style="transition: stroke-dashoffset 1.1s cubic-bezier(0.22,1,0.36,1) 0.35s"/>
         <text x="${size/2}" y="${cy1}" text-anchor="middle" fill="white"
           font-size="${big?15:13}" font-weight="700" font-family="Montserrat,sans-serif">${pct}%</text>
         ${big ? `<text x="${size/2}" y="${cy2}" text-anchor="middle" fill="rgba(255,255,255,0.38)"
@@ -2068,6 +2071,15 @@
           <span class="bca-label">Join Trip</span><span class="bca-arrow">›</span>
         </button>
       </div>`;
+
+    /* ── Animate progress rings on load ── */
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        document.querySelectorAll('.ring-arc').forEach(arc => {
+          arc.style.strokeDashoffset = arc.dataset.target;
+        });
+      }, 60);
+    });
 
     /* ── Hero interactions (only when trip exists) ── */
     if (hasTrip) {
