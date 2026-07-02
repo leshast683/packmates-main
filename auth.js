@@ -1,96 +1,700 @@
 /**
- * Packmates — client-side auth using localStorage.
- * Users are stored as: pm_users = [ { name, email, pwHash } ]
- * Session:             pm_session = { email, name }
+ * Packmates — Auth layer: Supabase backend + localStorage fallback for existing users.
+ * New users  → Supabase Auth (PostgreSQL).
+ * Old users  → verified locally, then auto-migrated to Supabase on first login.
  */
+
+/* ── Supabase CDN + client ───────────────────────────────────────────── */
+const _SB_URL  = 'https://ocwqpeyfxsovkqbmzlgh.supabase.co';
+const _SB_KEY  = 'sb_publishable_xS8gLHbIxrR62lI178O3ag_DtXp66Rv';
+/* Supabase JS v2 persists the session at this key */
+const _SB_LKEY = 'sb-ocwqpeyfxsovkqbmzlgh-auth-token';
+
+let _sbClient = null;
+/* Load Supabase CDN once, resolve with the created client */
+window._pm_sbLoaded = new Promise(resolve => {
+  const _init = () => {
+    try {
+      _sbClient = window.supabase.createClient(_SB_URL, _SB_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      });
+      window._pm_sb = _sbClient;
+
+      /* Redirect to login when session truly expires (not on intentional logout) */
+      _sbClient.auth.onAuthStateChange((event) => {
+        if (event === 'SIGNED_OUT' && !window._pm_intentional_signout) {
+          const pub = ['welcome.html','login.html','signup.html','reset.html'];
+          if (!pub.some(p => location.pathname.endsWith(p))) {
+            location.replace('login.html?expired=1');
+          }
+        }
+      });
+    } catch(e) { console.error('[Auth] Supabase init failed:', e); }
+    resolve(_sbClient);
+  };
+  if (window.supabase) { _init(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  s.onload  = _init;
+  s.onerror = () => { console.warn('[Auth] CDN unavailable – using localStorage fallback.'); resolve(null); };
+  document.head.appendChild(s);
+});
+
+async function _getSb() {
+  if (_sbClient) return _sbClient;
+  return await window._pm_sbLoaded;
+}
+
+/* ── Legacy localStorage helpers ─────────────────────────────────────── */
+const _USERS_KEY  = 'pm_users';
+const _SESS_KEY   = 'pm_session';
+const _SAVED_KEY  = 'pm_saved_email';
+const _SCHEMA_VER = 2;
+
+function _localUsers()    { try { return JSON.parse(localStorage.getItem(_USERS_KEY) || '[]'); } catch { return []; } }
+function _saveLocalUsers(u) { localStorage.setItem(_USERS_KEY, JSON.stringify(u)); }
+
+function _djb2(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h) ^ str.charCodeAt(i);
+  return (h >>> 0).toString(36);
+}
+async function _sha256(str, salt = '') {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function _salt() {
+  return Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+const _legacy = h => !h || h.length < 20;
+
+async function _verifyLocal(norm, pw) {
+  const users = _localUsers();
+  const idx = users.findIndex(u => u.email.toLowerCase() === norm);
+  if (idx === -1) return null;
+  const u = users[idx];
+  const valid = _legacy(u.pwHash)
+    ? _djb2(pw) === u.pwHash
+    : (await _sha256(pw, u.salt || '')) === u.pwHash;
+  if (valid && _legacy(u.pwHash)) {
+    /* upgrade hash in place */
+    const s = _salt();
+    u.pwHash = await _sha256(pw, s); u.salt = s;
+    users[idx] = u; _saveLocalUsers(users);
+  }
+  return valid ? u : null;
+}
+
+/* ── Read Supabase cached user synchronously (no CDN needed) ──────────── */
+function _sbCachedUser() {
+  try {
+    const raw = localStorage.getItem(_SB_LKEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (p?.expires_at && Date.now() / 1000 > p.expires_at) return null;
+    return p?.user || null;
+  } catch { return null; }
+}
+
+/* ── Migrate localStorage data → Supabase (runs once per user per device) */
+async function _migrateLocalData(sbUser) {
+  const migKey = 'pm_sb_migrated_' + sbUser.id;
+  if (localStorage.getItem(migKey)) return;
+  try {
+    const sb = await _getSb();
+    if (!sb) return;
+
+    const localTrips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+    for (const t of localTrips) {
+      if (!t.id) continue;
+      await sb.from('trips').upsert({
+        id: t.id, user_id: sbUser.id,
+        destination: t.destination || '', from_date: t.fromDate || null,
+        to_date: t.toDate || null, travelers: t.travelers || 1,
+        activities: t.activities || [], country: t.country || null,
+        image_url: t.imageUrl || null, invite_code: t.inviteCode || t.id,
+        owner_email: t.ownerEmail || sbUser.email,
+        created_at: t.createdAt || new Date().toISOString(),
+        data: t,
+      }, { onConflict: 'id', ignoreDuplicates: true });
+
+      const packRaw = JSON.parse(localStorage.getItem(`pm_pack_${t.id}`) || '{}');
+      if (Object.keys(packRaw).length) {
+        await sb.from('packing_state').upsert({
+          trip_id: t.id, user_id: sbUser.id,
+          item_state:   packRaw.itemState   || {},
+          dismissed:    packRaw.dismissed   || [],
+          custom_items: packRaw.customItems || {},
+        }, { onConflict: 'trip_id,user_id', ignoreDuplicates: true });
+      }
+    }
+
+    const lp = JSON.parse(localStorage.getItem('pm_profile') || 'null');
+    if (lp) {
+      await sb.from('profiles').upsert({
+        id: sbUser.id,
+        name:     lp.name    || sbUser.user_metadata?.name || '',
+        handle:   lp.handle  || null,
+        avatar:   lp.avatar  || null,
+        gender:   lp.gender  || sbUser.user_metadata?.gender || null,
+        pd_name:  lp.pdName  || null,
+        pd_email: lp.pdEmail || null,
+        pd_phone: lp.pdPhone || null,
+        notif:    lp.notif   || {},
+        privacy:  lp.privacy || {},
+      }, { onConflict: 'id' });
+    }
+
+    localStorage.setItem(migKey, '1');
+    console.log('[Auth] Migrated local data → Supabase.');
+  } catch(e) { console.error('[Auth] Migration error:', e); }
+}
+
+/* ── Auth ────────────────────────────────────────────────────────────── */
 const Auth = (() => {
-  const USERS_KEY   = 'pm_users';
-  const SESSION_KEY = 'pm_session';
-  const SAVED_KEY   = 'pm_saved_email';
-
-  /* ── Tiny hash (djb2) — good enough for a local demo ── */
-  function hash(str) {
-    let h = 5381;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) + h) ^ str.charCodeAt(i);
-    return (h >>> 0).toString(36);
-  }
-
-  function getUsers() {
-    try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
-    catch { return []; }
-  }
-
-  function saveUsers(users) {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  }
 
   return {
     /* ── Register ── */
-    register(name, email, pw) {
-      const users = getUsers();
-      const norm  = email.trim().toLowerCase();
-
+    async register(name, email, pw, gender) {
+      const norm = email.trim().toLowerCase();
       if (!name.trim())        return { success: false, error: 'Please enter your name.' };
       if (!norm.includes('@')) return { success: false, error: 'Please enter a valid email.' };
-      if (pw.length < 8)       return { success: false, error: 'Password must be at least 8 characters.' };
+      if (pw.length < 6)       return { success: false, error: 'Password must be at least 6 characters.' };
+      if (!gender)             return { success: false, error: 'Please select your gender.' };
 
-      if (users.find(u => u.email === norm)) {
-        return { success: false, error: 'An account with this email already exists.' };
+      const sb = await _getSb();
+      if (!sb) return this._localRegister(name, norm, pw, gender);
+
+      const { data, error } = await sb.auth.signUp({
+        email: norm, password: pw,
+        options: {
+          data: { name: name.trim(), gender },
+          emailRedirectTo: 'https://packmatesai.com/welcome.html',
+        }
+      });
+      if (error) {
+        const msg = error.message;
+        if (msg.includes('already registered') || msg.includes('already exists'))
+          return { success: false, error: 'An account with this email already exists.' };
+        return { success: false, error: msg };
       }
+      /* Profile row is auto-created by the DB trigger */
+      return { success: true };
+    },
 
-      users.push({ name: name.trim(), email: norm, pwHash: hash(pw) });
-      saveUsers(users);
-
-      /* auto sign-in after registration */
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ email: norm, name: name.trim() }));
+    async _localRegister(name, norm, pw, gender) {
+      const users = _localUsers();
+      if (pw.length < 8) return { success: false, error: 'Password must be at least 8 characters.' };
+      if (users.find(u => u.email.toLowerCase() === norm))
+        return { success: false, error: 'An account with this email already exists.' };
+      const s = _salt();
+      users.push({ name: name.trim(), email: norm, pwHash: await _sha256(pw, s), salt: s, gender });
+      _saveLocalUsers(users);
+      localStorage.setItem(_SESS_KEY, JSON.stringify({ email: norm, name: name.trim(), gender, loginAt: Date.now() }));
       return { success: true };
     },
 
     /* ── Login ── */
-    login(email, pw, remember = false) {
-      const norm  = email.trim().toLowerCase();
-      const users = getUsers();
-      const user  = users.find(u => u.email === norm);
+    async login(email, pw, remember = false) {
+      const norm = email.trim().toLowerCase();
+      const sb = await _getSb();
 
-      if (!user)                      return { success: false, error: 'No account found with this email.' };
-      if (user.pwHash !== hash(pw))   return { success: false, error: 'Incorrect password. Please try again.' };
+      if (sb) {
+        /* 1. Try Supabase */
+        const { data, error } = await sb.auth.signInWithPassword({ email: norm, password: pw });
+        if (!error && data?.user) {
+          if (remember) localStorage.setItem(_SAVED_KEY, norm); else localStorage.removeItem(_SAVED_KEY);
+          _migrateLocalData(data.user); /* fire-and-forget */
+          return { success: true };
+        }
 
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ email: norm, name: user.name }));
+        /* 2a. Email not confirmed yet */
+        if (error?.message?.includes('Email not confirmed') || error?.message?.includes('email_not_confirmed')) {
+          return { success: false, error: 'EMAIL_NOT_CONFIRMED' };
+        }
 
-      if (remember) localStorage.setItem(SAVED_KEY, norm);
-      else          localStorage.removeItem(SAVED_KEY);
+        /* 2b. Supabase says wrong credentials — check legacy localStorage account */
+        const isCredErr = error?.message?.includes('Invalid login') || error?.message?.includes('invalid_credentials');
+        if (isCredErr) {
+          const localUser = await _verifyLocal(norm, pw);
+          if (localUser) {
+            /* Auto-create Supabase account for this existing user */
+            const { data: sd, error: se } = await sb.auth.signUp({
+              email: norm, password: pw,
+              options: { data: { name: localUser.name, gender: localUser.gender } }
+            });
+            if (!se && sd?.user) {
+              /* Try immediate sign-in (works when email confirm is disabled) */
+              const { data: si, error: sie } = await sb.auth.signInWithPassword({ email: norm, password: pw });
+              if (!sie && si?.user) {
+                if (remember) localStorage.setItem(_SAVED_KEY, norm); else localStorage.removeItem(_SAVED_KEY);
+                _migrateLocalData(si.user);
+                return { success: true };
+              }
+            }
+            /* Email confirm required or other issue — fall back to local session */
+            localStorage.setItem(_SESS_KEY, JSON.stringify({ email: norm, name: localUser.name, gender: localUser.gender, loginAt: Date.now() }));
+            if (remember) localStorage.setItem(_SAVED_KEY, norm); else localStorage.removeItem(_SAVED_KEY);
+            return { success: true };
+          }
+          return { success: false, error: 'No account found with this email or password is incorrect.' };
+        }
 
+        /* Other Supabase error (network, etc.) */
+        if (error) return { success: false, error: error.message };
+      }
+
+      /* No Supabase CDN — pure local auth */
+      const localUser = await _verifyLocal(norm, pw);
+      if (!localUser) return { success: false, error: 'Incorrect email or password.' };
+      localStorage.setItem(_SESS_KEY, JSON.stringify({ email: norm, name: localUser.name, gender: localUser.gender, loginAt: Date.now() }));
+      if (remember) localStorage.setItem(_SAVED_KEY, norm); else localStorage.removeItem(_SAVED_KEY);
+      return { success: true };
+    },
+
+    /* ── Change password ── */
+    async changePassword(currentPw, newPw) {
+      const session = this.getSession();
+      if (!session) return { success: false, error: 'Not logged in.' };
+      const sb = await _getSb();
+
+      if (sb && _sbCachedUser()) {
+        const { error: ve } = await sb.auth.signInWithPassword({ email: session.email, password: currentPw });
+        if (ve) return { success: false, error: 'Current password is incorrect.' };
+        const { error } = await sb.auth.updateUser({ password: newPw });
+        if (error) return { success: false, error: error.message };
+        return { success: true };
+      }
+
+      /* local fallback */
+      const users = _localUsers();
+      const idx = users.findIndex(u => u.email === session.email);
+      if (idx === -1) return { success: false, error: 'Account not found.' };
+      const u = users[idx];
+      const valid = _legacy(u.pwHash) ? _djb2(currentPw) === u.pwHash : (await _sha256(currentPw, u.salt || '')) === u.pwHash;
+      if (!valid) return { success: false, error: 'Current password is incorrect.' };
+      const s = _salt();
+      u.pwHash = await _sha256(newPw, s); u.salt = s;
+      users[idx] = u; _saveLocalUsers(users);
+      return { success: true };
+    },
+
+    /* ── Reset password (local accounts only — Supabase uses email link) ── */
+    async resetPassword(email, newPw) {
+      const norm = email.trim().toLowerCase();
+      const users = _localUsers();
+      const idx = users.findIndex(u => u.email.toLowerCase() === norm);
+      if (idx === -1) return { success: false, error: 'No account found with this email.' };
+      const s = _salt();
+      users[idx].pwHash = await _sha256(newPw, s);
+      users[idx].salt   = s;
+      _saveLocalUsers(users);
+      return { success: true };
+    },
+
+    /* ── Async token (refreshes if near expiry) ── */
+    async getTokenAsync() {
+      const client = await _getSb();
+      if (client) {
+        const { data } = await client.auth.getSession();
+        return data?.session?.access_token || '';
+      }
+      return this.getToken();
+    },
+
+    /* ── Resend signup confirmation email ── */
+    async resendConfirmation(email) {
+      const client = await _getSb();
+      if (!client) return { success: false, error: 'Service unavailable.' };
+      const { error } = await client.auth.resend({ type: 'signup', email: email.trim().toLowerCase() });
+      if (error) return { success: false, error: error.message };
+      return { success: true };
+    },
+
+    /* ── Send password-reset link via Supabase email ── */
+    async sendPasswordReset(email) {
+      const client = await _getSb();
+      if (!client) return { success: false, error: 'Password reset via email is not available offline.' };
+      const { error } = await client.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+        redirectTo: 'https://packmatesai.com/reset.html',
+      });
+      if (error) return { success: false, error: error.message };
+      return { success: true };
+    },
+
+    /* ── Google OAuth ── */
+    async loginWithGoogle() {
+      const client = await _getSb();
+      if (!client) return { success: false, error: 'Google sign-in unavailable.' };
+      const { error } = await client.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: 'https://packmatesai.com/welcome.html' },
+      });
+      if (error) return { success: false, error: error.message };
       return { success: true };
     },
 
     /* ── Logout ── */
     logout() {
-      localStorage.removeItem(SESSION_KEY);
+      window._pm_intentional_signout = true;
+      localStorage.removeItem(_SB_LKEY);
+      localStorage.removeItem(_SESS_KEY);
+      if (_sbClient) { try { _sbClient.auth.signOut(); } catch {} }
     },
 
-    /* ── Get current session ── */
+    /* ── Session (synchronous) ── */
     getSession() {
-      try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
-      catch { return null; }
+      const sbUser = _sbCachedUser();
+      if (sbUser) {
+        return {
+          email:    sbUser.email,
+          name:     sbUser.user_metadata?.name || sbUser.email?.split('@')[0] || 'Traveler',
+          gender:   sbUser.user_metadata?.gender || null,
+          loginAt:  Date.now(),
+          userId:   sbUser.id,
+        };
+      }
+      try {
+        const s = JSON.parse(localStorage.getItem(_SESS_KEY) || 'null');
+        if (!s) return null;
+        if (s.loginAt && Date.now() - s.loginAt > 30 * 24 * 60 * 60 * 1000) {
+          localStorage.removeItem(_SESS_KEY); return null;
+        }
+        return s;
+      } catch { return null; }
     },
 
-    /* ── Is authenticated ── */
-    isLoggedIn() {
-      return !!this.getSession();
+    isLoggedIn()  { return !!this.getSession(); },
+    /* Returns the Supabase access token for authenticated API calls */
+    getToken() {
+      try {
+        return JSON.parse(localStorage.getItem(_SB_LKEY) || 'null')?.access_token || '';
+      } catch { return ''; }
+    },
+    requireAuth(redirect = 'welcome.html') {
+      if (!this.isLoggedIn()) { location.replace(redirect); return false; }
+      return true;
+    },
+    getSavedEmail() { return localStorage.getItem(_SAVED_KEY) || ''; },
+
+    /* ── Export ── */
+    exportData() {
+      const session = this.getSession();
+      const email   = session?.email || '';
+      const trips   = JSON.parse(localStorage.getItem('pm_trips') || '[]')
+                        .filter(t => !email || t.ownerEmail === email || !t.ownerEmail);
+      const packStates = {};
+      trips.forEach(t => { try { packStates[t.id] = JSON.parse(localStorage.getItem(`pm_pack_${t.id}`) || 'null'); } catch {} });
+      const blob = new Blob([JSON.stringify({
+        exportedAt: new Date().toISOString(),
+        account:    { name: session?.name, email, gender: session?.gender },
+        profile:    JSON.parse(localStorage.getItem('pm_profile') || 'null'),
+        trips, packStates,
+      }, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `packmates-data-${new Date().toISOString().slice(0,10)}.json`;
+      a.click(); URL.revokeObjectURL(url);
     },
 
-    /* ── Require auth — redirect if not logged in ── */
-    requireAuth(redirectTo = 'welcome.html') {
-      if (!this.isLoggedIn()) {
-        location.replace(redirectTo);
-        return false;
+    /* ── Delete account ── */
+    async deleteAccount() {
+      const session = this.getSession();
+      const email   = session?.email || '';
+
+      /* Server-side: delete all Supabase rows + auth user */
+      const token = this.getToken();
+      if (token) {
+        try {
+          await fetch('/api/delete-account', {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        } catch { /* non-fatal — still wipe local data */ }
+      }
+
+      /* Local cleanup */
+      const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+      trips.filter(t => !email || t.ownerEmail === email || !t.ownerEmail)
+           .forEach(t => localStorage.removeItem(`pm_pack_${t.id}`));
+      const remaining = trips.filter(t => email && t.ownerEmail && t.ownerEmail !== email);
+      localStorage.setItem('pm_trips', JSON.stringify(remaining));
+      ['pm_session','pm_profile','currentTrip','pm_tip_videos','pm_tip_idx','pm_tip_ver',
+       'pm_packmates', _SB_LKEY, `pm_notifications_${email}`, `pm_sb_migrated_${session?.userId||''}`]
+        .forEach(k => localStorage.removeItem(k));
+      _saveLocalUsers(_localUsers().filter(u => u.email !== email));
+      window._pm_intentional_signout = true;
+      if (_sbClient) { try { await _sbClient.auth.signOut(); } catch {} }
+      location.replace('welcome.html');
+    },
+
+    /* ── Legacy migration v1→v2 ── */
+    migrate() {
+      if (parseInt(localStorage.getItem('pm_schema_ver') || '0') >= _SCHEMA_VER) return;
+      try {
+        const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+        trips.forEach(t => {
+          if (!t.id) return;
+          if (!localStorage.getItem(`pm_pack_${t.id}`))
+            localStorage.setItem(`pm_pack_${t.id}`, JSON.stringify({ itemState: t.packItemState||{}, dismissed: t.packDismissed||[], customItems: t.packCustom||{} }));
+          delete t.packState; delete t.packItemState; delete t.packDismissed; delete t.packCustom;
+        });
+        localStorage.setItem('pm_trips', JSON.stringify(trips));
+      } catch {}
+      try {
+        const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+        if (cur?.id && !localStorage.getItem(`pm_pack_${cur.id}`)) {
+          localStorage.setItem(`pm_pack_${cur.id}`, JSON.stringify({
+            itemState:   JSON.parse(localStorage.getItem('packingItemState')   || '{}'),
+            dismissed:   JSON.parse(localStorage.getItem('packingDismissed')   || '[]'),
+            customItems: JSON.parse(localStorage.getItem('packingCustomItems') || '{}'),
+          }));
+        }
+      } catch {}
+      ['packingState','packingItemState','packingDismissed','packingCustomItems'].forEach(k => localStorage.removeItem(k));
+      try {
+        if (!localStorage.getItem('pm_profile')) {
+          localStorage.setItem('pm_profile', JSON.stringify({
+            name: localStorage.getItem('pm_name')||'', handle: localStorage.getItem('pm_handle')||'',
+            avatar: localStorage.getItem('pm_avatar')||'', pdName: localStorage.getItem('pm_pd_name')||'',
+            pdEmail: localStorage.getItem('pm_pd_email')||'', pdPhone: localStorage.getItem('pm_pd_phone')||'',
+            notif:   JSON.parse(localStorage.getItem('pm_notif')   || 'null') || {},
+            privacy: JSON.parse(localStorage.getItem('pm_privacy') || 'null') || {},
+          }));
+          ['pm_name','pm_handle','pm_avatar','pm_pd_name','pm_pd_email','pm_pd_phone','pm_notif','pm_privacy'].forEach(k => localStorage.removeItem(k));
+        }
+      } catch {}
+      try {
+        const s = JSON.parse(localStorage.getItem(_SESS_KEY) || 'null');
+        if (s?.email) {
+          const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+          let dirty = false;
+          trips.forEach(t => { if (!t.ownerEmail) { t.ownerEmail = s.email; dirty = true; } });
+          if (dirty) localStorage.setItem('pm_trips', JSON.stringify(trips));
+        }
+      } catch {}
+      try { _saveLocalUsers(_localUsers().map(u => ({ ...u, email: u.email.toLowerCase() }))); } catch {}
+      localStorage.setItem('pm_schema_ver', _SCHEMA_VER);
+    },
+  };
+})();
+
+Auth.migrate();
+
+/* ── DB layer: localStorage cache + Supabase background sync ────────── */
+const DB = (() => {
+  function _uid() {
+    try {
+      const raw = localStorage.getItem('sb-ocwqpeyfxsovkqbmzlgh-auth-token');
+      if (!raw) return null;
+      const p = JSON.parse(raw);
+      if (p?.expires_at && Date.now() / 1000 > p.expires_at) return null;
+      return p?.user?.id || null;
+    } catch { return null; }
+  }
+
+  async function sb() { return window._pm_sb || await window._pm_sbLoaded || null; }
+
+  function _tripRow(t, uid) {
+    return {
+      id: t.id, user_id: uid,
+      destination: t.destination || '', from_date: t.fromDate || null,
+      to_date: t.toDate || null, travelers: t.travelers || 1,
+      activities: t.activities || [], country: t.country || null,
+      image_url: t.imageUrl || null, invite_code: t.inviteCode || t.id,
+      owner_email: t.ownerEmail || null, airline: t.airline || null,
+      weather_tags: t.weatherTags || [],
+      created_at: t.createdAt || new Date().toISOString(),
+      data: t,
+    };
+  }
+
+  /* debounce helper for high-frequency saves (packing state) */
+  const _timers = {};
+  function _debounce(key, fn, ms = 2000) {
+    clearTimeout(_timers[key]);
+    _timers[key] = setTimeout(fn, ms);
+  }
+
+  return {
+    /* save trip to localStorage + Supabase */
+    async saveTrip(tripData) {
+      const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+      const idx = trips.findIndex(t => t.id === tripData.id);
+      if (idx >= 0) trips[idx] = tripData; else trips.push(tripData);
+      localStorage.setItem('pm_trips', JSON.stringify(trips));
+      localStorage.setItem('currentTrip', JSON.stringify(tripData));
+      const client = await sb(); const uid = _uid();
+      if (client && uid) {
+        client.from('trips').upsert(_tripRow(tripData, uid), { onConflict: 'id' })
+          .then(({ error }) => { if (error) console.error('[DB] saveTrip:', error.message); });
+      }
+    },
+
+    /* delete trip from localStorage + Supabase */
+    async deleteTrip(tripId) {
+      const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+      const remaining = trips.filter(t => t.id !== tripId);
+      localStorage.setItem('pm_trips', JSON.stringify(remaining));
+      localStorage.removeItem(`pm_pack_${tripId}`);
+      const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+      if (cur?.id === tripId) {
+        remaining.length
+          ? localStorage.setItem('currentTrip', JSON.stringify(remaining[remaining.length - 1]))
+          : localStorage.removeItem('currentTrip');
+      }
+      const client = await sb(); const uid = _uid();
+      if (client && uid) {
+        client.from('trips').delete().eq('id', tripId).eq('user_id', uid)
+          .then(({ error }) => { if (error) console.error('[DB] deleteTrip:', error.message); });
+        client.from('packing_state').delete().eq('trip_id', tripId).eq('user_id', uid)
+          .then(({ error }) => { if (error) console.error('[DB] deletePackState:', error.message); });
+      }
+    },
+
+    /* save packing state to localStorage + Supabase (debounced) */
+    savePackState(tripId, state) {
+      localStorage.setItem(`pm_pack_${tripId}`, JSON.stringify(state));
+      _debounce('pack_' + tripId, async () => {
+        const client = await sb(); const uid = _uid();
+        if (!client || !uid) return;
+        client.from('packing_state').upsert({
+          trip_id: tripId, user_id: uid,
+          item_state:   state.itemState   || {},
+          dismissed:    state.dismissed   || [],
+          custom_items: state.customItems || {},
+        }, { onConflict: 'trip_id,user_id' })
+          .then(({ error }) => { if (error) console.error('[DB] savePackState:', error.message); });
+      }, 2000);
+    },
+
+    /* pull trips from Supabase → update localStorage (returns true if updated) */
+    async syncTrips() {
+      const client = await sb(); const uid = _uid();
+      if (!client || !uid) return false;
+      const { data: rows, error } = await client.from('trips').select('*')
+        .eq('user_id', uid).order('created_at', { ascending: false });
+      if (error || !rows?.length) return false;
+      const converted = rows.map(r => r.data || {
+        id: r.id, destination: r.destination, fromDate: r.from_date, toDate: r.to_date,
+        travelers: r.travelers, activities: r.activities || [], country: r.country,
+        imageUrl: r.image_url, inviteCode: r.invite_code, ownerEmail: r.owner_email,
+        airline: r.airline, weatherTags: r.weather_tags || [], createdAt: r.created_at,
+      });
+      localStorage.setItem('pm_trips', JSON.stringify(converted));
+      const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+      if (cur) {
+        const updated = converted.find(t => t.id === cur.id);
+        updated
+          ? localStorage.setItem('currentTrip', JSON.stringify(updated))
+          : converted.length
+            ? localStorage.setItem('currentTrip', JSON.stringify(converted[0]))
+            : localStorage.removeItem('currentTrip');
+      } else if (converted.length) {
+        localStorage.setItem('currentTrip', JSON.stringify(converted[0]));
       }
       return true;
     },
 
-    /* ── Saved email for "remember me" ── */
-    getSavedEmail() {
-      return localStorage.getItem(SAVED_KEY) || '';
+    /* pull pack state from Supabase → update localStorage */
+    async syncPackState(tripId) {
+      const client = await sb(); const uid = _uid();
+      if (!client || !uid) return false;
+      const { data, error } = await client.from('packing_state').select('*')
+        .eq('trip_id', tripId).eq('user_id', uid).maybeSingle();
+      if (error || !data) return false;
+      localStorage.setItem(`pm_pack_${tripId}`, JSON.stringify({
+        itemState:   data.item_state   || {},
+        dismissed:   data.dismissed    || [],
+        customItems: data.custom_items || {},
+      }));
+      return true;
+    },
+
+    /* save profile to localStorage + Supabase */
+    async saveProfile(profileData) {
+      const merged = { ...JSON.parse(localStorage.getItem('pm_profile') || '{}'), ...profileData };
+      localStorage.setItem('pm_profile', JSON.stringify(merged));
+      const client = await sb(); const uid = _uid();
+      if (!client || !uid) return;
+      client.from('profiles').upsert({
+        id: uid,
+        name:     merged.name    || null, handle:   merged.handle   || null,
+        avatar:   merged.avatar  || null, gender:   merged.gender   || null,
+        pd_name:  merged.pdName  || null, pd_email: merged.pdEmail  || null,
+        pd_phone: merged.pdPhone || null, notif:    merged.notif    || {},
+        privacy:  merged.privacy || {},
+      }, { onConflict: 'id' })
+        .then(({ error }) => { if (error) console.error('[DB] saveProfile:', error.message); });
+    },
+
+    /* pull profile from Supabase → update localStorage */
+    async syncProfile() {
+      const client = await sb(); const uid = _uid();
+      if (!client || !uid) return false;
+      const { data, error } = await client.from('profiles').select('*').eq('id', uid).maybeSingle();
+      if (error || !data) return false;
+      const existing = JSON.parse(localStorage.getItem('pm_profile') || '{}');
+      localStorage.setItem('pm_profile', JSON.stringify({
+        ...existing,
+        name:     data.name     || existing.name,
+        handle:   data.handle   || existing.handle,
+        avatar:   data.avatar   || existing.avatar,
+        gender:   data.gender   || existing.gender,
+        pdName:   data.pd_name  || existing.pdName,
+        pdEmail:  data.pd_email || existing.pdEmail,
+        pdPhone:  data.pd_phone || existing.pdPhone,
+        notif:    data.notif    || existing.notif,
+        privacy:  data.privacy  || existing.privacy,
+      }));
+      return true;
     },
   };
+})();
+
+/* ── XSS escaper ─────────────────────────────────────────────────────── */
+function escapeHtml(str) {
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ── Page transitions ────────────────────────────────────────────────── */
+(function () {
+  const _mobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
+  const _ts = document.createElement('style');
+  if (_mobile) {
+    _ts.textContent =
+      '@view-transition{navigation:none}' +
+      'body{animation:none!important}' +
+      '.pm-exit{animation:none!important;pointer-events:none!important}';
+  } else {
+    _ts.textContent =
+      '@view-transition{navigation:auto}' +
+      '@keyframes pm-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}' +
+      '@keyframes pm-out{to{opacity:0;transform:translateY(-5px) scale(.99)}}' +
+      '::view-transition-old(root){animation:180ms ease-out both pm-out}' +
+      '::view-transition-new(root){animation:300ms cubic-bezier(0,0,.2,1) both pm-in}' +
+      'body{animation:pm-in 300ms cubic-bezier(0,0,.2,1) both}' +
+      '.pm-exit{animation:pm-out 180ms ease-out both!important;pointer-events:none!important}';
+  }
+  document.head.appendChild(_ts);
+  if (window.navigation && typeof window.navigation.addEventListener === 'function') {
+    window.navigation.addEventListener('navigate', function(e) {
+      if (!e.canIntercept || e.hashChange || e.downloadRequest != null) return;
+      if (e.navigationType === 'reload') return;
+      try { if (new URL(e.destination.url).origin !== location.origin) return; } catch { return; }
+      if (_mobile) return;
+      e.intercept({ handler: () => new Promise(r => { document.body.classList.add('pm-exit'); setTimeout(r, 175); }) });
+    });
+    return;
+  }
+  document.addEventListener('click', function(e) {
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const href = a.getAttribute('href');
+    if (!href || /^(#|javascript:|mailto:|tel:)/.test(href)) return;
+    if (_mobile) return;
+    e.preventDefault();
+    document.body.classList.add('pm-exit');
+    setTimeout(() => { location.href = a.href; }, 180);
+  }, true);
 })();

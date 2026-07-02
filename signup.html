@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Packmates — Create Account</title>
+  <link rel="icon" type="image/png" href="img/appIcon.png">
   <style>
     @font-face { font-family:'Blauer Nue'; src:url('font/Blauer-Nue-Heavy-iF6626350c62afa.otf') format('opentype'); font-weight:700; }
     @font-face { font-family:'Montserrat'; src:url('font/Montserrat-Regular.ttf') format('truetype'); font-weight:400; }
@@ -184,11 +185,49 @@
     .btn-submit:hover { background:#52892a; transform:translateY(-1px); box-shadow:0 8px 20px rgba(95,157,48,0.35); }
     .btn-submit:active { transform:translateY(0); }
 
+    .gender-group {
+      display:flex; gap:10px; margin-bottom:18px;
+    }
+    .gender-btn {
+      flex:1; padding:18px 8px 14px;
+      background:rgba(255,255,255,0.07);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:14px;
+      font-family:'Montserrat', sans-serif;
+      font-size:0.67rem; font-weight:700; letter-spacing:0.04em;
+      color:rgba(255,255,255,0.45);
+      cursor:pointer;
+      transition:all 0.18s;
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+    }
+    .gender-btn svg {
+      width:30px; height:30px;
+      stroke:currentColor; fill:none;
+      stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;
+      transition:transform 0.18s;
+    }
+    .gender-btn:hover {
+      background:rgba(255,255,255,0.11);
+      color:rgba(255,255,255,0.75);
+    }
+    .gender-btn:hover svg { transform:scale(1.1); }
+    .gender-btn.active {
+      background:rgba(95,157,48,0.16);
+      border-color:rgba(95,157,48,0.7);
+      color:#fff;
+      box-shadow:0 0 0 3px rgba(95,157,48,0.14);
+    }
+    .gender-btn.active svg { color:#7dcc40; }
+
     .switch {
       text-align:center; font-size:0.78rem; color:rgba(255,255,255,0.4);
     }
     .switch a { color:var(--green); text-decoration:none; font-weight:700; transition:opacity 0.2s; }
     .switch a:hover { opacity:0.8; }
+    @media (max-width: 480px) {
+      body { padding: 16px; align-items: flex-start; padding-top: 24px; overflow-y: auto; }
+      .card { padding: 28px 20px 24px; border-radius: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -201,12 +240,38 @@
       <span class="logo-name">Packmates</span>
     </div>
 
-    <h1>Create Account</h1>
-    <p class="sub">Join and start your first trip today</p>
+    <h1 id="mainTitle">Create Account</h1>
+    <p class="sub" id="mainSub">Join and start your first trip today</p>
 
     <div class="msg" id="msg"></div>
 
-    <form class="form" onsubmit="handleSignup(event)">
+    <!-- Success screen (hidden until signup) -->
+    <div id="successScreen" style="display:none;text-align:center;padding:8px 0 16px;">
+      <div style="width:72px;height:72px;background:rgba(95,157,48,0.15);border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
+        <svg width="34" height="26" viewBox="0 0 34 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="32" height="22" rx="3" stroke="#7dcc40" stroke-width="2" fill="none"/>
+          <path d="M1 5l16 11 16-11" stroke="#7dcc40" stroke-width="2" fill="none" stroke-linejoin="round"/>
+          <circle cx="28" cy="5" r="3" fill="#f59e0b"/>
+        </svg>
+      </div>
+      <p style="color:rgba(255,255,255,0.9);font-size:0.9rem;line-height:1.65;margin-bottom:8px;">
+        We sent a confirmation link to<br>
+        <strong id="confirmedEmail" style="color:#7dcc40;"></strong>
+      </p>
+      <p style="color:rgba(255,255,255,0.38);font-size:0.75rem;margin-bottom:28px;">
+        Click the link in your email to activate your account.
+      </p>
+      <button onclick="openEmailApp()" class="btn-submit" style="margin-bottom:14px;">
+        Check your email →
+      </button>
+      <div id="resendWrap" style="display:none;margin-top:4px;">
+        <a href="#" id="resendLink" style="color:rgba(255,255,255,0.35);font-size:0.75rem;text-decoration:none;" onclick="resendEmail(event)">
+          Didn't receive it? Resend email
+        </a>
+      </div>
+    </div>
+
+    <form class="form" id="signupForm" onsubmit="handleSignup(event)">
       <label class="field-label" for="name">Full Name</label>
       <div class="field">
         <input type="text" id="name" placeholder="Your name" required>
@@ -233,6 +298,40 @@
         <input type="password" id="confirm" class="has-toggle" placeholder="Repeat password" required>
         <button type="button" class="toggle-pw" onclick="togglePassword('confirm',this)">Show</button>
       </div>
+
+      <label class="field-label">Gender</label>
+      <div class="gender-group" id="genderGroup">
+        <button type="button" class="gender-btn" data-gender="male" onclick="selectGender(this)">
+          <svg viewBox="0 0 24 24">
+            <circle cx="10" cy="10" r="6"/>
+            <line x1="14.2" y1="5.8" x2="20" y2="0"/>
+            <polyline points="16 0 20 0 20 4"/>
+          </svg>
+          Male
+        </button>
+        <button type="button" class="gender-btn" data-gender="female" onclick="selectGender(this)">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="6"/>
+            <line x1="12" y1="14" x2="12" y2="22"/>
+            <line x1="8" y1="19" x2="16" y2="19"/>
+          </svg>
+          Female
+        </button>
+        <button type="button" class="gender-btn" data-gender="nonbinary" onclick="selectGender(this)">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="10" r="6"/>
+            <line x1="12" y1="16" x2="12" y2="22"/>
+            <line x1="8.5" y1="19" x2="15.5" y2="19"/>
+            <line x1="15.8" y1="5.2" x2="20" y2="1"/>
+            <polyline points="17 1 20 1 20 4"/>
+          </svg>
+          Non-binary
+        </button>
+      </div>
+
+      <!-- honeypot: hidden from real users, bots fill it in -->
+      <input type="text" id="hp_signup" name="hp_name" tabindex="-1" autocomplete="off" aria-hidden="true"
+        style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
 
       <button type="submit" class="btn-submit">Create Account</button>
     </form>
@@ -268,8 +367,38 @@
       hint.style.color = val.length ? colors[score-1] : '';
     }
 
-    function handleSignup(e) {
+    let selectedGender = null;
+
+    function selectGender(btn) {
+      document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedGender = btn.dataset.gender;
+    }
+
+    let _signedUpEmail = '';
+
+    function openEmailApp() {
+      window.location.href = 'mailto:';
+    }
+
+    async function resendEmail(e) {
       e.preventDefault();
+      const link = document.getElementById('resendLink');
+      link.textContent = 'Sending…';
+      link.style.pointerEvents = 'none';
+      const result = await Auth.resendConfirmation(_signedUpEmail);
+      if (result.success) {
+        link.textContent = 'Sent! Check your inbox.';
+        link.style.color = '#7dcc40';
+      } else {
+        link.textContent = 'Failed — tap to try again';
+        link.style.pointerEvents = 'auto';
+      }
+    }
+
+    async function handleSignup(e) {
+      e.preventDefault();
+      if (document.getElementById('hp_signup').value) return;
       const msg     = document.getElementById('msg');
       const name    = document.getElementById('name').value.trim();
       const email   = document.getElementById('email').value.trim();
@@ -277,12 +406,31 @@
       const confirm = document.getElementById('confirm').value;
       msg.className = 'msg';
       if (pw !== confirm) { msg.className='msg error'; msg.textContent='Passwords do not match.'; return; }
-      const result = Auth.register(name, email, pw);
+      if (!selectedGender) { msg.className='msg error'; msg.textContent='Please select your gender.'; return; }
+
+      const submitBtn = document.querySelector('#signupForm .btn-submit');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account…';
+
+      const result = await Auth.register(name, email, pw, selectedGender);
       if (result.success) {
-        msg.className='msg success'; msg.textContent='Account created! Redirecting…';
-        setTimeout(() => location.href='index.html', 900);
+        _signedUpEmail = email;
+        // Hide form, update heading, show success screen
+        document.getElementById('signupForm').style.display = 'none';
+        document.querySelector('.switch').style.display = 'none';
+        document.getElementById('mainTitle').textContent = 'Check your email';
+        document.getElementById('mainSub').textContent = 'One last step to get started';
+        document.getElementById('confirmedEmail').textContent = email;
+        document.getElementById('successScreen').style.display = 'block';
+        // Show resend link after 15s
+        setTimeout(() => {
+          document.getElementById('resendWrap').style.display = 'block';
+        }, 15000);
       } else {
-        msg.className='msg error'; msg.textContent=result.error;
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+        msg.className='msg error';
+        msg.textContent = result.error;
       }
     }
   </script>
