@@ -173,11 +173,16 @@ const Auth = (() => {
         }
       });
       if (error) {
-        const msg = error.message;
-        if (msg.includes('already registered') || msg.includes('already exists'))
+        const msg = error.message || '';
+        if (!msg || msg === '{}' || msg === '[]' || msg === 'null')
+          return { success: false, error: 'An account with this email already exists.' };
+        if (msg.includes('already registered') || msg.includes('already exists') || msg.includes('already been registered'))
           return { success: false, error: 'An account with this email already exists.' };
         return { success: false, error: msg };
       }
+      /* Supabase v2 silently returns data.user == null for duplicate emails when confirm is ON */
+      if (!data?.user && !error)
+        return { success: false, error: 'An account with this email already exists.' };
       /* Profile row is auto-created by the DB trigger */
       return { success: true };
     },
