@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 400">
+  <defs>
+    <radialGradient id="peakGlow" cx="50%" cy="22%" r="65%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#9fc840" stop-opacity="0.38"/>
+      <stop offset="60%"  stop-color="#5a9e68" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#5a9e68" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rivGlow" cx="50%" cy="50%" r="50%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#4ecece" stop-opacity="0.30"/>
+      <stop offset="100%" stop-color="#4ecece" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fogL1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#3d7a62" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#3d7a62" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="fogL2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#2a5e44" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#2a5e44" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="topFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#082233" stop-opacity="1"/>
+      <stop offset="28%"  stop-color="#082233" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="btmFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="62%"  stop-color="#082233" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#082233" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="248" height="400" fill="#0b2030"/>
+
+  <!-- Atmospheric glow at peak -->
+  <ellipse cx="124" cy="88" rx="148" ry="95" fill="url(#peakGlow)"/>
+
+  <!-- Far mountains (lightest) -->
+  <path d="M-10,195 L22,92 L48,128 L78,58 L106,100 L130,46 L158,88 L186,62 L214,90 L238,70 L258,84 L258,230 L-10,230Z"
+        fill="#2e6b5c"/>
+
+  <!-- Fog between far and mid mountains -->
+  <path d="M-10,208 Q40,192 88,202 Q136,212 184,196 Q216,186 258,200 L258,228 L-10,228Z"
+        fill="url(#fogL1)"/>
+
+  <!-- Mid mountains -->
+  <path d="M-10,258 L18,178 L44,208 L70,158 L98,192 L124,148 L152,186 L178,162 L208,185 L232,165 L258,178 L258,300 L-10,300Z"
+        fill="#1a4e3a"/>
+
+  <!-- Fog between mid and near mountains -->
+  <path d="M-10,272 Q36,256 80,270 Q124,283 168,265 Q208,248 258,262 L258,295 L-10,295Z"
+        fill="url(#fogL2)"/>
+
+  <!-- Near ridge -->
+  <path d="M-10,318 L16,255 L40,280 L62,242 L88,272 L112,230 L136,268 L160,244 L188,270 L214,250 L240,268 L258,256 L258,370 L-10,370Z"
+        fill="#0f3628"/>
+
+  <!-- River glow -->
+  <ellipse cx="118" cy="330" rx="72" ry="28" fill="url(#rivGlow)"/>
+
+  <!-- River — outer soft glow -->
+  <path d="M96,400 Q104,365 112,344 Q120,324 126,306 Q134,285 138,262"
+        stroke="#4ecece" stroke-opacity="0.10" stroke-width="9"
+        stroke-linecap="round" fill="none"/>
+  <!-- River — inner bright -->
+  <path d="M96,400 Q104,365 112,344 Q120,324 126,306 Q134,285 138,262"
+        stroke="#6ee8e8" stroke-opacity="0.26" stroke-width="3"
+        stroke-linecap="round" fill="none"/>
+
+  <!-- Mid pine forest (shorter, lighter) -->
+  <polygon points="0,360   6,302  12,360"  fill="#0a2c1c"/>
+  <polygon points="9,360  17,295  25,360"  fill="#082518"/>
+  <polygon points="21,360  30,288  39,360" fill="#0a2c1c"/>
+  <polygon points="35,360  44,298  53,360" fill="#082518"/>
+  <polygon points="50,360  58,304  66,360" fill="#0a2c1c"/>
+  <polygon points="64,360  72,292  80,360" fill="#082518"/>
+  <polygon points="80,360  87,300  94,360" fill="#0a2c1c"/>
+  <polygon points="148,360 155,296 162,360" fill="#0a2c1c"/>
+  <polygon points="160,360 168,290 176,360" fill="#082518"/>
+  <polygon points="175,360 183,298 191,360" fill="#0a2c1c"/>
+  <polygon points="191,360 200,288 209,360" fill="#082518"/>
+  <polygon points="208,360 217,294 226,360" fill="#0a2c1c"/>
+  <polygon points="224,360 233,300 242,360" fill="#082518"/>
+  <polygon points="238,360 245,306 252,360" fill="#0a2c1c"/>
+
+  <!-- Foreground pine forest (tall, dark) -->
+  <polygon points="-6,400   4,318  14,400" fill="#061812"/>
+  <polygon points="9,400   21,305  33,400" fill="#051410"/>
+  <polygon points="26,400  40,294  54,400" fill="#061812"/>
+  <polygon points="46,400  60,308  74,400" fill="#051410"/>
+  <polygon points="64,400  77,318  90,400" fill="#061812"/>
+  <polygon points="80,400  91,328  102,400" fill="#051410"/>
+  <polygon points="92,400 102,335 112,400" fill="#061812"/>
+
+  <polygon points="136,400 146,332 156,400" fill="#051410"/>
+  <polygon points="150,400 162,320 174,400" fill="#061812"/>
+  <polygon points="168,400 181,306 194,400" fill="#051410"/>
+  <polygon points="188,400 202,296 216,400" fill="#061812"/>
+  <polygon points="210,400 223,312 236,400" fill="#051410"/>
+  <polygon points="232,400 243,322 254,400" fill="#061812"/>
+
+  <!-- Top + bottom fade to sidebar bg -->
+  <rect width="248" height="400" fill="url(#topFade)"/>
+  <rect width="248" height="400" fill="url(#btmFade)"/>
+</svg>

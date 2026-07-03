@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Packmates — Home</title>
+  <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
   <style>
     /* ═══════════════════════════════════════════════════
@@ -469,7 +470,6 @@
       min-height: 180px;
       box-shadow: 0 2px 8px rgba(12,122,122,0.25), 0 8px 24px rgba(12,122,122,0.15);
     }
-
     .bc-weather-label {
       font-size: 0.6rem;
       font-weight: 800;
@@ -477,26 +477,43 @@
       text-transform: uppercase;
       color: rgba(255,255,255,0.5);
     }
-
     .bc-weather-main {
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
-      gap: 4px;
-      flex: 1;
       justify-content: center;
+      gap: 6px;
+      flex: 1;
+      text-align: center;
     }
-
     .bc-weather-icon {
-      font-size: 5.5rem;
+      font-size: 4.2rem;
       line-height: 1;
       display: block;
-      margin-bottom: 4px;
+      flex-shrink: 0;
       transition: transform 0.4s var(--ease);
       will-change: transform;
       transform-origin: center center;
       user-select: none;
+    }
+    .bc-weather-info { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .bc-weather-temp {
+      font-family: 'Blauer Nue', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .bc-weather-cond {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+    }
+    .bc-weather-city {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.62);
     }
 
     /* ── Weather icon animations ── */
@@ -542,28 +559,6 @@
     .wx-stormy { animation: wx-storm 3s ease-in-out infinite; }
     .wx-foggy  { animation: wx-fog   3s ease-in-out infinite; }
     .wx-idle   { animation: wx-float 5s ease-in-out infinite; }
-
-    .bc-weather-temp {
-      font-family: 'Blauer Nue', sans-serif;
-      font-size: 2.6rem;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.03em;
-      line-height: 1;
-    }
-
-    .bc-weather-details { display: flex; flex-direction: column; gap: 2px; align-items: center; }
-
-    .bc-weather-city {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: rgba(255,255,255,0.9);
-    }
-
-    .bc-weather-cond {
-      font-size: 0.7rem;
-      color: rgba(255,255,255,0.55);
-    }
 
     /* ── ROW 3: TIP CARD ── */
     .bc-tip {
@@ -913,6 +908,17 @@
       transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
     .trip-card-delete:hover { background: rgba(192,57,43,0.1); border-color: rgba(192,57,43,0.3); color: #c0392b; }
+    .trip-card-share {
+      display: flex; align-items: center; gap: 5px;
+      padding: 5px 10px; height: 28px;
+      background: linear-gradient(135deg,rgba(124,198,62,.15),rgba(12,122,122,.12));
+      border: 1px solid rgba(124,198,62,.3);
+      border-radius: 8px; cursor: pointer;
+      color: #5f9d30; font-size: 0.68rem; font-weight: 600;
+      font-family: inherit; white-space: nowrap; flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .trip-card-share:hover { background: linear-gradient(135deg,rgba(124,198,62,.28),rgba(12,122,122,.2)); border-color: rgba(124,198,62,.5); transform: translateY(-1px); }
 
     /* ── EMPTY STATE ── */
     .bento-empty {
@@ -982,34 +988,70 @@
     /* ── PACKED ITEMS STRIP ── */
     .packed-strip {
       display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-bottom: 14px;
+      flex-wrap: nowrap;
+      gap: 10px;
+      margin-bottom: 8px;
     }
 
     .packed-chip {
-      display: inline-flex;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 7px;
+      flex: 1;
+      min-width: 0;
       background: var(--surface);
       border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 7px 12px;
-      font-size: 0.72rem;
-      color: var(--text-2);
-      font-weight: 600;
+      border-radius: 18px;
+      padding: 14px 8px 10px;
+      position: relative;
+      cursor: default;
       transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
     }
-
     .packed-chip:hover {
       border-color: var(--teal-a, #0c7a7a);
-      box-shadow: 0 2px 10px rgba(12,122,122,0.12);
-      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(12,122,122,0.13);
+      transform: translateY(-2px);
     }
-
-    .packed-chip-bar { width: 36px; height: 3px; background: #e4ede8; border-radius: 99px; overflow: hidden; flex-shrink: 0; }
-    .packed-chip-fill { height: 100%; background: var(--green); border-radius: 99px; }
-    .packed-chip-pct { font-size: 0.62rem; color: var(--green); font-weight: 700; }
+    .packed-chip-pct {
+      position: absolute;
+      top: 9px; right: 9px;
+      font-size: 0.58rem;
+      font-weight: 800;
+      color: var(--green);
+      background: rgba(95,157,48,0.13);
+      border-radius: 6px;
+      padding: 2px 5px;
+      line-height: 1.4;
+    }
+    .packed-chip-circle {
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 7px;
+      flex-shrink: 0;
+    }
+    .packed-chip-img { width: 34px; height: 34px; object-fit: contain; }
+    .packed-chip-circle svg { width: 34px; height: 34px; }
+    .packed-top-pick {
+      font-size: 0.50rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #c98b00;
+      background: rgba(220,168,0,0.12);
+      border-radius: 5px;
+      padding: 2px 6px;
+      margin-bottom: 5px;
+    }
+    .packed-chip-name {
+      font-size: 0.64rem;
+      font-weight: 700;
+      color: var(--text-1);
+      text-align: center;
+      line-height: 1.3;
+      margin-bottom: 9px;
+    }
+    .packed-chip-bar { width: 100%; height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; margin-top: auto; }
+    .packed-chip-fill { height: 100%; border-radius: 99px; }
 
     /* ── TOAST ── */
     .toast {
@@ -1214,12 +1256,15 @@
 
     .bc-board-bag-fee {
       margin-left: auto;
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: var(--green, #5f9d30);
-      background: rgba(95,157,48,0.1);
-      border-radius: 7px;
-      padding: 3px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #0a5050;
+      background: rgba(12,122,122,0.09);
+      border: 1px solid rgba(12,122,122,0.20);
+      border-radius: 99px;
+      padding: 5px 14px;
+      transform: translate(-6px, -10px);
     }
 
     /* ══ LUGGAGE CARD ══ */
@@ -1253,7 +1298,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      filter: drop-shadow(0 10px 24px rgba(190,130,0,0.28)) drop-shadow(0 2px 6px rgba(0,0,0,0.12));
+      pointer-events: none;
+      user-select: none;
     }
 
     .bc-lug-svg { width: 76px; height: 76px; }
@@ -1261,6 +1307,9 @@
     .bc-lug-img {
       width: 108px; height: 108px;
       object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
     /* ══ REDESIGNED TIP CARD — side-tab layout ══ */
@@ -1453,6 +1502,14 @@
     }
     .bc-tip.bc-nudge::before,
     .bc-tip.bc-nudge::after { display: none !important; content: '' !important; background: none !important; animation: none !important; }
+
+    /* ── Video card — dark bg, no tip decorations ── */
+    .bc-tip.bc-video-card {
+      background: #071e2a !important;
+      box-shadow: 0 2px 8px rgba(7,30,42,.3) !important;
+    }
+    .bc-tip.bc-video-card::before,
+    .bc-tip.bc-video-card::after { display: none !important; content: '' !important; background: none !important; animation: none !important; }
     .bc-nudge-inner {
       padding: 22px;
       display: flex;
@@ -1562,21 +1619,32 @@
     @media (max-width: 640px) {
       .dash-header { flex-direction: column; align-items: flex-start; gap: 10px; }
       .dash-header-right { width: 100%; }
-      .search-box { flex: 1; }
+      .search-box { flex: 1; min-width: 0; }
       .btn-new-trip { display: none; }
       .dash-stats { gap: 0; }
       .dash-stat { flex: 1; }
       .bento { grid-template-columns: 1fr; gap: 10px; }
       .bc-hero { grid-column: 1; min-height: 240px; }
       .bc-countdown, .bc-progress, .bc-weather, .bc-tip, .bc-actions { grid-column: 1; }
-      .bc-tip { grid-column: 1; min-height: 200px; }
+      .bc-tip { grid-column: 1; min-height: 180px; }
       .bc-hero-dest { font-size: 1.6rem; }
       .bc-hero-right { display: none; }
       .explore-strip { gap: 10px; }
       .explore-card { min-width: 140px; height: 160px; }
       .trips-grid { grid-template-columns: 1fr; }
-      .packed-strip { flex-wrap: wrap; }
+      .packed-strip { gap: 8px; overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch; padding-bottom: 6px; flex-wrap: nowrap; }
+      .packed-chip { min-width: 90px; flex: 0 0 90px; }
+      .packed-chip-circle { width: 50px; height: 50px; }
+      .packed-chip-circle svg, .packed-chip-circle img { width: 28px; height: 28px; }
       .bento-section-header h2 { font-size: 1rem; }
+      .bc-countdown-num { font-size: 3rem !important; }
+      .toast { bottom: 88px; max-width: calc(100vw - 32px); white-space: normal; text-align: center; }
+      .home-search-dd { min-width: 0; width: 100vw; left: 0; right: 0; max-width: 100vw; }
+
+      /* Disable bento stagger animations on mobile — GPU-expensive and add ~500ms of perceived lag */
+      .bc, .bento-section, .trips-grid-wrap, .dash-header {
+        animation: none !important;
+      }
     }
   </style>
 </head>
@@ -1615,8 +1683,8 @@
     </div>
 
     <div class="nav-bottom">
-      <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7dd94a;margin-bottom:4px">
-        <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7dd94a"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <button type="button" class="nav-new-trip" onclick="location.href='newTrip.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
         <span>New Trip</span>
       </button>
       <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
@@ -1702,7 +1770,9 @@
   <div class="toast" id="toast"></div>
 
   <script src="auth.js"></script>
+  <script src="notifications.js"></script>
   <script src="airlines.js"></script>
+  <script src="packing-icons.js"></script>
   <script>
     const PEXELS_KEY = 'vnk5OqRIBUtBdRV9LUp1oaAn2QiAB5lO0HL8GwM5WrRRQZt5GOaFlVIq';
 
@@ -1775,47 +1845,39 @@
     });
 
     /* ── Trip management ── */
-    function _saveCurrentPackState(trips) {
-      const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
-      if (!cur?.id) return;
-      const idx = trips.findIndex(t => t.id === cur.id);
-      if (idx < 0) return;
-      trips[idx].packState     = JSON.parse(localStorage.getItem('packingState')       || '{}');
-      trips[idx].packItemState = JSON.parse(localStorage.getItem('packingItemState')   || '{}');
-      trips[idx].packDismissed = JSON.parse(localStorage.getItem('packingDismissed')   || '[]');
-      trips[idx].packCustom    = JSON.parse(localStorage.getItem('packingCustomItems') || '{}');
-    }
-    function _applyTripPackState(t) {
-      localStorage.setItem('currentTrip',        JSON.stringify(t));
-      localStorage.setItem('packingState',        JSON.stringify(t.packState     || {}));
-      localStorage.setItem('packingItemState',    JSON.stringify(t.packItemState || {}));
-      localStorage.setItem('packingDismissed',    JSON.stringify(t.packDismissed || []));
-      localStorage.setItem('packingCustomItems',  JSON.stringify(t.packCustom    || {}));
-    }
     function switchToTrip(tripId) {
       const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
-      _saveCurrentPackState(trips);
       const target = trips.find(t => t.id === tripId);
       if (!target) return;
-      _applyTripPackState(target);
-      localStorage.setItem('pm_trips', JSON.stringify(trips));
+      localStorage.setItem('currentTrip', JSON.stringify(target));
       location.reload();
+    }
+    function shareTrip(tripId) {
+      const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+      const t = trips.find(x => x.id === tripId);
+      if (!t) return;
+      const packRaw = JSON.parse(localStorage.getItem(`pm_pack_${tripId}`) || '{}');
+      const items = Object.entries(packRaw.itemState || {}).map(([k, v]) => [k, v.packed ? 1 : 0, v.qty || 1]);
+      const by = Auth.getSession()?.name || 'A friend';
+      const payload = { v:1, sid:tripId, dest:t.destination, from:t.fromDate||'', to:t.toDate||'', trav:t.travelers||1, by, items,
+        custom: packRaw.customItems || {}, dismissed: packRaw.dismissed || [] };
+      const code = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      const url = `${location.origin}/packing-list.html?join=${code}`;
+      // Show share sheet or copy to clipboard
+      if (navigator.share) {
+        navigator.share({ title: `${t.destination} Packing List`, text: `Pack together for ${t.destination}!`, url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => toast('Share link copied!')).catch(() => {
+          prompt('Copy this link:', url);
+        });
+      }
     }
     function deleteTrip(tripId) {
       const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
       const target = trips.find(t => t.id === tripId);
       if (!target) return;
       if (!confirm(`Delete trip to ${target.destination}? This cannot be undone.`)) return;
-      const remaining = trips.filter(t => t.id !== tripId);
-      localStorage.setItem('pm_trips', JSON.stringify(remaining));
-      const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
-      if (cur?.id === tripId) {
-        if (remaining.length > 0) {
-          _applyTripPackState(remaining[remaining.length - 1]);
-        } else {
-          ['currentTrip','packingState','packingItemState','packingDismissed','packingCustomItems'].forEach(k => localStorage.removeItem(k));
-        }
-      }
+      DB.deleteTrip(tripId);
       location.reload();
     }
 
@@ -1845,13 +1907,21 @@
     }
 
     async function fetchWeather(city) {
+      const cacheKey = 'pm_wx_' + city.toLowerCase().replace(/\s+/g, '_');
+      const WX_TTL = 15 * 60 * 1000;
+      try {
+        const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+        if (cached && Date.now() - cached.ts < WX_TTL) return cached.data;
+      } catch {}
       try {
         const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)).json();
         if (!g.results?.[0]) return null;
         const {latitude:lat, longitude:lon} = g.results[0];
         const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`)).json();
         const cw = w.current_weather;
-        return { temp: Math.round(cw.temperature), icon: WMO[cw.weathercode] || '🌡️', code: cw.weathercode };
+        const data = { temp: Math.round(cw.temperature), icon: WMO[cw.weathercode] || '🌡️', code: cw.weathercode };
+        try { localStorage.setItem(cacheKey, JSON.stringify({ data, ts: Date.now() })); } catch {}
+        return data;
       } catch { return null; }
     }
 
@@ -1889,13 +1959,18 @@
 
     /* ── Data ── */
     const trip      = JSON.parse(localStorage.getItem('currentTrip') || 'null');
-    const packState = JSON.parse(localStorage.getItem('packingState') || '{}');
+    const _packRaw  = trip?.id ? JSON.parse(localStorage.getItem(`pm_pack_${trip.id}`) || '{}') : {};
+    const packState = Object.fromEntries(
+        Object.entries(_packRaw.itemState || {}).map(([k, v]) => [k, !!v?.packed])
+    );
     const hasTrip   = !!trip?.destination;
     const bento     = document.getElementById('bentoGrid');
 
-    const allKeys    = Object.keys(packState);
-    const packedKeys = allKeys.filter(k => packState[k]);
-    const pct        = allKeys.length ? Math.round(packedKeys.length / allKeys.length * 100) : 0;
+    const allKeys        = Object.keys(packState);
+    const packedKeys     = allKeys.filter(k => packState[k]);
+    // Use full suggested count (including dismissed) so packing 4/68 shows ~6%, not 100%
+    const totalSuggested = _packRaw.totalSuggested || _packRaw.suggestedTotal || allKeys.length;
+    const pct            = totalSuggested > 0 ? Math.round(packedKeys.length / totalSuggested * 100) : 0;
 
     const days         = hasTrip ? daysTo(trip.fromDate) : null;
     const countdownNum = !hasTrip ? '—' : days === null ? '—' : days > 0 ? days : days === 0 ? '0' : '✓';
@@ -1955,7 +2030,7 @@
           </div>
           <div class="bc-hero-right">
             ${ring(pct, 96, 7)}
-            <div class="bc-hero-ring-label">${allKeys.length ? `${packedKeys.length} of ${allKeys.length}<br>items packed` : 'No items yet'}</div>
+            <div class="bc-hero-ring-label">${totalSuggested > 0 ? `${packedKeys.length} of ${totalSuggested}<br>items packed` : 'No items yet'}</div>
           </div>
         </div>`}
       </div>
@@ -2016,7 +2091,7 @@
         <div class="bc-progress-inner">
           <div class="bc-progress-text">
             <div class="bc-progress-pct">${pct}%</div>
-            <div class="bc-progress-sub">${allKeys.length ? `${packedKeys.length} of ${allKeys.length} items` : 'Create a trip to start'}</div>
+            <div class="bc-progress-sub">${totalSuggested > 0 ? `${packedKeys.length} of ${totalSuggested} items` : 'Create a trip to start'}</div>
           </div>
           ${ring(pct, 72, 5)}
         </div>
@@ -2029,18 +2104,18 @@
       <div class="bc bc-weather">
         <div class="bc-weather-label">Destination Weather</div>
         <div class="bc-weather-main" id="weatherMain">
-          <div class="bc-weather-icon wx-idle" id="wIcon">${hasTrip ? '—' : '☀️'}</div>
-          <div class="bc-weather-temp" id="weatherTemp">${hasTrip ? '—°F' : '—'}</div>
-          <div class="bc-weather-details">
-            <div class="bc-weather-city">${hasTrip ? trip.destination : 'No destination'}</div>
+          <div class="bc-weather-icon wx-idle" id="wIcon">${hasTrip ? '⛅' : '☀️'}</div>
+          <div class="bc-weather-info">
+            <div class="bc-weather-temp" id="weatherTemp">${hasTrip ? '—°F' : '—'}</div>
             <div class="bc-weather-cond" id="weatherCond">${hasTrip ? 'Loading…' : 'Plan a trip first'}</div>
+            <div class="bc-weather-city">${hasTrip ? trip.destination : 'No destination'}</div>
           </div>
         </div>
       </div>
 
       <!-- TRAVEL VIDEO CARD -->
       <div class="bc bc-tip bc-video-card" onclick="location.href='${nudgeLink}'" style="cursor:pointer;padding:0;background:#071e2a;">
-        <video id="tipVideo" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity 1.2s ease;border-radius:inherit;"></video>
+        <video id="tipVideo" autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity 0.8s ease;border-radius:inherit;"></video>
         <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(160deg,rgba(7,30,42,0.0) 0%,rgba(7,30,42,0.08) 100%);border-radius:inherit;pointer-events:none;"></div>
         <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:20px 22px;">
           <div style="font-size:1rem;font-weight:700;color:#fff;line-height:1.25;text-shadow:0 1px 8px rgba(0,0,0,0.4);" id="nudgeTitle">Ready to start?</div>
@@ -2143,9 +2218,15 @@
               <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : 'Dates not set'}${daysLabel ? ` · <span style="color:var(--green-dark,#4d8225);font-weight:600">${daysLabel}</span>` : ''}</div>
               <div class="trip-card-footer">
                 <div class="avatars" id="cardAvatars-${t.id}"></div>
-                <button class="trip-card-delete" onclick="event.stopPropagation();deleteTrip('${t.id}')" title="Delete trip">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                </button>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <button class="trip-card-share" onclick="event.stopPropagation();shareTrip('${t.id}')" title="Share packing list">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    Share
+                  </button>
+                  <button class="trip-card-delete" onclick="event.stopPropagation();deleteTrip('${t.id}')" title="Delete trip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>`;
@@ -2168,10 +2249,14 @@
     (async () => {
       const videoEl = document.getElementById('tipVideo');
       if (!videoEl) return;
+      const isMobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
+      if (isMobile) return;
 
       function playVideo(url) {
         videoEl.src = url;
-        videoEl.oncanplay = () => { videoEl.style.opacity = '1'; };
+        videoEl.load();
+        videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; };
+        videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; };
       }
 
       // Rotate through cached pool immediately
@@ -2273,31 +2358,44 @@
     }
 
     /* ── Others Also Packed ── */
+    // [name, pct, circleBg, barColor]
     const POPULAR = {
-      'Beach':           [['Sunscreen',90],['Swimsuit',88],['Beach Towel',85],['Sunglasses',82],['Flip Flops',78]],
-      'Hiking':          [['Hiking Boots',92],['Water Bottle',89],['Backpack',87],['Insect Repellent',75],['Snacks',72]],
-      'Camping':         [['Tent',95],['Sleeping Bag',93],['Camp Stove',80],['Insect Repellent',77],['Flashlight',74]],
-      'Road Trip':       [['Snacks',91],['Car Charger',88],['Travel Pillow',82],['Sunglasses',79],['Water Bottle',76]],
-      'Snow Sports':     [['Ski Jacket',94],['Gloves',91],['Thermal Base Layer',88],['Goggles',85],['Wool Socks',80]],
-      'Business Trip':   [['Laptop',96],['Business Cards',85],['Dress Shirts',84],['Blazer',81],['Notebook',76]],
-      'City Sightseeing':[['Camera',89],['Comfortable Shoes',87],['Backpack',84],['Water Bottle',78],['Travel Guidebook',70]],
-      '_default':        [['Passport',97],['Phone Charger',95],['Power Bank',90],['Comfortable Shoes',85],['Travel Adapter',80]],
+      'Beach':           [['Sunscreen',90,'rgba(255,200,40,0.15)','#f5a623'],['Beach Towel',88,'rgba(30,150,220,0.14)','#29b6f6'],['Sunglasses',85,'rgba(255,200,40,0.12)','#f5a623'],['Flip Flops',82,'rgba(30,150,220,0.11)','#29b6f6'],['Snorkel Set',72,'rgba(30,200,200,0.12)','#26c6da']],
+      'Hiking':          [['Hiking Boots',94,'rgba(95,157,48,0.15)','#7cc63e'],['Water Bottle',89,'rgba(95,157,48,0.12)','#7cc63e'],['Backpack',87,'rgba(95,157,48,0.10)','#7cc63e'],['Insect Repellent',75,'rgba(78,180,130,0.12)','#4ecece'],['Snacks',72,'rgba(220,150,50,0.12)','#f5a623']],
+      'Camping':         [['Tent',95,'rgba(52,140,80,0.15)','#4caf50'],['Sleeping Bag',93,'rgba(52,140,80,0.13)','#4caf50'],['Camp Stove',80,'rgba(52,140,80,0.10)','#4caf50'],['Insect Repellent',77,'rgba(78,180,130,0.11)','#4ecece'],['Firestarter',70,'rgba(52,140,80,0.09)','#4caf50']],
+      'Road Trip':       [['Snacks',91,'rgba(220,150,50,0.15)','#f5a623'],['Car Charger',88,'rgba(220,150,50,0.13)','#f5a623'],['Travel Pillow',82,'rgba(220,150,50,0.10)','#f5a623'],['Sunglasses',79,'rgba(255,200,40,0.11)','#f5a623'],['Water Bottle',76,'rgba(95,157,48,0.10)','#7cc63e']],
+      'Snow Sports':     [['Ski Jacket',94,'rgba(100,160,220,0.15)','#42a5f5'],['Gloves',91,'rgba(100,160,220,0.13)','#42a5f5'],['Thermal Base Layer',88,'rgba(100,160,220,0.11)','#42a5f5'],['Ski Goggles',85,'rgba(100,160,220,0.09)','#42a5f5'],['Wool Socks',80,'rgba(95,157,48,0.12)','#7cc63e']],
+      'Business Trip':   [['Laptop',96,'rgba(100,100,200,0.15)','#7986cb'],['Business Cards',85,'rgba(100,100,200,0.12)','#7986cb'],['Dress Shirts',84,'rgba(100,100,200,0.10)','#7986cb'],['Blazer',81,'rgba(100,100,200,0.09)','#7986cb'],['Notebook',76,'rgba(100,100,200,0.08)','#7986cb']],
+      'City Sightseeing':[['Camera',89,'rgba(78,206,206,0.15)','#4ecece'],['Sneakers',87,'rgba(78,206,206,0.12)','#4ecece'],['Backpack',84,'rgba(95,157,48,0.11)','#7cc63e'],['Water Bottle',78,'rgba(95,157,48,0.09)','#7cc63e'],['Travel Guidebook',70,'rgba(78,206,206,0.09)','#4ecece']],
+      'Swimming':        [['Goggles',92,'rgba(30,200,200,0.15)','#26c6da'],['Swim Cap',82,'rgba(30,200,200,0.12)','#26c6da'],['Aqua Shoes',75,'rgba(30,200,200,0.10)','#26c6da'],['Sunscreen',85,'rgba(255,200,40,0.12)','#f5a623'],['Flip Flops',78,'rgba(30,150,220,0.11)','#29b6f6']],
+      'Gym':             [['Workout Clothes',91,'rgba(255,130,50,0.15)','#ff7043'],['Sports Shoes',88,'rgba(255,130,50,0.13)','#ff7043'],['Gym Towel',82,'rgba(255,130,50,0.11)','#ff7043'],['Water Bottle',79,'rgba(255,130,50,0.09)','#ff7043'],['Running Shoes',74,'rgba(255,130,50,0.08)','#ff7043']],
+      'Night Out':       [['Blazer',88,'rgba(12,122,122,0.15)','#0c7a7a'],['Dress Shoes',84,'rgba(12,122,122,0.12)','#0c7a7a'],['Perfume/Cologne',80,'rgba(12,122,122,0.10)','#0c7a7a'],['Watch',75,'rgba(95,157,48,0.12)','#7cc63e'],['Jumpsuit',70,'rgba(12,122,122,0.09)','#0c7a7a']],
+      'Festival':        [['Tent',89,'rgba(95,157,48,0.15)','#5f9d30'],['Sleeping Bag',86,'rgba(95,157,48,0.13)','#5f9d30'],['Sunglasses',83,'rgba(12,122,122,0.12)','#0c7a7a'],['Water Bottle',80,'rgba(95,157,48,0.10)','#7cc63e'],['Fanny Pack',76,'rgba(12,122,122,0.10)','#0c7a7a']],
+      'Cruise':          [['Matching Set',90,'rgba(30,100,200,0.15)','#42a5f5'],['Motion Sickness Medication',85,'rgba(30,100,200,0.12)','#42a5f5'],['Panama Hat',82,'rgba(30,100,200,0.10)','#42a5f5'],['Waterproof Sandals',79,'rgba(30,100,200,0.09)','#42a5f5'],['Floral Top',74,'rgba(30,100,200,0.08)','#42a5f5']],
+      'Dining':          [['Blazer',87,'rgba(180,80,80,0.15)','#ef5350'],['Dress Shoes',83,'rgba(180,80,80,0.12)','#ef5350'],['Button-Down Shirts',79,'rgba(180,80,80,0.10)','#ef5350'],['Dress Pants',74,'rgba(180,80,80,0.09)','#ef5350'],['Tie',70,'rgba(180,80,80,0.08)','#ef5350']],
+      'Theme Park':      [['Sneakers',93,'rgba(220,100,50,0.15)','#ff7043'],['Water Bottle',89,'rgba(220,100,50,0.12)','#ff7043'],['Sunglasses',85,'rgba(220,100,50,0.10)','#ff7043'],['Power Bank',78,'rgba(100,100,200,0.10)','#7986cb'],['Camera',74,'rgba(78,206,206,0.10)','#4ecece']],
+      'Baby':            [['Diapers',97,'rgba(78,206,206,0.15)','#4ecece'],['Baby Wipes',95,'rgba(78,206,206,0.13)','#4ecece'],['Baby Bottle',90,'rgba(95,157,48,0.13)','#7cc63e'],['Baby Clothes',87,'rgba(78,206,206,0.11)','#4ecece'],['Stroller',82,'rgba(95,157,48,0.10)','#7cc63e']],
+      '_default':        [['Passport',97,'rgba(78,206,206,0.15)','#4ecece'],['Charger',95,'rgba(100,100,200,0.14)','#7986cb'],['Power Bank',90,'rgba(100,100,200,0.12)','#7986cb'],['Sneakers',85,'rgba(78,206,206,0.11)','#4ecece'],['Headphones',80,'rgba(100,100,200,0.10)','#7986cb']],
     };
 
     const activities = trip?.activityCategories?.length ? trip.activityCategories : ['_default'];
     const seen = new Set();
     const popularItems = [];
     activities.forEach(act => {
-      (POPULAR[act] || POPULAR['_default']).forEach(([name, pct]) => {
-        if (!seen.has(name)) { seen.add(name); popularItems.push([name, pct]); }
+      (POPULAR[act] || POPULAR['_default']).forEach(item => {
+        if (!seen.has(item[0])) { seen.add(item[0]); popularItems.push(item); }
       });
     });
 
-    document.getElementById('packedStrip').innerHTML = popularItems.slice(0,8).map(([name, pct]) => `
+    document.getElementById('packedStrip').innerHTML = popularItems.slice(0,8).map(([name, pct, circleBg, barColor]) => `
       <div class="packed-chip">
-        <span>${name}</span>
-        <div class="packed-chip-bar"><div class="packed-chip-fill" style="width:${pct}%"></div></div>
         <span class="packed-chip-pct">${pct}%</span>
+        <div class="packed-chip-circle" style="background:${circleBg}">
+          ${getItemIcon(name)}
+        </div>
+        ${pct >= 80 ? '<div class="packed-top-pick">⭐ TOP PICK</div>' : ''}
+        <div class="packed-chip-name">${name}</div>
+        <div class="packed-chip-bar"><div class="packed-chip-fill" style="width:${pct}%;background:${barColor}"></div></div>
       </div>`).join('');
 
     /* ── Explore destinations with real photos ── */
@@ -2348,6 +2446,43 @@
         await new Promise(r => setTimeout(r, 120));
       }
     })();
+
+    /* ── Supabase background sync: pull latest trips, reload once if data differs ── */
+    if (!sessionStorage.getItem('pm_synced')) {
+      (async () => {
+        const before = JSON.stringify((JSON.parse(localStorage.getItem('pm_trips') || '[]')).map(t => t.id + t.destination));
+        const changed = await DB.syncTrips();
+        if (!changed) return;
+        const after = JSON.stringify((JSON.parse(localStorage.getItem('pm_trips') || '[]')).map(t => t.id + t.destination));
+        if (before !== after) {
+          sessionStorage.setItem('pm_synced', '1');
+          location.reload();
+        }
+      })().catch(() => {});
+    }
+
+    /* ── Realtime: live cross-device sync via Supabase channel ── */
+    (async () => {
+      const sbClient = await window._pm_sbLoaded;
+      if (!sbClient) return;
+      const { data: { session } } = await sbClient.auth.getSession();
+      if (!session) return;
+      sbClient.channel('trips-realtime')
+        .on('postgres_changes', {
+          event: '*', schema: 'public', table: 'trips',
+          filter: `user_id=eq.${session.user.id}`
+        }, async () => {
+          if (sessionStorage.getItem('pm_synced')) return;
+          const changed = await DB.syncTrips();
+          if (changed) { sessionStorage.setItem('pm_synced', '1'); location.reload(); }
+        })
+        .subscribe();
+    })().catch(() => {});
+
+    /* ── Service worker (offline support) ── */
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+    }
   </script>
 
   <nav class="bottom-nav">

@@ -1,3 +1,28 @@
+/* ── Mobile destination hero ── */
+.city-banner {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .city-banner.has-image {
+    display: block;
+    width: calc(100% + 24px);
+    height: 240px;
+    background: #1a2634 center/cover no-repeat;
+    position: relative;
+    margin: 0 -12px 0;
+    clip-path: polygon(0 0, 100% 0, 100% 78%, 0 100%);
+    flex-shrink: 0;
+  }
+  .city-banner.has-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.55) 100%);
+    clip-path: inherit;
+  }
+}
+
 /* ── Page layout ── */
 body > main {
   padding: 28px 28px 40px;
@@ -24,6 +49,9 @@ body > main {
   flex-wrap: wrap;
   animation: fadeUp 0.4s ease both;
 }
+
+.pl-title-row { display: flex; align-items: flex-start; }
+.pl-title-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
 .pl-header h1 {
   font-size: 1.55rem;
@@ -372,6 +400,53 @@ body > main {
   padding: 1px 7px;
   letter-spacing: 0.02em;
   text-transform: none;
+}
+
+/* ── Adapted-for-trip banner ── */
+.packing-suggested-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(95,157,48,0.07) 0%, rgba(78,206,206,0.05) 100%);
+  border: 1px solid rgba(95,157,48,0.18);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  animation: fadeUp 0.35s ease both;
+}
+.pb-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.pb-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px 4px 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-2);
+  line-height: 1;
+}
+.pb-chip--weather {
+  padding: 4px 10px;
+}
+.pb-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .suggested-dot {
@@ -754,7 +829,7 @@ body > main {
 .packing-summary { display: none; }
 .packing-controls { display: none; }
 .packing-list { display: contents; }
-.city-banner { display: none !important; }
+.city-banner { display: none; }
 
 /* ══════════════════════════
    FINISH PACKING BANNER
@@ -849,6 +924,94 @@ body > main {
   box-shadow: 0 8px 24px rgba(0,0,0,0.28);
 }
 
+/* ── Share button ── */
+.pl-share-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #7cc63e 0%, #5f9d30 100%);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: .76rem; font-weight: 700; cursor: pointer;
+  font-family: inherit; letter-spacing: .01em;
+  box-shadow: 0 2px 10px rgba(124,198,62,.4);
+  transition: opacity .15s, transform .1s, box-shadow .15s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.pl-share-btn:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,198,62,.5); }
+.pl-share-btn:active { transform: translateY(0); }
+
+/* ── Join banner ── */
+.pl-join-banner {
+  background: linear-gradient(135deg, #0c7a7a 0%, #113a58 100%);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  animation: slideDown .35s ease;
+}
+@keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:none; } }
+.pl-join-left { display: flex; align-items: center; gap: 12px; }
+.pl-join-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(124,198,62,.25); color: #7cc63e;
+  font-size: .75rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pl-join-banner strong { display: block; color: #fff; font-size: .9rem; }
+.pl-join-banner span  { color: rgba(255,255,255,.62); font-size: .75rem; }
+.pl-join-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.pl-join-btn { border: none; border-radius: 8px; padding: 7px 16px; font-size: .8rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity .15s; }
+.pl-join-accept { background: #7cc63e; color: #fff; }
+.pl-join-accept:hover { opacity: .88; }
+.pl-join-dismiss { background: none; border: none; color: rgba(255,255,255,.5); font-size: 1rem; cursor: pointer; padding: 4px; line-height: 1; }
+.pl-join-dismiss:hover { color: #fff; }
+
+/* ── Collab bar ── */
+.pl-collab-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(12,122,122,.15);
+  border: 1px solid rgba(12,122,122,.3);
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  font-size: .78rem; color: #4fd1c5;
+}
+.pl-collab-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4fd1c5; margin-left: auto;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+
+/* ── Share modal ── */
+.pl-share-modal { max-width: 420px; }
+.pl-share-body { padding: 0 2px 4px; }
+.pl-share-icon-wrap { text-align: center; margin-bottom: 14px; }
+.pl-share-desc { font-size: .84rem; color: var(--text-secondary,#8899a6); text-align: center; margin-bottom: 18px; line-height: 1.5; }
+.pl-share-url-wrap { display: flex; gap: 8px; margin-bottom: 8px; }
+.pl-share-url {
+  flex: 1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px; padding: 9px 12px; font-size: .75rem; color: rgba(255,255,255,.7);
+  font-family: monospace; outline: none; min-width: 0;
+}
+.pl-copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: #7cc63e; color: #fff; border: none;
+  border-radius: 8px; padding: 9px 14px;
+  font-size: .8rem; font-weight: 600; cursor: pointer; font-family: inherit;
+  white-space: nowrap; transition: opacity .15s;
+}
+.pl-copy-btn:hover { opacity: .88; }
+.pl-share-copied { font-size: .78rem; color: #7cc63e; text-align: center; margin-top: 4px; }
+.pl-share-info {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .74rem; color: var(--text-secondary,#8899a6);
+  background: rgba(255,255,255,.04); border-radius: 8px; padding: 10px 12px;
+  margin-top: 14px;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   body > main { padding: 18px 16px 40px; }
@@ -861,6 +1024,8 @@ body > main {
 
 @media (max-width: 640px) {
   body > main { padding: 14px 12px 80px; overflow-y: auto; height: 100vh; }
+  /* When destination image exists, remove top padding so banner bleeds to the edge */
+  body > main.has-city-banner { padding-top: 0; overflow-x: hidden; }
   .pl-header { flex-direction: column; align-items: flex-start; gap: 8px; }
   .pl-header-right { width: 100%; justify-content: space-between; }
   .pl-stats-bar { flex-wrap: wrap; gap: 10px; }

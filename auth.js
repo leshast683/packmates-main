@@ -354,7 +354,7 @@ const Auth = (() => {
       window._pm_intentional_signout = true;
       localStorage.removeItem(_SB_LKEY);
       localStorage.removeItem(_SESS_KEY);
-      if (_sbClient) { try { _sbClient.auth.signOut(); } catch {} }
+      if (_sbClient) { _sbClient.auth.signOut().catch(() => {}); }
     },
 
     /* ── Session (synchronous) ── */
@@ -388,6 +388,13 @@ const Auth = (() => {
     },
     requireAuth(redirect = 'welcome.html') {
       if (!this.isLoggedIn()) { location.replace(redirect); return false; }
+      /* Block Supabase users whose email is not yet confirmed */
+      const sbUser = _sbCachedUser();
+      if (sbUser && !sbUser.email_confirmed_at) {
+        this.logout();
+        location.replace(redirect);
+        return false;
+      }
       return true;
     },
     getSavedEmail() { return localStorage.getItem(_SAVED_KEY) || ''; },

@@ -699,18 +699,23 @@
         return pool[poolIdx++];
       }
 
-      /* Pre-render every icon into a hidden cache so images are in the
-         browser's memory before the animation uses them */
+      /* Pre-render every icon into a hidden container attached to the live DOM.
+         Attaching to DOM is required for SVG <image> elements to actually fetch
+         their src URLs — detached elements are never fetched by the browser. */
+      const _preloadWrap = document.createElement('div');
+      _preloadWrap.style.cssText = 'position:fixed;top:-9999px;left:-9999px;visibility:hidden;pointer-events:none;';
+      document.body.appendChild(_preloadWrap);
+
       const _iconCache = {};
       ITEMS.forEach(name => {
         const el = document.createElement('div');
         el.className = 'pa-icon';
         el.innerHTML = getItemIcon(name);
         _iconCache[name] = el;
+        _preloadWrap.appendChild(el);
       });
 
       function makeIcon(name) {
-        /* Clone from cache — image is already loaded */
         const src = _iconCache[name] || (() => {
           const el = document.createElement('div');
           el.className = 'pa-icon';
@@ -722,7 +727,7 @@
         return clone;
       }
 
-      /* Preload all external image URLs used by ITEMS */
+      /* Collect image URLs from the live container and track loading via new Image() */
       const _preloadUrls = new Set();
       Object.values(_iconCache).forEach(el => {
         el.querySelectorAll('image').forEach(img => {
@@ -738,12 +743,13 @@
       function startAnim() {
         if (_animStarted) return;
         _animStarted = true;
+        _preloadWrap.remove();
         for (let i = 0; i < VISIBLE + BUFFER; i++) row.appendChild(makeIcon(nextName()));
         tick();
         setInterval(tick, 2200);
       }
 
-      /* Kick off preloading, start animation when all images ready (max 2s wait) */
+      /* Track completion with new Image() so we start only after cache is warm */
       const urls = [..._preloadUrls];
       if (urls.length === 0) {
         startAnim();
@@ -755,7 +761,7 @@
           img.onload = img.onerror = onLoad;
           img.src = url;
         });
-        setTimeout(startAnim, 2000); /* fallback */
+        setTimeout(startAnim, 3000); /* fallback — give network time */
       }
 
       function tick() {

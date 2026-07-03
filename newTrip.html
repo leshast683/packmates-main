@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Trip — Packmates</title>
+  <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
     body > main {
@@ -737,7 +739,7 @@
     @media (max-width: 640px) {
       body > main { overflow-y: auto; height: 100vh; }
       .nt-layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
-      .nt-preview-panel { display: none; }
+      .nt-preview-panel { display: flex; order: -1; height: 220px; flex-shrink: 0; }
       .nt-form-panel { padding: 20px 16px 80px; height: auto; overflow: visible; }
       .nt-header { flex-direction: row; align-items: center; margin-bottom: 20px; }
       .nt-header h1 { font-size: 1.2rem; }
@@ -761,9 +763,106 @@
     }
 
     @media (max-width: 380px) {
-      .nt-chips { grid-template-columns: repeat(5, 1fr); gap: 5px; }
+      .nt-chips { grid-template-columns: repeat(4, 1fr); gap: 5px; }
       .chip-icon { width: 22px; height: 22px; }
       .activity-chip { padding: 10px 3px 8px; font-size: 0.54rem; min-height: 64px; }
+    }
+
+    /* ── Flatpickr dark theme ── */
+    .flatpickr-calendar {
+      background: #0d1e2d !important;
+      border: 1.5px solid rgba(78,206,206,0.18) !important;
+      border-radius: 18px !important;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3) !important;
+      font-family: 'Montserrat', sans-serif !important;
+      padding: 6px !important;
+    }
+    .flatpickr-calendar.arrowTop::before,
+    .flatpickr-calendar.arrowTop::after { border-bottom-color: #0d1e2d !important; }
+    .flatpickr-months { padding: 4px 0 2px !important; }
+    .flatpickr-month { background: transparent !important; color: #fff !important; height: 38px !important; }
+    .flatpickr-current-month {
+      font-size: 0.9rem !important; font-weight: 700 !important; color: #fff !important;
+      padding-top: 6px !important;
+    }
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+      background: #0d1e2d !important; color: #fff !important; font-weight: 700 !important;
+      border: none !important; outline: none !important;
+    }
+    .flatpickr-current-month input.cur-year {
+      color: #fff !important; font-weight: 700 !important;
+    }
+    .numInputWrapper:hover { background: rgba(255,255,255,0.06) !important; }
+    .numInput { color: #fff !important; }
+    .arrowUp::after { border-bottom-color: rgba(255,255,255,0.5) !important; }
+    .arrowDown::after { border-top-color: rgba(255,255,255,0.5) !important; }
+    .flatpickr-prev-month, .flatpickr-next-month {
+      color: rgba(255,255,255,0.6) !important; fill: rgba(255,255,255,0.6) !important;
+      padding: 8px 10px !important;
+    }
+    .flatpickr-prev-month:hover, .flatpickr-next-month:hover,
+    .flatpickr-prev-month:hover svg, .flatpickr-next-month:hover svg {
+      color: #4ecece !important; fill: #4ecece !important;
+    }
+    .flatpickr-weekdays { background: transparent !important; margin-top: 4px !important; }
+    .flatpickr-weekday {
+      background: transparent !important; color: rgba(78,206,206,0.7) !important;
+      font-size: 0.65rem !important; font-weight: 800 !important; letter-spacing: 0.06em !important;
+    }
+    .flatpickr-days { border-top: 1px solid rgba(255,255,255,0.06) !important; }
+    .dayContainer { padding: 4px 0 !important; }
+    .flatpickr-day {
+      color: rgba(255,255,255,0.78) !important; border-radius: 10px !important;
+      border-color: transparent !important; font-size: 0.82rem !important; font-weight: 500 !important;
+    }
+    .flatpickr-day:hover:not(.selected):not(.today):not(.startRange):not(.endRange) {
+      background: rgba(255,255,255,0.08) !important; border-color: transparent !important;
+      color: #fff !important;
+    }
+    .flatpickr-day.today {
+      border-color: rgba(78,206,206,0.5) !important; color: #4ecece !important; font-weight: 700 !important;
+    }
+    .flatpickr-day.today:hover { background: rgba(78,206,206,0.12) !important; }
+    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+      background: #0c7a7a !important; border-color: #0c7a7a !important;
+      color: #fff !important; font-weight: 700 !important;
+    }
+    .flatpickr-day.selected:hover { background: #0a6868 !important; }
+    .flatpickr-day.flatpickr-disabled, .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+      color: rgba(255,255,255,0.2) !important;
+    }
+    /* Mobile calendar responsiveness */
+    @media (max-width: 640px) {
+      .flatpickr-calendar {
+        width: 92vw !important;
+        max-width: 340px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+      }
+      .flatpickr-day { height: 38px !important; line-height: 38px !important; font-size: 0.85rem !important; }
+      .dayContainer { width: 100% !important; min-width: unset !important; max-width: unset !important; }
+      .flatpickr-days, .flatpickr-innerContainer { width: 100% !important; }
+    }
+
+    /* Style the alt input like our existing date field */
+    .flatpickr-input.flatpickr-mobile,
+    input.flatpickr-input[readonly] {
+      padding: 12px 16px !important;
+      background: var(--surface) !important;
+      border: 1.5px solid var(--border) !important;
+      border-radius: 12px !important;
+      font-family: 'Montserrat', sans-serif !important;
+      font-size: 0.875rem !important;
+      color: var(--text-1) !important;
+      width: 100% !important;
+      cursor: pointer !important;
+      transition: border-color 0.2s, box-shadow 0.2s !important;
+    }
+    input.flatpickr-input[readonly]:focus,
+    input.flatpickr-input[readonly].active {
+      border-color: var(--teal-a) !important;
+      box-shadow: 0 0 0 3px rgba(12,122,122,0.12) !important;
+      outline: none !important;
     }
   </style>
 </head>
@@ -996,6 +1095,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="auth.js"></script>
+  <script src="notifications.js"></script>
   <script src="airlines.js"></script>
   <script>
     Auth.requireAuth('welcome.html');
@@ -1009,13 +1109,14 @@
       attributionControl: true,
       scrollWheelZoom: false,
     });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd', maxZoom: 19,
+    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+      maxZoom: 19,
       attribution: '© <a href="https://openstreetmap.org">OSM</a> © <a href="https://carto.com">CARTO</a>',
     }).addTo(ntMap);
     L.control.zoom({ position: 'bottomright' }).addTo(ntMap);
     /* Ensure tiles render once layout is stable */
     requestAnimationFrame(() => ntMap.invalidateSize());
+    setTimeout(() => ntMap.invalidateSize(), 350);
 
     let destMarker = null;
 
@@ -1300,12 +1401,11 @@
 
     /* ── Notifications helper ── */
     function pushNotification(type, text, tripName) {
-      const session = Auth.getSession();
-      if (!session) return;
-      const key    = `pm_notifications_${session.email}`;
-      const notifs = JSON.parse(localStorage.getItem(key) || '[]');
-      notifs.unshift({ id: Date.now(), type, text, tripName, time: new Date().toISOString(), read: false });
-      localStorage.setItem(key, JSON.stringify(notifs));
+      if (window.Notify) {
+        Notify.push(type, text, tripName, null);
+        Notify.showToast(text, type, tripName);
+        Notify.updateBell();
+      }
     }
 
     /* ── Pre-fill from explore ── */
@@ -1439,34 +1539,15 @@
         activityCategories, activities, notes,
         airline: selectedAirline || null,
         inviteCode, weatherTags, createdAt: new Date().toISOString(),
+        ownerEmail: Auth.getSession()?.email || null,
       };
 
       const imageUrl = await fetchCityImage(destination);
       if (imageUrl) tripData.imageUrl = imageUrl;
 
-      /* save to trips registry so joinTrip can find it by code */
-      const allTrips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
-
-      // Persist previous trip's packing state before switching
-      const prevTrip = JSON.parse(localStorage.getItem('currentTrip') || 'null');
-      if (prevTrip?.id) {
-        const prevIdx = allTrips.findIndex(t => t.id === prevTrip.id);
-        if (prevIdx >= 0) {
-          allTrips[prevIdx].packState     = JSON.parse(localStorage.getItem('packingState')       || '{}');
-          allTrips[prevIdx].packItemState = JSON.parse(localStorage.getItem('packingItemState')   || '{}');
-          allTrips[prevIdx].packDismissed = JSON.parse(localStorage.getItem('packingDismissed')   || '[]');
-          allTrips[prevIdx].packCustom    = JSON.parse(localStorage.getItem('packingCustomItems') || '{}');
-        }
-      }
-
-      allTrips.push(tripData);
-      localStorage.setItem('pm_trips', JSON.stringify(allTrips));
-
-      localStorage.setItem('currentTrip',        JSON.stringify(tripData));
-      localStorage.setItem('packingItemState',   '{}');
-      localStorage.setItem('packingDismissed',   '[]');
-      localStorage.setItem('packingCustomItems', '{}');
-      localStorage.setItem('packingState',       '{}');
+      /* save to trips registry + Supabase */
+      await DB.saveTrip(tripData);
+      DB.savePackState(tripId, { itemState: {}, dismissed: [], customItems: {} });
 
       pushNotification('trip', `Your trip to ${destination} has been created!`, destination);
       location.href = 'tripPreview.html';
@@ -1476,6 +1557,39 @@
     const style = document.createElement('style');
     style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
     document.head.appendChild(style);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    (function () {
+      let toPickr;
+      const fromPickr = flatpickr('#tripFromDate', {
+        dateFormat: 'Y-m-d',
+        altInput: true,
+        altFormat: 'M j, Y',
+        altInputClass: 'nt-date-input',
+        minDate: 'today',
+        disableMobile: true,
+        onChange(selectedDates, dateStr) {
+          document.getElementById('tripFromDate').dispatchEvent(new Event('change'));
+          if (toPickr) {
+            toPickr.set('minDate', dateStr || 'today');
+            // Auto-open return date picker after departure is chosen
+            setTimeout(() => toPickr.open(), 120);
+          }
+        }
+      });
+      toPickr = flatpickr('#tripToDate', {
+        dateFormat: 'Y-m-d',
+        altInput: true,
+        altFormat: 'M j, Y',
+        altInputClass: 'nt-date-input',
+        minDate: 'today',
+        disableMobile: true,
+        onChange() {
+          document.getElementById('tripToDate').dispatchEvent(new Event('change'));
+        }
+      });
+    })();
   </script>
   <nav class="bottom-nav">
     <button class="bn-btn" onclick="location.href='index.html'">

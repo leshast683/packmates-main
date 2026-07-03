@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Password — Packmates</title>
+  <link rel="icon" type="image/png" href="img/appIcon.png">
+  <style>
+    @font-face { font-family:'Blauer Nue'; src:url('font/Blauer-Nue-Heavy-iF6626350c62afa.otf') format('opentype'); font-weight:700; }
+    @font-face { font-family:'Montserrat'; src:url('font/Montserrat-Regular.ttf') format('truetype'); font-weight:400; }
+    @font-face { font-family:'Montserrat'; src:url('font/Montserrat-Medium.ttf') format('truetype'); font-weight:500; }
+    @font-face { font-family:'Montserrat'; src:url('font/Montserrat-ExtraBold.ttf') format('truetype'); font-weight:700; }
+
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html, body { height:100%; }
+
+    :root { --green:#5f9d30; --green2:#7cc63e; }
+
+    body {
+      min-height:100vh;
+      font-family:'Montserrat', sans-serif;
+      background:linear-gradient(135deg, #082233 0%, #0d3347 50%, #113a58 100%);
+      display:flex; align-items:center; justify-content:center;
+      padding:24px; overflow:hidden; position:relative;
+    }
+
+    .orb { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; }
+    .orb-1 { width:500px; height:500px; top:-150px; right:-100px; background:radial-gradient(circle, rgba(26,88,120,0.6), transparent 70%); animation:drift 20s ease-in-out infinite; }
+    .orb-2 { width:400px; height:400px; bottom:-100px; left:-80px; background:radial-gradient(circle, rgba(95,157,48,0.1), transparent 70%); animation:drift 26s 3s ease-in-out infinite reverse; }
+    @keyframes drift { 0%,100%{transform:translate(0,0)} 33%{transform:translate(40px,60px)} 66%{transform:translate(-50px,30px)} }
+
+    body::after {
+      content:''; position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:0;
+    }
+
+    .card {
+      position:relative; z-index:1;
+      width:100%; max-width:420px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:24px; padding:44px 40px 36px;
+      backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      box-shadow:0 32px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+      animation:slideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes slideUp { from{opacity:0;transform:translateY(32px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+    .logo { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:32px; }
+    .logo img { width:34px; height:34px; border-radius:9px; box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+    .logo-name { font-family:'Blauer Nue',sans-serif; font-weight:700; font-size:1rem; letter-spacing:0.15em; text-transform:uppercase; color:#fff; }
+
+    h1 { font-family:'Blauer Nue',sans-serif; font-size:1.75rem; font-weight:700; letter-spacing:-0.025em; color:#fff; text-align:center; margin-bottom:4px; }
+    .sub { text-align:center; font-size:0.78rem; color:rgba(255,255,255,0.38); font-weight:500; margin-bottom:28px; }
+
+    .msg { border-radius:10px; padding:10px 14px; margin-bottom:14px; font-size:0.78rem; display:none; }
+    .msg.error   { background:rgba(220,50,50,0.15); border:1px solid rgba(220,50,50,0.25); color:#ff8a8a; display:block; }
+    .msg.success { background:rgba(95,157,48,0.15); border:1px solid rgba(95,157,48,0.25); color:#a0e060; display:block; }
+
+    .form { display:flex; flex-direction:column; }
+    .field-label { font-size:0.68rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:7px; display:block; }
+    .field { position:relative; margin-bottom:16px; }
+    .field input { width:100%; padding:13px 44px 13px 16px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:12px; font-family:'Montserrat',sans-serif; font-size:0.9rem; color:#fff; outline:none; transition:border-color 0.2s,background 0.2s,box-shadow 0.2s; }
+    .field input::placeholder { color:rgba(255,255,255,0.25); }
+    .field input:focus { border-color:var(--green); background:rgba(255,255,255,0.1); box-shadow:0 0 0 3px rgba(95,157,48,0.15); }
+
+    .toggle-pw { position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:rgba(255,255,255,0.3); font-family:'Montserrat',sans-serif; font-size:0.72rem; font-weight:600; cursor:pointer; transition:color 0.2s; }
+    .toggle-pw:hover { color:rgba(255,255,255,0.7); }
+
+    .btn-submit { width:100%; padding:14px; background:var(--green); color:#fff; border:none; border-radius:12px; font-family:'Montserrat',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.22s; margin-bottom:20px; position:relative; overflow:hidden; }
+    .btn-submit::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,0.15), transparent); opacity:0; transition:opacity 0.2s; }
+    .btn-submit:hover::before { opacity:1; }
+    .btn-submit:hover { background:#52892a; transform:translateY(-1px); box-shadow:0 8px 20px rgba(95,157,48,0.35); }
+    .btn-submit:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+
+    .switch { text-align:center; font-size:0.78rem; color:rgba(255,255,255,0.35); }
+    .switch a { color:var(--green2); text-decoration:none; font-weight:600; }
+    .switch a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="card">
+    <div class="logo">
+      <img src="img/appIcon.png" alt="Packmates">
+      <span class="logo-name">Packmates</span>
+    </div>
+
+    <h1>New Password</h1>
+    <p class="sub">Choose a strong password for your account</p>
+
+    <div class="msg" id="msg"></div>
+
+    <form class="form" id="resetForm" onsubmit="handleReset(event)">
+      <label class="field-label" for="newPw">New Password</label>
+      <div class="field">
+        <input type="password" id="newPw" placeholder="Min. 8 characters" required autocomplete="new-password">
+        <button type="button" class="toggle-pw" onclick="togglePw('newPw',this)">Show</button>
+      </div>
+
+      <label class="field-label" for="confirmPw">Confirm Password</label>
+      <div class="field">
+        <input type="password" id="confirmPw" placeholder="Repeat password" required autocomplete="new-password">
+        <button type="button" class="toggle-pw" onclick="togglePw('confirmPw',this)">Show</button>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Set New Password</button>
+    </form>
+
+    <div class="switch">
+      <a href="login.html">Back to sign in</a>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    (async function init() {
+      /* Must arrive with a recovery token in the hash */
+      if (!location.hash.includes('access_token=') || !location.hash.includes('type=recovery')) {
+        location.replace('login.html');
+        return;
+      }
+
+      const sb = await window._pm_sbLoaded;
+      if (!sb) { location.replace('login.html'); return; }
+
+      /* Give Supabase a moment to exchange the hash token for a session */
+      await new Promise(r => setTimeout(r, 900));
+      const { data, error } = await sb.auth.getSession();
+      if (error || !data?.session) {
+        const msg = document.getElementById('msg');
+        msg.className = 'msg error';
+        msg.textContent = 'Reset link has expired or is invalid. Please request a new one.';
+        document.getElementById('submitBtn').disabled = true;
+      }
+    })();
+
+    function togglePw(id, btn) {
+      const el = document.getElementById(id);
+      const show = el.type === 'text';
+      el.type = show ? 'password' : 'text';
+      btn.textContent = show ? 'Show' : 'Hide';
+    }
+
+    async function handleReset(e) {
+      e.preventDefault();
+      const msg  = document.getElementById('msg');
+      const btn  = document.getElementById('submitBtn');
+      const pw   = document.getElementById('newPw').value;
+      const conf = document.getElementById('confirmPw').value;
+      msg.className = 'msg';
+
+      if (pw.length < 8)  { msg.className = 'msg error'; msg.textContent = 'Password must be at least 8 characters.'; return; }
+      if (pw !== conf)    { msg.className = 'msg error'; msg.textContent = 'Passwords do not match.'; return; }
+
+      btn.disabled = true; btn.textContent = 'Updating…';
+
+      const sb = await window._pm_sbLoaded;
+      const { error } = await sb.auth.updateUser({ password: pw });
+
+      if (error) {
+        msg.className = 'msg error'; msg.textContent = error.message;
+        btn.disabled = false; btn.textContent = 'Set New Password';
+        return;
+      }
+
+      msg.className = 'msg success'; msg.textContent = 'Password updated! Redirecting to sign in…';
+      btn.disabled = true;
+      setTimeout(() => location.replace('login.html?reset_success=1'), 1400);
+    }
+  </script>
+</body>
+</html>

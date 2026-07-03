@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Packing List — Packmates</title>
+  <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="packing-list.css">
 </head>
@@ -39,8 +40,8 @@
       </button>
     </div>
     <div class="nav-bottom">
-      <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
-        <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <button type="button" class="nav-new-trip" onclick="location.href='newTrip.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
         <span>New Trip</span>
       </button>
       <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
@@ -53,11 +54,44 @@
   <!-- ══ MAIN ══ -->
   <main>
 
+    <!-- Mobile destination hero (hidden on desktop) -->
+    <div id="cityBanner" class="city-banner"></div>
+
+    <!-- Join banner (shown when opening a shared link) -->
+    <div class="pl-join-banner" id="joinBanner" style="display:none">
+      <div class="pl-join-left">
+        <div class="pl-join-avatar" id="joinAvatar">PM</div>
+        <div>
+          <strong id="joinTitle">Shared packing list</strong>
+          <span id="joinSub">Join to pack together in real time</span>
+        </div>
+      </div>
+      <div class="pl-join-actions">
+        <button class="pl-join-btn pl-join-accept" id="joinAcceptBtn">Join</button>
+        <button class="pl-join-dismiss" id="joinDismissBtn">✕</button>
+      </div>
+    </div>
+
+    <!-- Collab indicator (shown when in collaborative mode) -->
+    <div class="pl-collab-bar" id="collabBar" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span id="collabLabel">Packing together</span>
+      <div class="pl-collab-dot"></div>
+    </div>
+
     <!-- Page header -->
     <div class="pl-header">
-      <div>
-        <h1 id="packingListTitle">Packing List</h1>
-        <div class="pl-sub" id="packingSummaryMeta">Loading…</div>
+      <div class="pl-title-row">
+        <div>
+          <div class="pl-title-line">
+            <h1 id="packingListTitle">Packing List</h1>
+            <button class="pl-share-btn" id="openShareModal">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              Share
+            </button>
+          </div>
+          <div class="pl-sub" id="packingSummaryMeta">Loading…</div>
+        </div>
       </div>
       <div class="pl-header-right">
         <button class="pl-back-btn" onclick="location.href='tripPreview.html'">
@@ -94,6 +128,9 @@
         <span class="pl-progress-pct" id="progressPct">0%</span>
       </div>
     </div>
+    <div id="dismissedBar" style="display:none;font-size:.72rem;color:#888;text-align:center;margin:-6px 0 10px;padding:0 20px;">
+      <span id="dismissedCount"></span> items hidden &mdash; <button onclick="restoreDismissed()" style="background:none;border:none;color:#7cc63e;font-size:.72rem;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;">restore all</button>
+    </div>
 
     <!-- Suggested banner -->
     <div class="pl-banner" id="suggestedBanner" style="display:none">
@@ -117,6 +154,9 @@
       </div>
     </div>
 
+    <!-- "Adapted for your trip" banner — outside the list so search never clears it -->
+    <div id="profileBannerWrap"></div>
+
     <!-- List body -->
     <div class="pl-list" id="packingListBody"></div>
 
@@ -128,11 +168,11 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div>
-          <strong>You're all packed!</strong>
-          <span>Every item on your list is checked off</span>
+          <strong id="finishBannerTitle">You're all packed!</strong>
+          <span id="finishBannerSub">Every item on your list is checked off</span>
         </div>
       </div>
-      <button class="pl-finish-btn" onclick="location.href='tripPreview.html'">
+      <button class="pl-finish-btn" id="finishBannerBtn" onclick="location.href='tripPreview.html'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
         Back to Trip
       </button>
@@ -200,11 +240,43 @@
     </div>
   </div>
 
+  <!-- ══ SHARE MODAL ══ -->
+  <div class="pl-modal-backdrop" id="shareModal">
+    <div class="pl-modal pl-share-modal">
+      <div class="pl-modal-header">
+        <h2>Share Packing List</h2>
+        <button class="pl-modal-close" id="closeShareModal" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="pl-share-body">
+        <div class="pl-share-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7cc63e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </div>
+        <p class="pl-share-desc">Share this link with your travel companions. Anyone with the link can join and pack together in real time.</p>
+        <div class="pl-share-url-wrap">
+          <input type="text" id="shareUrl" class="pl-share-url" readonly>
+          <button class="pl-copy-btn" id="copyShareUrl">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="pl-share-copied" id="shareCopied" style="display:none">Link copied!</div>
+        <div class="pl-share-info">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Changes sync live across all devices using the same link.
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="auth.js"></script>
+  <script src="notifications.js"></script>
   <script>
     Auth.requireAuth('welcome.html');
   </script>
-  <script src="packing-list.js"></script>
+  <script src="packing-icons.js?v=1"></script>
+  <script src="packing-list.js?v=48"></script>
   <nav class="bottom-nav">
     <button class="bn-btn" onclick="location.href='index.html'">
       <svg viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>

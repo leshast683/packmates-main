@@ -22,42 +22,33 @@
     body {
       min-height:100vh;
       font-family:'Montserrat', sans-serif;
-      background:var(--navy);
+      background-color:#2ab5b5;
+      background-image:url('img/world-map-bg.png');
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
       display:flex;
       align-items:center;
       justify-content:center;
       padding:24px;
-      overflow:hidden;
+      overflow-y:auto;
       position:relative;
+      opacity:0;
+      transition:opacity 0.55s ease;
     }
 
-    .orb {
-      position:fixed;
-      border-radius:50%;
-      filter:blur(80px);
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.28);
       pointer-events:none;
-    }
-    .orb-1 {
-      width:500px; height:500px;
-      top:-100px; left:-80px;
-      background:radial-gradient(circle, rgba(95,157,48,0.1), transparent 70%);
-      animation:drift 22s ease-in-out infinite;
-    }
-    .orb-2 {
-      width:400px; height:400px;
-      bottom:-120px; right:-60px;
-      background:radial-gradient(circle, rgba(17,58,88,0.65), transparent 70%);
-      animation:drift 18s 2s ease-in-out infinite reverse;
-    }
-    @keyframes drift {
-      0%,100%{ transform:translate(0,0); }
-      50%    { transform:translate(50px,-50px); }
+      z-index:0;
     }
 
     body::after {
       content:'';
       position:fixed; inset:0;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
       pointer-events:none;
       z-index:0;
     }
@@ -66,19 +57,13 @@
       position:relative; z-index:1;
       width:100%;
       max-width:440px;
-      background:rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.1);
+      background:rgba(4,30,30,0.62);
+      border:1px solid rgba(255,255,255,0.13);
       border-radius:24px;
       padding:40px 40px 36px;
-      backdrop-filter:blur(24px);
-      -webkit-backdrop-filter:blur(24px);
-      box-shadow:0 32px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
-      animation:slideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
-    }
-
-    @keyframes slideUp {
-      from { opacity:0; transform:translateY(32px) scale(0.97); }
-      to   { opacity:1; transform:translateY(0) scale(1); }
+      backdrop-filter:blur(28px);
+      -webkit-backdrop-filter:blur(28px);
+      box-shadow:0 32px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
     }
 
     .logo {
@@ -236,9 +221,6 @@
   </style>
 </head>
 <body>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-
   <div class="card">
     <div class="logo">
       <img src="img/appIcon.png" alt="Packmates">
@@ -391,6 +373,40 @@
     }
 
     let _signedUpEmail = '';
+    let _signedUpPw    = ''; /* kept in memory only — never stored */
+    let _pollTimer     = null;
+
+    /* ── Same-browser detection: fires immediately when session is established ── */
+    (async function() {
+      const sb = await window._pm_sbLoaded;
+      if (!sb) return;
+      const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
+        if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+          subscription.unsubscribe();
+          if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+          location.replace('index.html');
+        }
+      });
+    })();
+
+    /* ── Cross-device detection: poll signIn every 5 s until email is confirmed ── */
+    async function _startConfirmationPoll() {
+      const sb = await window._pm_sbLoaded;
+      if (!sb || !_signedUpEmail || !_signedUpPw) return;
+      const email = _signedUpEmail, pw = _signedUpPw;
+      _pollTimer = setInterval(async () => {
+        const { data } = await sb.auth.signInWithPassword({ email, password: pw });
+        if (data?.session) {
+          clearInterval(_pollTimer); _pollTimer = null; _signedUpPw = '';
+          location.replace('index.html');
+        }
+      }, 5000);
+      /* Stop polling after 20 minutes and wipe password from memory */
+      setTimeout(() => {
+        if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+        _signedUpPw = '';
+      }, 20 * 60 * 1000);
+    }
 
     function openEmailApp() {
       window.location.href = 'mailto:';
@@ -446,11 +462,19 @@
       /* Fade out form while API call runs in parallel — no layout jump */
       const form = document.getElementById('signupForm');
       const sw   = document.querySelector('.switch');
+      const card = document.querySelector('.card');
+
+      /* Lock card height NOW (form still in layout) so hiding it won't collapse the card */
+      card.style.minHeight = card.offsetHeight + 'px';
+
       form.style.opacity = '0';
       form.style.pointerEvents = 'none';
       sw.style.opacity = '0';
       document.getElementById('mainTitle').textContent = 'Creating account…';
       document.getElementById('mainSub').textContent = 'Just a moment';
+
+      /* Keep password in memory for cross-device confirmation polling */
+      _signedUpPw = pw;
 
       /* Start API call immediately, don't wait for fade */
       const apiPromise = Auth.register(name, email, pw, selectedGender);
@@ -462,6 +486,7 @@
       document.getElementById('loadingScreen').style.display = 'block';
 
       const result = await apiPromise;
+      card.style.minHeight = '';
 
       if (result.success) {
         _signedUpEmail = email;
@@ -471,12 +496,25 @@
         document.getElementById('confirmedEmail').textContent = email;
         document.getElementById('successScreen').style.display = 'block';
         setTimeout(() => { document.getElementById('resendWrap').style.display = 'block'; }, 15000);
+        _startConfirmationPoll(); /* cross-device: detect confirmation on phone/other browser */
       } else {
         const errText = (typeof result.error === 'string' && result.error && result.error !== '{}')
           ? result.error : 'Sign up failed. Please try again.';
         _showForm(errText);
       }
     }
+  </script>
+  <script>
+    /* Fade the page in only after the background image has loaded */
+    (function() {
+      const img = new Image();
+      const show = () => { document.body.style.opacity = '1'; };
+      img.onload  = show;
+      img.onerror = show; /* show immediately if image fails */
+      img.src = 'img/world-map-bg.png';
+      /* Fallback: show after 1.5 s no matter what */
+      setTimeout(show, 1500);
+    })();
   </script>
 </body>
 </html>
