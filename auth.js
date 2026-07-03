@@ -172,17 +172,21 @@ const Auth = (() => {
           emailRedirectTo: 'https://packmatesai.com/welcome.html',
         }
       });
+      console.log('[Auth] signUp data:', JSON.stringify(data), 'error:', JSON.stringify(error), error);
       if (error) {
-        const msg = error.message || '';
-        if (!msg || msg === '{}' || msg === '[]' || msg === 'null')
-          return { success: false, error: 'An account with this email already exists.' };
+        const msg = error.message || error.error_description || error.msg || '';
+        console.error('[Auth] signUp error — status:', error.status, 'code:', error.code, 'message:', msg);
+        if (!msg || msg === '{}' || msg === '[]' || msg === 'null' || msg === '{}')
+          return { success: false, error: 'Sign up failed — please wait a minute and try again.' };
+        if (msg.toLowerCase().includes('rate limit') || msg.toLowerCase().includes('too many'))
+          return { success: false, error: 'Too many sign-up attempts. Please wait a few minutes and try again.' };
         if (msg.includes('already registered') || msg.includes('already exists') || msg.includes('already been registered'))
           return { success: false, error: 'An account with this email already exists.' };
         return { success: false, error: msg };
       }
       /* Supabase v2 silently returns data.user == null for duplicate emails when confirm is ON */
-      if (!data?.user && !error)
-        return { success: false, error: 'An account with this email already exists.' };
+      if (!data?.user)
+        return { success: false, error: 'An account with this email already exists. Try logging in instead.' };
       /* Profile row is auto-created by the DB trigger */
       return { success: true };
     },
