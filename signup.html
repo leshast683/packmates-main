@@ -437,7 +437,9 @@
       if (pw !== conf)       { msg.className='msg error'; msg.textContent='Passwords do not match.'; return; }
       if (!selectedGender)   { msg.className='msg error'; msg.textContent='Please select your gender.'; return; }
 
-      /* Immediately hide form and show loading dots */
+      /* Lock card height to prevent layout jump, then swap content */
+      const card = document.querySelector('.card');
+      card.style.minHeight = card.offsetHeight + 'px';
       document.getElementById('signupForm').style.display = 'none';
       document.querySelector('.switch').style.display = 'none';
       document.getElementById('mainTitle').textContent = 'Creating account…';
