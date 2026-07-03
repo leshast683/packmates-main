@@ -2394,13 +2394,15 @@
       });
     });
 
-    document.getElementById('packedStrip').innerHTML = popularItems.slice(0,8).map(([name, pct, circleBg, barColor]) => `
+    const shownItems = popularItems.slice(0, 8);
+    const topPct = Math.max(...shownItems.map(([,pct]) => pct));
+    document.getElementById('packedStrip').innerHTML = shownItems.map(([name, pct, circleBg, barColor]) => `
       <div class="packed-chip">
         <span class="packed-chip-pct">${pct}%</span>
         <div class="packed-chip-circle" style="background:${circleBg}">
           ${getItemIcon(name)}
         </div>
-        ${pct >= 80 ? '<div class="packed-top-pick">⭐ TOP PICK</div>' : ''}
+        ${pct === topPct ? '<div class="packed-top-pick">⭐ TOP PICK</div>' : ''}
         <div class="packed-chip-name">${name}</div>
         <div class="packed-chip-bar"><div class="packed-chip-fill" style="width:${pct}%;background:${barColor}"></div></div>
       </div>`).join('');
