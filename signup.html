@@ -224,6 +224,10 @@
     }
     .switch a { color:var(--green); text-decoration:none; font-weight:700; transition:opacity 0.2s; }
     .switch a:hover { opacity:0.8; }
+    @keyframes dot-bounce {
+      0%,80%,100% { transform:translateY(0); opacity:0.4; }
+      40%          { transform:translateY(-10px); opacity:1; }
+    }
     @media (max-width: 480px) {
       body { padding: 16px; align-items: flex-start; padding-top: 24px; overflow-y: auto; }
       .card { padding: 28px 20px 24px; border-radius: 20px; }
@@ -245,7 +249,17 @@
 
     <div class="msg" id="msg"></div>
 
-    <!-- Success screen (hidden until signup) -->
+    <!-- Loading screen (shown immediately on submit) -->
+    <div id="loadingScreen" style="display:none;text-align:center;padding:24px 0 32px;">
+      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px;">
+        <span style="width:10px;height:10px;border-radius:50%;background:#5f9d30;display:inline-block;animation:dot-bounce 1.2s ease-in-out infinite;"></span>
+        <span style="width:10px;height:10px;border-radius:50%;background:#5f9d30;display:inline-block;animation:dot-bounce 1.2s ease-in-out 0.2s infinite;"></span>
+        <span style="width:10px;height:10px;border-radius:50%;background:#5f9d30;display:inline-block;animation:dot-bounce 1.2s ease-in-out 0.4s infinite;"></span>
+      </div>
+      <p style="color:rgba(255,255,255,0.45);font-size:0.8rem;">Creating your account…</p>
+    </div>
+
+    <!-- Success screen (shown after account created) -->
     <div id="successScreen" style="display:none;text-align:center;padding:8px 0 16px;">
       <div style="width:72px;height:72px;background:rgba(95,157,48,0.15);border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
         <svg width="34" height="26" viewBox="0 0 34 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -396,42 +410,54 @@
       }
     }
 
+    function _showForm(errorText) {
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('signupForm').style.display = 'flex';
+      document.querySelector('.switch').style.display = 'block';
+      document.getElementById('mainTitle').textContent = 'Create Account';
+      document.getElementById('mainSub').textContent = 'Join and start your first trip today';
+      if (errorText) {
+        const msg = document.getElementById('msg');
+        msg.className = 'msg error';
+        msg.textContent = errorText;
+      }
+    }
+
     async function handleSignup(e) {
       e.preventDefault();
       if (document.getElementById('hp_signup').value) return;
-      const msg     = document.getElementById('msg');
-      const name    = document.getElementById('name').value.trim();
-      const email   = document.getElementById('email').value.trim();
-      const pw      = document.getElementById('password').value;
-      const confirm = document.getElementById('confirm').value;
-      msg.className = 'msg';
-      if (pw !== confirm) { msg.className='msg error'; msg.textContent='Passwords do not match.'; return; }
-      if (!selectedGender) { msg.className='msg error'; msg.textContent='Please select your gender.'; return; }
 
-      const submitBtn = document.querySelector('#signupForm .btn-submit');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Creating account…';
+      const msg    = document.getElementById('msg');
+      const name   = document.getElementById('name').value.trim();
+      const email  = document.getElementById('email').value.trim();
+      const pw     = document.getElementById('password').value;
+      const conf   = document.getElementById('confirm').value;
+
+      msg.className = 'msg';
+      if (pw !== conf)       { msg.className='msg error'; msg.textContent='Passwords do not match.'; return; }
+      if (!selectedGender)   { msg.className='msg error'; msg.textContent='Please select your gender.'; return; }
+
+      /* Immediately hide form and show loading dots */
+      document.getElementById('signupForm').style.display = 'none';
+      document.querySelector('.switch').style.display = 'none';
+      document.getElementById('mainTitle').textContent = 'Creating account…';
+      document.getElementById('mainSub').textContent = 'Just a moment';
+      document.getElementById('loadingScreen').style.display = 'block';
 
       const result = await Auth.register(name, email, pw, selectedGender);
+
       if (result.success) {
         _signedUpEmail = email;
-        // Hide form, update heading, show success screen
-        document.getElementById('signupForm').style.display = 'none';
-        document.querySelector('.switch').style.display = 'none';
+        document.getElementById('loadingScreen').style.display = 'none';
         document.getElementById('mainTitle').textContent = 'Check your email';
         document.getElementById('mainSub').textContent = 'One last step to get started';
         document.getElementById('confirmedEmail').textContent = email;
         document.getElementById('successScreen').style.display = 'block';
-        // Show resend link after 15s
-        setTimeout(() => {
-          document.getElementById('resendWrap').style.display = 'block';
-        }, 15000);
+        setTimeout(() => { document.getElementById('resendWrap').style.display = 'block'; }, 15000);
       } else {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Create Account';
-        msg.className='msg error';
-        msg.textContent = (typeof result.error === 'string' && result.error && result.error !== '{}')
+        const errText = (typeof result.error === 'string' && result.error && result.error !== '{}')
           ? result.error : 'Sign up failed. Please try again.';
+        _showForm(errText);
       }
     }
   </script>
