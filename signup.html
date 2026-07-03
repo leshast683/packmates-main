@@ -430,8 +430,8 @@
         submitBtn.disabled = false;
         submitBtn.textContent = 'Create Account';
         msg.className='msg error';
-        const errText = result.error && result.error !== '{}' ? result.error : 'Sign up failed — please try again.';
-        msg.textContent = errText;
+        msg.textContent = (typeof result.error === 'string' && result.error && result.error !== '{}')
+          ? result.error : 'Sign up failed. Please try again.';
       }
     }
   </script>

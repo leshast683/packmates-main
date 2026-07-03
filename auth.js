@@ -165,26 +165,32 @@ const Auth = (() => {
       const sb = await _getSb();
       if (!sb) return this._localRegister(name, norm, pw, gender);
 
-      const { data, error } = await sb.auth.signUp({
-        email: norm, password: pw,
-        options: {
-          data: { name: name.trim(), gender },
-          emailRedirectTo: 'https://packmatesai.com/welcome.html',
-        }
-      });
-      console.log('[Auth] signUp data:', JSON.stringify(data), 'error:', JSON.stringify(error), error);
+      let data, error;
+      try {
+        ({ data, error } = await sb.auth.signUp({
+          email: norm, password: pw,
+          options: {
+            data: { name: name.trim(), gender },
+            emailRedirectTo: 'https://packmatesai.com/welcome.html',
+          }
+        }));
+      } catch (e) {
+        return { success: false, error: 'Connection error. Please check your internet and try again.' };
+      }
+
       if (error) {
-        const msg = error.message || error.error_description || error.msg || '';
-        console.error('[Auth] signUp error — status:', error.status, 'code:', error.code, 'message:', msg);
-        if (!msg || msg === '{}' || msg === '[]' || msg === 'null' || msg === '{}')
-          return { success: false, error: 'Sign up failed — please wait a minute and try again.' };
-        if (msg.toLowerCase().includes('rate limit') || msg.toLowerCase().includes('too many'))
-          return { success: false, error: 'Too many sign-up attempts. Please wait a few minutes and try again.' };
+        const msg = error.message || error.error_description || error.msg
+          || (error.code ? String(error.code) : '') || '';
+        if (!msg || msg === '{}' || msg === 'null')
+          return { success: false, error: 'Sign up failed. Please try again.' };
+        if (msg.toLowerCase().includes('sending') || msg.toLowerCase().includes('smtp') || error.status === 500)
+          return { success: false, error: 'We couldn\'t send a confirmation email. Please try again in a few minutes.' };
+        if (msg.toLowerCase().includes('rate limit') || msg.toLowerCase().includes('too many') || error.status === 429)
+          return { success: false, error: 'Too many attempts. Please wait a few minutes and try again.' };
         if (msg.includes('already registered') || msg.includes('already exists') || msg.includes('already been registered'))
           return { success: false, error: 'An account with this email already exists.' };
         return { success: false, error: msg };
       }
-      /* Supabase v2 silently returns data.user == null for duplicate emails when confirm is ON */
       if (!data?.user)
         return { success: false, error: 'An account with this email already exists. Try logging in instead.' };
       /* Profile row is auto-created by the DB trigger */
