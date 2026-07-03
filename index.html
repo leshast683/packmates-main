@@ -2257,7 +2257,14 @@
         videoEl.load();
         videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; };
         videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; };
+        /* If nothing plays within 4 s, fall back to local video */
+        videoEl._fbTimer = setTimeout(() => {
+          if (parseFloat(videoEl.style.opacity) < 1) playVideo('img/hero-forest-compressed.mp4');
+        }, 4000);
       }
+
+      /* Start with local video immediately so card is never empty */
+      playVideo('img/hero-forest-compressed.mp4');
 
       // Rotate through cached pool immediately
       if (localStorage.getItem('pm_tip_video')) { localStorage.removeItem('pm_tip_video'); localStorage.removeItem('pm_tip_idx'); }

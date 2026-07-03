@@ -1,14 +1,6 @@
-const CACHE = 'packmates-v1';
+const CACHE = 'packmates-v3';
 
 const PRECACHE = [
-  '/welcome.html',
-  '/login.html',
-  '/signup.html',
-  '/reset.html',
-  '/index.html',
-  '/auth.js',
-  '/style.css',
-  '/styles.css',
   '/img/appIcon.png',
 ];
 
@@ -30,11 +22,10 @@ self.addEventListener('fetch', e => {
   const { request } = e;
   const url = new URL(request.url);
 
-  /* Pass through: non-GET, cross-origin API (Supabase, Anthropic, Pexels, weather) */
   if (request.method !== 'GET') return;
   if (url.hostname !== self.location.hostname) return;
 
-  /* Network-first for our own API routes */
+  /* API routes: network-only */
   if (url.pathname.startsWith('/api/')) {
     e.respondWith(
       fetch(request).catch(() =>
@@ -47,7 +38,24 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  /* Cache-first for everything else (HTML, JS, CSS, fonts, images) */
+  /* HTML, JS, CSS: network-first so updates are always reflected */
+  const ext = url.pathname.split('.').pop().toLowerCase();
+  if (['html', 'js', 'css'].includes(ext) || url.pathname === '/') {
+    e.respondWith(
+      fetch(request)
+        .then(res => {
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => c.put(request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  /* Static assets (images, fonts, videos): cache-first */
   e.respondWith(
     caches.match(request).then(cached => {
       if (cached) return cached;
