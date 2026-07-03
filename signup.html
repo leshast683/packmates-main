@@ -224,6 +224,7 @@
     }
     .switch a { color:var(--green); text-decoration:none; font-weight:700; transition:opacity 0.2s; }
     .switch a:hover { opacity:0.8; }
+    #signupForm, .switch { transition: opacity 0.15s ease; }
     @keyframes dot-bounce {
       0%,80%,100% { transform:translateY(0); opacity:0.4; }
       40%          { transform:translateY(-10px); opacity:1; }
@@ -411,9 +412,14 @@
     }
 
     function _showForm(errorText) {
+      const form = document.getElementById('signupForm');
+      const sw   = document.querySelector('.switch');
       document.getElementById('loadingScreen').style.display = 'none';
-      document.getElementById('signupForm').style.display = 'flex';
-      document.querySelector('.switch').style.display = 'block';
+      form.style.display = 'flex';
+      form.style.opacity = '1';
+      form.style.pointerEvents = 'auto';
+      sw.style.display = 'block';
+      sw.style.opacity = '1';
       document.getElementById('mainTitle').textContent = 'Create Account';
       document.getElementById('mainSub').textContent = 'Join and start your first trip today';
       if (errorText) {
@@ -437,16 +443,25 @@
       if (pw !== conf)       { msg.className='msg error'; msg.textContent='Passwords do not match.'; return; }
       if (!selectedGender)   { msg.className='msg error'; msg.textContent='Please select your gender.'; return; }
 
-      /* Lock card height to prevent layout jump, then swap content */
-      const card = document.querySelector('.card');
-      card.style.minHeight = card.offsetHeight + 'px';
-      document.getElementById('signupForm').style.display = 'none';
-      document.querySelector('.switch').style.display = 'none';
+      /* Fade out form while API call runs in parallel — no layout jump */
+      const form = document.getElementById('signupForm');
+      const sw   = document.querySelector('.switch');
+      form.style.opacity = '0';
+      form.style.pointerEvents = 'none';
+      sw.style.opacity = '0';
       document.getElementById('mainTitle').textContent = 'Creating account…';
       document.getElementById('mainSub').textContent = 'Just a moment';
+
+      /* Start API call immediately, don't wait for fade */
+      const apiPromise = Auth.register(name, email, pw, selectedGender);
+
+      /* After CSS fade (150ms), swap to loading dots */
+      await new Promise(r => setTimeout(r, 150));
+      form.style.display = 'none';
+      sw.style.display = 'none';
       document.getElementById('loadingScreen').style.display = 'block';
 
-      const result = await Auth.register(name, email, pw, selectedGender);
+      const result = await apiPromise;
 
       if (result.success) {
         _signedUpEmail = email;
