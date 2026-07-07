@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Packmates — Home</title>
+  <meta name="description" content="Plan trips, split packing lists, and travel together with your crew on Packmates.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Packmates — Home">
+  <meta property="og:description" content="Plan trips, split packing lists, and travel together with your crew on Packmates.">
+  <meta property="og:image" content="https://packmatesai.com/img/discover-hero.jpg">
+  <meta property="og:url" content="https://packmatesai.com/">
   <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -2067,6 +2073,7 @@
                 <div class="bc-board-airline-logo">
                   <img src="https://www.gstatic.com/flights/airline_logos/70px/${airline.iata}.png"
                        alt="${airline.iata}"
+                       loading="lazy"
                        onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\\'font-size:0.6rem;font-weight:800;color:var(--teal-a)\\'>${airline.iata}</span>'">
                 </div>
                 <span class="bc-board-airline-name">${airline.name}</span>
@@ -2074,7 +2081,7 @@
             </div>
             <div class="bc-lug-icon-area">
               <div class="bc-lug-icon-wrap">
-                <img src="img/luggage.png" alt="Luggage" class="bc-lug-img">
+                <img src="img/luggage.png" alt="Luggage" class="bc-lug-img" loading="lazy">
               </div>
             </div>
           </div>
@@ -2208,7 +2215,7 @@
         return `
           <div class="trip-card${isActive ? ' trip-card--active' : ''}" id="tc-${t.id}">
             <div class="trip-card-img" onclick="${isActive ? `location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}" style="position:relative">
-              <img src="${t.imageUrl || 'img/placeholderTrip.png'}" alt="${t.destination}">
+              <img src="${t.imageUrl || 'img/placeholderTrip.png'}" alt="${t.destination}" loading="lazy">
               ${isActive
                 ? '<div class="trip-card-badge">Active</div>'
                 : '<div class="trip-card-badge trip-card-badge--switch">Switch</div>'}
@@ -2223,7 +2230,7 @@
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                     Share
                   </button>
-                  <button class="trip-card-delete" onclick="event.stopPropagation();deleteTrip('${t.id}')" title="Delete trip">
+                  <button class="trip-card-delete" onclick="event.stopPropagation();deleteTrip('${t.id}')" title="Delete trip" aria-label="Delete trip">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                   </button>
                 </div>

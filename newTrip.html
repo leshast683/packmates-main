@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Trip — Packmates</title>
+  <meta name="description" content="Plan a new trip with Packmates — dates, destinations, and your travel crew.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="New Trip — Packmates">
+  <meta property="og:description" content="Plan a new trip with Packmates — dates, destinations, and your travel crew.">
+  <meta property="og:image" content="https://packmatesai.com/img/discover-hero.jpg">
+  <meta property="og:url" content="https://packmatesai.com/newTrip.html">
   <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -946,7 +952,7 @@
               </div>
               <div class="nt-airline-selected" id="airlineSelected">
                 <div class="nt-airline-selected-logo" id="airlineLogoBox">
-                  <img id="airlineLogoImg" src="" alt="">
+                  <img id="airlineLogoImg" src="" alt="" loading="lazy">
                 </div>
                 <div>
                   <div class="nt-airline-selected-name" id="airlineSelName">—</div>
@@ -1243,6 +1249,7 @@
           <div class="nt-airline-iata">
             <img src="https://www.gstatic.com/flights/airline_logos/70px/${a.iata}.png"
                  alt="${a.iata}"
+                 loading="lazy"
                  onerror="this.style.display='none';this.nextSibling.style.display='block'">
             <span class="nt-airline-iata-fb" style="display:none">${a.iata}</span>
           </div>

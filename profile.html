@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile — Packmates</title>
+  <meta name="description" content="Your Packmates profile — trips, stats, and travel history.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Profile — Packmates">
+  <meta property="og:description" content="Your Packmates profile — trips, stats, and travel history.">
+  <meta property="og:image" content="https://packmatesai.com/img/discover-hero.jpg">
+  <meta property="og:url" content="https://packmatesai.com/profile.html">
   <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -820,7 +826,7 @@
             <div class="ai-insights-empty">Pack a trip to start seeing insights.</div>
           </div>
           <div class="ai-insights-deco" aria-hidden="true">
-            <img src="img/ai-packing-suitcase.png" alt="" style="width:100%;height:auto;display:block;object-fit:contain;">
+            <img src="img/ai-packing-suitcase.png" alt="" loading="lazy" style="width:100%;height:auto;display:block;object-fit:contain;">
           </div>
         </div>
       </div>
@@ -841,11 +847,11 @@
     <div class="pm-list-modal">
       <div class="pm-list-header">
         <div class="pm-list-logo">
-          <img src="img/appIcon.png" alt="Packmates">
+          <img src="img/appIcon.png" alt="Packmates" loading="lazy">
           <span>Packmates</span>
         </div>
         <span class="pm-list-count" id="pmListCount">0 packmates</span>
-        <button class="pm-list-close" onclick="closePackmatesModal()">
+        <button class="pm-list-close" onclick="closePackmatesModal()" aria-label="Close packmates list">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
@@ -859,7 +865,7 @@
       <div class="tp-header">
         <div class="tp-header-bg" id="pmTpHeaderBg"></div>
         <div class="tp-header-overlay"></div>
-        <button class="tp-close" onclick="closePackmateTravelerModal()">
+        <button class="tp-close" onclick="closePackmateTravelerModal()" aria-label="Close traveler profile">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
@@ -1081,7 +1087,7 @@
       const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
       container.innerHTML = sorted.map(([cat]) => {
         const m = STYLE_MAP[cat]; if (!m) return '';
-        return `<div class="style-chip ${m.cls}"><img src="img/${m.img}" alt="">${m.label}</div>`;
+        return `<div class="style-chip ${m.cls}"><img src="img/${m.img}" alt="" loading="lazy">${m.label}</div>`;
       }).join('');
     }
 
@@ -1101,7 +1107,7 @@
         const packed  = Object.values(pd.itemState || {}).filter(v => v?.packed).length;
         const pct     = total > 0 ? Math.round(packed / total * 100) : 0;
         const dates   = t.fromDate && t.toDate ? `${fmtDate(t.fromDate)} – ${fmtDate(t.toDate)}` : 'Dates TBD';
-        const img     = t.imageUrl ? `<img src="${t.imageUrl}" alt="${t.destination}" onerror="this.style.display='none'">` : '';
+        const img     = t.imageUrl ? `<img src="${t.imageUrl}" alt="${t.destination}" loading="lazy" onerror="this.style.display='none'">` : '';
         const tripStr = encodeURIComponent(JSON.stringify(t));
         return `<div class="recent-list-item" onclick="localStorage.setItem('currentTrip',decodeURIComponent('${tripStr}'));location.href='packing-list.html'">
           <div class="recent-list-thumb">${img}</div>
@@ -1136,7 +1142,7 @@
           const firstAct = (t.activityCategories||[])[0];
           const imgF = firstAct && ACT_IMG[firstAct] ? `img/${ACT_IMG[firstAct]}.png` : null;
           const dotContent = imgF
-            ? `<img src="${imgF}" alt="" style="width:16px;height:16px;object-fit:contain" onerror="this.style.display='none'">`
+            ? `<img src="${imgF}" alt="" loading="lazy" style="width:16px;height:16px;object-fit:contain" onerror="this.style.display='none'">`
             : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
           html += `<div class="timeline-item">
             <div class="timeline-dot" style="background:${col}18;border:2px solid ${col}44">${dotContent}</div>

@@ -5,6 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Packmates</title>
+    <meta name="description" content="Preview your trip itinerary with Packmates.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Packmates — Trip Preview">
+    <meta property="og:description" content="Preview your trip itinerary with Packmates.">
+    <meta property="og:image" content="https://packmatesai.com/img/discover-hero.jpg">
+    <meta property="og:url" content="https://packmatesai.com/tripPreview.html">
+    <link rel="icon" type="image/png" href="img/appIcon.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="packing-list.css">
     <style>
@@ -986,7 +993,7 @@
             <div style="background-image: url(img/tripPreviewBanner.jpg)" class="tripPreviewBanner">
                 <div class="banner-mobile-overlay">
                     <div class="banner-top-bar">
-                        <button class="banner-icon-btn" onclick="location.href='index.html'">
+                        <button class="banner-icon-btn" onclick="location.href='index.html'" aria-label="Back to home">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         </button>
                         <button class="banner-share-pill" onclick="copyInviteCode()">Share</button>
@@ -994,7 +1001,7 @@
                     <div class="banner-title-area">
                         <div class="banner-city-row">
                             <span class="banner-city-text" id="bannerCityName"></span>
-                            <button class="banner-edit-btn" title="Edit trip">
+                            <button class="banner-edit-btn" title="Edit trip" aria-label="Edit trip">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             </button>
                         </div>
@@ -1108,7 +1115,7 @@
                     <input type="hidden" id="activityType" value="Sightseeing">
                     <div class="activity-type-wrapper">
                         <div class="activity-type-trigger" id="activityTypeTrigger">
-                            <img class="activity-type-img" id="activityTypeImg" src="img/activity_sightseeing.png" alt="">
+                            <img class="activity-type-img" id="activityTypeImg" src="img/activity_sightseeing.png" alt="" loading="lazy">
                             <span class="activity-type-label-text" id="activityTypeLabelText">City Sightseeing</span>
                             <svg class="activity-type-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
                         </div>
@@ -1535,7 +1542,7 @@
                         <div class="tl-line"></div>
                     </div>
                     <div class="tl-card">
-                        <img id="actImg${i}" src="${placeholder}" alt="${act.name}" style="object-fit:cover;width:76px;height:76px;border-radius:12px;flex-shrink:0;">
+                        <img id="actImg${i}" src="${placeholder}" alt="${act.name}" loading="lazy" style="object-fit:cover;width:76px;height:76px;border-radius:12px;flex-shrink:0;">
                         <div class="itineraryItemInfo">
                             <h3>${act.name}</h3>
                             <p>${pinSvg} ${act.type}</p>
@@ -1577,7 +1584,7 @@
             ACTIVITY_OPTIONS.forEach((opt, idx) => {
                 const div = document.createElement('div');
                 div.className = 'activity-type-option' + (idx === 0 ? ' is-selected' : '');
-                div.innerHTML = `<img src="img/${opt.img}" alt="${opt.value}"><span>${opt.value}</span>`;
+                div.innerHTML = `<img src="img/${opt.img}" alt="${opt.value}" loading="lazy"><span>${opt.value}</span>`;
                 div.addEventListener('click', e => {
                     e.stopPropagation();
                     dropdownEl.querySelectorAll('.activity-type-option').forEach(o => o.classList.remove('is-selected'));
@@ -1650,7 +1657,7 @@
                 const b = document.createElement('div');
                 b.className = 'packingSuggestedBanner';
                 b.innerHTML = badges.map(({img, label}) =>
-                    `<span class="packing-badge-chip"><img class="packing-badge-img" src="img/${img}" alt="${label}"> ${label}</span>`
+                    `<span class="packing-badge-chip"><img class="packing-badge-img" src="img/${img}" alt="${label}" loading="lazy"> ${label}</span>`
                 ).join('');
                 body.appendChild(b);
             }
@@ -1728,7 +1735,7 @@
                         </div>
                         <div class="byg-tile-text">${text}</div>
                     </div>`;
-                const img = (src) => `<img src="${src}" style="width:74px;height:74px;object-fit:contain;">`;
+                const img = (src) => `<img src="${src}" loading="lazy" style="width:74px;height:74px;object-fit:contain;">`;
                 bygBody.innerHTML = `<div class="byg-grid">
                     ${tile('byg-tile-visa',     img('img/byg_visa.png'),     'Visa',     b.visa||'Check requirements')}
                     ${tile('byg-tile-currency', img('img/byg_currency.png'), 'Currency', b.currency||'Local currency')}

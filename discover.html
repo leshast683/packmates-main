@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Packmates — Discover</title>
+  <meta name="description" content="Discover trending destinations and travel inspiration with Packmates.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Packmates — Discover">
+  <meta property="og:description" content="Discover trending destinations and travel inspiration with Packmates.">
+  <meta property="og:image" content="https://packmatesai.com/img/discover-hero.jpg">
+  <meta property="og:url" content="https://packmatesai.com/discover.html">
   <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -47,13 +53,6 @@
       display:flex; align-items:center; justify-content:center;
     }
     .section-head-icon svg { width:14px; height:14px; }
-    .section-see-all {
-      margin-left:auto; font-size:.75rem; font-weight:700;
-      color:var(--green); text-decoration:none;
-      display:flex; align-items:center; gap:3px;
-      white-space:nowrap;
-    }
-    .section-see-all svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
 
     /* ── Destination strip ── */
     .dest-strip {
@@ -718,7 +717,6 @@
             </svg>
           </div>
           <h2>Community Travelers</h2>
-          <a class="section-see-all" href="#">See all <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></a>
         </div>
         <div class="travelers-strip" id="travelersStrip"></div>
       </section>
@@ -737,7 +735,6 @@
             </svg>
           </div>
           <h2>Inspiration for you</h2>
-          <a class="section-see-all" href="#">Browse all trips <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></a>
         </div>
         <div class="inspiration-grid" id="sharedGrid"></div>
       </section>
@@ -751,7 +748,7 @@
       <div class="tp-header">
         <div class="tp-header-bg" id="tpHeaderBg"></div>
         <div class="tp-header-overlay"></div>
-        <button class="tp-close" onclick="closeTravelerModal()">
+        <button class="tp-close" onclick="closeTravelerModal()" aria-label="Close traveler profile">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
@@ -794,7 +791,7 @@
       <div class="ti-header" id="tiHeader">
         <div class="ti-header-bg" id="tiHeaderBg"></div>
         <div class="ti-header-overlay"></div>
-        <button class="ti-close-btn" onclick="closeTripModal()">
+        <button class="ti-close-btn" onclick="closeTripModal()" aria-label="Close trip details">
           <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
         <div class="ti-header-info">
