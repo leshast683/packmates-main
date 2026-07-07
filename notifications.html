@@ -4,318 +4,265 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notifications — Packmates</title>
+  <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
   <style>
-    body > main {
-      padding: 28px 32px 40px;
-      overflow-y: auto;
-    }
+    body > main { padding: 28px 32px 48px; overflow-y: auto; }
 
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(16px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
 
     /* ── Page header ── */
-    .notif-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 24px;
-      animation: fadeUp 0.4s ease both;
-      flex-wrap: wrap;
+    .notif-page-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
+      animation: fadeUp .35s ease both;
+    }
+    .notif-head-left { display: flex; align-items: center; gap: 16px; }
+    .notif-bell-wrap {
+      width: 60px; height: 60px; border-radius: 18px;
+      background: rgba(124,198,62,.1); border: 1.5px solid rgba(124,198,62,.18);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .notif-bell-wrap svg { width: 26px; height: 26px; stroke: #5f9d30; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .notif-page-head h1 { font-family:'Blauer Nue',sans-serif; font-size: 1.7rem; font-weight: 700; color: var(--text-1); letter-spacing: -.02em; }
+    .notif-page-head p { font-size: .78rem; color: var(--text-3); margin-top: 2px; }
+    .btn-notif-settings {
+      display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px;
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px;
+      font-family: 'Montserrat', sans-serif; font-size: .75rem; font-weight: 600;
+      color: var(--text-2); cursor: pointer; white-space: nowrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,.05); transition: box-shadow .18s, border-color .18s;
+    }
+    .btn-notif-settings:hover { border-color: var(--border-2); box-shadow: 0 3px 10px rgba(0,0,0,.08); }
+    .btn-notif-settings svg { width: 15px; height: 15px; stroke: var(--text-3); fill: none; stroke-width: 2; stroke-linecap: round; }
+
+    /* ── Stats row ── */
+    .notif-stats {
+      display: grid; grid-template-columns: 1.1fr 1fr 1fr 1.4fr;
+      gap: 12px; margin-bottom: 22px;
+      animation: fadeUp .35s .05s ease both;
+    }
+    .nstat {
+      background: var(--surface); border-radius: 16px;
+      border: 1px solid rgba(0,0,0,.05); box-shadow: 0 1px 4px rgba(0,0,0,.05);
+      padding: 18px 16px; display: flex; flex-direction: column; gap: 2px;
+      position: relative; overflow: hidden;
+    }
+    /* green unread card */
+    .nstat--green {
+      background: linear-gradient(145deg, #3d7018 0%, #5f9d30 55%, #7cc63e 100%);
+      border: none; box-shadow: 0 4px 18px rgba(95,157,48,.35);
+    }
+    .nstat--green .nstat-label,
+    .nstat--green .nstat-sub { color: rgba(255,255,255,.7); }
+    .nstat--green .nstat-count { color: #fff; }
+    .nstat--green .nstat-meta { color: rgba(255,255,255,.8); }
+    /* clear card */
+    .nstat--clear {
+      background-color: #b8dcc8;
+      background-image: url('img/notif-empty-bg.jpg');
+      background-size: cover;
+      background-position: right center;
+      background-repeat: no-repeat;
+      border: none;
+    }
+    .nstat--clear::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(105deg, rgba(6,18,30,0.78) 0%, rgba(6,18,30,0.45) 50%, transparent 80%);
+      border-radius: inherit;
+    }
+    .nstat--clear > * { position: relative; z-index: 1; }
+    .nstat--clear .nstat-label { color: #fff; font-size: 1.05rem; font-weight: 700; }
+    .nstat--clear .nstat-sub { color: rgba(255,255,255,0.72); font-size: .78rem; }
+
+    .nstat-icon-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .nstat-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .nstat-icon svg { width: 16px; height: 16px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .nstat--green .nstat-icon { background: rgba(255,255,255,.22); }
+    .nstat--green .nstat-icon svg { stroke: #fff; }
+    .nstat-icon--cal { background: rgba(124,198,62,.12); }
+    .nstat-icon--cal svg { stroke: #5f9d30; }
+    .nstat-icon--check { background: rgba(124,198,62,.14); border-radius: 50%; }
+    .nstat-icon--check svg { stroke: #5f9d30; }
+    .nstat--clear .nstat-icon--check { background: rgba(255,255,255,0.2); }
+    .nstat--clear .nstat-icon--check svg { stroke: #fff; }
+
+    .nstat-meta { font-size: .63rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
+    .nstat-count { font-family: 'Blauer Nue', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text-1); line-height: 1.1; }
+    .nstat-label { font-size: .72rem; font-weight: 600; color: var(--text-2); }
+    .nstat-sub { font-size: .65rem; color: var(--text-3); margin-top: 1px; }
+
+    /* deco image in clear card */
+    .nstat-deco {
+      position: absolute; bottom: -4px; right: -4px;
+      font-size: 3rem; line-height: 1; opacity: .55;
+      pointer-events: none; user-select: none;
     }
 
-    .notif-header-icon {
-      width: 48px; height: 48px;
-      background: var(--green-bg);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+    /* ── Filter bar ── */
+    .notif-filterbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+      animation: fadeUp .35s .1s ease both;
+    }
+    .notif-tabs {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .notif-tabs::-webkit-scrollbar { display: none; }
+    .notif-tab {
+      padding: 6px 14px; border-radius: 99px;
+      border: 1.5px solid var(--border); background: var(--surface);
+      font-family: 'Montserrat', sans-serif; font-size: .73rem; font-weight: 600;
+      color: var(--text-2); cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .notif-tab:hover { border-color: var(--border-2); background: var(--bg); }
+    .notif-tab.active {
+      background: var(--text-1); color: #fff; border-color: var(--text-1);
     }
 
-    .notif-header-icon svg {
-      width: 22px; height: 22px;
-      stroke: var(--green);
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-width: 2;
+    .notif-actions { display: flex; align-items: center; gap: 8px; }
+    .btn-mark-read {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 10px; border: 1.5px solid var(--border);
+      background: var(--surface); font-family: 'Montserrat',sans-serif;
+      font-size: .72rem; font-weight: 600; color: var(--text-2); cursor: pointer;
+      transition: all .15s; white-space: nowrap;
     }
-
-    .notif-header-text { flex: 1; }
-    .notif-header-text h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
-    .notif-header-text p { font-size: 0.78rem; color: var(--text-3); font-weight: 500; margin-top: 2px; }
-
-    .notif-header-actions { display: flex; align-items: center; gap: 8px; }
-
-    .btn-outline {
-      padding: 8px 16px;
-      background: var(--surface);
-      color: var(--text-2);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.18s;
-      white-space: nowrap;
+    .btn-mark-read:hover { border-color: #5f9d30; color: #5f9d30; }
+    .btn-mark-read svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .btn-filter-icon {
+      width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid var(--border);
+      background: var(--surface); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: border-color .15s;
     }
-    .btn-outline:hover { background: var(--bg); border-color: var(--border-2); }
+    .btn-filter-icon:hover { border-color: var(--border-2); }
+    .btn-filter-icon svg { width: 15px; height: 15px; stroke: var(--text-3); fill: none; stroke-width: 2; stroke-linecap: round; }
 
-    .btn-danger-outline {
-      padding: 8px 16px;
-      background: var(--surface);
-      color: #c0392b;
-      border: 1.5px solid rgba(192,57,43,0.25);
-      border-radius: 10px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.18s;
-      white-space: nowrap;
-    }
-    .btn-danger-outline:hover { background: rgba(192,57,43,0.06); border-color: rgba(192,57,43,0.45); }
-
-    /* ── Content wrapper ── */
-    .notif-content {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-width: 720px;
-    }
-
-    /* ── Section ── */
-    .notif-section {
-      background: var(--surface);
-      border-radius: var(--radius);
+    /* ── Notification list container ── */
+    .notif-list-outer {
+      background: var(--surface); border-radius: 18px;
+      border: 1px solid rgba(0,0,0,.05);
+      box-shadow: 0 1px 4px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
       overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid rgba(0,0,0,0.04);
-      animation: fadeUp 0.4s ease both;
+      animation: fadeUp .35s .15s ease both;
     }
 
-    .notif-section:nth-child(1) { animation-delay: 0.05s; }
-    .notif-section:nth-child(2) { animation-delay: 0.10s; }
-
-    .notif-section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      cursor: pointer;
-      user-select: none;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-    }
-
-    .notif-section-header:hover { background: var(--surface-2, #f8f9fc); }
-
-    .notif-section-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .notif-section-title {
+    /* ── Group header ── */
+    .notif-group-head {
+      padding: 10px 20px 8px;
       font-family: 'Blauer Nue', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--text-1);
-    }
-
-    .notif-badge {
-      font-size: 0.62rem;
-      font-weight: 700;
-      background: var(--green-bg);
-      color: var(--green);
-      border: 1px solid rgba(95,157,48,0.2);
-      border-radius: 6px;
-      padding: 2px 8px;
-    }
-
-    .notif-section-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .collapse-chevron {
-      width: 24px; height: 24px;
+      font-size: .78rem; font-weight: 700; color: var(--text-3);
+      border-bottom: 1px solid var(--border);
       background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.25s var(--ease), background 0.15s;
-      flex-shrink: 0;
     }
-
-    .collapse-chevron svg {
-      width: 12px; height: 12px;
-      stroke: var(--text-3);
-      fill: none;
-      stroke-linecap: round;
-      stroke-width: 2.2;
-    }
-
-    .notif-section.collapsed .collapse-chevron { transform: rotate(-90deg); }
-
-    /* ── Collapsible list ── */
-    .notif-list-wrap {
-      overflow: hidden;
-      max-height: 2000px;
-      transition: max-height 0.35s ease, opacity 0.25s ease;
-      opacity: 1;
-    }
-
-    .notif-section.collapsed .notif-list-wrap {
-      max-height: 0;
-      opacity: 0;
-    }
-
-    .notif-list { display: flex; flex-direction: column; }
+    .notif-group-head:not(:first-child) { border-top: 1px solid var(--border); }
 
     /* ── Notification item ── */
     .notif-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 20px;
-      cursor: pointer;
-      transition: background 0.15s;
-      border-top: 1px solid var(--border);
-      position: relative;
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px; cursor: pointer; transition: background .14s;
+      border-bottom: 1px solid var(--border); position: relative;
     }
-
-    .notif-item:first-child { border-top: none; }
-
-    .notif-item.unread { background: rgba(95,157,48,0.035); }
-
-    .notif-item.unread::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: var(--green);
-      border-radius: 0 2px 2px 0;
-    }
-
+    .notif-item:last-child { border-bottom: none; }
     .notif-item:hover { background: var(--bg); }
-    .notif-item.unread:hover { background: rgba(95,157,48,0.06); }
+    .notif-item.unread { background: rgba(95,157,48,.03); }
+    .notif-item.unread:hover { background: rgba(95,157,48,.06); }
 
-    /* Icon chip */
-    .notif-icon-chip {
-      width: 40px; height: 40px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+    /* Circle avatar */
+    .notif-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 1.15rem; overflow: hidden;
+      background: #e8f0e4;
     }
+    .notif-avatar svg { width: 20px; height: 20px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .av-green  { background: linear-gradient(145deg,#7cc63e,#4d8225); }
+    .av-navy   { background: linear-gradient(145deg,#1a5878,#0d2d40); }
+    .av-teal   { background: linear-gradient(145deg,#0c7a7a,#055555); }
+    .av-amber  { background: linear-gradient(145deg,#f59e0b,#b45309); }
+    .av-rose   { background: linear-gradient(145deg,#e11d48,#9f1239); }
+    .av-green  svg, .av-navy svg, .av-teal svg, .av-amber svg, .av-rose svg { stroke: rgba(255,255,255,.95); }
 
-    .notif-icon-chip svg {
-      width: 18px; height: 18px;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-width: 2;
-    }
+    /* Photo avatar */
+    .notif-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
-    .chip-blue   { background: var(--teal-a-bg, rgba(12,122,122,0.10)); }
-    .chip-blue svg { stroke: var(--teal-a, #0c7a7a); }
-    .chip-pink   { background: rgba(224,92,122,0.12); }
-    .chip-pink svg { stroke: #e05c7a; }
-    .chip-purple { background: rgba(155,110,245,0.12); }
-    .chip-purple svg { stroke: #9b6ef5; }
-    .chip-green  { background: var(--green-bg); }
-    .chip-green svg { stroke: var(--green); }
-    .chip-orange { background: rgba(245,130,50,0.12); }
-    .chip-orange svg { stroke: #f58232; }
-
-    /* Item body */
     .notif-body { flex: 1; min-width: 0; }
-
-    .notif-text {
-      font-size: 0.84rem;
-      font-weight: 500;
-      color: var(--text-2);
-      line-height: 1.45;
-    }
-
+    .notif-text { font-size: .84rem; font-weight: 500; color: var(--text-2); line-height: 1.45; }
     .notif-item.unread .notif-text { font-weight: 600; color: var(--text-1); }
     .notif-text strong { font-weight: 700; color: var(--text-1); }
+    .notif-time { font-size: .68rem; color: var(--text-3); margin-top: 3px; display: block; }
 
-    .notif-time {
-      font-size: 0.7rem;
-      color: var(--text-3);
-      font-weight: 500;
-      margin-top: 3px;
-      display: block;
+    /* Thumbnail(s) right of text */
+    .notif-thumbs { display: flex; gap: 4px; flex-shrink: 0; }
+    .notif-thumb {
+      width: 40px; height: 40px; border-radius: 10px; object-fit: cover;
+      background: var(--border); flex-shrink: 0;
     }
 
     /* Unread dot */
     .notif-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--border-2);
-      flex-shrink: 0;
-      transition: background 0.2s;
+      width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
+      background: var(--border); transition: background .2s;
     }
-
     .notif-item.unread .notif-dot {
-      background: var(--green);
-      box-shadow: 0 0 0 3px rgba(95,157,48,0.18);
-      animation: pulse 2.2s ease-in-out infinite;
+      background: #5f9d30;
+      box-shadow: 0 0 0 3px rgba(95,157,48,.18);
+      animation: nPulse 2.4s ease-in-out infinite;
     }
-
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 0 3px rgba(95,157,48,0.18); }
-      50%       { box-shadow: 0 0 0 6px rgba(95,157,48,0.06); }
+    @keyframes nPulse {
+      0%,100% { box-shadow: 0 0 0 3px rgba(95,157,48,.18); }
+      50%      { box-shadow: 0 0 0 6px rgba(95,157,48,.06); }
     }
 
     /* ── Empty state ── */
     .notif-empty {
-      background: var(--surface);
-      border-radius: var(--radius);
-      border: 1.5px dashed var(--border);
-      padding: 56px 24px;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      text-align: center;
-      animation: fadeUp 0.4s ease both;
+      display: none; flex-direction: column; align-items: flex-start; gap: 8px;
+      min-height: 360px; border-radius: 20px; overflow: hidden;
+      background: url('img/notif-empty-bg.jpg') center/cover no-repeat;
+      position: relative; text-align: left; padding: 40px 36px;
+      margin-top: 8px;
     }
-
+    .notif-empty::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(10,25,38,0.68) 0%, rgba(10,25,38,0.18) 60%, transparent 100%);
+      border-radius: inherit;
+    }
+    .notif-empty > * { position: relative; z-index: 1; }
     .notif-empty.visible { display: flex; }
+    .notif-empty h3 { font-size: 1.3rem; font-weight: 700; color: #fff; margin: 0; }
+    .notif-empty p { font-size: .82rem; color: rgba(255,255,255,0.72); max-width: 260px; margin: 0; line-height: 1.5; }
 
-    .notif-empty-icon {
-      width: 56px; height: 56px;
-      background: var(--bg);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 4px;
+    /* ── Hidden group (filter) ── */
+    .notif-group { }
+    .notif-group.hidden { display: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .notif-stats { grid-template-columns: 1fr 1fr; }
     }
-
-    .notif-empty-icon svg {
-      width: 26px; height: 26px;
-      stroke: var(--text-3);
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-width: 1.6;
+    @media (max-width: 640px) {
+      body > main { padding: 18px 14px 80px; }
+      .notif-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .nstat { padding: 14px 12px; }
+      .notif-page-head h1 { font-size: 1.3rem; }
+      .notif-page-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .btn-notif-settings { align-self: flex-end; }
+      .notif-filterbar { flex-direction: column; align-items: stretch; gap: 8px; }
+      .notif-tabs { flex-wrap: nowrap; width: 100%; overflow-x: auto; padding-bottom: 2px; }
+      .notif-tab { flex-shrink: 0; }
     }
-
-    .notif-empty h3 { font-size: 1rem; font-weight: 700; color: var(--text-1); }
-    .notif-empty p { font-size: 0.78rem; color: var(--text-3); font-weight: 400; }
+    @media (max-width: 420px) {
+      .notif-stats { grid-template-columns: 1fr; }
+      .nstat--clear { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -349,8 +296,8 @@
       </button>
     </div>
     <div class="nav-bottom">
-      <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
-        <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <button type="button" class="nav-new-trip" onclick="location.href='newTrip.html'">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
         <span>New Trip</span>
       </button>
       <button class="logout" type="button" onclick="Auth.logout();location.href='welcome.html'">
@@ -363,93 +310,139 @@
   <!-- ══ MAIN ══ -->
   <main>
 
-    <!-- Header -->
-    <div class="notif-header">
-      <div class="notif-header-icon">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    <!-- Page header -->
+    <div class="notif-page-head">
+      <div class="notif-head-left">
+        <div class="notif-bell-wrap">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </div>
+        <div>
+          <h1>Notifications</h1>
+          <p>Stay updated with your travel and packing activity</p>
+        </div>
       </div>
-      <div class="notif-header-text">
-        <h1>Notifications</h1>
-        <p id="unread-count-text">Loading…</p>
+      <button class="btn-notif-settings" onclick="location.href='profile.html'">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Notification settings
+      </button>
+    </div>
+
+    <!-- Stats row -->
+    <div class="notif-stats">
+      <!-- Unread -->
+      <div class="nstat nstat--green">
+        <div class="nstat-icon-row">
+          <div class="nstat-icon">
+            <svg viewBox="0 0 24 24" stroke="#fff"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          </div>
+          <span class="nstat-count" id="statUnread" style="font-size:1.5rem">—</span>
+        </div>
+        <div class="nstat-label" style="color:rgba(255,255,255,.95);font-size:.8rem">Unread</div>
+        <div class="nstat-sub" id="statUnreadSub">Loading…</div>
       </div>
-      <div class="notif-header-actions">
-        <button class="btn-outline" onclick="markAllRead()">Mark all read</button>
-        <button class="btn-danger-outline" onclick="clearAll()">Clear all</button>
+      <!-- Today -->
+      <div class="nstat">
+        <div class="nstat-meta">Today</div>
+        <div class="nstat-icon-row" style="margin-top:4px">
+          <div class="nstat-icon nstat-icon--cal">
+            <svg viewBox="0 0 24 24" stroke="#5f9d30"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="nstat-count" id="statToday">—</span>
+        </div>
+        <div class="nstat-label">New</div>
+        <div class="nstat-sub">Latest updates</div>
+      </div>
+      <!-- This Week -->
+      <div class="nstat">
+        <div class="nstat-meta">This Week</div>
+        <div class="nstat-icon-row" style="margin-top:4px">
+          <div class="nstat-icon nstat-icon--cal">
+            <svg viewBox="0 0 24 24" stroke="#5f9d30"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="nstat-count" id="statWeek">—</span>
+        </div>
+        <div class="nstat-label">Updates</div>
+        <div class="nstat-sub">Recent activity</div>
+      </div>
+      <!-- All Clear -->
+      <div class="nstat nstat--clear">
+        <div class="nstat-icon-row">
+          <div class="nstat-icon nstat-icon--check">
+            <svg viewBox="0 0 24 24" stroke="#5f9d30"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+        </div>
+        <div class="nstat-label">All Clear</div>
+        <div class="nstat-sub">You're all caught up</div>
+        <div class="nstat-sub" style="font-weight:600;color:rgba(255,255,255,0.6);margin-top:2px">Keep packing! 🎒</div>
       </div>
     </div>
 
-    <!-- Notifications -->
-    <div class="notif-content" id="app">
+    <!-- Filter bar -->
+    <div class="notif-filterbar">
+      <div class="notif-tabs" id="filterTabs">
+        <button class="notif-tab active" data-filter="all" onclick="setFilter(this)">All</button>
+        <button class="notif-tab" data-filter="trip" onclick="setFilter(this)">Trips</button>
+        <button class="notif-tab" data-filter="packing" onclick="setFilter(this)">Packing List</button>
+        <button class="notif-tab" data-filter="alert" onclick="setFilter(this)">System</button>
+        <button class="notif-tab" data-filter="social" onclick="setFilter(this)">Community</button>
+      </div>
+      <div class="notif-actions">
+        <button class="btn-mark-read" onclick="markAllRead()">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Mark all as read
+        </button>
+        <button class="btn-filter-icon" onclick="clearAll()" title="Clear all">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        </button>
+      </div>
+    </div>
 
-      <!-- Today -->
-      <div class="notif-section" id="section-today">
-        <div class="notif-section-header" onclick="toggleSection('today')">
-          <div class="notif-section-left">
-            <span class="notif-section-title">Today</span>
-            <span class="notif-badge" id="badge-today">3 unread</span>
-          </div>
-          <div class="notif-section-right">
-            <div class="collapse-chevron">
-              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-          </div>
-        </div>
-        <div class="notif-list-wrap" id="wrapper-today">
-          <div class="notif-list" id="list-today"></div>
-        </div>
+    <!-- Notification list -->
+    <div class="notif-list-outer" id="notifListOuter">
+
+      <div class="notif-group" id="group-today">
+        <div class="notif-group-head">Today</div>
+        <div id="list-today"></div>
       </div>
 
-      <!-- This Week -->
-      <div class="notif-section" id="section-week">
-        <div class="notif-section-header" onclick="toggleSection('week')">
-          <div class="notif-section-left">
-            <span class="notif-section-title">This Week</span>
-            <span class="notif-badge" id="badge-week">1 unread</span>
-          </div>
-          <div class="notif-section-right">
-            <div class="collapse-chevron">
-              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-          </div>
-        </div>
-        <div class="notif-list-wrap" id="wrapper-week">
-          <div class="notif-list" id="list-week"></div>
-        </div>
+      <div class="notif-group" id="group-week">
+        <div class="notif-group-head">This Week</div>
+        <div id="list-week"></div>
       </div>
 
-      <!-- Empty state -->
+      <div class="notif-group" id="group-earlier">
+        <div class="notif-group-head">Earlier</div>
+        <div id="list-earlier"></div>
+      </div>
+
       <div class="notif-empty" id="empty-card">
-        <div class="notif-empty-icon">
-          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        </div>
         <h3>You're all caught up!</h3>
         <p>No notifications right now. We'll let you know when something happens.</p>
       </div>
 
     </div>
+
   </main>
 
   <script src="auth.js"></script>
+  <script src="notifications.js"></script>
   <script>
     Auth.requireAuth('welcome.html');
 
-    /* ── Notification storage helpers ── */
+    /* ── Storage helpers ── */
     function getStorageKey() {
       const s = Auth.getSession();
       return s ? `pm_notifications_${s.email}` : null;
     }
-
     function loadNotifs() {
       const key = getStorageKey();
       if (!key) return getDefaultNotifs();
       const stored = localStorage.getItem(key);
       if (stored) return JSON.parse(stored);
-      /* first visit: seed with demo notifications */
       const defaults = getDefaultNotifs();
       localStorage.setItem(key, JSON.stringify(defaults));
       return defaults;
     }
-
     function saveNotifs(notifs) {
       const key = getStorageKey();
       if (key) localStorage.setItem(key, JSON.stringify(notifs));
@@ -457,105 +450,126 @@
 
     function getDefaultNotifs() {
       const now = Date.now();
+      const trips = (() => { try { return JSON.parse(localStorage.getItem('pm_trips')||'[]'); } catch{return[];} })();
+      const dest = trips[0]?.destination || 'your trip';
       return [
-        { id: now-1, type:'reminder', text:'Remember to finish packing for <strong>your next trip!</strong>', tripName:'', time: new Date(now - 2*3600000).toISOString(), read:false },
-        { id: now-2, type:'like',     text:'<strong>Ellie</strong> liked your packing list', tripName:'', time: new Date(now - 4*3600000).toISOString(), read:false },
-        { id: now-3, type:'join',     text:"You've been added as a Packmate", tripName:'', time: new Date(now - 6*3600000).toISOString(), read:false },
-        { id: now-4, type:'packing',  text:"You've packed <strong>5 items</strong> for your trip!", tripName:'', time: new Date(now - 2*86400000).toISOString(), read:false },
-        { id: now-5, type:'like',     text:'<strong>Mark</strong> liked your trip plan', tripName:'', time: new Date(now - 3*86400000).toISOString(), read:true },
-        { id: now-6, type:'alert',    text:'Your trip starts soon — check your packing list!', tripName:'', time: new Date(now - 5*86400000).toISOString(), read:true },
+        { id:now-1,  type:'reminder', text:`Remember to finish packing for <strong>${dest}!</strong>`,  time:new Date(now-1*3600000).toISOString(),  read:false },
+        { id:now-2,  type:'packing',  text:`You're all packed for <strong>${dest}</strong>! Ready to go 🎒`,  time:new Date(now-5*3600000).toISOString(),  read:false },
+        { id:now-3,  type:'trip',     text:`Your trip to <strong>${dest}</strong> has been created!`,    time:new Date(now-3*86400000).toISOString(), read:false },
+        { id:now-4,  type:'alert',    text:'Your trip starts soon — check your packing list!',           time:new Date(now-5*86400000).toISOString(), read:false },
+        { id:now-5,  type:'like',     text:'<strong>Ellie</strong> liked your packing list',             time:new Date(now-13*86400000).toISOString(),read:false },
+        { id:now-6,  type:'social',   text:"You've been added as a <strong>Packmate</strong>",           time:new Date(now-14*86400000).toISOString(),read:false },
       ];
     }
 
-    /* ── Map type → icon chip ── */
-    const TYPE_ICON = {
-      trip:     { cls:'chip-green',  svg:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
-      join:     { cls:'chip-purple', svg:'<path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>' },
-      packing:  { cls:'chip-green',  svg:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
-      like:     { cls:'chip-pink',   svg:'<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>' },
-      reminder: { cls:'chip-blue',   svg:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' },
-      alert:    { cls:'chip-orange', svg:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' },
+    /* ── Type → avatar config ── */
+    const TYPE_CFG = {
+      trip:     { cls:'av-green', svg:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+      packing:  { cls:'av-green', svg:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+      reminder: { cls:'av-navy',  svg:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' },
+      alert:    { cls:'av-teal',  svg:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' },
+      like:     { cls:'av-rose',  svg:'<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>' },
+      social:   { cls:'av-navy',  svg:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>' },
+    };
+
+    /* ── Type → filter category ── */
+    const TYPE_FILTER = {
+      trip:'trip', packing:'packing', reminder:'alert', alert:'alert', like:'social', social:'social',
     };
 
     function timeAgo(iso) {
       const diff = Date.now() - new Date(iso).getTime();
       const m = Math.floor(diff / 60000);
-      if (m < 1)    return 'just now';
-      if (m < 60)   return `${m} minute${m>1?'s':''} ago`;
+      if (m < 1)  return 'just now';
+      if (m < 60) return `${m}m ago`;
       const h = Math.floor(m / 60);
-      if (h < 24)   return `${h} hour${h>1?'s':''} ago`;
+      if (h < 24) return `${h} hour${h>1?'s':''} ago`;
       const d = Math.floor(h / 24);
-      if (d < 7)    return `${d} day${d>1?'s':''} ago`;
+      if (d < 7)  return `${d} day${d>1?'s':''} ago`;
       const w = Math.floor(d / 7);
       return `${w} week${w>1?'s':''} ago`;
     }
 
-    function isToday(iso) {
-      return Date.now() - new Date(iso).getTime() < 86400000;
+    function getGroup(iso) {
+      const diff = Date.now() - new Date(iso).getTime();
+      if (diff < 86400000)   return 'today';
+      if (diff < 7*86400000) return 'week';
+      return 'earlier';
     }
 
     function buildItemHTML(n) {
-      const meta = TYPE_ICON[n.type] || TYPE_ICON.alert;
+      const cfg = TYPE_CFG[n.type] || TYPE_CFG.alert;
+      const filterCat = TYPE_FILTER[n.type] || 'alert';
       return `
-        <div class="notif-item${n.read?'':' unread'}" data-id="${n.id}" onclick="markRead(this)">
-          <div class="notif-icon-chip ${meta.cls}">
-            <svg viewBox="0 0 24 24">${meta.svg}</svg>
+        <div class="notif-item${n.read?'':' unread'}" data-id="${n.id}" data-type="${filterCat}" onclick="markRead(this)">
+          <div class="notif-avatar ${cfg.cls}">
+            <svg viewBox="0 0 24 24">${cfg.svg}</svg>
           </div>
           <div class="notif-body">
-            <div class="notif-text">${n.text}${n.tripName ? ` — <strong>${n.tripName}</strong>` : ''}</div>
+            <div class="notif-text">${n.text}</div>
             <span class="notif-time">${timeAgo(n.time)}</span>
           </div>
           <div class="notif-dot"></div>
         </div>`;
     }
 
+    let _activeFilter = 'all';
+
     function renderNotifs() {
       const notifs  = loadNotifs();
-      const today   = notifs.filter(n => isToday(n.time));
-      const week    = notifs.filter(n => !isToday(n.time));
+      const today   = notifs.filter(n => getGroup(n.time) === 'today');
+      const week    = notifs.filter(n => getGroup(n.time) === 'week');
+      const earlier = notifs.filter(n => getGroup(n.time) === 'earlier');
 
-      document.getElementById('list-today').innerHTML = today.map(buildItemHTML).join('');
-      document.getElementById('list-week').innerHTML  = week.map(buildItemHTML).join('');
-      updateSectionBadges();
-      updateUnreadCount();
+      document.getElementById('list-today').innerHTML   = today.map(buildItemHTML).join('');
+      document.getElementById('list-week').innerHTML    = week.map(buildItemHTML).join('');
+      document.getElementById('list-earlier').innerHTML = earlier.map(buildItemHTML).join('');
+
+      updateStats(notifs);
+      applyFilter(_activeFilter);
     }
 
-    function updateUnreadCount() {
-      const unread = document.querySelectorAll('.notif-item.unread').length;
-      const total  = document.querySelectorAll('.notif-item').length;
-      const el     = document.getElementById('unread-count-text');
-      if (total === 0)     el.textContent = 'No notifications';
-      else if (unread===0) el.textContent = 'All caught up!';
-      else                 el.textContent = `${unread} unread notification${unread!==1?'s':''}`;
+    function updateStats(notifs) {
+      const unread = notifs.filter(n => !n.read).length;
+      document.getElementById('statUnread').textContent = unread;
+      document.getElementById('statUnreadSub').textContent = unread > 0 ? 'You have new updates' : "You're all caught up";
+      document.getElementById('statToday').textContent = notifs.filter(n => getGroup(n.time)==='today').length;
+      document.getElementById('statWeek').textContent  = notifs.filter(n => getGroup(n.time)==='week').length;
     }
 
-    function updateSectionBadges() {
-      ['today','week'].forEach(id => {
-        const list    = document.getElementById(`list-${id}`);
-        const section = document.getElementById(`section-${id}`);
-        const badge   = document.getElementById(`badge-${id}`);
-        if (!list) return;
-        const total  = list.querySelectorAll('.notif-item').length;
-        const unread = list.querySelectorAll('.notif-item.unread').length;
-        badge.textContent  = `${unread} unread`;
-        badge.style.display = unread > 0 ? '' : 'none';
-        section.style.display = total === 0 ? 'none' : '';
+    function applyFilter(cat) {
+      _activeFilter = cat;
+      document.querySelectorAll('.notif-item').forEach(el => {
+        const show = cat === 'all' || el.dataset.type === cat;
+        el.style.display = show ? '' : 'none';
       });
-      const anyVisible = ['today','week'].some(id =>
-        document.getElementById(`section-${id}`)?.style.display !== 'none'
+      // Hide empty groups
+      ['today','week','earlier'].forEach(g => {
+        const group = document.getElementById(`group-${g}`);
+        const list  = document.getElementById(`list-${g}`);
+        const visible = list && [...list.querySelectorAll('.notif-item')].some(el => el.style.display !== 'none');
+        if (group) group.style.display = visible ? '' : 'none';
+      });
+      const anyVisible = ['today','week','earlier'].some(g =>
+        document.getElementById(`group-${g}`)?.style.display !== 'none'
       );
       document.getElementById('empty-card').classList.toggle('visible', !anyVisible);
     }
 
+    function setFilter(btn) {
+      document.querySelectorAll('.notif-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilter(btn.dataset.filter);
+    }
+
     function markRead(el) {
       if (!el.classList.contains('unread')) return;
-      const id     = parseInt(el.dataset.id);
+      const id = parseInt(el.dataset.id);
       const notifs = loadNotifs();
-      const n      = notifs.find(x => x.id === id);
+      const n = notifs.find(x => x.id === id);
       if (n) { n.read = true; saveNotifs(notifs); }
       el.classList.remove('unread');
-      updateUnreadCount();
-      updateSectionBadges();
+      updateStats(loadNotifs());
     }
 
     function markAllRead() {
@@ -563,35 +577,54 @@
       notifs.forEach(n => n.read = true);
       saveNotifs(notifs);
       document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
-      updateUnreadCount();
-      updateSectionBadges();
+      updateStats(notifs);
     }
 
     function clearAll() {
+      if (!confirm('Clear all notifications?')) return;
       const items = document.querySelectorAll('.notif-item');
       let delay = 0;
       items.forEach(item => {
         setTimeout(() => {
-          item.style.transition = 'opacity 0.22s, max-height 0.28s, padding 0.28s';
+          item.style.transition = 'opacity .2s, max-height .25s, padding .25s';
           item.style.opacity = '0';
           item.style.maxHeight = item.offsetHeight + 'px';
-          setTimeout(() => { item.style.maxHeight = '0'; item.style.padding = '0 20px'; item.style.overflow = 'hidden'; }, 50);
-          setTimeout(() => item.remove(), 300);
+          setTimeout(() => { item.style.maxHeight = '0'; item.style.padding = '0 20px'; item.style.overflow = 'hidden'; }, 40);
+          setTimeout(() => item.remove(), 280);
         }, delay);
-        delay += 55;
+        delay += 45;
       });
       setTimeout(() => {
         saveNotifs([]);
-        updateSectionBadges();
-        updateUnreadCount();
-      }, delay + 350);
-    }
-
-    function toggleSection(id) {
-      document.getElementById(`section-${id}`).classList.toggle('collapsed');
+        updateStats([]);
+        applyFilter(_activeFilter);
+      }, delay + 320);
     }
 
     renderNotifs();
   </script>
+
+  <nav class="bottom-nav">
+    <button class="bn-btn" onclick="location.href='index.html'">
+      <svg viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="bn-btn" onclick="location.href='discover.html'">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      Discover
+    </button>
+    <button class="bn-btn" onclick="location.href='packing-list.html'">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+      Packing
+    </button>
+    <button class="bn-btn" onclick="location.href='newTrip.html'">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      New Trip
+    </button>
+    <button class="bn-btn active" onclick="location.href='notifications.html'">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      Alerts
+    </button>
+  </nav>
 </body>
 </html>

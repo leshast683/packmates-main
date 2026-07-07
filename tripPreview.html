@@ -24,34 +24,36 @@
 
         /* ── LEFT PANEL ── */
         .tripPreviewLeft {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            display: block;
+            overflow-y: auto;
+            overflow-x: hidden;
             height: 100%;
         }
 
         .tripPreviewBanner {
-            height: 200px;
-            flex-shrink: 0;
+            height: 320px;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            position: relative;
+            overflow: hidden;
+        }
+        .tripPreviewBanner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, transparent 35%, rgba(0,0,0,0.62) 100%);
+            pointer-events: none;
+            z-index: 1;
         }
 
         .tripPreviewMain {
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
             padding: 24px 32px 32px;
             background: var(--bg);
         }
 
         .tripPreviewHeader {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-            gap: 12px;
+            display: none;
         }
 
         .tripPreviewHeader h1 {
@@ -271,16 +273,28 @@
 
         /* Suggested banner inside the panel */
         .packingSuggestedBanner {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--green);
             background: #f0fbe8;
             border-radius: 8px;
-            padding: 5px 10px;
+            padding: 8px 10px;
             margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .packing-badge-chip {
             display: flex;
             align-items: center;
             gap: 5px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--green);
+        }
+        .packing-badge-img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            flex-shrink: 0;
         }
 
         .packingCategoryGroup {
@@ -365,80 +379,561 @@
         .activityModal {
             position: fixed;
             inset: 0;
-            background: rgba(17, 58, 88, 0.35);
-            display: none;
+            background: rgba(8, 20, 34, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 100;
-        }
-
-        .activityModal.is-visible {
-            display: flex;
-        }
-
-        .activityModalBox {
-            background: var(--surface);
-            border-radius: 14px;
-            width: 360px;
+            z-index: 200;
             padding: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.22s ease, visibility 0.22s ease;
         }
-
+        .activityModal.is-visible {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        .activityModalBox {
+            background: #fff;
+            border-radius: 24px;
+            width: 400px;
+            max-width: calc(100vw - 32px);
+            overflow: hidden;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12);
+            transform: translateY(16px) scale(0.97);
+            transition: transform 0.26s cubic-bezier(0.22,1,0.36,1);
+        }
+        .activityModal.is-visible .activityModalBox {
+            transform: none;
+        }
         .activityModalHeader {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            padding: 20px 20px 0;
+            margin-bottom: 18px;
         }
-
         .activityModalHeader h2 {
-            font-size: 1rem;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #0a1f2e;
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-
+        .activityModalHeader h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0c7a7a, #7cc63e);
+        }
         .activityModalClose {
+            width: 30px; height: 30px;
+            border-radius: 50%;
             border: none;
-            background: transparent;
-            font-size: 1.1rem;
+            background: #f0f3f5;
+            color: #4b5a66;
+            font-size: 1rem;
             cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            line-height: 1;
+            transition: background 0.15s, color 0.15s;
+            font-family: inherit;
         }
-
+        .activityModalClose:hover { background: #e0e7ed; color: #1a2a35; }
         .activityForm {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 14px;
+            padding: 0 20px 20px;
         }
-
         .activityField {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            font-size: 0.8rem;
-            color: #4b5a66;
+            gap: 5px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #6b7a88;
         }
-
-        .activityField input,
-        .activityField select {
-            padding: 8px 10px;
-            border-radius: 10px;
-            border: 1px solid #cdd6de;
-            font-size: 0.85rem;
+        .activityField input {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1.5px solid #e0e7ed;
+            font-size: 0.9rem;
             font-family: inherit;
+            font-weight: 500;
+            color: #0a1f2e;
             outline: none;
             margin: 0;
             width: 100%;
+            transition: border-color 0.18s, box-shadow 0.18s;
+            background: #f8fafc;
         }
-
-        .activityField input:focus,
-        .activityField select:focus {
-            border-color: var(--green);
+        .activityField input:focus {
+            border-color: #0c7a7a;
+            box-shadow: 0 0 0 3px rgba(12,122,122,0.12);
+            background: #fff;
         }
-
+        .activityField input::placeholder { color: #b0bec8; }
         .activityModalActions {
             display: flex;
-            justify-content: flex-end;
-            gap: 8px;
+            gap: 10px;
+            padding: 14px 20px 20px;
+            border-top: 1px solid #f0f3f5;
             margin-top: 6px;
+        }
+        .activityModalActions .packing-btn-secondary {
+            flex: 1;
+            padding: 11px;
+            border-radius: 12px;
+            border: 1.5px solid #e0e7ed;
+            background: #f8fafc;
+            color: #4b5a66;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .activityModalActions .packing-btn-secondary:hover { background: #e8edf1; }
+        .activityModalActions .packing-btn-primary {
+            flex: 2;
+            padding: 11px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #0c7a7a, #7cc63e);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.15s;
+            box-shadow: 0 4px 14px rgba(12,122,122,0.3);
+        }
+        .activityModalActions .packing-btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        /* ══ BANNER REDESIGN (applies all sizes) ══ */
+
+        /* Mobile banner overlay structure */
+        .banner-mobile-overlay {
+            display: flex;
+            position: absolute;
+            inset: 0;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 2;
+        }
+        .banner-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 16px 0;
+        }
+        .banner-icon-btn {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: rgba(20,30,40,0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: none;
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .banner-icon-btn svg { width: 16px; height: 16px; stroke: #fff; fill: none; }
+        .banner-share-pill {
+            background: rgba(255,255,255,0.92);
+            color: #1a2a35;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 0.01em;
+        }
+        .banner-title-area {
+            padding: 0 20px 56px;
+        }
+        .banner-city-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .banner-city-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+            font-family: Georgia, 'Times New Roman', serif;
+            line-height: 1.1;
+            text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+        }
+        .banner-edit-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .banner-edit-btn svg { width: 13px; height: 13px; stroke: #fff; fill: none; }
+        .banner-trip-meta {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.82);
+            font-weight: 500;
+        }
+
+        /* Timeline */
+        .tl-dot-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 28px;
+            flex-shrink: 0;
+            padding-top: 24px;
+        }
+        .tl-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #2d3a45;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 3px rgba(45,58,69,0.12);
+        }
+        .tl-line {
+            width: 1.5px;
+            flex: 1;
+            min-height: 16px;
+            background: #dce4ea;
+            margin-top: 4px;
+        }
+        .tl-card {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0 16px;
+            border-bottom: 1px solid #f0f3f5;
+            min-width: 0;
+        }
+        .itineraryItem:last-child .tl-line { display: none; }
+        .itineraryItem:last-child .tl-card { border-bottom: none; }
+
+        /* ── Custom Activity Type Dropdown ── */
+        .activity-type-wrapper { position: relative; }
+        .activity-type-trigger {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 12px; border-radius: 10px; border: 1px solid #cdd6de;
+            font-size: 0.85rem; font-family: inherit; cursor: pointer;
+            background: #fff; user-select: none; transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .activity-type-trigger.is-open, .activity-type-trigger:hover { border-color: var(--green,#7cc63e); box-shadow: 0 0 0 3px rgba(124,198,62,0.12); }
+        .activity-type-img { width: 24px; height: 24px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+        .activity-type-label-text { flex: 1; font-size: 0.85rem; font-weight: 500; color: #2d3a45; }
+        .activity-type-chevron { width: 14px; height: 14px; stroke: #8a9baa; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.18s; flex-shrink: 0; }
+        .activity-type-trigger.is-open .activity-type-chevron { transform: rotate(180deg); }
+        .activity-type-dropdown {
+            display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: #fff; border: 1px solid #cdd6de; border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.14); z-index: 300;
+            max-height: 220px; overflow-y: auto; padding: 4px;
+        }
+        .activity-type-dropdown.is-open { display: block; }
+        .activity-type-option { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; cursor: pointer; transition: background 0.12s; }
+        .activity-type-option:hover { background: #f0fbe8; }
+        .activity-type-option.is-selected { background: #e6f8d6; }
+        .activity-type-option img { width: 26px; height: 26px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+        .activity-type-option span { font-size: 0.82rem; font-weight: 500; color: #2d3a45; }
+        .itineraryItem { box-shadow: none !important; padding: 0 !important; background: transparent !important; border-radius: 0 !important; gap: 0 !important; align-items: stretch !important; }
+
+        /* Itinerary section heading */
+        .itinerary-section-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+            margin-top: 4px;
+        }
+        .itinerary-section-head span {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #1a2a35;
+            white-space: nowrap;
+        }
+        .itinerary-section-line {
+            flex: 1;
+            height: 1px;
+            background: #e8edf1;
+        }
+
+        /* Invite card redesign */
+        .invite-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            border: 1.5px solid #e4eaee;
+            border-radius: 18px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            gap: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+        .invite-card-left { display: flex; align-items: center; gap: 12px; }
+        .invite-card-icon {
+            width: 44px; height: 44px;
+            background: #f0f3f5;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .invite-card-icon svg { width:22px;height:22px;stroke:#6b7a88;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2; }
+        .invite-label { font-size: 0.88rem; font-weight: 700; color: #1a2a35; margin-bottom: 2px; }
+        .invite-code  { font-size: 0.82rem; font-weight: 600; letter-spacing: 0.12em; color: #6b7a88; font-family: 'Courier New', monospace; }
+        .invite-copy-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #fff;
+            color: #4b5a66;
+            border: 1.5px solid #cdd6de;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.18s;
+            flex-shrink: 0;
+        }
+        .invite-copy-btn:hover { background: #f5f8fa; border-color: #b0bec8; }
+        .invite-copy-btn.copied { background: #1a2a35; color: #fff; border-color: #1a2a35; }
+
+        /* Add Activity button redesign */
+        .addActivityBtn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            border: 2px dashed #cdd6de;
+            border-radius: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            margin-top: 8px;
+            transition: border-color 0.2s;
+        }
+        .addActivityBtn:hover { border-color: var(--green, #7cc63e); }
+        .addActivityLabel {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--green, #7cc63e);
+        }
+
+        /* ── Trip Weather Strip ── */
+        .trip-weather-strip {
+            margin: 20px 0 0; border-radius: 22px; overflow: hidden; position: relative;
+            background: linear-gradient(145deg,#0b1f32,#0d2a42);
+            background-size: cover; background-position: center;
+            box-shadow: 0 16px 48px rgba(0,0,0,.45); min-height: 220px;
+        }
+        .trip-weather-strip:empty { margin: 0; min-height: 0; }
+        .wx-overlay { position: absolute; inset: 0; background: linear-gradient(165deg,rgba(6,22,40,.62),rgba(4,16,30,.84)); pointer-events: none; }
+        .wx-content { position: relative; z-index: 1; }
+        .weather-strip-header { display: flex; align-items: center; gap: 10px; padding: 20px 24px 0; }
+        .weather-strip-label { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: #7cc63e; }
+        .weather-strip-note { margin-left: auto; font-size: 0.57rem; color: rgba(255,255,255,0.3); font-style: italic; }
+        .weather-7grid { display: grid; grid-template-columns: repeat(7,1fr); padding: 10px 0 24px; }
+        .weather-col { display: flex; flex-direction: column; align-items: center; padding: 18px 4px 0; border-right: 1px solid rgba(255,255,255,0.09); text-align: center; }
+        .weather-col:last-child { border-right: none; }
+        .weather-col-day { font-size: 1rem; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.05em; line-height: 1; }
+        .weather-col-date { font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 5px; margin-bottom: 8px; }
+        .weather-col-icon { font-size: 3rem; line-height: 1; margin-bottom: 8px; display: block; text-align: center; }
+        .weather-col-hi { font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 6px; }
+        .weather-col-lo { font-size: 1.05rem; font-weight: 500; color: rgba(140,195,240,0.65); margin-bottom: 20px; }
+        .weather-col-precip { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; color: rgba(255,255,255,0.55); }
+        @media (max-width: 640px) {
+            .trip-weather-strip { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 18px; margin-bottom: 0; }
+            /* overlay must match scroll content width — inset:0 only anchors to visible viewport on mobile */
+            .wx-overlay { background: rgba(4,16,30,.76); min-width: 560px; }
+            .weather-7grid { min-width: 560px; padding: 8px 0 6px; }
+            .weather-col { padding: 12px 6px 0; border-right: none; }
+            .weather-col:last-child { border-right: none; }
+            .weather-col-day { font-size: 0.78rem; }
+            .weather-col-icon { font-size: 2.2rem; }
+            .weather-col-hi { font-size: 1.8rem; }
+            .weather-col-lo { font-size: 0.85rem; margin-bottom: 8px; }
+            .byg-card { margin-top: 4px; }
+        }
+        .weather-col-precip svg { flex-shrink: 0; }
+
+        /* ── Before You Go card ── */
+        .byg-card {
+            margin: 20px 0 0;
+            background: #fff url('img/byg_bg.png') center/cover no-repeat;
+            border: 1.5px solid #e8edf1; border-radius: 22px; overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,.07);
+            position: relative;
+        }
+        .byg-header { display: flex; align-items: center; gap: 9px; padding: 14px 16px 12px; position: relative; border-bottom: 1px solid #f0f3f5; }
+        .byg-title { font-size: .68rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: #1a2a35; display: flex; align-items: center; gap: 8px; -webkit-text-fill-color: #1a2a35; }
+        /* BYG header elements */
+        .byg-spark { font-size: 1.1rem; color: #0c7a7a; flex-shrink: 0; }
+        .byg-badge { font-size: .65rem; font-weight: 800; letter-spacing: .05em; padding: 3px 11px; border-radius: 20px; background: #e2f5ec; color: #0c7a7a; border: 1.5px solid #b8e8d0; }
+        .byg-header-deco { position: absolute; right: 16px; top: 8px; font-size: 2.6rem; opacity: .12; pointer-events: none; line-height: 1; }
+
+        /* Grid */
+        .byg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px 14px 16px; }
+
+        /* Tiles */
+        .byg-tile {
+            border-radius: 18px; padding: 14px 14px 36px;
+            border: none; display: flex; flex-direction: column;
+            gap: 0; position: relative; overflow: hidden; min-height: 160px;
+        }
+        .byg-tile-visa, .byg-tile-currency, .byg-tile-weather, .byg-tile-safety { background: rgba(255,255,255,0.25); border: 1.5px solid rgba(255,255,255,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+
+        /* Large icon box */
+        .byg-tile-icon-box {
+            width: 58px; height: 58px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; margin-bottom: 10px; flex-shrink: 0;
+        }
+        .byg-tile-visa     .byg-tile-icon-box { background: rgba(120,87,210,.14); }
+        .byg-tile-currency .byg-tile-icon-box { background: rgba(0,160,100,.14); }
+        .byg-tile-weather  .byg-tile-icon-box { background: rgba(234,160,20,.16); }
+        .byg-tile-safety   .byg-tile-icon-box { background: rgba(230,60,60,.13); }
+
+        /* Tile header row */
+        .byg-tile-head { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+        .byg-tile-label { font-size: .72rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: #1a2a35; }
+
+        /* Per-tile AI badge */
+        .byg-tile-badge { font-size: .52rem; font-weight: 800; padding: 2px 7px; border-radius: 20px; }
+        .byg-tile-visa     .byg-tile-badge { background: #ede8ff; color: #7857d2; }
+        .byg-tile-currency .byg-tile-badge { background: #d2f4e4; color: #00a064; }
+        .byg-tile-weather  .byg-tile-badge { background: #fef3c7; color: #d97706; }
+        .byg-tile-safety   .byg-tile-badge { background: #fde3e3; color: #dc3545; }
+
+        .byg-tile-text { font-size: .72rem; color: #4b5a66; line-height: 1.52; }
+
+        /* Arrow button */
+        .byg-tile-arrow {
+            position: absolute; bottom: 10px; right: 10px;
+            width: 28px; height: 28px; border-radius: 50%;
+            background: rgba(255,255,255,.85); border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.1);
+            font-size: .9rem; color: #4b5a66; font-weight: 700;
+        }
+
+        /* Faint watermark icon */
+        .byg-tile-wm {
+            position: absolute; bottom: -10px; right: -4px;
+            font-size: 4rem; opacity: .07; pointer-events: none; line-height: 1;
+        }
+
+        /* Skeleton (light theme) */
+        .byg-skeleton { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px 14px 16px; }
+        .byg-skel-tile { height: 160px; border-radius: 18px; background: linear-gradient(90deg,#f0f3f5 25%,#e4e9ec 50%,#f0f3f5 75%); background-size: 200% 100%; animation: bygShimmer 1.5s infinite; }
+        @keyframes bygShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+        /* ══ MOBILE REDESIGN ≤768px ══ */
+        @media (max-width: 768px) {
+            body { overflow: hidden; }
+            /* neutralise global main padding/scroll at this breakpoint */
+            body > main { padding: 0 !important; overflow: hidden !important; }
+            .tripPreviewSplit {
+                display: block;
+                width: 100%;
+                height: 100vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            .tripPreviewLeft {
+                display: block;
+                width: 100%;
+                height: auto;
+                overflow: visible;
+                min-width: 0;
+            }
+            .tripPreviewBanner {
+                height: 300px;
+                border-radius: 0;
+                clip-path: none;
+                margin-bottom: 0;
+                background-position: center center;
+            }
+            .tripPreviewMain {
+                overflow-y: visible;
+                padding: 26px 20px 100px;
+                background: #fff;
+                border-radius: 26px 26px 0 0;
+                margin-top: -26px;
+                position: relative;
+                z-index: 3;
+                box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+                min-width: 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .tripPreviewHeader { display: none !important; }
+            .tripDivider { display: none; }
+            .tripPreviewRight { display: none; }
+            .itineraryList { gap: 0; }
+            .itineraryItem { gap: 0 !important; }
+        }
+
+        @media (max-width: 640px) {
+            /* body is the scroll container; neutralise main's own scroll + padding */
+            body { overflow-y: auto; overflow-x: hidden; }
+            body > main { padding: 0 !important; overflow: visible !important; height: auto !important; }
+            .tripPreviewSplit {
+                display: block;
+                width: 100%;
+                max-width: 100vw;
+                height: auto;
+                overflow: visible;
+            }
+            .tripPreviewLeft {
+                display: block;
+                width: 100%;
+                height: auto;
+                overflow: visible;
+            }
+            .tripPreviewBanner { height: 260px; }
+            .tripPreviewMain {
+                padding: 26px 20px 100px;
+                min-width: 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .tripPreviewRight { display: none; }
+            .invite-card { margin-left: 0; margin-right: 0; }
+            .itinerarySection { overflow: hidden; }
+            .activityModal { padding: 0; align-items: flex-end; }
+            .activityModalBox {
+                width: 100%;
+                max-width: 100%;
+                border-radius: 24px 24px 0 0;
+                transform: translateY(40px);
+            }
+            .activityModal.is-visible .activityModalBox { transform: none; }
         }
     </style>
 </head>
@@ -488,7 +983,25 @@
 
         <!-- LEFT: Preview + Itinerary -->
         <div class="tripPreviewLeft">
-            <div style="background-image: url(img/tripPreviewBanner.jpg)" class="tripPreviewBanner"></div>
+            <div style="background-image: url(img/tripPreviewBanner.jpg)" class="tripPreviewBanner">
+                <div class="banner-mobile-overlay">
+                    <div class="banner-top-bar">
+                        <button class="banner-icon-btn" onclick="location.href='index.html'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                        <button class="banner-share-pill" onclick="copyInviteCode()">Share</button>
+                    </div>
+                    <div class="banner-title-area">
+                        <div class="banner-city-row">
+                            <span class="banner-city-text" id="bannerCityName"></span>
+                            <button class="banner-edit-btn" title="Edit trip">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                        </div>
+                        <div class="banner-trip-meta" id="bannerTripMeta"></div>
+                    </div>
+                </div>
+            </div>
 
             <div class="tripPreviewMain">
                 <div class="tripPreviewHeader">
@@ -509,23 +1022,39 @@
                 <div class="invite-card" id="inviteCard" style="display:none">
                   <div class="invite-card-left">
                     <div class="invite-card-icon">
-                      <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                     </div>
                     <div>
                       <div class="invite-label">Invite Packmates</div>
                       <div class="invite-code" id="inviteCodeDisplay">----</div>
                     </div>
                   </div>
-                  <button class="invite-copy-btn" id="copyInviteBtn" onclick="copyInviteCode()">Copy</button>
+                  <button class="invite-copy-btn" id="copyInviteBtn" onclick="copyInviteCode()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                    Copy Link
+                  </button>
                 </div>
 
                 <section class="itinerarySection">
-                    <h2>Trip Itinerary</h2>
+                    <div class="itinerary-section-head">
+                        <span>Trip Itinerary</span>
+                        <div class="itinerary-section-line"></div>
+                    </div>
                     <div class="itineraryList" id="itineraryList"></div>
                     <button class="addActivityBtn" id="openActivityModal">
-                        <div class="addActivityIcon">＋</div>
-                        <span class="addActivityLabel">Add Activity</span>
+                        <span class="addActivityLabel">↳ Add Activity</span>
                     </button>
+                    <div id="bygCard" class="byg-card">
+                        <div class="byg-header">
+                            <span class="byg-spark">✦</span>
+                            <span class="byg-title">Before You Go</span>
+                            <span class="byg-badge">AI</span>
+                        </div>
+                        <div id="bygBody">
+                            <div class="byg-skeleton"><div class="byg-skel-tile"></div><div class="byg-skel-tile"></div><div class="byg-skel-tile"></div><div class="byg-skel-tile"></div></div>
+                        </div>
+                    </div>
+                    <div id="tripWeatherStrip" class="trip-weather-strip"></div>
                 </section>
             </div>
         </div>
@@ -574,25 +1103,18 @@
                     <span>Activity Name</span>
                     <input type="text" id="activityName" placeholder="e.g. Central Park Walk">
                 </label>
-                <label class="activityField">
+                <div class="activityField">
                     <span>Type</span>
-                    <select id="activityType">
-                        <option>🏖️ Beach</option>
-                        <option>🥾 Hiking</option>
-                        <option>⛺ Camping</option>
-                        <option>💪 Gym</option>
-                        <option>🏊 Swimming</option>
-                        <option>⛷️ Snow Sports</option>
-                        <option>💼 Business Trip</option>
-                        <option>🌙 Night Out</option>
-                        <option>👶 Baby</option>
-                        <option>🎢 Theme Park</option>
-                        <option>🎪 Festival</option>
-                        <option>🚗 Road Trip</option>
-                        <option>🏙️ City Sightseeing</option>
-                        <option>🍽️ Dining</option>
-                    </select>
-                </label>
+                    <input type="hidden" id="activityType" value="Sightseeing">
+                    <div class="activity-type-wrapper">
+                        <div class="activity-type-trigger" id="activityTypeTrigger">
+                            <img class="activity-type-img" id="activityTypeImg" src="img/activity_sightseeing.png" alt="">
+                            <span class="activity-type-label-text" id="activityTypeLabelText">City Sightseeing</span>
+                            <svg class="activity-type-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="activity-type-dropdown" id="activityTypeDropdown"></div>
+                    </div>
+                </div>
                 <div class="activityModalActions">
                     <button type="button" class="packing-btn-secondary" id="cancelActivity">Cancel</button>
                     <button type="submit" class="packing-btn-primary">Add</button>
@@ -859,6 +1381,28 @@
         if (tripData.inviteCode) {
             document.getElementById('inviteCodeDisplay').textContent = tripData.inviteCode;
             document.getElementById('inviteCard').style.display = '';
+            try {
+                const payload = {
+                    id: tripData.id, destination: tripData.destination,
+                    fromDate: tripData.fromDate, toDate: tripData.toDate,
+                    travelers: tripData.travelers,
+                    activityCategories: tripData.activityCategories || [],
+                    inviteCode: tripData.inviteCode,
+                    imageUrl: tripData.imageUrl || null,
+                };
+                window._tripShareUrl = `${location.origin}/joinTrip.html?invite=${btoa(unescape(encodeURIComponent(JSON.stringify(payload))))}`;
+            } catch(e) {}
+        }
+
+        // ── Populate mobile banner overlay ──
+        const bannerCityEl = document.getElementById('bannerCityName');
+        const bannerMetaEl = document.getElementById('bannerTripMeta');
+        if (bannerCityEl) bannerCityEl.textContent = destination;
+        if (bannerMetaEl) {
+            const parts = [];
+            if (fromDate && toDate) parts.push(`${formatDate(fromDate)} – ${formatDate(toDate)}`);
+            parts.push(`${travelers} traveler${travelers !== 1 ? 's' : ''}`);
+            bannerMetaEl.textContent = parts.join(' • ');
         }
 
         // ── Header ──
@@ -884,24 +1428,24 @@
 
         // ── Profile badge line ──
         const badges = [];
-        if (profile.hot)            badges.push('☀️ Warm');
-        if (profile.cold)           badges.push('🧊 Cold');
-        if (profile.snowy)          badges.push('❄️ Snowy');
-        if (profile.rainy)          badges.push('🌧️ Rainy');
-        if (profile.beach)          badges.push('🏖️ Beach');
-        if (profile.ski)            badges.push('⛷️ Ski');
-        if (profile.hiking)         badges.push('🥾 Hiking');
-        if (profile.camping)        badges.push('⛺ Camping');
-        if (profile.swimming)       badges.push('🏊 Swimming');
-        if (profile.gym)            badges.push('💪 Gym');
-        if (profile.business)       badges.push('💼 Business');
-        if (profile.nightOut)       badges.push('🌙 Night Out');
-        if (profile.baby)           badges.push('👶 Baby');
-        if (profile.themePark)      badges.push('🎢 Theme Park');
-        if (profile.festival)       badges.push('🎪 Festival');
-        if (profile.roadTrip)       badges.push('🚗 Road Trip');
-        if (profile.citySightseeing)badges.push('🏙️ City Sightseeing');
-        if (profile.dining)         badges.push('🍽️ Dining');
+        if (profile.hot)             badges.push({img:'weather_warm.png',      label:'Warm'});
+        if (profile.cold)            badges.push({img:'weather_cold.png',      label:'Cold'});
+        if (profile.snowy)           badges.push({img:'weather_snowy.png',     label:'Snowy'});
+        if (profile.rainy)           badges.push({img:'weather_rainy.png',     label:'Rainy'});
+        if (profile.beach)           badges.push({img:'activity_beach.png',       label:'Beach'});
+        if (profile.ski)             badges.push({img:'activity_snowsports.png',  label:'Ski'});
+        if (profile.hiking)          badges.push({img:'activity_hiking.png',      label:'Hiking'});
+        if (profile.camping)         badges.push({img:'activity_camping.png',     label:'Camping'});
+        if (profile.swimming)        badges.push({img:'activity_swimming.png',    label:'Swimming'});
+        if (profile.gym)             badges.push({img:'activity_gym.png',         label:'Gym'});
+        if (profile.business)        badges.push({img:'activity_business.png',    label:'Business'});
+        if (profile.nightOut)        badges.push({img:'activity_nightout.png',    label:'Night Out'});
+        if (profile.baby)            badges.push({img:'activity_baby.png',        label:'Baby'});
+        if (profile.themePark)       badges.push({img:'activity_themepark.png',   label:'Theme Park'});
+        if (profile.festival)        badges.push({img:'activity_festival.png',    label:'Festival'});
+        if (profile.roadTrip)        badges.push({img:'activity_roadtrip.png',    label:'Road Trip'});
+        if (profile.citySightseeing) badges.push({img:'activity_sightseeing.png', label:'Sightseeing'});
+        if (profile.dining)          badges.push({img:'activity_dining.png',      label:'Dining'});
 
         // ── Activities ──
         const CITY_DEFAULTS = {
@@ -980,13 +1524,23 @@
         function renderItinerary() {
             const list = document.getElementById('itineraryList');
             list.innerHTML = '';
+            const pinSvg = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8a9baa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
             activities.forEach((act, i) => {
                 const item = document.createElement('div');
                 item.className = 'itineraryItem';
                 const placeholder = tripData.imageUrl || 'img/tripPreviewBanner.jpg';
                 item.innerHTML = `
-                    <img id="actImg${i}" src="${placeholder}" alt="${act.name}" style="object-fit:cover;">
-                    <div class="itineraryItemInfo"><h3>${act.name}</h3><p>${act.type}</p></div>`;
+                    <div class="tl-dot-col">
+                        <div class="tl-dot"></div>
+                        <div class="tl-line"></div>
+                    </div>
+                    <div class="tl-card">
+                        <img id="actImg${i}" src="${placeholder}" alt="${act.name}" style="object-fit:cover;width:76px;height:76px;border-radius:12px;flex-shrink:0;">
+                        <div class="itineraryItemInfo">
+                            <h3>${act.name}</h3>
+                            <p>${pinSvg} ${act.type}</p>
+                        </div>
+                    </div>`;
                 list.appendChild(item);
 
                 fetchActivityImage(act.name, destination).then(url => {
@@ -995,6 +1549,58 @@
             });
         }
         renderItinerary();
+
+        // ── Custom activity type dropdown ──
+        const ACTIVITY_OPTIONS = [
+            { value:'Sightseeing',   img:'activity_sightseeing.png' },
+            { value:'Dining',        img:'activity_dining.png' },
+            { value:'Beach',         img:'activity_beach.png' },
+            { value:'Hiking',        img:'activity_hiking.png' },
+            { value:'Camping',       img:'activity_camping.png' },
+            { value:'Gym',           img:'activity_gym.png' },
+            { value:'Swimming',      img:'activity_swimming.png' },
+            { value:'Snow Sports',   img:'activity_snowsports.png' },
+            { value:'Business Trip', img:'activity_business.png' },
+            { value:'Night Out',     img:'activity_nightout.png' },
+            { value:'Baby',          img:'activity_baby.png' },
+            { value:'Theme Park',    img:'activity_themepark.png' },
+            { value:'Festival',      img:'activity_festival.png' },
+            { value:'Road Trip',     img:'activity_roadtrip.png' },
+        ];
+        (function initActivityDropdown() {
+            const triggerEl   = document.getElementById('activityTypeTrigger');
+            const dropdownEl  = document.getElementById('activityTypeDropdown');
+            const hiddenInput = document.getElementById('activityType');
+            const imgEl       = document.getElementById('activityTypeImg');
+            const labelEl     = document.getElementById('activityTypeLabelText');
+            if (!triggerEl) return;
+            ACTIVITY_OPTIONS.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'activity-type-option' + (idx === 0 ? ' is-selected' : '');
+                div.innerHTML = `<img src="img/${opt.img}" alt="${opt.value}"><span>${opt.value}</span>`;
+                div.addEventListener('click', e => {
+                    e.stopPropagation();
+                    dropdownEl.querySelectorAll('.activity-type-option').forEach(o => o.classList.remove('is-selected'));
+                    div.classList.add('is-selected');
+                    hiddenInput.value = opt.value;
+                    imgEl.src = 'img/' + opt.img;
+                    labelEl.textContent = opt.value;
+                    triggerEl.classList.remove('is-open');
+                    dropdownEl.classList.remove('is-open');
+                });
+                dropdownEl.appendChild(div);
+            });
+            triggerEl.addEventListener('click', e => {
+                e.stopPropagation();
+                const opening = !triggerEl.classList.contains('is-open');
+                triggerEl.classList.toggle('is-open', opening);
+                dropdownEl.classList.toggle('is-open', opening);
+            });
+            document.addEventListener('click', () => {
+                triggerEl.classList.remove('is-open');
+                dropdownEl.classList.remove('is-open');
+            });
+        })();
 
         const activityModal = document.getElementById('activityModal');
         document.getElementById('openActivityModal').addEventListener('click',  () => activityModal.classList.add('is-visible'));
@@ -1043,7 +1649,9 @@
             if (badges.length) {
                 const b = document.createElement('div');
                 b.className = 'packingSuggestedBanner';
-                b.textContent = badges.join('  ');
+                b.innerHTML = badges.map(({img, label}) =>
+                    `<span class="packing-badge-chip"><img class="packing-badge-img" src="img/${img}" alt="${label}"> ${label}</span>`
+                ).join('');
                 body.appendChild(b);
             }
 
@@ -1103,17 +1711,198 @@
         renderPackingPanel();
         updateProgress();
 
-        // ── Copy invite code ──
+        // ── Before You Go (AI briefing) ──
+        (async function fetchTripBrief() {
+            const bygCard = document.getElementById('bygCard');
+            const bygBody = document.getElementById('bygBody');
+            if (!bygCard || !bygBody) return;
+            const cacheKey = 'pm_brief_' + destination;
+            const cached = (() => { try { const r = JSON.parse(localStorage.getItem(cacheKey) || 'null'); if (r && Date.now() - r.ts < 86400000) return r.data; } catch {} return null; })();
+            const renderBrief = (b) => {
+                if (!b) { bygCard.style.display = 'none'; return; }
+                const tile = (cls, icon, label, text) => `
+                    <div class="byg-tile ${cls}">
+                        <div class="byg-tile-icon-box">${icon}</div>
+                        <div class="byg-tile-head">
+                            <span class="byg-tile-label">${label}</span>
+                        </div>
+                        <div class="byg-tile-text">${text}</div>
+                    </div>`;
+                const img = (src) => `<img src="${src}" style="width:74px;height:74px;object-fit:contain;">`;
+                bygBody.innerHTML = `<div class="byg-grid">
+                    ${tile('byg-tile-visa',     img('img/byg_visa.png'),     'Visa',     b.visa||'Check requirements')}
+                    ${tile('byg-tile-currency', img('img/byg_currency.png'), 'Currency', b.currency||'Local currency')}
+                    ${tile('byg-tile-weather',  img('img/byg_weather.png'),  'Weather',  b.weather||'Varies')}
+                    ${tile('byg-tile-safety',   img('img/byg_safety.png'),   'Safety',   b.safety||'Stay aware')}
+                </div>`;
+            };
+            if (cached) { renderBrief(cached); return; }
+            try {
+                const country = tripData.country || destination;
+                const dates   = (fromDate && toDate) ? `${fromDate} to ${toDate}` : '';
+                const r = await fetch('/api/destination-brief', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${await Auth.getTokenAsync()}`
+                    },
+                    body: JSON.stringify({ destination, country, dates })
+                });
+                const brief = await r.json();
+                if (brief && !brief.error) {
+                    try { localStorage.setItem(cacheKey, JSON.stringify({ data: brief, ts: Date.now() })); } catch {}
+                    renderBrief(brief);
+                } else { bygCard.style.display = 'none'; }
+            } catch { bygCard.style.display = 'none'; }
+        })();
+
+        // ── Weather Forecast ──
+        const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        function isoDate(d) {
+            return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        }
+
+        function wxEmoji(code) {
+            if (code === 0)                                                    return '☀️';
+            if (code === 1)                                                    return '🌤️';
+            if (code === 2)                                                    return '⛅';
+            if (code === 3)                                                    return '☁️';
+            if (code === 45 || code === 48)                                    return '🌫️';
+            if (code >= 51 && code <= 57)                                      return '🌦️';
+            if (code >= 61 && code <= 67)                                      return '🌧️';
+            if ((code >= 71 && code <= 77) || code === 85 || code === 86)     return '❄️';
+            if (code >= 80 && code <= 84)                                      return '🌦️';
+            if (code >= 95)                                                    return '⛈️';
+            return '🌡️';
+        }
+
+        async function fetchTripWeather() {
+            if (!destination) return;
+            const strip = document.getElementById('tripWeatherStrip');
+            if (!strip) return;
+            try {
+                const geoRes  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&format=json`);
+                const geoData = await geoRes.json();
+                if (!geoData.results?.length) return;
+                const { latitude, longitude } = geoData.results[0];
+
+                const today       = new Date(); today.setHours(0,0,0,0);
+                const tripStart   = fromDate ? new Date(fromDate + 'T00:00:00') : new Date(today);
+                const tripEnd     = toDate   ? new Date(toDate   + 'T00:00:00') : new Date(today);
+                const maxForecast = new Date(today); maxForecast.setDate(maxForecast.getDate() + 15);
+
+                let apiUrl, isHistorical = false;
+                let fetchStart, fetchEnd;
+
+                if (tripEnd >= today && tripStart <= maxForecast) {
+                    fetchStart = tripStart < today ? today : tripStart;
+                    fetchEnd   = new Date(fetchStart); fetchEnd.setDate(fetchEnd.getDate() + 6);
+                    if (fetchEnd > maxForecast) fetchEnd = new Date(maxForecast);
+                    apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max&start_date=${isoDate(fetchStart)}&end_date=${isoDate(fetchEnd)}&timezone=auto&temperature_unit=fahrenheit`;
+                } else {
+                    const archiveMax = new Date(today); archiveMax.setDate(archiveMax.getDate() - 2);
+                    const ly_s = new Date(tripStart); ly_s.setFullYear(ly_s.getFullYear() - 1);
+                    while (ly_s > archiveMax) ly_s.setFullYear(ly_s.getFullYear() - 1);
+                    const ly_e = new Date(ly_s); ly_e.setDate(ly_s.getDate() + 6);
+                    if (ly_e > archiveMax) ly_e.setTime(archiveMax.getTime());
+                    fetchStart = ly_s; fetchEnd = ly_e;
+                    isHistorical = true;
+                    apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&start_date=${isoDate(ly_s)}&end_date=${isoDate(ly_e)}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum&timezone=auto&temperature_unit=fahrenheit`;
+                }
+
+                const res  = await fetch(apiUrl);
+                const data = await res.json();
+                if (!data.daily?.time?.length) return;
+
+                const { time, temperature_2m_max, temperature_2m_min, weathercode,
+                        precipitation_probability_max, precipitation_sum } = data.daily;
+                const wxDays = time.slice(0, 7);
+
+                function precipDisplay(i) {
+                    const dropSvg = `<svg width="10" height="13" viewBox="0 0 10 13" fill="none"><path d="M5 0.5C5 0.5 0.5 6 0.5 8.5a4.5 4.5 0 009 0C9.5 6 5 0.5 5 0.5z" fill="rgba(100,180,255,0.75)"/></svg>`;
+                    if (precipitation_probability_max) return `${dropSvg} ${Math.round(precipitation_probability_max[i] ?? 0)}%`;
+                    const mm = precipitation_sum?.[i] ?? 0;
+                    const pct = mm === 0 ? 5 : mm < 1 ? 15 : mm < 3 ? 30 : mm < 6 ? 50 : mm < 10 ? 65 : 80;
+                    return `${dropSvg} ${pct}%`;
+                }
+
+                const cols = wxDays.map((dateStr, i) => {
+                    const d  = new Date(dateStr + 'T00:00:00');
+                    const hi = Math.round(temperature_2m_max[i]);
+                    const lo = Math.round(temperature_2m_min[i]);
+                    return `<div class="weather-col">
+                        <div class="weather-col-day">${DAYS[d.getDay()]}</div>
+                        <div class="weather-col-date">${MONTHS[d.getMonth()]} ${d.getDate()}</div>
+                        <span class="weather-col-icon">${wxEmoji(weathercode[i])}</span>
+                        <div class="weather-col-hi">${hi}°</div>
+                        <div class="weather-col-lo">${lo}°</div>
+                        <div class="weather-col-precip">${precipDisplay(i)}</div>
+                    </div>`;
+                }).join('');
+
+                const noteHtml = isHistorical ? `<span class="weather-strip-note">Based on last year</span>` : '';
+                strip.innerHTML = `
+                    <div class="wx-overlay"></div>
+                    <div class="wx-content">
+                        <div class="weather-strip-header">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7cc63e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <div class="weather-strip-label">7-Day Forecast</div>
+                            ${noteHtml}
+                        </div>
+                        <div class="weather-7grid">${cols}</div>
+                    </div>`;
+
+                try {
+                    const PKEY = 'vnk5OqRIBUtBdRV9LUp1oaAn2QiAB5lO0HL8GwM5WrRRQZt5GOaFlVIq';
+                    const bgCacheKey = 'pm_wxbg_' + destination;
+                    const bgCached = (() => { try { const r = localStorage.getItem(bgCacheKey); return r ? JSON.parse(r).url : null; } catch { return null; } })();
+                    const applyBg = url => { if (url) strip.style.backgroundImage = `url('${url}')`; };
+                    if (bgCached) { applyBg(bgCached); }
+                    else {
+                        fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(destination+' city landscape')}&orientation=landscape&per_page=3&size=medium`, { headers:{ Authorization: PKEY } })
+                            .then(r => r.json()).then(d => {
+                                const url = d.photos?.[0]?.src?.large2x || d.photos?.[0]?.src?.large;
+                                if (url) { try { localStorage.setItem(bgCacheKey, JSON.stringify({url})); } catch {} applyBg(url); }
+                            }).catch(() => {});
+                    }
+                } catch {}
+            } catch(e) { console.error('Weather fetch failed:', e); }
+        }
+        fetchTripWeather();
+
+        // ── Copy invite code / share link ──
         function copyInviteCode() {
-            const code = document.getElementById('inviteCodeDisplay').textContent;
-            navigator.clipboard.writeText(code).then(() => {
+            const textToCopy = window._tripShareUrl || document.getElementById('inviteCodeDisplay').textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
                 const btn = document.getElementById('copyInviteBtn');
-                btn.textContent = 'Copied!';
+                const original = btn.innerHTML;
+                btn.innerHTML = 'Copied!';
                 btn.classList.add('copied');
-                setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+                setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
+            }).catch(() => {
+                const code = document.getElementById('inviteCodeDisplay').textContent;
+                const btn = document.getElementById('copyInviteBtn');
+                const original = btn.innerHTML;
+                btn.innerHTML = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
             });
         }
         window.copyInviteCode = copyInviteCode;
+
+        /* Background sync: pull fresh trip + pack state from Supabase */
+        if (!sessionStorage.getItem('pm_tp_synced')) {
+          (async () => {
+            const curBefore = localStorage.getItem('currentTrip');
+            const changed = await DB.syncTrips();
+            if (changed && localStorage.getItem('currentTrip') !== curBefore) {
+              sessionStorage.setItem('pm_tp_synced', '1');
+              location.reload();
+            }
+          })().catch(() => {});
+        }
     </script>
 </body>
 

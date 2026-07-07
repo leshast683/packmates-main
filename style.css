@@ -1,4 +1,26 @@
 /* ─────────────────────────────────────────────
+   PAGE TRANSITIONS — desktop only
+   auth.js injects these dynamically and handles mobile detection.
+   These rules are kept as a secondary source for pages that load
+   style.css but serve as a no-op since auth.js overrides them.
+───────────────────────────────────────────── */
+@keyframes pm-page-out {
+  to { opacity: 0; transform: translateY(-5px) scale(0.995); }
+}
+@keyframes pm-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Mobile: disable all page transitions */
+@media (max-width: 767px) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+  body { animation: none !important; }
+  .pm-exit { animation: none !important; pointer-events: none !important; }
+}
+
+/* ─────────────────────────────────────────────
    FONTS
 ───────────────────────────────────────────── */
 @font-face { font-family:'Blauer Nue'; src:url('font/Blauer-Nue-Heavy-iF6626350c62afa.otf') format('opentype'); font-weight:700; }
@@ -88,7 +110,7 @@ body {
    SIDEBAR
 ───────────────────────────────────────────── */
 .sidebar {
-  background: linear-gradient(180deg, var(--teal-2) 0%, var(--teal-1) 100%);
+  background: #102834;
   display: flex;
   flex-direction: column;
   padding: 0 10px;
@@ -106,11 +128,13 @@ body {
   background: linear-gradient(90deg, var(--teal-a), #4ecece, var(--green), transparent);
 }
 
-/* Inner highlight on left edge */
+/* Inner highlight + landscape illustration at bottom of sidebar */
 .sidebar::after {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(34,114,160,0.12) 0%, transparent 50%);
+  background:
+    linear-gradient(to bottom, #102834 0%, transparent 28%),
+    url('img/sidebar-landscape.jpg') bottom center / 100% auto no-repeat;
   pointer-events: none;
 }
 
@@ -245,21 +269,60 @@ body {
 
 /* ── Bottom nav ── */
 .nav-bottom {
-  padding: 10px 0 18px;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 8px 0 18px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   position: relative;
   z-index: 1;
 }
 
 .nav-bottom hr { display: none; }
 
-.logout { color: rgba(255,255,255,0.28) !important; }
+/* New Trip — compact green pill */
+.nav-new-trip {
+  background: linear-gradient(135deg, #5faf2e 0%, #4a8a24 100%) !important;
+  color: #fff !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 2px 8px rgba(74,140,36,0.35) !important;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s !important;
+}
+.nav-new-trip .nav-icon {
+  width: 14px !important;
+  height: 14px !important;
+  padding: 5px !important;
+  stroke: #fff !important;
+  background: rgba(255,255,255,0.18) !important;
+}
+.nav-new-trip:hover {
+  background: linear-gradient(135deg, #6cc234 0%, #53992a 100%) !important;
+  box-shadow: 0 4px 14px rgba(74,140,36,0.48) !important;
+  color: #fff !important;
+}
+
+/* Sign Out — slim frosted row */
+.logout {
+  background: rgba(255,255,255,0.14) !important;
+  border: 1px solid rgba(255,255,255,0.28) !important;
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 0.72rem !important;
+  border-radius: 10px !important;
+  padding: 6px 10px !important;
+}
+.logout .nav-icon {
+  width: 14px !important;
+  height: 14px !important;
+  padding: 5px !important;
+  stroke: rgba(255,255,255,0.80) !important;
+  background: transparent !important;
+}
 .logout:hover {
-  background: rgba(255,255,255,0.05) !important;
-  color: rgba(255,255,255,0.6) !important;
+  background: rgba(255,255,255,0.22) !important;
+  color: #fff !important;
+  border-color: rgba(255,255,255,0.40) !important;
 }
 
 /* ─────────────────────────────────────────────

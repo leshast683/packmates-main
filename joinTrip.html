@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Join a Trip — Packmates</title>
+  <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
   <style>
     body > main {
@@ -27,6 +28,10 @@
       box-shadow: var(--shadow-md);
       padding: 40px;
       animation: fadeUp 0.4s ease both;
+    }
+    @media (max-width: 480px) {
+      body > main { align-items: flex-start; padding: 20px 16px 40px; }
+      .jt-card { padding: 28px 20px 24px; border-radius: 20px; }
     }
 
     .jt-icon {
@@ -231,11 +236,28 @@
   </main>
 
   <script src="auth.js"></script>
+  <script src="notifications.js"></script>
   <script>
     Auth.requireAuth('welcome.html');
 
     const input = document.getElementById('codeInput');
     let foundTrip = null;
+
+    /* decode ?invite= URL param so share links work cross-device */
+    (function() {
+      try {
+        const inv = new URLSearchParams(location.search).get('invite');
+        if (!inv) return;
+        window._urlInviteData = JSON.parse(decodeURIComponent(escape(atob(inv))));
+        const code = window._urlInviteData?.inviteCode;
+        if (code) {
+          let val = code.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+          if (val.length > 4) val = val.slice(0, 4) + '-' + val.slice(4, 8);
+          input.value = val;
+          setTimeout(() => lookupCode(val), 0);
+        }
+      } catch(e) {}
+    })();
 
     /* format input as user types: uppercase + insert hyphen after 4 chars */
     input.addEventListener('input', () => {
@@ -250,6 +272,10 @@
     function lookupCode(code) {
       const allTrips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
       foundTrip = allTrips.find(t => t.inviteCode === code) || null;
+      // Cross-device fallback: use trip data embedded in the invite URL
+      if (!foundTrip && window._urlInviteData?.inviteCode === code) {
+        foundTrip = window._urlInviteData;
+      }
 
       const preview = document.getElementById('tripPreviewCard');
       if (foundTrip) {
@@ -266,12 +292,11 @@
     }
 
     function pushNotification(type, text, tripName) {
-      const session = Auth.getSession();
-      if (!session) return;
-      const key    = `pm_notifications_${session.email}`;
-      const notifs = JSON.parse(localStorage.getItem(key) || '[]');
-      notifs.unshift({ id: Date.now(), type, text, tripName, time: new Date().toISOString(), read: false });
-      localStorage.setItem(key, JSON.stringify(notifs));
+      if (window.Notify) {
+        Notify.push(type, text, tripName, null);
+        Notify.showToast(text, type, tripName);
+        Notify.updateBell();
+      }
     }
 
     function joinTrip() {
@@ -286,12 +311,18 @@
       btn.disabled  = true;
       btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0"/></svg> Joining…`;
 
-      /* load the trip as the active trip */
-      localStorage.setItem('currentTrip', JSON.stringify(foundTrip));
-      localStorage.removeItem('packingItemState');
-      localStorage.removeItem('packingDismissed');
-      localStorage.removeItem('packingCustomItems');
-      localStorage.removeItem('packingState');
+      /* load the trip as the active trip + save to Supabase */
+      if (typeof DB !== 'undefined') {
+        DB.saveTrip(foundTrip);
+        if (foundTrip.id && !localStorage.getItem(`pm_pack_${foundTrip.id}`)) {
+          DB.savePackState(foundTrip.id, { itemState: {}, dismissed: [], customItems: {} });
+        }
+      } else {
+        localStorage.setItem('currentTrip', JSON.stringify(foundTrip));
+        if (foundTrip.id && !localStorage.getItem(`pm_pack_${foundTrip.id}`)) {
+          localStorage.setItem(`pm_pack_${foundTrip.id}`, JSON.stringify({ itemState: {}, dismissed: [], customItems: {} }));
+        }
+      }
 
       pushNotification('join', `You joined the trip to ${foundTrip.destination}!`, foundTrip.destination);
 

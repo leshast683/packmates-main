@@ -2249,12 +2249,11 @@
     (async () => {
       const videoEl = document.getElementById('tipVideo');
       if (!videoEl) return;
-      const isMobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
-      if (isMobile) return;
 
       function playVideo(url) {
         videoEl.src = url;
         videoEl.load();
+        videoEl.play().catch(() => {});
         videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; };
         videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; };
         /* If nothing plays within 4 s, fall back to local video */
@@ -2394,7 +2393,7 @@
       });
     });
 
-    const shownItems = popularItems.slice(0, 8);
+    const shownItems = popularItems.slice(0, 5);
     const topPct = Math.max(...shownItems.map(([,pct]) => pct));
     document.getElementById('packedStrip').innerHTML = shownItems.map(([name, pct, circleBg, barColor]) => `
       <div class="packed-chip">

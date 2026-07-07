@@ -4,811 +4,902 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile — Packmates</title>
+  <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="style.css">
   <style>
-    body > main {
-      padding: 28px 32px 40px;
-      overflow-y: auto;
+    body > main { padding: 28px 32px 40px; overflow-y: auto; display: block; }
+    .profile-hero { flex-shrink: 0; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── HERO ── */
+    .profile-hero { border-radius: 20px; overflow: hidden; margin-bottom: 18px; box-shadow: 0 4px 28px rgba(11,25,41,.22); animation: fadeUp .4s ease both; }
+
+    .profile-hero-banner {
+      height: 310px; position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #0b1929 0%, #113a58 35%, #1a6685 65%, #2d8a5e 85%, #5f9d30 100%);
+    }
+    .profile-hero-banner::before { display:none; }
+    .profile-hero-banner::after {
+      content:''; position:absolute; inset:0; z-index:2;
+      background: linear-gradient(to bottom, rgba(11,25,41,.08) 0%, rgba(11,25,41,.48) 100%);
+    }
+    .hero-bg-video {
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; z-index:1; opacity:.85;
     }
 
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(18px); }
-      to   { opacity:1; transform:translateY(0); }
+    .hero-banner-inner {
+      position:absolute; inset:0; z-index:3;
+      padding:24px 22px 0; display:flex; flex-direction:column;
     }
+    .hero-plane-deco { z-index:3; }
+    .hero-banner-top { display:flex; align-items:flex-start; gap:18px; flex:1; }
 
-    /* ══════════════════════════
-       HERO CARD
-    ══════════════════════════ */
-    .profile-hero {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      border: 1px solid rgba(0,0,0,0.04);
-      padding: 28px 32px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      animation: fadeUp 0.4s ease both;
+    .profile-streak-card {
+      position:absolute; top:18px; right:20px; z-index:5;
+      background:rgba(11,25,41,.7); backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.15); border-radius:16px;
+      padding:14px 20px; text-align:center; min-width:112px;
     }
+    .profile-streak-title { font-size:.52rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.45); margin-bottom:4px; }
+    .profile-streak-num { font-family:'Blauer Nue',sans-serif; font-size:2.4rem; font-weight:700; color:#fff; line-height:1; }
+    .profile-streak-unit { font-size:.56rem; font-weight:600; color:rgba(255,255,255,.45); margin-top:1px; }
+    .profile-streak-sub { font-size:.56rem; color:#7cc63e; margin-top:6px; font-weight:600; letter-spacing:.04em; }
 
-    /* Avatar */
-    .avatar-wrap {
-      position: relative;
-      width: 72px; height: 72px;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
+    .hero-plane-deco { position:absolute; top:50%; right:155px; transform:translateY(-55%); z-index:2; opacity:.3; pointer-events:none; }
 
+    .avatar-wrap { position:relative; width:96px; height:96px; flex-shrink:0; cursor:pointer; margin-top:4px; }
     .avatar-circle {
-      width: 72px; height: 72px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Blauer Nue', sans-serif;
-      font-weight: 700;
-      font-size: 1.6rem;
-      color: #fff;
-      letter-spacing: -0.02em;
-      overflow: hidden;
-      background: linear-gradient(135deg, var(--navy-deep), var(--navy-mid, #1a4f70));
+      width:96px; height:96px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Blauer Nue',sans-serif; font-weight:700; font-size:2.4rem; color:#113a58;
+      overflow:hidden; background:rgba(180,220,205,.88);
+      border:3px solid rgba(255,255,255,.5); box-shadow:0 4px 20px rgba(0,0,0,.3);
     }
-
-    .avatar-circle img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: none;
+    .avatar-circle img { width:100%; height:100%; object-fit:cover; display:none; }
+    .avatar-circle.has-photo span { display:none; }
+    .avatar-circle.has-photo img  { display:block; }
+    .avatar-camera {
+      position:absolute; bottom:2px; right:2px; width:28px; height:28px;
+      border-radius:50%; background:rgba(11,25,41,.82);
+      border:2px solid rgba(255,255,255,.35);
+      display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,.3);
     }
+    .avatar-camera svg { width:13px; height:13px; stroke:rgba(255,255,255,.9); fill:none; stroke-width:2; stroke-linecap:round; }
+    #avatar-input { display:none; }
 
-    .avatar-circle.has-photo span { display: none; }
-    .avatar-circle.has-photo img  { display: block; }
+    .hero-info { flex:1; min-width:0; padding-top:4px; }
+    .hero-greeting { font-family:'Blauer Nue',sans-serif; font-size:1.7rem; font-weight:700; color:#fff; letter-spacing:-.02em; margin:0 0 2px; text-shadow:0 2px 8px rgba(0,0,0,.35); }
+    .hero-handle { font-size:.82rem; color:rgba(255,255,255,.62); font-weight:500; margin-bottom:11px; }
+    .hero-meta { display:flex; align-items:center; flex-wrap:wrap; gap:0; font-size:.74rem; color:rgba(255,255,255,.8); font-weight:500; }
+    .hero-meta-item { display:flex; align-items:center; gap:5px; }
+    .hero-meta-item svg { width:13px; height:13px; stroke:rgba(255,255,255,.65); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+    .hero-meta-sep { color:rgba(255,255,255,.28); padding:0 10px; font-weight:300; }
 
-    .avatar-overlay {
-      position: absolute; inset: 0;
-      border-radius: 18px;
-      background: rgba(0,0,0,0.45);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; transition: opacity 0.2s;
-      color: #fff; font-size: 0.65rem; font-weight: 700;
-      letter-spacing: 0.06em; text-transform: uppercase; text-align: center;
-    }
-    .avatar-wrap:hover .avatar-overlay { opacity: 1; }
-    #avatar-input { display: none; }
-
-    /* Profile info */
-    .profile-info { flex: 1; min-width: 160px; }
-
-    .profile-name {
-      font-family: 'Blauer Nue', sans-serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text-1);
-      margin-bottom: 3px;
-    }
-
-    .profile-email {
-      font-size: 0.78rem;
-      color: var(--text-3);
-      font-weight: 500;
-    }
-
-    .profile-edit-inputs {
-      display: none;
-      flex-direction: column;
-      gap: 8px;
-      flex: 1;
-      min-width: 160px;
-    }
-
-    .profile-edit-inputs input {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.9rem;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 9px 14px;
-      color: var(--text-1);
-      outline: none;
-      transition: border-color 0.2s;
-      margin: 0; width: 100%;
-    }
-    .profile-edit-inputs input:focus { border-color: var(--navy); }
-
-    /* Stats */
-    .profile-stats {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      padding: 0 24px;
-      border-left: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-    }
-
-    .profile-stat { text-align: center; }
-
-    .profile-stat-num {
-      font-family: 'Blauer Nue', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text-1);
-      display: block;
-    }
-
-    .profile-stat-lbl {
-      font-size: 0.6rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-3);
-      display: block;
-    }
-
-    /* Edit button */
     .btn-edit-profile {
-      padding: 10px 22px;
-      background: var(--navy-deep);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      flex-shrink: 0;
+      display:inline-flex; align-items:center; gap:6px; margin-top:14px; padding:8px 18px;
+      background:rgba(255,255,255,.15); border:1.5px solid rgba(255,255,255,.3); color:#fff;
+      border-radius:10px; font-family:'Montserrat',sans-serif; font-size:.76rem; font-weight:700;
+      cursor:pointer; backdrop-filter:blur(6px); transition:all .2s; letter-spacing:.02em;
     }
-    .btn-edit-profile:hover {
-      background: var(--navy);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(11,25,41,0.2);
+    .btn-edit-profile:hover { background:rgba(255,255,255,.26); }
+
+    .profile-edit-inputs { display:none; flex-direction:column; gap:7px; flex:1; padding-top:4px; }
+    .profile-edit-inputs input {
+      font-family:'Montserrat',sans-serif; font-size:.84rem;
+      background:rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.28);
+      border-radius:10px; padding:8px 13px; color:#fff; outline:none;
+      transition:border-color .2s; margin:0; width:100%; backdrop-filter:blur(4px);
     }
+    .profile-edit-inputs input::placeholder { color:rgba(255,255,255,.38); }
+    .profile-edit-inputs input:focus { border-color:rgba(124,198,62,.75); }
+    .profile-edit-btns { display:flex; gap:8px; margin-top:4px; }
+    .loc-wrap { position:relative; }
+    .loc-dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; background:rgba(12,22,40,.97); border:1.5px solid rgba(255,255,255,.22); border-radius:10px; backdrop-filter:blur(14px); z-index:500; max-height:180px; overflow-y:auto; display:none; scrollbar-width:none; box-shadow:0 8px 24px rgba(0,0,0,.4); }
+    .loc-dropdown::-webkit-scrollbar { display:none; }
+    .loc-option { padding:9px 13px; font-size:.8rem; color:rgba(255,255,255,.88); cursor:pointer; font-family:'Montserrat',sans-serif; transition:background .12s; }
+    .loc-option:hover, .loc-option.active { background:rgba(124,198,62,.18); color:#fff; }
+    .bio-field-wrap { position:relative; }
+    .bio-char-count { position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:.58rem; color:rgba(255,255,255,.38); pointer-events:none; font-weight:700; }
+    .bio-char-count.warn { color:rgba(255,120,60,.7); }
+    .hero-bio { font-size:.84rem; color:rgba(255,255,255,.72); margin-top:8px; font-style:italic; }
 
-    /* ══════════════════════════
-       SETTINGS GRID
-    ══════════════════════════ */
-    .settings-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-      animation: fadeUp 0.4s 0.06s ease both;
+    .explorer-level {
+      margin:0 0 18px; background:rgba(11,25,41,.62); backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:12px 16px;
+      display:flex; align-items:center; gap:12px; cursor:pointer; transition:background .18s;
     }
-
-    .settings-card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      border: 1px solid rgba(0,0,0,0.04);
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    .explorer-level:hover { background:rgba(11,25,41,.78); }
+    .explorer-level-icon {
+      width:36px; height:36px; flex-shrink:0; border-radius:10px;
+      background:rgba(124,198,62,.18); border:1.5px solid rgba(124,198,62,.32);
+      display:flex; align-items:center; justify-content:center;
     }
+    .explorer-level-icon svg { width:17px; height:17px; stroke:#7cc63e; fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+    .explorer-level-body { flex:1; }
+    .explorer-level-title { font-size:.78rem; font-weight:700; color:#fff; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .explorer-pct { font-size:.72rem; font-weight:600; color:rgba(255,255,255,.6); }
+    .explorer-track { height:6px; background:rgba(255,255,255,.15); border-radius:999px; overflow:hidden; }
+    .explorer-fill { height:100%; background:linear-gradient(90deg,#7cc63e,#a8e63e); border-radius:999px; transition:width .9s ease; box-shadow:0 0 8px rgba(124,198,62,.5); }
 
-    .settings-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .settings-card.open  { transform: none; box-shadow: var(--shadow-md); grid-column: span 2; }
+    .profile-gender-chip { display:inline-flex; align-items:center; gap:4px; font-size:.62rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:99px; flex-shrink:0; }
+    .profile-gender-chip--male     { background:rgba(96,165,250,.2);  color:#93c5fd; border:1px solid rgba(96,165,250,.35); }
+    .profile-gender-chip--female   { background:rgba(244,114,182,.2); color:#f9a8d4; border:1px solid rgba(244,114,182,.35); }
+    .profile-gender-chip--nonbinary{ background:rgba(167,139,250,.2); color:#c4b5fd; border:1px solid rgba(167,139,250,.35); }
 
-    .settings-card-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 20px 22px;
-    }
+    /* ── STATS ROW ── */
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; animation:fadeUp .4s .05s ease both; }
+    .stat-card { background:var(--surface); border-radius:16px; border:1px solid rgba(0,0,0,.04); box-shadow:0 2px 8px rgba(0,0,0,.05); padding:18px 16px; display:flex; flex-direction:column; gap:2px; transition:transform .2s,box-shadow .2s; }
+    .stat-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.09); }
+    .stat-icon { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; flex-shrink:0; }
+    .stat-icon svg { width:20px; height:20px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .stat-icon--green,
+    .stat-icon--orange,
+    .stat-icon--purple,
+    .stat-icon--teal   { background:linear-gradient(135deg,#1a4d6e,#113a58); box-shadow:0 4px 12px rgba(17,58,88,.3); }
+    .stat-num { font-family:'Blauer Nue',sans-serif; font-size:1.5rem; font-weight:700; letter-spacing:-.02em; color:var(--text-1); line-height:1; }
+    .stat-lbl { font-size:.72rem; font-weight:600; color:var(--text-2); margin-top:2px; }
+    .stat-sub { font-size:.62rem; color:#7cc63e; font-weight:600; margin-top:3px; display:flex; align-items:center; gap:3px; }
+    .stat-sub svg { width:10px; height:10px; stroke:currentColor; fill:none; stroke-width:2.5; stroke-linecap:round; }
 
-    .settings-icon {
-      width: 44px; height: 44px;
-      background: var(--navy-deep);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: #fff;
-    }
+    /* ── BODY GRID ── */
+    .profile-body-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; animation:fadeUp .4s .08s ease both; }
 
-    .settings-icon svg {
-      width: 20px; height: 20px;
-      stroke: currentColor;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-width: 1.8;
-    }
+    /* ── CARDS ── */
+    .profile-card { background:var(--surface); border-radius:16px; border:1px solid rgba(0,0,0,.04); box-shadow:0 2px 8px rgba(0,0,0,.05); overflow:hidden; }
+    .card-head { display:flex; align-items:flex-start; justify-content:space-between; padding:18px 20px 14px; border-bottom:1px solid var(--border); }
+    .card-head h3 { font-family:'Blauer Nue',sans-serif; font-size:.96rem; font-weight:700; color:var(--text-1); margin:0; }
+    .card-head-sub { font-size:.68rem; color:var(--text-3); margin-top:2px; }
+    .view-all-link { font-size:.72rem; font-weight:700; color:#0c7a7a; background:none; border:none; cursor:pointer; padding:0; text-decoration:none; font-family:'Montserrat',sans-serif; transition:opacity .15s; flex-shrink:0; margin-top:2px; }
+    .view-all-link:hover { opacity:.7; }
 
-    .settings-text { flex: 1; }
+    /* Travel style chips */
+    .travel-style-body { padding:14px 18px; }
+    .style-chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .style-chip { display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:10px; font-size:.72rem; font-weight:600; border:1.5px solid; transition:transform .15s; }
+    .style-chip:hover { transform:translateY(-1px); }
+    .style-chip img { width:18px; height:18px; object-fit:contain; }
+    .style-chip--green  { background:rgba(124,198,62,.1);  color:#4d8225; border-color:rgba(124,198,62,.3); }
+    .style-chip--teal   { background:rgba(12,122,122,.08); color:#0c7a7a; border-color:rgba(12,122,122,.2); }
+    .style-chip--blue   { background:rgba(37,99,235,.08);  color:#1d4ed8; border-color:rgba(37,99,235,.2); }
+    .style-chip--orange { background:rgba(234,88,12,.08);  color:#c2410c; border-color:rgba(234,88,12,.2); }
+    .style-chip--purple { background:rgba(124,58,237,.08); color:#6d28d9; border-color:rgba(124,58,237,.2); }
+    .style-chip--pink   { background:rgba(219,39,119,.08); color:#be185d; border-color:rgba(219,39,119,.2); }
+    .style-empty { font-size:.8rem; color:var(--text-3); padding:6px 0; }
 
-    .settings-text strong {
-      font-family: 'Blauer Nue', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text-1);
-      display: block;
-      margin-bottom: 2px;
-    }
+    /* Settings list */
+    .settings-list-body { padding:4px 0; }
+    .settings-row { display:flex; align-items:center; gap:14px; padding:14px 20px; cursor:pointer; transition:background .15s; border-bottom:1px solid var(--border); }
+    .settings-row:last-of-type.no-panel { border-bottom:none; }
+    .settings-row:hover { background:var(--bg); }
+    .settings-row-icon { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 3px 10px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.22); }
+    .settings-row-icon svg { width:18px; height:18px; stroke:rgba(255,255,255,.95); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+    .settings-row-text { flex:1; }
+    .settings-row-text strong { font-family:'Blauer Nue',sans-serif; font-size:.86rem; font-weight:700; color:var(--text-1); display:block; margin-bottom:1px; }
+    .settings-row-text span { font-size:.7rem; color:var(--text-3); font-weight:400; }
+    .settings-row-badge { font-size:.6rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:3px 9px; border-radius:6px; white-space:nowrap; flex-shrink:0; }
+    .badge--navy  { background:var(--navy-deep); color:#fff; }
+    .badge--green { background:rgba(124,198,62,.12); color:#4d8225; border:1px solid rgba(124,198,62,.25); }
+    .settings-row-chevron { width:24px; height:24px; background:var(--bg); border:1px solid var(--border); border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .2s,background .15s; }
+    .settings-row-chevron svg { width:11px; height:11px; stroke:var(--text-3); fill:none; stroke-width:2.2; stroke-linecap:round; transition:transform .2s; }
+    .settings-row.open .settings-row-chevron { background:var(--border); }
+    .settings-row.open .settings-row-chevron svg { transform:rotate(180deg); }
 
-    .settings-text span {
-      font-size: 0.72rem;
-      color: var(--text-3);
-      font-weight: 500;
-    }
-
-    .settings-chevron {
-      width: 28px; height: 28px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: transform 0.25s var(--ease), background 0.15s;
-      color: var(--text-3);
-    }
-
-    .settings-chevron svg {
-      width: 13px; height: 13px;
-      stroke: currentColor;
-      fill: none;
-      stroke-linecap: round;
-      stroke-width: 2.2;
-    }
-
-    .settings-card.open .settings-chevron { transform: rotate(180deg); background: var(--border); }
-
-    /* Collapsible panel */
-    .settings-panel {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.38s ease;
-    }
-
-    .settings-panel-inner {
-      padding: 0 22px 22px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      padding-top: 20px;
-    }
+    .settings-panel { max-height:0; overflow:hidden; transition:max-height .38s ease; background:var(--bg); border-bottom:1px solid var(--border); }
+    .settings-panel:last-child { border-bottom:none; }
+    .settings-panel-inner { padding:18px 20px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:14px; }
 
     /* Form fields */
-    .s-field { display: flex; flex-direction: column; gap: 6px; }
+    .s-field { display:flex; flex-direction:column; gap:6px; }
+    .s-field label { font-size:.65rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); }
+    .s-field input[type="text"],.s-field input[type="email"],.s-field input[type="tel"],.s-field input[type="password"] { width:100%; padding:11px 14px; background:var(--surface); border:1.5px solid var(--border); border-radius:10px; font-family:'Montserrat',sans-serif; font-size:.875rem; color:var(--text-1); outline:none; transition:border-color .2s,box-shadow .2s; margin:0; }
+    .s-field input:focus { border-color:#7cc63e; box-shadow:0 0 0 3px rgba(124,198,62,.1); }
+    .field-msg { font-size:.72rem; border-radius:8px; padding:8px 12px; display:none; }
+    .field-msg.error   { background:rgba(192,57,43,.08); border:1px solid rgba(192,57,43,.2); color:#c0392b; display:block; }
+    .field-msg.success { background:rgba(124,198,62,.08); border:1px solid rgba(124,198,62,.2); color:#4d8225; display:block; }
+    .btn-save { display:inline-flex; align-items:center; padding:10px 22px; background:var(--navy-deep); color:#fff; border:none; border-radius:10px; font-family:'Montserrat',sans-serif; font-size:.75rem; font-weight:700; cursor:pointer; align-self:flex-start; transition:all .2s; }
+    .btn-save:hover { background:var(--navy); transform:translateY(-2px); box-shadow:0 8px 22px rgba(11,25,41,.28); }
 
-    .s-field label {
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-3);
+    .pg-gender-group { display:flex; gap:8px; }
+    .pg-gender-btn { flex:1; padding:12px 6px 9px; background:var(--surface); border:1.5px solid var(--border); border-radius:12px; font-family:'Montserrat',sans-serif; font-size:.65rem; font-weight:700; letter-spacing:.04em; color:var(--text-3); cursor:pointer; transition:all .18s; display:flex; flex-direction:column; align-items:center; gap:7px; }
+    .pg-gender-btn svg { width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+    .pg-gender-btn:hover { border-color:var(--navy); color:var(--navy); }
+    .pg-gender-btn.active { background:rgba(124,198,62,.08); border-color:#7cc63e; color:#4d8225; box-shadow:0 0 0 3px rgba(124,198,62,.08); }
+
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); }
+    .toggle-row:last-of-type { border-bottom:none; }
+    .toggle-label strong { font-size:.84rem; font-weight:600; color:var(--text-1); display:block; }
+    .toggle-label small  { font-size:.72rem; color:var(--text-3); font-weight:400; }
+    .toggle { position:relative; width:42px; height:24px; flex-shrink:0; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:var(--border-2); border-radius:99px; cursor:pointer; transition:background .25s; }
+    .toggle-slider::before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .25s; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+    .toggle input:checked + .toggle-slider { background:#7cc63e; }
+    .toggle input:checked + .toggle-slider::before { transform:translateX(18px); }
+
+    .plan-card { background:var(--surface); border-radius:12px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; border:1px solid var(--border); }
+    .plan-card strong { font-family:'Blauer Nue',sans-serif; font-size:.95rem; font-weight:700; color:var(--text-1); display:block; margin-bottom:2px; }
+    .plan-card small { font-size:.72rem; color:var(--text-3); }
+    .btn-upgrade { display:inline-flex; padding:9px 20px; background:transparent; color:#7cc63e; border:1.5px solid #7cc63e; border-radius:10px; font-family:'Montserrat',sans-serif; font-size:.75rem; font-weight:700; cursor:pointer; transition:all .2s; }
+    .btn-upgrade:hover { background:#7cc63e; color:#fff; transform:translateY(-2px); box-shadow:0 8px 22px rgba(124,198,62,.35); }
+
+    .faq-item { border-bottom:1px solid var(--border); }
+    .faq-item:last-child { border-bottom:none; }
+    .faq-q { width:100%; background:none; border:none; text-align:left; font-family:'Montserrat',sans-serif; font-size:.82rem; font-weight:600; color:var(--text-1); padding:12px 0; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .faq-q svg { width:13px; height:13px; stroke:var(--text-3); fill:none; stroke-width:2.2; stroke-linecap:round; flex-shrink:0; transition:transform .2s; }
+    .faq-item.open .faq-q svg { transform:rotate(180deg); }
+    .faq-a { font-size:.78rem; color:var(--text-2); line-height:1.65; max-height:0; overflow:hidden; transition:max-height .3s ease,padding .3s; }
+    .faq-item.open .faq-a { max-height:200px; padding-bottom:12px; }
+
+    /* Recent trips */
+    .recent-list-item { display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid var(--border); transition:background .15s; cursor:pointer; }
+    .recent-list-item:last-child { border-bottom:none; }
+    .recent-list-item:hover { background:var(--bg); }
+    .recent-list-thumb { width:48px; height:48px; border-radius:10px; background:linear-gradient(135deg,#113a58,#1a6685); flex-shrink:0; overflow:hidden; }
+    .recent-list-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .recent-list-info { flex:1; min-width:0; }
+    .recent-list-info strong { font-size:.84rem; font-weight:600; color:var(--text-1); display:block; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .recent-list-info span { font-size:.68rem; color:var(--text-3); }
+    .recent-list-count { text-align:right; flex-shrink:0; }
+    .recent-list-count strong { font-size:.88rem; font-weight:700; color:var(--text-1); display:block; }
+    .recent-list-count span { font-size:.62rem; color:var(--text-3); }
+    .list-empty { padding:24px 18px; text-align:center; font-size:.8rem; color:var(--text-3); }
+
+    /* Timeline */
+    .timeline-wrap { padding:16px 20px; }
+    .timeline-year { font-size:.78rem; font-weight:700; color:var(--text-2); margin-bottom:12px; }
+    .timeline-item { display:flex; gap:14px; padding-bottom:16px; position:relative; }
+    .timeline-item::before { content:''; position:absolute; left:14px; top:30px; bottom:0; width:2px; background:var(--border); }
+    .timeline-item:last-child::before { display:none; }
+    .timeline-dot { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .timeline-dot img { width:16px; height:16px; object-fit:contain; }
+    .timeline-content { flex:1; padding-top:4px; }
+    .timeline-dates { font-size:.68rem; color:var(--text-3); margin-bottom:2px; }
+    .timeline-dest { font-size:.82rem; font-weight:600; color:var(--text-1); }
+
+    /* Timeline card */
+    .timeline-card { margin-bottom:14px; }
+
+    /* CTA Banner */
+    .cta-banner { background:linear-gradient(135deg,#0b1929 0%,#113a58 60%,#1a4f70 100%); border-radius:18px; padding:22px 28px; display:flex; align-items:center; gap:18px; margin-top:14px; box-shadow:0 4px 20px rgba(11,25,41,.2); animation:fadeUp .4s .14s ease both; }
+    .cta-banner-icon { width:46px; height:46px; border-radius:13px; background:rgba(124,198,62,.18); border:1px solid rgba(124,198,62,.32); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .cta-banner-icon svg { width:22px; height:22px; stroke:#7cc63e; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .cta-banner-text { flex:1; }
+    .cta-banner-text strong { font-family:'Blauer Nue',sans-serif; font-size:1.05rem; font-weight:700; color:#fff; display:block; margin-bottom:2px; }
+    .cta-banner-text span { font-size:.74rem; color:rgba(255,255,255,.5); }
+    .btn-signout { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; background:rgba(255,255,255,.1); border:1.5px solid rgba(255,255,255,.18); color:#fff; border-radius:12px; font-family:'Montserrat',sans-serif; font-size:.78rem; font-weight:700; cursor:pointer; flex-shrink:0; transition:all .2s; }
+    .btn-signout:hover { background:rgba(255,255,255,.18); transform:translateY(-1px); }
+    .btn-signout svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; }
+
+    /* Modal + toast */
+    /* ── Packmates List Modal ── */
+    .pm-list-backdrop { position:fixed; inset:0; z-index:300; background:rgba(10,18,30,.55); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .pm-list-backdrop.open { opacity:1; pointer-events:all; }
+    .pm-list-modal { background:var(--surface); border-radius:22px; width:100%; max-width:420px; max-height:80vh; display:flex; flex-direction:column; box-shadow:0 24px 64px rgba(0,0,0,.22); transform:translateY(16px) scale(.97); transition:transform .28s cubic-bezier(.22,.97,.42,1.1); overflow:hidden; }
+    .pm-list-backdrop.open .pm-list-modal { transform:none; }
+    .pm-list-header { display:flex; align-items:center; justify-content:space-between; padding:18px 20px 16px; border-bottom:1px solid var(--border); flex-shrink:0; }
+    .pm-list-logo { display:flex; align-items:center; gap:10px; }
+    .pm-list-logo img { width:34px; height:34px; border-radius:10px; }
+    .pm-list-logo span { font-family:'Blauer Nue',sans-serif; font-size:1.05rem; font-weight:800; color:var(--text-1); }
+    .pm-list-count { font-size:.72rem; font-weight:600; color:var(--text-3); background:var(--bg); padding:3px 10px; border-radius:20px; }
+    .pm-list-close { width:30px; height:30px; border-radius:50%; background:var(--bg); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .pm-list-close svg { width:14px; height:14px; stroke:var(--text-2); fill:none; stroke-width:2.5; stroke-linecap:round; }
+    .pm-list-body { overflow-y:auto; padding:12px 16px 16px; display:flex; flex-direction:column; gap:8px; scrollbar-width:none; }
+    .pm-list-body::-webkit-scrollbar { display:none; }
+    .pm-list-empty { text-align:center; padding:40px 20px; color:var(--text-3); font-size:.85rem; }
+    .pm-list-empty svg { width:40px; height:40px; stroke:var(--border); fill:none; stroke-width:1.5; margin-bottom:12px; display:block; margin-inline:auto; }
+    .pm-item { display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--bg); border-radius:14px; }
+    .pm-item-avatar { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:800; color:#fff; font-family:'Blauer Nue',sans-serif; flex-shrink:0; }
+    .pm-item-info { flex:1; min-width:0; }
+    .pm-item-name { font-size:.88rem; font-weight:700; color:var(--text-1); }
+    .pm-item-city { font-size:.68rem; color:var(--text-3); margin-top:1px; }
+    .pm-item-stats { display:flex; gap:10px; margin-top:4px; }
+    .pm-item-stat { font-size:.65rem; color:var(--text-3); font-weight:600; }
+    .pm-item-stat strong { color:var(--text-1); }
+    .pm-item-remove { background:none; border:1.5px solid var(--border); border-radius:8px; padding:5px 10px; font-size:.65rem; font-weight:700; color:var(--text-3); cursor:pointer; flex-shrink:0; transition:border-color .2s,color .2s; }
+    .pm-item-remove:hover { border-color:#e74c3c; color:#e74c3c; }
+    .pm-item { cursor:pointer; transition:transform .15s,box-shadow .15s; }
+    .pm-item:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,.1); }
+    .hero-meta-item[onclick] { transition:background .15s; border-radius:8px; padding:3px 7px; margin:-3px -7px; }
+    .hero-meta-item[onclick]:hover { background:rgba(255,255,255,.18); }
+
+    /* ── Packmate Traveler Profile Modal ── */
+    .tp-backdrop { position:fixed; inset:0; z-index:400; background:rgba(10,18,30,.65); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .tp-backdrop.open { opacity:1; pointer-events:all; }
+    .tp-modal { background:var(--surface); border-radius:24px; width:100%; max-width:480px; max-height:88vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,.22); transform:translateY(18px) scale(.97); transition:transform .28s cubic-bezier(.22,.97,.42,1.12); scrollbar-width:none; }
+    .tp-modal::-webkit-scrollbar { display:none; }
+    .tp-backdrop.open .tp-modal { transform:none; }
+    .tp-header { position:relative; height:130px; border-radius:24px 24px 0 0; }
+    .tp-header-bg { position:absolute; inset:0; border-radius:24px 24px 0 0; overflow:hidden; background-size:cover; background-position:center; transition:background-image .3s; }
+    .tp-header-overlay { position:absolute; inset:0; border-radius:24px 24px 0 0; background:linear-gradient(to bottom, rgba(0,0,0,.18) 0%, rgba(0,0,0,.35) 100%); }
+    .tp-close { position:absolute; top:12px; right:12px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,.3); backdrop-filter:blur(6px); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:1; }
+    .tp-close svg { width:14px; height:14px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; }
+    .tp-body { padding:0 22px 24px; }
+    .tp-avatar-row { display:flex; align-items:flex-end; justify-content:space-between; margin-top:-40px; margin-bottom:14px; padding-right:2px; position:relative; z-index:2; }
+    .tp-avatar { width:80px; height:80px; border-radius:50%; border:4px solid var(--surface); display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:800; color:#fff; font-family:'Blauer Nue',sans-serif; flex-shrink:0; box-shadow:0 4px 16px rgba(0,0,0,.15); }
+    .tp-follow-btn { padding:8px 20px; border-radius:20px; background:var(--green); color:#fff; border:none; font-family:'Montserrat',sans-serif; font-size:.72rem; font-weight:700; cursor:pointer; transition:opacity .2s; }
+    .tp-follow-btn:hover { opacity:.85; }
+    .tp-follow-btn.following { background:var(--green-bg); color:var(--green); }
+    .tp-name { font-size:1.12rem; font-weight:800; color:var(--text-1); margin-bottom:2px; }
+    .tp-location { font-size:.75rem; color:var(--text-3); margin-bottom:6px; display:flex; align-items:center; gap:4px; }
+    .tp-location svg { width:12px; height:12px; fill:#7cc63e; }
+    .tp-bio { font-size:.78rem; color:var(--text-2); line-height:1.55; margin-bottom:14px; }
+    .tp-stats-row { display:flex; gap:0; background:var(--bg); border-radius:14px; overflow:hidden; margin-bottom:18px; }
+    .tp-stat { flex:1; padding:12px 6px; text-align:center; }
+    .tp-stat + .tp-stat { border-left:1px solid var(--border); }
+    .tp-stat-num { display:block; font-size:1rem; font-weight:800; color:var(--text-1); }
+    .tp-stat-lbl { display:block; font-size:.55rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--text-3); margin-top:1px; }
+    .tp-section-title { font-size:.65rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--text-3); margin-bottom:8px; }
+    .tp-chips { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px; }
+    .tp-chip { padding:5px 12px; border-radius:20px; font-size:.72rem; font-weight:600; border:1.5px solid var(--border); color:var(--text-2); background:var(--bg); }
+    .tp-chip.place { border-color:rgba(17,58,88,.2); color:#113a58; background:rgba(17,58,88,.07); }
+    .tp-chip.activity { border-color:rgba(124,198,62,.3); color:#5a8e2a; background:rgba(124,198,62,.1); }
+    .tp-trips-list { display:flex; flex-direction:column; gap:8px; }
+    .tp-trip { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--bg); border-radius:12px; }
+    .tp-trip-dot { width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0; }
+    .tp-trip-info { flex:1; min-width:0; }
+    .tp-trip-name { font-size:.78rem; font-weight:700; color:var(--text-1); }
+    .tp-trip-date { font-size:.65rem; color:var(--text-3); margin-top:1px; }
+    .tp-trip-badge { font-size:.6rem; font-weight:700; padding:3px 8px; border-radius:20px; background:rgba(124,198,62,.12); color:#5a8e2a; flex-shrink:0; }
+
+    .modal-overlay { position:fixed; inset:0; background:rgba(11,25,41,.55); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; z-index:200; padding:20px; }
+    .modal-overlay.active { opacity:1; pointer-events:all; }
+    .modal { background:var(--surface); border-radius:18px; padding:32px 36px; max-width:360px; width:100%; transform:scale(.95) translateY(10px); transition:transform .25s ease; box-shadow:var(--shadow-lg); text-align:center; }
+    .modal-overlay.active .modal { transform:scale(1) translateY(0); }
+    .modal-icon { width:52px; height:52px; background:rgba(192,57,43,.1); border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; color:#c0392b; }
+    .modal-icon svg { width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; }
+    .modal h2 { font-family:'Blauer Nue',sans-serif; font-size:1.15rem; font-weight:700; color:var(--text-1); margin-bottom:8px; }
+    .modal p  { font-size:.82rem; color:var(--text-3); line-height:1.6; }
+    .modal-actions { display:flex; gap:10px; margin-top:24px; }
+    .btn-cancel { flex:1; background:var(--bg); color:var(--text-2); border:1.5px solid var(--border); font-family:'Montserrat',sans-serif; font-size:.78rem; font-weight:700; border-radius:10px; padding:11px; cursor:pointer; transition:background .18s; }
+    .btn-cancel:hover { background:var(--border); }
+    .btn-confirm-logout { flex:1; background:#c0392b; color:#fff; border:none; border-radius:10px; padding:11px; font-family:'Montserrat',sans-serif; font-size:.78rem; font-weight:700; cursor:pointer; transition:background .18s; }
+    .btn-confirm-logout:hover { background:#a93226; }
+    .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(16px); background:var(--navy-deep); color:#fff; font-size:.78rem; font-weight:500; padding:10px 22px; border-radius:10px; opacity:0; pointer-events:none; transition:opacity .25s,transform .25s; z-index:300; white-space:nowrap; box-shadow:var(--shadow-md); }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* ── TIMELINE + AI INSIGHTS GRID ── */
+    .timeline-insights-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+    .ai-insights-card { animation:fadeUp .4s .1s ease both; }
+    .ai-insights-body { display:flex; align-items:center; gap:0; }
+    .ai-insights-list { flex:1; padding:16px 20px; display:flex; flex-direction:column; gap:10px; min-width:0; }
+    .ai-insight-item { display:flex; align-items:center; gap:12px; }
+    .ai-insight-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--bg); border:1px solid var(--border); overflow:hidden; padding:4px; }
+    .ai-insight-icon svg { width:100%; height:100%; display:block; }
+    .ai-insight-text { font-size:.82rem; color:var(--text-2); font-weight:500; line-height:1.35; }
+    .ai-insight-text strong { color:var(--text-1); font-weight:700; }
+    .ai-insights-deco { width:180px; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:8px 12px 8px 0; }
+    .ai-insights-empty { padding:20px 20px; font-size:.8rem; color:var(--text-3); }
+
+    /* ── 1024px: tablet landscape ── */
+    @media (max-width:1024px) {
+      .stats-row { grid-template-columns:repeat(2,1fr); }
+      .profile-body-grid { grid-template-columns:1fr; }
+      .timeline-insights-grid { grid-template-columns:1fr; }
     }
 
-    .s-field input[type="text"],
-    .s-field input[type="email"],
-    .s-field input[type="tel"],
-    .s-field input[type="password"] {
-      width: 100%;
-      padding: 11px 14px;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.875rem;
-      color: var(--text-1);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      margin: 0;
+    /* ── 768px: tablet portrait / collapsed sidebar ── */
+    @media (max-width:768px) {
+      body > main { padding:20px 18px 40px; display:block; }
+      .profile-hero-banner { height:auto; min-height:290px; }
+      .hero-banner-inner { padding:20px 18px 0; }
+      .profile-streak-card { padding:10px 14px; min-width:96px; top:14px; right:14px; }
+      .hero-meta { flex-wrap:wrap; gap:4px; }
+      .hero-meta-sep { padding:0 4px; }
     }
 
-    .s-field input:focus {
-      border-color: var(--navy);
-      box-shadow: 0 0 0 3px rgba(17,58,88,0.07);
-      background: var(--surface);
+    /* ── 640px: mobile ── */
+    @media (max-width:640px) {
+      body > main { padding:0 0 80px; display:block; }
+
+      /* Hero */
+      .profile-hero { border-radius:0 0 20px 20px; margin-bottom:12px; }
+      .profile-hero-banner { min-height:300px; height:auto; }
+      .hero-banner-inner { padding:16px 14px 0; }
+      .hero-banner-top { gap:12px; align-items:flex-start; }
+
+      /* Avatar */
+      .avatar-wrap { width:72px; height:72px; }
+      .avatar-circle { width:72px; height:72px; font-size:1.6rem; }
+      .avatar-camera { width:23px; height:23px; }
+      .avatar-camera svg { width:11px; height:11px; }
+
+      /* Text - leave right gap so streak card doesn't overlap */
+      .hero-info { padding-right:108px; }
+      .hero-greeting { font-size:1.25rem; }
+      .hero-handle { font-size:.74rem; margin-bottom:8px; }
+      .btn-edit-profile { margin-top:10px; padding:7px 14px; font-size:.72rem; }
+
+      /* Meta row */
+      .hero-meta { flex-direction:column; gap:5px; align-items:flex-start; }
+      .hero-meta-sep { display:none; }
+      .hero-meta-item { font-size:.7rem; }
+
+      /* Streak card: smaller, stays top-right */
+      .profile-streak-card { top:14px; right:12px; padding:10px 12px; min-width:84px; border-radius:12px; }
+      .profile-streak-title { font-size:.48rem; }
+      .profile-streak-num { font-size:1.85rem; }
+      .profile-streak-unit { font-size:.5rem; }
+      .profile-streak-sub { font-size:.5rem; margin-top:4px; }
+
+      /* Plane deco */
+      .hero-plane-deco { display:none; }
+
+      /* Explorer bar */
+      .explorer-level { margin:0 0 14px; padding:10px 12px; }
+      .explorer-level-icon { width:30px; height:30px; border-radius:8px; }
+      .explorer-level-title { font-size:.72rem; }
+      .explorer-pct { font-size:.66rem; }
+
+      /* Stats */
+      .stats-row { grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:12px; padding:0 12px; }
+      .stat-card { padding:14px 12px; }
+      .stat-icon { width:36px; height:36px; border-radius:10px; margin-bottom:6px; }
+      .stat-icon svg { width:17px; height:17px; }
+      .stat-num { font-size:1.3rem; }
+
+      /* Body grid: 1-col with padding */
+      .profile-body-grid { padding:0 12px; gap:10px; margin-bottom:10px; }
+      .profile-card { border-radius:14px; }
+      .card-head { padding:14px 16px 12px; }
+      .card-head h3 { font-size:.9rem; }
+
+      /* Travel style chips */
+      .travel-style-body { padding:10px 14px; }
+      .style-chip { font-size:.68rem; padding:5px 10px; gap:5px; }
+      .style-chip img { width:15px; height:15px; }
+
+      /* Settings list */
+      .settings-row { padding:12px 14px; gap:10px; }
+      .settings-row-icon { width:34px; height:34px; border-radius:9px; }
+      .settings-row-icon svg { width:16px; height:16px; }
+      .settings-row-text strong { font-size:.82rem; }
+      .settings-row-text span { font-size:.66rem; }
+      .settings-row-badge { font-size:.56rem; padding:2px 7px; }
+      .settings-panel-inner { padding:14px 14px; gap:12px; }
+      .pg-gender-btn { font-size:.6rem; padding:10px 4px 8px; }
+      .pg-gender-btn svg { width:20px; height:20px; }
+
+      /* Recent list */
+      .recent-list-item { padding:10px 14px; gap:10px; }
+      .recent-list-thumb { width:42px; height:42px; border-radius:8px; }
+      .recent-list-info strong { font-size:.8rem; }
+      .recent-list-info span { font-size:.64rem; }
+
+      /* Timeline */
+      .timeline-wrap { padding:12px 14px; }
+
+      /* Timeline + AI insights + CTA horizontal margins */
+      .timeline-insights-grid { padding:0 12px; gap:10px; margin-bottom:10px; }
+      .timeline-card { margin:0; }
+      .ai-insights-deco { width:100px; }
+      .cta-banner { flex-direction:column; text-align:center; padding:18px; gap:14px; margin:0 12px 0; border-radius:16px; }
+      .btn-signout { width:100%; justify-content:center; }
+      .cta-banner-text strong { font-size:.95rem; }
     }
 
-    .field-msg {
-      font-size: 0.72rem;
-      border-radius: 8px;
-      padding: 8px 12px;
-      display: none;
-    }
-    .field-msg.error   { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.2); color: #c0392b; display: block; }
-    .field-msg.success { background: var(--green-bg); border: 1px solid rgba(95,157,48,0.2); color: var(--green-dark); display: block; }
-
-    .btn-save {
-      display: inline-flex;
-      align-items: center;
-      padding: 10px 22px;
-      background: var(--navy-deep);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-      align-self: flex-start;
-      transition: all 0.2s;
-    }
-    .btn-save:hover { background: var(--navy); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(11,25,41,0.2); }
-
-    /* Toggles */
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .toggle-row:last-of-type { border-bottom: none; }
-    .toggle-label strong { font-size: 0.84rem; font-weight: 600; color: var(--text-1); display: block; }
-    .toggle-label small  { font-size: 0.72rem; color: var(--text-3); font-weight: 400; }
-
-    .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
-    .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider {
-      position: absolute; inset: 0;
-      background: var(--border-2);
-      border-radius: 99px;
-      cursor: pointer;
-      transition: background 0.25s;
-    }
-    .toggle-slider::before {
-      content: '';
-      position: absolute;
-      width: 18px; height: 18px;
-      left: 3px; top: 3px;
-      background: #fff;
-      border-radius: 50%;
-      transition: transform 0.25s;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    }
-    .toggle input:checked + .toggle-slider { background: var(--green); }
-    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
-
-    /* Subscription */
-    .plan-card {
-      background: var(--bg);
-      border-radius: 12px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .plan-card strong {
-      font-family: 'Blauer Nue', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text-1);
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .plan-card small { font-size: 0.72rem; color: var(--text-3); }
-
-    .plan-tag {
-      background: var(--navy-deep);
-      color: #fff;
-      font-size: 0.6rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 6px;
-      white-space: nowrap;
-    }
-
-    .btn-upgrade {
-      display: inline-flex;
-      padding: 9px 20px;
-      background: transparent;
-      color: var(--green);
-      border: 1.5px solid var(--green);
-      border-radius: 10px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-      align-self: flex-start;
-      transition: all 0.2s;
-    }
-    .btn-upgrade:hover { background: var(--green); color: #fff; }
-
-    /* FAQ */
-    .faq-item { border-bottom: 1px solid var(--border); }
-    .faq-item:last-child { border-bottom: none; }
-    .faq-q {
-      width: 100%; background: none; border: none; text-align: left;
-      font-family: 'Montserrat', sans-serif; font-size: 0.84rem; font-weight: 600;
-      color: var(--text-1); padding: 12px 0;
-      cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;
-    }
-    .faq-q svg { width: 14px; height: 14px; stroke: var(--text-3); fill: none; stroke-width: 2.2; stroke-linecap: round; flex-shrink: 0; transition: transform 0.2s; }
-    .faq-item.open .faq-q svg { transform: rotate(180deg); }
-    .faq-a {
-      font-size: 0.8rem; color: var(--text-2); line-height: 1.65;
-      max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s;
-    }
-    .faq-item.open .faq-a { max-height: 200px; padding-bottom: 12px; }
-
-    /* ══════════════════════════
-       LOGOUT BUTTON
-    ══════════════════════════ */
-    .btn-logout-full {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #7a1a1a, #c0392b);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 16px rgba(192,57,43,0.25);
-      animation: fadeUp 0.4s 0.12s ease both;
-    }
-    .btn-logout-full:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(192,57,43,0.35); }
-
-    /* ══════════════════════════
-       LOGOUT MODAL
-    ══════════════════════════ */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(11,25,41,0.55);
-      backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.2s; z-index: 200; padding: 20px;
-    }
-    .modal-overlay.active { opacity: 1; pointer-events: all; }
-
-    .modal {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 32px 36px;
-      max-width: 360px; width: 100%;
-      transform: scale(0.95) translateY(10px);
-      transition: transform 0.25s var(--spring, ease);
-      box-shadow: var(--shadow-lg);
-      text-align: center;
-    }
-    .modal-overlay.active .modal { transform: scale(1) translateY(0); }
-
-    .modal-icon {
-      width: 52px; height: 52px;
-      background: rgba(192,57,43,0.1);
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-      color: #c0392b;
-    }
-    .modal-icon svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
-    .modal h2 { font-family: 'Blauer Nue', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text-1); margin-bottom: 8px; }
-    .modal p  { font-size: 0.82rem; color: var(--text-3); line-height: 1.6; }
-    .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
-
-    .btn-cancel {
-      flex: 1; background: var(--bg); color: var(--text-2);
-      border: 1.5px solid var(--border);
-      font-family: 'Montserrat', sans-serif; font-size: 0.78rem; font-weight: 700;
-      border-radius: 10px; padding: 11px; cursor: pointer;
-      transition: background 0.18s, border-color 0.18s;
-    }
-    .btn-cancel:hover { background: var(--border); border-color: var(--border-2); }
-
-    .btn-confirm-logout {
-      flex: 1; background: #c0392b; color: #fff;
-      border: none; border-radius: 10px; padding: 11px;
-      font-family: 'Montserrat', sans-serif; font-size: 0.78rem; font-weight: 700;
-      cursor: pointer; transition: background 0.18s;
-    }
-    .btn-confirm-logout:hover { background: #a93226; }
-
-    /* Toast */
-    .toast {
-      position: fixed; bottom: 28px; left: 50%;
-      transform: translateX(-50%) translateY(16px);
-      background: var(--navy-deep); color: #fff;
-      font-size: 0.78rem; font-weight: 500;
-      padding: 10px 22px; border-radius: 10px;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.25s, transform 0.25s;
-      z-index: 300; white-space: nowrap;
-      box-shadow: var(--shadow-md);
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    @media (max-width: 900px) {
-      .settings-grid { grid-template-columns: 1fr; }
-      .settings-card.open { grid-column: span 1; }
-      .profile-stats { border: none; padding: 12px 0 0; width: 100%; justify-content: flex-start; }
+    /* ── 480px: small phones (iPhone SE etc.) ── */
+    @media (max-width:480px) {
+      .ai-insights-deco { display:none; }
+      .profile-hero-banner { min-height:280px; }
+      .avatar-wrap { width:64px; height:64px; }
+      .avatar-circle { width:64px; height:64px; font-size:1.4rem; }
+      .hero-info { padding-right:100px; }
+      .hero-greeting { font-size:1.1rem; }
+      .profile-streak-card { min-width:76px; padding:8px 10px; right:10px; }
+      .profile-streak-num { font-size:1.6rem; }
+      .stats-row { grid-template-columns:repeat(2,1fr); }
+      .stat-card { padding:12px 10px; }
+      .stat-num { font-size:1.2rem; }
+      .stat-lbl { font-size:.66rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ══ SIDEBAR ══ -->
   <nav class="sidebar">
-    <div class="brand">
-      <img src="img/appIcon.png" alt="Packmates" class="icon">
-      <span>Packmates</span>
-    </div>
+    <div class="brand"><img src="img/appIcon.png" alt="Packmates" class="icon"><span>Packmates</span></div>
     <span class="nav-label">Main Menu</span>
     <div class="nav-buttons">
-      <button type="button" onclick="location.href='index.html'">
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span>Home</span>
-      </button>
-      <button type="button" onclick="location.href='discover.html'">
-        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-        <span>Discover</span>
-      </button>
-      <button type="button" onclick="location.href='packing-list.html'">
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-        <span>Packing List</span>
-      </button>
-      <button type="button" onclick="location.href='notifications.html'">
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span>Notifications</span>
-      </button>
-      <button type="button" onclick="location.href='profile.html'" class="active">
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span>Profile</span>
-      </button>
+      <button type="button" onclick="location.href='index.html'"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></button>
+      <button type="button" onclick="location.href='discover.html'"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg><span>Discover</span></button>
+      <button type="button" onclick="location.href='packing-list.html'"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg><span>Packing List</span></button>
+      <button type="button" onclick="location.href='notifications.html'"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>Notifications</span></button>
+      <button type="button" onclick="location.href='profile.html'" class="active"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></button>
     </div>
     <div class="nav-bottom">
-      <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
-        <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-        <span>New Trip</span>
-      </button>
-      <button class="logout" type="button" onclick="openLogoutModal()">
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span>Sign Out</span>
-      </button>
+      <button type="button" class="nav-new-trip" onclick="location.href='newTrip.html'"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>New Trip</span></button>
+      <button class="logout" type="button" onclick="openLogoutModal()"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Sign Out</span></button>
     </div>
   </nav>
 
-  <!-- ══ MAIN ══ -->
   <main>
 
-    <!-- Profile hero -->
+    <!-- ── HERO ── -->
     <div class="profile-hero">
-      <div class="avatar-wrap" onclick="document.getElementById('avatar-input').click()" title="Change photo">
-        <div class="avatar-circle" id="avatar">
-          <span id="avatar-initials">?</span>
-          <img id="avatar-img" src="" alt="Profile photo">
-        </div>
-        <div class="avatar-overlay">Change Photo</div>
-      </div>
-      <input type="file" id="avatar-input" accept="image/*">
+      <div class="profile-hero-banner">
 
-      <div class="profile-info" id="profile-display">
-        <div class="profile-name" id="display-name">—</div>
-        <div class="profile-email" id="display-handle">—</div>
-      </div>
+        <!-- Drone forest video background (desktop only — skipped on mobile to save bandwidth) -->
+        <video class="hero-bg-video" id="heroBgVideo" autoplay muted loop playsinline preload="none"></video>
 
-      <div class="profile-edit-inputs" id="profile-edit">
-        <input type="text" id="edit-name" placeholder="Display name">
-        <input type="text" id="edit-handle" placeholder="@handle">
-      </div>
+        <!-- Streak card -->
+        <div class="profile-streak-card">
+          <div class="profile-streak-title">Packing Streak</div>
+          <div class="profile-streak-num" id="streakDays">—</div>
+          <div class="profile-streak-unit">days</div>
+          <div class="profile-streak-sub" id="streakSub">Keep it up! ✈️</div>
+        </div>
 
-      <div class="profile-stats">
-        <div class="profile-stat">
-          <span class="profile-stat-num" id="stat-trips">—</span>
-          <span class="profile-stat-lbl">Trips</span>
+        <!-- Airplane decoration -->
+        <div class="hero-plane-deco">
+          <svg width="170" height="90" viewBox="0 0 170 90" fill="none">
+            <path d="M10 80 Q90 5 162 32" stroke="white" stroke-width="1.5" stroke-dasharray="6 5" stroke-linecap="round"/>
+            <g transform="translate(160,30) rotate(-34)">
+              <path d="M0 0 L-10 5 L-7 0 L-10 -5Z" fill="white"/>
+              <path d="M-6 0 L-13 6 L-12 0 L-13 -6Z" fill="white" opacity=".55"/>
+            </g>
+          </svg>
         </div>
-        <div class="profile-stat" style="padding: 0 20px; border-left:1px solid var(--border); border-right:1px solid var(--border);">
-          <span class="profile-stat-num">Free</span>
-          <span class="profile-stat-lbl">Plan</span>
-        </div>
-        <div class="profile-stat">
-          <span class="profile-stat-num" id="stat-items">—</span>
-          <span class="profile-stat-lbl">Items packed</span>
-        </div>
-      </div>
 
-      <button class="btn-edit-profile" id="btn-edit-profile" onclick="toggleProfileEdit()">Edit Profile</button>
-    </div>
+        <!-- All content overlaid on photo -->
+        <div class="hero-banner-inner">
+          <div class="hero-banner-top">
 
-    <!-- Settings grid -->
-    <div class="settings-grid">
-
-      <!-- Personal Data -->
-      <div class="settings-card" id="card-personal">
-        <div class="settings-card-header" onclick="toggleCard('personal')">
-          <div class="settings-icon">
-            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
-          <div class="settings-text">
-            <strong>Personal Data</strong>
-            <span>Name, email, phone</span>
-          </div>
-          <div class="settings-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="settings-panel" id="panel-personal">
-          <div class="settings-panel-inner">
-            <div class="s-field"><label>Full Name</label><input type="text" id="pd-name" placeholder="Your full name"></div>
-            <div class="s-field"><label>Email</label><input type="email" id="pd-email" placeholder="you@example.com"></div>
-            <div class="s-field"><label>Phone</label><input type="tel" id="pd-phone" placeholder="+1 (555) 000-0000"></div>
-            <div class="field-msg" id="pd-msg"></div>
-            <button class="btn-save" onclick="savePersonalData()">Save Changes</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Security -->
-      <div class="settings-card" id="card-security">
-        <div class="settings-card-header" onclick="toggleCard('security')">
-          <div class="settings-icon">
-            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          </div>
-          <div class="settings-text">
-            <strong>Security</strong>
-            <span>Password</span>
-          </div>
-          <div class="settings-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="settings-panel" id="panel-security">
-          <div class="settings-panel-inner">
-            <div class="s-field"><label>Current Password</label><input type="password" id="sec-current" placeholder="••••••••"></div>
-            <div class="s-field"><label>New Password</label><input type="password" id="sec-new" placeholder="Min. 8 characters"></div>
-            <div class="s-field"><label>Confirm New Password</label><input type="password" id="sec-confirm" placeholder="••••••••"></div>
-            <div class="field-msg" id="sec-msg"></div>
-            <button class="btn-save" onclick="savePassword()">Update Password</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Subscription -->
-      <div class="settings-card" id="card-subscription">
-        <div class="settings-card-header" onclick="toggleCard('subscription')">
-          <div class="settings-icon">
-            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
-          </div>
-          <div class="settings-text">
-            <strong>Subscription</strong>
-            <span>Manage your plan</span>
-          </div>
-          <div class="settings-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="settings-panel" id="panel-subscription">
-          <div class="settings-panel-inner">
-            <div class="plan-card">
-              <div>
-                <strong>Free Tier</strong>
-                <small>Up to 3 packing lists · Basic features</small>
+            <!-- Avatar -->
+            <div class="avatar-wrap" onclick="document.getElementById('avatar-input').click()" title="Change photo">
+              <div class="avatar-circle" id="avatar">
+                <span id="avatar-initials">?</span>
+                <img id="avatar-img" src="" alt="Profile photo">
               </div>
-              <span class="plan-tag">Active</span>
+              <div class="avatar-camera"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
             </div>
-            <p style="font-size:0.8rem;color:var(--text-3);line-height:1.65;">Upgrade to Pro for unlimited lists, smart weather packing, and real-time collaboration.</p>
-            <button class="btn-upgrade" onclick="showToast('Redirecting to checkout…')">Upgrade to Pro →</button>
+            <input type="file" id="avatar-input" accept="image/*">
+
+            <!-- Display info -->
+            <div class="hero-info" id="profile-display">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px;">
+                <h1 class="hero-greeting" id="hero-greeting">Hey, Traveler! 👋</h1>
+                <span class="profile-gender-chip" id="display-gender-chip" style="display:none"></span>
+              </div>
+              <div class="hero-handle" id="display-handle">@traveler</div>
+              <div class="hero-meta">
+                <span class="hero-meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="meta-location">Explorer</span></span>
+                <span class="hero-meta-sep">|</span>
+                <span class="hero-meta-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="meta-joined">Joined recently</span></span>
+                <span class="hero-meta-sep">|</span>
+                <span class="hero-meta-item" onclick="openPackmatesModal()" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span id="meta-packmates">0 Packmates</span></span>
+              </div>
+              <button class="btn-edit-profile" id="btn-edit-profile" onclick="toggleProfileEdit()">
+                <svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit Profile
+              </button>
+              <div class="hero-bio" id="display-bio" style="display:none"></div>
+            </div>
+
+            <!-- Edit inputs (hidden by default) -->
+            <div class="profile-edit-inputs" id="profile-edit">
+              <input type="text" id="edit-name" placeholder="Display name">
+              <input type="text" id="edit-handle" placeholder="@handle">
+              <div class="loc-wrap">
+                <input type="text" id="edit-location" placeholder="Your city (e.g. San Francisco, CA)" autocomplete="off">
+                <div class="loc-dropdown" id="loc-dropdown"></div>
+              </div>
+              <div class="bio-field-wrap">
+                <input type="text" id="edit-bio" placeholder="Short bio (max 50 chars)" maxlength="50" autocomplete="off">
+                <span class="bio-char-count" id="bio-char-count">50</span>
+              </div>
+              <div class="profile-edit-btns">
+                <button class="btn-edit-profile" onclick="toggleProfileEdit()">Save</button>
+                <button class="btn-edit-profile" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)" onclick="cancelProfileEdit()">Cancel</button>
+              </div>
+            </div>
+
           </div>
+
+          <!-- Explorer level glass bar -->
+          <div class="explorer-level">
+            <div class="explorer-level-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+            <div class="explorer-level-body">
+              <div class="explorer-level-title">Explorer Level <span class="explorer-pct" id="explorerPctText">—</span></div>
+              <div class="explorer-track"><div class="explorer-fill" id="explorerFill" style="width:0%"></div></div>
+            </div>
+            <svg style="width:16px;height:16px;stroke:rgba(255,255,255,.4);fill:none;stroke-width:2.2;stroke-linecap:round;flex-shrink:0" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STATS ROW ── -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--green"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="stat-num" id="stat-trips">0</div>
+        <div class="stat-lbl">Trips</div>
+        <div class="stat-sub"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>All time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--orange"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
+        <div class="stat-num" id="stat-items">0</div>
+        <div class="stat-lbl">Items Packed</div>
+        <div class="stat-sub">Current trip</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--purple"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></div>
+        <div class="stat-num" id="stat-dest">0</div>
+        <div class="stat-lbl">Destinations</div>
+        <div class="stat-sub"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>Explored</div>
+      </div>
+      <div class="stat-card" onclick="openPackmatesModal()" style="cursor:pointer;">
+        <div class="stat-icon stat-icon--teal"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="stat-num" id="stat-packmates">0</div>
+        <div class="stat-lbl">Packmates</div>
+        <div class="stat-sub" style="color:#0c7a7a">View all →</div>
+      </div>
+    </div>
+
+    <!-- ── BODY GRID ── -->
+    <div class="profile-body-grid">
+
+      <!-- Left column -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Travel Style -->
+        <div class="profile-card">
+          <div class="card-head">
+            <div><h3>Your Travel Style</h3><div class="card-head-sub">Based on your trips and packing habits</div></div>
+          </div>
+          <div class="travel-style-body"><div class="style-chips" id="travelStyleChips"></div></div>
+        </div>
+
+        <!-- Recent Packing Lists -->
+        <div class="profile-card">
+          <div class="card-head">
+            <h3>Recent Packing Lists</h3>
+            <a class="view-all-link" href="packing-list.html">View all</a>
+          </div>
+          <div id="recentPackingLists"><div class="list-empty">No trips yet. <a href="newTrip.html" style="color:#7cc63e;text-decoration:none;font-weight:600">Create one →</a></div></div>
+        </div>
+
+      </div>
+
+      <!-- Right column: Settings -->
+      <div class="profile-card">
+        <div class="card-head"><h3>Settings</h3></div>
+        <div class="settings-list-body">
+
+          <!-- Personal Data -->
+          <div class="settings-row" id="row-personal" onclick="toggleCard('personal')">
+            <div class="settings-row-icon" style="background:linear-gradient(145deg,#60a5fa,#2563eb)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div class="settings-row-text"><strong>Personal Data</strong><span>Name, email, phone &amp; gender</span></div>
+            <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="settings-panel" id="panel-personal">
+            <div class="settings-panel-inner">
+              <div class="s-field"><label>Full Name</label><input type="text" id="pd-name" placeholder="Your full name"></div>
+              <div class="s-field"><label>Email</label><input type="email" id="pd-email" placeholder="you@example.com"></div>
+              <div class="s-field"><label>Phone</label><input type="tel" id="pd-phone" placeholder="+1 (555) 000-0000"></div>
+              <div class="s-field"><label>Gender</label>
+                <div class="pg-gender-group" id="pg-genderGroup">
+                  <button type="button" class="pg-gender-btn" data-gender="male" onclick="selectProfileGender(this)"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><line x1="14.2" y1="5.8" x2="20" y2="0"/><polyline points="16 0 20 0 20 4"/></svg>Male</button>
+                  <button type="button" class="pg-gender-btn" data-gender="female" onclick="selectProfileGender(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><line x1="12" y1="14" x2="12" y2="22"/><line x1="8" y1="19" x2="16" y2="19"/></svg>Female</button>
+                  <button type="button" class="pg-gender-btn" data-gender="nonbinary" onclick="selectProfileGender(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="6"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="8.5" y1="19" x2="15.5" y2="19"/><line x1="15.8" y1="5.2" x2="20" y2="1"/><polyline points="17 1 20 1 20 4"/></svg>Non-binary</button>
+                </div>
+              </div>
+              <div class="field-msg" id="pd-msg"></div>
+              <button class="btn-save" onclick="savePersonalData()">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- Security -->
+          <div class="settings-row" id="row-security" onclick="toggleCard('security')">
+            <div class="settings-row-icon" style="background:linear-gradient(145deg,#fcd34d,#d97706)"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+            <div class="settings-row-text"><strong>Security</strong><span>Password &amp; login security</span></div>
+            <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="settings-panel" id="panel-security">
+            <div class="settings-panel-inner">
+              <div class="s-field"><label>Current Password</label><input type="password" id="sec-current" placeholder="••••••••"></div>
+              <div class="s-field"><label>New Password</label><input type="password" id="sec-new" placeholder="Min. 8 characters"></div>
+              <div class="s-field"><label>Confirm New Password</label><input type="password" id="sec-confirm" placeholder="••••••••"></div>
+              <div class="field-msg" id="sec-msg"></div>
+              <button class="btn-save" onclick="savePassword()">Update Password</button>
+            </div>
+          </div>
+
+          <!-- Subscription -->
+          <div class="settings-row" id="row-subscription" onclick="toggleCard('subscription')">
+            <div class="settings-row-icon" style="background:linear-gradient(145deg,#a78bfa,#7c3aed)"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
+            <div class="settings-row-text"><strong>Subscription</strong><span>Manage your plan</span></div>
+            <span class="settings-row-badge badge--green">Free Plan</span>
+            <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="settings-panel" id="panel-subscription">
+            <div class="settings-panel-inner">
+              <div class="plan-card"><div><strong>Free Tier</strong><small>Up to 3 packing lists · Basic features</small></div><span class="settings-row-badge badge--navy">Active</span></div>
+              <p style="font-size:.8rem;color:var(--text-3);line-height:1.65;">Upgrade to Pro for unlimited lists, smart weather packing, and real-time collaboration.</p>
+              <button class="btn-upgrade" onclick="showToast('Redirecting to checkout…')">Upgrade to Pro →</button>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="settings-row" id="row-notifications" onclick="toggleCard('notifications')">
+            <div class="settings-row-icon" style="background:linear-gradient(145deg,#fb923c,#ea580c)"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+            <div class="settings-row-text"><strong>Notifications</strong><span>Alerts and emails</span></div>
+            <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="settings-panel" id="panel-notifications">
+            <div class="settings-panel-inner">
+              <div class="toggle-row"><div class="toggle-label"><strong>Email Alerts</strong><small>Trip reminders and updates</small></div><label class="toggle"><input type="checkbox" id="notif-email" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong>Push Notifications</strong><small>In-app alerts</small></div><label class="toggle"><input type="checkbox" id="notif-push" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong>Packing Reminders</strong><small>24h before departure</small></div><label class="toggle"><input type="checkbox" id="notif-reminders" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong>Product Updates</strong><small>New features and news</small></div><label class="toggle"><input type="checkbox" id="notif-updates" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
+
+          <!-- Privacy -->
+          <div class="settings-row" id="row-privacy" onclick="toggleCard('privacy')">
+            <div class="settings-row-icon" style="background:linear-gradient(145deg,#34d399,#059669)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="settings-row-text"><strong>Privacy</strong><span>Data controls &amp; visibility</span></div>
+            <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="settings-panel" id="panel-privacy">
+            <div class="settings-panel-inner">
+              <div class="toggle-row"><div class="toggle-label"><strong>Analytics</strong><small>Help improve Packmates</small></div><label class="toggle"><input type="checkbox" id="priv-analytics" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong>Personalisation</strong><small>Tailored suggestions</small></div><label class="toggle"><input type="checkbox" id="priv-personalise" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong>Share Usage Data</strong><small>Anonymous statistics</small></div><label class="toggle"><input type="checkbox" id="priv-share" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
+              <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+                <button class="btn-save" style="flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="Auth.exportData();showToast('Your data is downloading…')">
+                  <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Export My Data
+                </button>
+                <button class="btn-save" style="flex:1;min-width:120px;background:#c0392b;display:flex;align-items:center;justify-content:center;gap:6px" onclick="confirmDeleteAccount()">
+                  <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                  Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete account confirmation modal -->
+          <div id="deleteModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px">
+            <div style="background:var(--surface);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:fadeUp .25s ease both">
+              <div style="width:48px;height:48px;border-radius:14px;background:#fdecea;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+                <svg style="width:24px;height:24px;stroke:#c0392b;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <h3 style="font-family:'Blauer Nue',sans-serif;font-size:1.05rem;font-weight:700;margin:0 0 8px;color:var(--text-1)">Delete account?</h3>
+              <p style="font-size:.82rem;color:var(--text-3);line-height:1.6;margin:0 0 20px">This will permanently erase all your trips, packing lists, and account data. This action cannot be undone.</p>
+              <div style="display:flex;gap:8px">
+                <button onclick="document.getElementById('deleteModal').style.display='none'" style="flex:1;padding:11px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-2);font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer">Cancel</button>
+                <button onclick="Auth.deleteAccount()" style="flex:1;padding:11px;border:none;border-radius:10px;background:#c0392b;color:#fff;font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer">Yes, delete everything</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Help Center -->
+          <div class="settings-row no-panel" id="row-help" onclick="toggleCard('help')">
+            <div class="settings-row-icon" style="background:linear-gradient(145deg,#fb7185,#e11d48)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <div class="settings-row-text"><strong>Help Center</strong><span>Support and FAQs</span></div>
+            <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="settings-panel" id="panel-help" style="border-bottom:none">
+            <div class="settings-panel-inner">
+              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How do I create a packing list?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Head to the Dashboard and tap "New Trip". Give it a destination, set your travel dates and activities, then your smart packing list is generated automatically.</div></div>
+              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I share lists with others?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Yes! Open any trip, tap the share icon, and send an invite link. Collaborators can view and check off items in real time.</div></div>
+              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">I forgot my password. What do I do?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">On the login screen tap "Forgot password?" and enter your email. We'll send a reset link. Check your spam folder if it doesn't arrive.</div></div>
+              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How do I contact support?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Email us at support@packmates.app. We typically respond within 24 hours on business days.</div></div>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <!-- Notifications -->
-      <div class="settings-card" id="card-notifications">
-        <div class="settings-card-header" onclick="toggleCard('notifications')">
-          <div class="settings-icon">
-            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-          </div>
-          <div class="settings-text">
-            <strong>Notifications</strong>
-            <span>Alerts and emails</span>
-          </div>
-          <div class="settings-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+
+    <!-- ── TIMELINE + AI INSIGHTS ── -->
+    <div class="timeline-insights-grid">
+
+      <!-- Travel Timeline -->
+      <div class="profile-card timeline-card" style="animation:fadeUp .4s .1s ease both">
+        <div class="card-head">
+          <h3>Travel Timeline</h3>
+          <a class="view-all-link" href="tripPreview.html">View trip →</a>
         </div>
-        <div class="settings-panel" id="panel-notifications">
-          <div class="settings-panel-inner">
-            <div class="toggle-row">
-              <div class="toggle-label"><strong>Email Alerts</strong><small>Trip reminders and updates</small></div>
-              <label class="toggle"><input type="checkbox" id="notif-email" onchange="saveNotifications()"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-label"><strong>Push Notifications</strong><small>In-app alerts</small></div>
-              <label class="toggle"><input type="checkbox" id="notif-push" onchange="saveNotifications()"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-label"><strong>Packing Reminders</strong><small>24h before departure</small></div>
-              <label class="toggle"><input type="checkbox" id="notif-reminders" onchange="saveNotifications()"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-label"><strong>Product Updates</strong><small>New features and news</small></div>
-              <label class="toggle"><input type="checkbox" id="notif-updates" onchange="saveNotifications()"><span class="toggle-slider"></span></label>
-            </div>
-          </div>
-        </div>
+        <div id="travelTimeline"><div class="list-empty">No trips yet. <a href="newTrip.html" style="color:#7cc63e;text-decoration:none;font-weight:600">Plan your first one →</a></div></div>
       </div>
 
-      <!-- Privacy -->
-      <div class="settings-card" id="card-privacy">
-        <div class="settings-card-header" onclick="toggleCard('privacy')">
-          <div class="settings-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div class="settings-text">
-            <strong>Privacy</strong>
-            <span>Data controls</span>
-          </div>
-          <div class="settings-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+      <!-- AI Packing Insights -->
+      <div class="profile-card ai-insights-card">
+        <div class="card-head">
+          <div><h3>AI Packing Insights</h3><div class="card-head-sub">Smart insights from your packing history</div></div>
+          <a class="view-all-link" href="packing-list.html">View all</a>
         </div>
-        <div class="settings-panel" id="panel-privacy">
-          <div class="settings-panel-inner">
-            <div class="toggle-row">
-              <div class="toggle-label"><strong>Analytics</strong><small>Help improve Packmates</small></div>
-              <label class="toggle"><input type="checkbox" id="priv-analytics" onchange="savePrivacy()"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-label"><strong>Personalisation</strong><small>Tailored suggestions</small></div>
-              <label class="toggle"><input type="checkbox" id="priv-personalise" onchange="savePrivacy()"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-label"><strong>Share Usage Data</strong><small>Anonymous statistics</small></div>
-              <label class="toggle"><input type="checkbox" id="priv-share" onchange="savePrivacy()"><span class="toggle-slider"></span></label>
-            </div>
-            <button class="btn-save" style="background:#c0392b;" onclick="showToast('Data deletion request submitted.')">Request Data Deletion</button>
+        <div class="ai-insights-body">
+          <div class="ai-insights-list" id="aiInsightsList">
+            <div class="ai-insights-empty">Pack a trip to start seeing insights.</div>
           </div>
-        </div>
-      </div>
-
-      <!-- Help Center -->
-      <div class="settings-card" id="card-help">
-        <div class="settings-card-header" onclick="toggleCard('help')">
-          <div class="settings-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          </div>
-          <div class="settings-text">
-            <strong>Help Center</strong>
-            <span>Support and FAQs</span>
-          </div>
-          <div class="settings-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="settings-panel" id="panel-help">
-          <div class="settings-panel-inner">
-            <div class="faq-item">
-              <button class="faq-q" onclick="toggleFaq(this)">How do I create a packing list?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-              <div class="faq-a">Head to the Dashboard and tap "New Trip". Give it a destination, set your travel dates and activities, then your smart packing list is generated automatically.</div>
-            </div>
-            <div class="faq-item">
-              <button class="faq-q" onclick="toggleFaq(this)">Can I share lists with others?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-              <div class="faq-a">Yes! Open any trip, tap the share icon, and send an invite link. Collaborators can view and check off items in real time. This feature requires a Pro plan.</div>
-            </div>
-            <div class="faq-item">
-              <button class="faq-q" onclick="toggleFaq(this)">How do I cancel my subscription?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-              <div class="faq-a">Go to Subscription in your profile and tap "Manage Plan". You can cancel anytime and Pro access continues until the end of the billing period.</div>
-            </div>
-            <div class="faq-item">
-              <button class="faq-q" onclick="toggleFaq(this)">I forgot my password. What do I do?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-              <div class="faq-a">On the login screen tap "Forgot password?" and enter your email. We'll send a reset link. Check your spam folder if it doesn't arrive.</div>
-            </div>
-            <div class="faq-item">
-              <button class="faq-q" onclick="toggleFaq(this)">How do I contact support?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-              <div class="faq-a">Email us at support@packmates.app. We typically respond within 24 hours on business days.</div>
-            </div>
+          <div class="ai-insights-deco" aria-hidden="true">
+            <img src="img/ai-packing-suitcase.png" alt="" style="width:100%;height:auto;display:block;object-fit:contain;">
           </div>
         </div>
       </div>
 
     </div>
 
-    <button class="btn-logout-full" onclick="openLogoutModal()">Sign Out of Packmates</button>
+    <!-- ── CTA BANNER ── -->
+    <div class="cta-banner">
+      <div class="cta-banner-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="cta-banner-text"><strong>Every trip is a new story.</strong><span>Pack smart. Travel light. Make memories.</span></div>
+      <button class="btn-signout" onclick="openLogoutModal()">Sign Out <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+    </div>
 
   </main>
+
+  <!-- Packmates List Modal -->
+  <div class="pm-list-backdrop" id="pmListBackdrop" onclick="if(event.target===this)closePackmatesModal()">
+    <div class="pm-list-modal">
+      <div class="pm-list-header">
+        <div class="pm-list-logo">
+          <img src="img/appIcon.png" alt="Packmates">
+          <span>Packmates</span>
+        </div>
+        <span class="pm-list-count" id="pmListCount">0 packmates</span>
+        <button class="pm-list-close" onclick="closePackmatesModal()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="pm-list-body" id="pmListBody"></div>
+    </div>
+  </div>
+
+  <!-- Packmate Traveler Profile Modal -->
+  <div class="tp-backdrop" id="pmTpBackdrop">
+    <div class="tp-modal" id="pmTravelerModal">
+      <div class="tp-header">
+        <div class="tp-header-bg" id="pmTpHeaderBg"></div>
+        <div class="tp-header-overlay"></div>
+        <button class="tp-close" onclick="closePackmateTravelerModal()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="tp-body">
+        <div class="tp-avatar-row">
+          <div class="tp-avatar"></div>
+          <button class="tp-follow-btn">Packmate</button>
+        </div>
+        <div class="tp-name"></div>
+        <div class="tp-location">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          <span></span>
+        </div>
+        <div class="tp-meta-row" style="display:flex;gap:14px;flex-wrap:wrap;font-size:.65rem;color:var(--text-3);margin-bottom:10px;">
+          <span class="tp-member"></span>
+          <span class="tp-gender"></span>
+          <span class="tp-level"></span>
+        </div>
+        <div class="tp-bio"></div>
+        <div class="tp-stats-row">
+          <div class="tp-stat"><span class="tp-stat-num" id="pmTpStatTrips">—</span><span class="tp-stat-lbl">Trips</span></div>
+          <div class="tp-stat"><span class="tp-stat-num" id="pmTpStatCountries">—</span><span class="tp-stat-lbl">Countries</span></div>
+          <div class="tp-stat"><span class="tp-stat-num" id="pmTpStatFollowers">—</span><span class="tp-stat-lbl">Followers</span></div>
+        </div>
+        <div class="tp-section-title">Travel Style</div>
+        <div class="tp-chips tp-styles-chips"></div>
+        <div class="tp-section-title">Favorite Destinations</div>
+        <div class="tp-chips tp-places-chips"></div>
+        <div class="tp-section-title">Favorite Activities</div>
+        <div class="tp-chips tp-activities-chips"></div>
+        <div class="tp-section-title">Recent Packing Lists</div>
+        <div class="tp-trips-list tp-packing-list"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Logout modal -->
   <div class="modal-overlay" id="logout-modal">
     <div class="modal">
-      <div class="modal-icon">
-        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      </div>
+      <div class="modal-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
       <h2>Sign out?</h2>
       <p>You'll need to sign back in to access your packing lists and settings.</p>
       <div class="modal-actions">
@@ -821,109 +912,460 @@
   <div class="toast" id="toast"></div>
 
   <script src="auth.js"></script>
+  <script src="notifications.js"></script>
+  <script src="packing-icons.js?v=1"></script>
   <script>
     Auth.requireAuth('welcome.html');
 
-    function showToast(msg, d = 2500) {
+    (function() {
+      const v = document.getElementById('heroBgVideo');
+      if (!v) return;
+      const src = document.createElement('source');
+      src.src = 'img/hero-forest-compressed.mp4';
+      src.type = 'video/mp4';
+      v.appendChild(src);
+      v.load();
+      const tryPlay = () => v.play().catch(() => {});
+      v.addEventListener('canplay', tryPlay);
+      v.play().catch(() => {});
+    })();
+
+    function showToast(msg, d=2500) {
       const t = document.getElementById('toast');
       t.textContent = msg; t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), d);
     }
-
     function showMsg(id, msg, type) {
       const el = document.getElementById(id);
       el.textContent = msg; el.className = 'field-msg ' + type;
       setTimeout(() => { el.className = 'field-msg'; el.textContent = ''; }, 3500);
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      loadProfile();
-      loadPersonalData();
-      loadNotifications();
-      loadPrivacy();
-      loadAvatar();
-      loadStats();
+    function _pmProfile() { try { return JSON.parse(localStorage.getItem('pm_profile') || '{}'); } catch { return {}; } }
+    function _savePmProfile(u) {
+      const merged = { ..._pmProfile(), ...u };
+      localStorage.setItem('pm_profile', JSON.stringify(merged));
+      /* Sync to Supabase */
+      if (typeof DB !== 'undefined') DB.saveProfile(merged);
+    }
 
-      document.getElementById('avatar-input').addEventListener('change', function() {
-        const file = this.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = e => {
-          try { localStorage.setItem('pm_avatar', e.target.result); } catch(e) {}
-          applyAvatar(e.target.result);
-          showToast('Profile photo updated!');
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-
-    function loadStats() {
-      const trip  = JSON.parse(localStorage.getItem('currentTrip') || 'null');
-      const state = JSON.parse(localStorage.getItem('packingState') || '{}');
-      const packed = Object.values(state).filter(Boolean).length;
-      document.getElementById('stat-trips').textContent  = trip ? '1' : '0';
-      document.getElementById('stat-items').textContent  = packed || '0';
+    function getAllTrips() {
+      const trips = [];
+      try { trips.push(...JSON.parse(localStorage.getItem('pm_trips') || '[]')); } catch(e) {}
+      try {
+        const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+        if (cur?.id && !trips.find(t => t.id === cur.id)) trips.push(cur);
+      } catch(e) {}
+      return trips;
     }
 
     function applyAvatar(src) {
       document.getElementById('avatar-img').src = src;
       document.getElementById('avatar').classList.add('has-photo');
     }
-
-    function loadAvatar() {
-      try { const s = localStorage.getItem('pm_avatar'); if (s) applyAvatar(s); } catch(e) {}
-    }
-
-    let editingProfile = false;
+    function loadAvatar() { try { const s = _pmProfile().avatar; if (s) applyAvatar(s); } catch(e) {} }
 
     function loadProfile() {
       const session = Auth.getSession();
-      const dName   = localStorage.getItem('pm_name')   || session?.name  || 'Traveler';
-      const dHandle = localStorage.getItem('pm_handle') || (session?.email ? '@' + session.email.split('@')[0] : '@traveler');
-      document.getElementById('display-name').textContent   = dName;
+      const p = _pmProfile();
+      const dName   = p.name   || session?.name  || 'Traveler';
+      const dHandle = p.handle || (session?.email ? '@' + session.email.split('@')[0] : '@traveler');
+      const firstName = dName.split(' ')[0];
+      document.getElementById('hero-greeting').textContent  = `Hey, ${firstName}! 👋`;
       document.getElementById('display-handle').textContent = dHandle;
       document.getElementById('avatar-initials').textContent = dName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-      if (session?.email && !localStorage.getItem('pm_pd_email')) localStorage.setItem('pm_pd_email', session.email);
-      if (session?.name  && !localStorage.getItem('pm_pd_name'))  localStorage.setItem('pm_pd_name',  session.name);
+      if (session?.email && !p.pdEmail) _savePmProfile({ pdEmail: session.email });
+      if (session?.name  && !p.pdName)  _savePmProfile({ pdName:  session.name });
+
+      const chip = document.getElementById('display-gender-chip');
+      if (chip && session?.gender) {
+        const LABELS = { male:'♂ Male', female:'♀ Female', nonbinary:'⚧ Non-binary' };
+        const CLASS  = { male:'profile-gender-chip--male', female:'profile-gender-chip--female', nonbinary:'profile-gender-chip--nonbinary' };
+        chip.textContent = LABELS[session.gender] || session.gender;
+        chip.className   = 'profile-gender-chip ' + (CLASS[session.gender] || '');
+        chip.style.display = '';
+      }
+
+      // Location meta
+      const trips = getAllTrips();
+      const recentDest = trips.sort((a,b)=>new Date(b.fromDate||0)-new Date(a.fromDate||0))[0]?.destination;
+      const locationText = p.location || recentDest || 'Explorer';
+      document.getElementById('meta-location').textContent = locationText;
+
+      // Bio display
+      const bioEl = document.getElementById('display-bio');
+      if (bioEl) { bioEl.textContent = p.bio || ''; bioEl.style.display = p.bio ? '' : 'none'; }
+
+      // Joined date — store once, display forever
+      if (!p.joinedDate) _savePmProfile({ joinedDate: new Date().toISOString().slice(0,7) });
+      const [jy, jm] = (p.joinedDate || new Date().toISOString().slice(0,7)).split('-');
+      const joinedStr = new Date(Number(jy), Number(jm)-1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+      document.getElementById('meta-joined').textContent = 'Joined ' + joinedStr;
+
+      // Packmates = users added via Packmate button in Discover
+      const packmatesList = JSON.parse(localStorage.getItem('pm_packmates') || '[]');
+      const packmates = packmatesList.length;
+      document.getElementById('meta-packmates').textContent = packmates + ' Packmate' + (packmates !== 1 ? 's' : '');
     }
 
+    function loadStats() {
+      const trips = getAllTrips();
+      document.getElementById('stat-trips').textContent = trips.length;
+      const destSet = new Set(trips.map(t => t.destination).filter(Boolean));
+      document.getElementById('stat-dest').textContent = destSet.size;
+      const packmatesCount = JSON.parse(localStorage.getItem('pm_packmates') || '[]').length;
+      document.getElementById('stat-packmates').textContent = packmatesCount;
+      try {
+        const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+        if (cur?.id) {
+          const pd = JSON.parse(localStorage.getItem(`pm_pack_${cur.id}`) || '{}');
+          document.getElementById('stat-items').textContent = Object.values(pd.itemState || {}).filter(v => v?.packed).length;
+        }
+      } catch(e) {}
+    }
+
+    function loadStreakAndLevel() {
+      const trips = getAllTrips();
+      let streakVal = 0, streakSub = 'Keep it up! ✈️';
+      try {
+        const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+        if (cur?.fromDate) {
+          const daysTo = Math.ceil((new Date(cur.fromDate + 'T00:00:00') - new Date()) / 86400000);
+          if (daysTo > 0 && daysTo <= 365) { streakVal = daysTo; streakSub = 'Days to trip ✈️'; }
+          else { streakVal = Math.min(trips.length * 7, 99); }
+        } else { streakVal = Math.min(trips.length * 7, 99); }
+      } catch(e) { streakVal = trips.length * 7; }
+      document.getElementById('streakDays').textContent = streakVal || '—';
+      document.getElementById('streakSub').textContent  = streakSub;
+
+      const LEVELS = [
+        { min:0,  pct:5,  label:'5% to Adventurer' },
+        { min:1,  pct:28, label:'28% to Adventurer' },
+        { min:2,  pct:50, label:'50% to Adventurer' },
+        { min:3,  pct:65, label:'65% to Adventurer' },
+        { min:5,  pct:78, label:'78% to Adventurer' },
+        { min:8,  pct:88, label:'Adventurer · 88% to Globetrotter' },
+        { min:15, pct:96, label:'Globetrotter' },
+      ];
+      const lvl = [...LEVELS].reverse().find(l => trips.length >= l.min) || LEVELS[0];
+      setTimeout(() => { document.getElementById('explorerFill').style.width = lvl.pct + '%'; }, 120);
+      document.getElementById('explorerPctText').textContent = lvl.label;
+    }
+
+    function loadTravelStyle() {
+      const trips = getAllTrips();
+      const counts = {};
+      trips.forEach(t => (t.activityCategories || []).forEach(c => { counts[c] = (counts[c]||0)+1; }));
+      const STYLE_MAP = {
+        'Beach':{'label':'Beach Lover','img':'activity_beach.png','cls':'style-chip--teal'},
+        'Hiking':{'label':'Adventure Seeker','img':'activity_hiking.png','cls':'style-chip--orange'},
+        'Camping':{'label':'Camper','img':'activity_camping.png','cls':'style-chip--green'},
+        'Gym':{'label':'Fitness Fan','img':'activity_gym.png','cls':'style-chip--blue'},
+        'Swimming':{'label':'Water Lover','img':'activity_swimming.png','cls':'style-chip--teal'},
+        'Snow Sports':{'label':'Snow Seeker','img':'activity_snowsports.png','cls':'style-chip--blue'},
+        'Business Trip':{'label':'Business Traveler','img':'activity_business.png','cls':'style-chip--purple'},
+        'Night Out':{'label':'Night Explorer','img':'activity_nightout.png','cls':'style-chip--purple'},
+        'Baby':{'label':'Family Traveler','img':'activity_baby.png','cls':'style-chip--pink'},
+        'Theme Park':{'label':'Thrill Seeker','img':'activity_themepark.png','cls':'style-chip--orange'},
+        'Festival':{'label':'Festival Goer','img':'activity_festival.png','cls':'style-chip--pink'},
+        'Road Trip':{'label':'Road Warrior','img':'activity_roadtrip.png','cls':'style-chip--orange'},
+        'City Sightseeing':{'label':'City Explorer','img':'activity_sightseeing.png','cls':'style-chip--blue'},
+        'Dining':{'label':'Food Lover','img':'activity_dining.png','cls':'style-chip--pink'},
+      };
+      const container = document.getElementById('travelStyleChips');
+      if (!container) return;
+      if (!Object.keys(counts).length) {
+        container.innerHTML = '<span class="style-empty">Plan a trip to discover your travel style!</span>';
+        return;
+      }
+      const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+      container.innerHTML = sorted.map(([cat]) => {
+        const m = STYLE_MAP[cat]; if (!m) return '';
+        return `<div class="style-chip ${m.cls}"><img src="img/${m.img}" alt="">${m.label}</div>`;
+      }).join('');
+    }
+
+    function fmtDate(d) {
+      if (!d) return '';
+      return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    }
+
+    function loadRecentTrips() {
+      const trips = getAllTrips().sort((a,b) => new Date(b.fromDate||0) - new Date(a.fromDate||0)).slice(0,4);
+      const c = document.getElementById('recentPackingLists');
+      if (!c) return;
+      if (!trips.length) { c.innerHTML = '<div class="list-empty">No trips yet. <a href="newTrip.html" style="color:#7cc63e;text-decoration:none;font-weight:600">Create one →</a></div>'; return; }
+      c.innerHTML = trips.map(t => {
+        const pd      = JSON.parse(localStorage.getItem(`pm_pack_${t.id}`) || '{}');
+        const total   = pd.totalSuggested ?? pd.suggestedTotal ?? Object.keys(pd.itemState || {}).length;
+        const packed  = Object.values(pd.itemState || {}).filter(v => v?.packed).length;
+        const pct     = total > 0 ? Math.round(packed / total * 100) : 0;
+        const dates   = t.fromDate && t.toDate ? `${fmtDate(t.fromDate)} – ${fmtDate(t.toDate)}` : 'Dates TBD';
+        const img     = t.imageUrl ? `<img src="${t.imageUrl}" alt="${t.destination}" onerror="this.style.display='none'">` : '';
+        const tripStr = encodeURIComponent(JSON.stringify(t));
+        return `<div class="recent-list-item" onclick="localStorage.setItem('currentTrip',decodeURIComponent('${tripStr}'));location.href='packing-list.html'">
+          <div class="recent-list-thumb">${img}</div>
+          <div class="recent-list-info">
+            <strong>${t.destination||'Trip'}</strong>
+            <span>${dates}</span>
+            <div style="margin-top:4px;height:3px;border-radius:99px;background:rgba(0,0,0,.08);overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:#7cc63e;border-radius:99px;transition:width .6s ease"></div>
+            </div>
+          </div>
+          <div class="recent-list-count"><strong>${packed}</strong><span>of ${total}</span></div>
+        </div>`;
+      }).join('');
+    }
+
+    function loadTimeline() {
+      const trips = getAllTrips().sort((a,b) => new Date(b.fromDate||0) - new Date(a.fromDate||0));
+      const c = document.getElementById('travelTimeline');
+      if (!c) return;
+      if (!trips.length) { c.innerHTML = '<div class="list-empty">No trips yet. <a href="newTrip.html" style="color:#7cc63e;text-decoration:none;font-weight:600">Plan your first one →</a></div>'; return; }
+      const COLORS = ['#7cc63e','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c'];
+      const ACT_IMG = { 'Beach':'activity_beach','Hiking':'activity_hiking','Camping':'activity_camping','Gym':'activity_gym','Swimming':'activity_swimming','Snow Sports':'activity_snowsports','Business Trip':'activity_business','Night Out':'activity_nightout','Baby':'activity_baby','Theme Park':'activity_themepark','Festival':'activity_festival','Road Trip':'activity_roadtrip','City Sightseeing':'activity_sightseeing','Dining':'activity_dining' };
+      const byYear = {};
+      trips.forEach(t => { const y = t.fromDate ? new Date(t.fromDate+'T00:00:00').getFullYear() : 'Upcoming'; (byYear[y]=byYear[y]||[]).push(t); });
+      let idx = 0;
+      let html = '<div class="timeline-wrap">';
+      Object.entries(byYear).sort(([a],[b]) => Number(b)-Number(a)).forEach(([year, yTrips]) => {
+        html += `<div class="timeline-year">${year}</div>`;
+        yTrips.forEach(t => {
+          const col = COLORS[idx++ % COLORS.length];
+          const dates = t.fromDate && t.toDate ? `${fmtDate(t.fromDate)} – ${fmtDate(t.toDate)}` : '';
+          const firstAct = (t.activityCategories||[])[0];
+          const imgF = firstAct && ACT_IMG[firstAct] ? `img/${ACT_IMG[firstAct]}.png` : null;
+          const dotContent = imgF
+            ? `<img src="${imgF}" alt="" style="width:16px;height:16px;object-fit:contain" onerror="this.style.display='none'">`
+            : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+          html += `<div class="timeline-item">
+            <div class="timeline-dot" style="background:${col}18;border:2px solid ${col}44">${dotContent}</div>
+            <div class="timeline-content"><div class="timeline-dates">${dates}</div><div class="timeline-dest">${t.destination||'Trip'}</div></div>
+          </div>`;
+        });
+      });
+      html += '</div>';
+      c.innerHTML = html;
+    }
+
+    function loadAiInsights() {
+      const trips = getAllTrips();
+      const el = document.getElementById('aiInsightsList');
+      if (!el) return;
+
+      // Collect item data across all trips
+      // Handle state stored as boolean true/false OR as object { packed: true }
+      const itemCounts = {}, itemPacked = {};
+      trips.forEach(t => {
+        try {
+          const pd = JSON.parse(localStorage.getItem(`pm_pack_${t.id}`) || '{}');
+          Object.entries(pd.itemState || {}).forEach(([name, state]) => {
+            itemCounts[name] = (itemCounts[name] || 0) + 1;
+            const packed = state === true || (state && state.packed === true);
+            if (packed) itemPacked[name] = (itemPacked[name] || 0) + 1;
+          });
+        } catch(e) {}
+      });
+
+      // Strip "Category::item name" prefix and capitalize first letter
+      const cleanName = n => {
+        const bare = n.includes('::') ? n.split('::').pop() : n;
+        return bare.trim().replace(/^\w/, c => c.toUpperCase());
+      };
+
+      // "a" vs "an" based on first vowel
+      const article = n => /^[aeiou]/i.test(n.trim()) ? 'an' : 'a';
+
+      // Icon SVG via shared packing-icons.js — same icons as the packing list
+      const itemIconHtml = n => getItemIcon(n.toLowerCase(), '');
+
+      const insights = [];
+      const sortedItems = Object.entries(itemCounts).sort((a,b) => b[1]-a[1]);
+      const sortedPacked = Object.entries(itemPacked).sort((a,b) => b[1]-a[1]);
+      const usedNames = new Set();
+
+      // Always packs — most frequent item that's always been packed (≥1 trip)
+      const alwaysItem = sortedPacked[0] || sortedItems[0];
+      if (alwaysItem) {
+        usedNames.add(alwaysItem[0]);
+        const aName = cleanName(alwaysItem[0]);
+        insights.push({ icon: itemIconHtml(aName), text: `You always pack ${article(aName)} <strong>${aName.toLowerCase()}</strong>` });
+      }
+
+      // You also pack — second distinct frequent item
+      const alsoItem = (sortedPacked.find(([n]) => !usedNames.has(n))) || (sortedItems.find(([n]) => !usedNames.has(n)));
+      if (alsoItem) {
+        usedNames.add(alsoItem[0]);
+        const bName = cleanName(alsoItem[0]);
+        insights.push({ icon: itemIconHtml(bName), text: `You also pack ${article(bName)} <strong>${bName.toLowerCase()}</strong>` });
+      }
+
+      // Forgot — item that appears in itemCounts but never packed (needs ≥2 trips to be meaningful)
+      const forgotItem = sortedItems.find(([n, c]) => c >= 2 && !(itemPacked[n]));
+      if (forgotItem) {
+        usedNames.add(forgotItem[0]);
+        const fName = cleanName(forgotItem[0]);
+        insights.push({ icon: itemIconHtml(fName), text: `You forgot <strong>${fName.toLowerCase()}</strong> ${forgotItem[1]} times on avg.` });
+      }
+
+      // Most packed item — by packed count, different from the first two
+      const mostPackedItem = sortedPacked.find(([n]) => !usedNames.has(n)) || sortedItems.find(([n]) => !usedNames.has(n));
+      if (mostPackedItem) {
+        usedNames.add(mostPackedItem[0]);
+        const mName = cleanName(mostPackedItem[0]);
+        insights.push({ icon: itemIconHtml(mName), text: `Most packed item: <strong>${mName}</strong>` });
+      }
+
+      // Favorite destination
+      const destCounts = {};
+      trips.forEach(t => { if (t.destination) destCounts[t.destination] = (destCounts[t.destination]||0)+1; });
+      const topDest = Object.entries(destCounts).sort((a,b) => b[1]-a[1])[0];
+      const pinSvg = `<svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#7cc63e"/></svg>`;
+      if (topDest) {
+        insights.push({ icon: pinSvg, text: `Favorite destination: <strong>${topDest[0]}</strong>` });
+      }
+
+      if (!insights.length) {
+        el.innerHTML = '<div class="ai-insights-empty">Pack a trip to start seeing insights.</div>';
+        return;
+      }
+
+      el.innerHTML = insights.slice(0, 5).map(i =>
+        `<div class="ai-insight-item">
+          <div class="ai-insight-icon">${i.icon}</div>
+          <div class="ai-insight-text">${i.text}</div>
+        </div>`
+      ).join('');
+    }
+
+    let editingProfile = false;
     function toggleProfileEdit() {
       editingProfile = !editingProfile;
       const disp = document.getElementById('profile-display');
       const edit = document.getElementById('profile-edit');
-      const btn  = document.getElementById('btn-edit-profile');
       if (editingProfile) {
-        document.getElementById('edit-name').value   = document.getElementById('display-name').textContent;
-        document.getElementById('edit-handle').value = document.getElementById('display-handle').textContent;
-        disp.style.display = 'none'; edit.style.display = 'flex'; btn.textContent = 'Save';
+        const p = _pmProfile(), s = Auth.getSession();
+        document.getElementById('edit-name').value     = p.name     || s?.name   || 'Traveler';
+        document.getElementById('edit-handle').value   = p.handle   || (s?.email ? '@'+s.email.split('@')[0] : '@traveler');
+        document.getElementById('edit-location').value = p.location || '';
+        const bioInput = document.getElementById('edit-bio');
+        bioInput.value = p.bio || '';
+        const remaining = 50 - bioInput.value.length;
+        const counter = document.getElementById('bio-char-count');
+        counter.textContent = remaining;
+        counter.className = 'bio-char-count' + (remaining <= 10 ? ' warn' : '');
+        hideLoc();
+        disp.style.display='none'; edit.style.display='flex';
       } else {
-        const name   = document.getElementById('edit-name').value.trim()   || 'Traveler';
-        const handle = document.getElementById('edit-handle').value.trim() || '@traveler';
-        try { localStorage.setItem('pm_name', name); localStorage.setItem('pm_handle', handle); } catch(e) {}
-        document.getElementById('display-name').textContent   = name;
-        document.getElementById('display-handle').textContent = handle;
+        const name     = document.getElementById('edit-name').value.trim()     || 'Traveler';
+        const handle   = document.getElementById('edit-handle').value.trim()   || '@traveler';
+        const location = document.getElementById('edit-location').value.trim();
+        const bio      = document.getElementById('edit-bio').value.trim().slice(0,50);
+        hideLoc();
+        try {
+          _savePmProfile({ name, handle, location, bio });
+          /* Sync name to Supabase auth metadata so Auth.getSession() returns the new name */
+          if (window._pm_sbLoaded) window._pm_sbLoaded.then(sb => {
+            if (sb) sb.auth.updateUser({ data: { name } }).catch(() => {});
+          });
+        } catch(e) {}
+        document.getElementById('hero-greeting').textContent   = `Hey, ${name.split(' ')[0]}! 👋`;
+        document.getElementById('display-handle').textContent  = handle;
+        document.getElementById('meta-location').textContent   = location || document.getElementById('meta-location').textContent;
         document.getElementById('avatar-initials').textContent = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-        disp.style.display = ''; edit.style.display = 'none'; btn.textContent = 'Edit Profile';
+        const bioEl = document.getElementById('display-bio');
+        if (bioEl) { bioEl.textContent = bio; bioEl.style.display = bio ? '' : 'none'; }
+        disp.style.display=''; edit.style.display='none';
         showToast('Profile updated!');
       }
     }
+    function cancelProfileEdit() {
+      editingProfile = false;
+      hideLoc();
+      document.getElementById('profile-display').style.display = '';
+      document.getElementById('profile-edit').style.display    = 'none';
+    }
+
+    /* ── Location autocomplete ── */
+    const LOC_CITIES = [
+      'New York, USA','Los Angeles, CA','Chicago, IL','Houston, TX','Phoenix, AZ','San Francisco, CA',
+      'Seattle, WA','Miami, FL','Boston, MA','Denver, CO','Atlanta, GA','Las Vegas, NV','Austin, TX',
+      'Portland, OR','Nashville, TN','Dallas, TX','San Diego, CA','Philadelphia, PA','Detroit, MI',
+      'Minneapolis, MN','Orlando, FL','Charlotte, NC','San Antonio, TX','Baltimore, MD','Salt Lake City, UT',
+      'London, UK','Paris, France','Berlin, Germany','Madrid, Spain','Rome, Italy','Barcelona, Spain',
+      'Amsterdam, Netherlands','Vienna, Austria','Prague, Czech Republic','Lisbon, Portugal',
+      'Stockholm, Sweden','Copenhagen, Denmark','Oslo, Norway','Zurich, Switzerland','Geneva, Switzerland',
+      'Brussels, Belgium','Warsaw, Poland','Budapest, Hungary','Athens, Greece','Dublin, Ireland',
+      'Edinburgh, UK','Manchester, UK','Munich, Germany','Hamburg, Germany','Milan, Italy',
+      'Florence, Italy','Venice, Italy','Seville, Spain','Cologne, Germany','Frankfurt, Germany',
+      'Tokyo, Japan','Osaka, Japan','Kyoto, Japan','Seoul, South Korea','Beijing, China',
+      'Shanghai, China','Hong Kong','Singapore','Bangkok, Thailand','Bali, Indonesia',
+      'Kuala Lumpur, Malaysia','Taipei, Taiwan','Hanoi, Vietnam','Ho Chi Minh City, Vietnam',
+      'Mumbai, India','Delhi, India','Bangalore, India','Kathmandu, Nepal','Colombo, Sri Lanka',
+      'Dubai, UAE','Abu Dhabi, UAE','Istanbul, Turkey','Tel Aviv, Israel','Cairo, Egypt',
+      'Marrakech, Morocco','Casablanca, Morocco','Cape Town, South Africa','Johannesburg, South Africa',
+      'Nairobi, Kenya','Lagos, Nigeria','Accra, Ghana','Addis Ababa, Ethiopia',
+      'Sydney, Australia','Melbourne, Australia','Brisbane, Australia','Auckland, New Zealand',
+      'Toronto, Canada','Vancouver, Canada','Montreal, Canada','Calgary, Canada',
+      'Mexico City, Mexico','Guadalajara, Mexico','São Paulo, Brazil','Rio de Janeiro, Brazil',
+      'Buenos Aires, Argentina','Lima, Peru','Bogotá, Colombia','Medellin, Colombia',
+      'Santiago, Chile','Quito, Ecuador','Havana, Cuba','San José, Costa Rica',
+      'Reykjavik, Iceland','Tbilisi, Georgia','Yerevan, Armenia','Baku, Azerbaijan',
+    ];
+    let locHighlight = -1;
+    function hideLoc() {
+      const dd = document.getElementById('loc-dropdown');
+      if (dd) { dd.style.display = 'none'; dd.innerHTML = ''; }
+      locHighlight = -1;
+    }
+    function showLocDropdown(val) {
+      const dd = document.getElementById('loc-dropdown');
+      if (!dd) return;
+      if (!val) { hideLoc(); return; }
+      const matches = LOC_CITIES.filter(c => c.toLowerCase().startsWith(val.toLowerCase())).slice(0, 8);
+      if (!matches.length) { hideLoc(); return; }
+      dd.innerHTML = matches.map((c,i) => `<div class="loc-option" data-val="${c}" onmousedown="pickCity('${c.replace(/'/g,'\\\'')}')">${c}</div>`).join('');
+      dd.style.display = 'block';
+      locHighlight = -1;
+    }
+    function pickCity(city) {
+      document.getElementById('edit-location').value = city;
+      hideLoc();
+    }
 
     function toggleCard(id) {
-      const card  = document.getElementById('card-' + id);
       const panel = document.getElementById('panel-' + id);
-      const isOpen = card.classList.contains('open');
-      document.querySelectorAll('.settings-card.open').forEach(c => {
-        c.classList.remove('open');
-        c.querySelector('.settings-panel').style.maxHeight = '';
-      });
-      if (!isOpen) { card.classList.add('open'); panel.style.maxHeight = panel.scrollHeight + 80 + 'px'; }
+      const row   = document.getElementById('row-' + id);
+      if (!panel) return;
+      const isOpen = row?.classList.contains('open');
+      document.querySelectorAll('.settings-panel').forEach(p => { p.style.maxHeight = ''; });
+      document.querySelectorAll('.settings-row').forEach(r => r.classList.remove('open'));
+      if (!isOpen) {
+        if (row) row.classList.add('open');
+        panel.style.maxHeight = panel.scrollHeight + 80 + 'px';
+        setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
+      }
+    }
+
+    let selectedGender = null;
+    function selectProfileGender(btn) {
+      document.querySelectorAll('.pg-gender-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedGender = btn.dataset.gender;
     }
 
     function loadPersonalData() {
       try {
-        document.getElementById('pd-name').value  = localStorage.getItem('pm_pd_name')  || '';
-        document.getElementById('pd-email').value = localStorage.getItem('pm_pd_email') || '';
-        document.getElementById('pd-phone').value = localStorage.getItem('pm_pd_phone') || '';
+        const p = _pmProfile();
+        document.getElementById('pd-name').value  = p.pdName  || '';
+        document.getElementById('pd-email').value = p.pdEmail || '';
+        document.getElementById('pd-phone').value = p.pdPhone || '';
+        const s = Auth.getSession();
+        if (s?.gender) {
+          selectedGender = s.gender;
+          const btn = document.querySelector(`.pg-gender-btn[data-gender="${s.gender}"]`);
+          if (btn) btn.classList.add('active');
+        }
       } catch(e) {}
     }
 
@@ -933,52 +1375,72 @@
       const phone = document.getElementById('pd-phone').value.trim();
       if (!name || !email) { showMsg('pd-msg','Name and email are required.','error'); return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMsg('pd-msg','Please enter a valid email.','error'); return; }
-      try { localStorage.setItem('pm_pd_name',name); localStorage.setItem('pm_pd_email',email); localStorage.setItem('pm_pd_phone',phone); } catch(e) {}
-      showMsg('pd-msg','Personal data saved!','success');
-      showToast('Personal data saved!');
+      if (!selectedGender) { showMsg('pd-msg','Please select your gender.','error'); return; }
+      try {
+        const s = Auth.getSession();
+        /* Update legacy local users list for backward compat */
+        const users = JSON.parse(localStorage.getItem('pm_users') || '[]');
+        const idx = users.findIndex(u => u.email === s?.email);
+        if (idx >= 0) { users[idx].gender = selectedGender; localStorage.setItem('pm_users', JSON.stringify(users)); }
+        /* Update legacy session */
+        const legacySess = JSON.parse(localStorage.getItem('pm_session') || 'null');
+        if (legacySess) localStorage.setItem('pm_session', JSON.stringify({...legacySess, gender:selectedGender}));
+        /* Update Supabase user metadata */
+        if (typeof _getSb === 'function') {
+          _getSb().then(sb => { if (sb) sb.auth.updateUser({ data: { gender: selectedGender } }).catch(() => {}); });
+        }
+        _savePmProfile({ pdName:name, pdEmail:email, pdPhone:phone, gender:selectedGender });
+      } catch(e) {}
+      loadProfile();
+      showMsg('pd-msg','Saved! Packing suggestions updated.','success');
+      showToast('Gender saved — packing suggestions updated!');
     }
 
-    function savePassword() {
+    async function savePassword() {
       const current = document.getElementById('sec-current').value;
       const newPw   = document.getElementById('sec-new').value;
       const confirm = document.getElementById('sec-confirm').value;
-      if (!current)          { showMsg('sec-msg','Please enter your current password.','error'); return; }
-      if (newPw.length < 8)  { showMsg('sec-msg','New password must be at least 8 characters.','error'); return; }
-      if (newPw !== confirm)  { showMsg('sec-msg','Passwords do not match.','error'); return; }
-      document.getElementById('sec-current').value = '';
-      document.getElementById('sec-new').value = '';
-      document.getElementById('sec-confirm').value = '';
+      if (!current)         { showMsg('sec-msg','Please enter your current password.','error'); return; }
+      if (newPw.length < 8) { showMsg('sec-msg','New password must be at least 8 characters.','error'); return; }
+      if (newPw !== confirm) { showMsg('sec-msg','Passwords do not match.','error'); return; }
+      const result = await Auth.changePassword(current, newPw);
+      if (!result.success) { showMsg('sec-msg', result.error, 'error'); return; }
+      ['sec-current','sec-new','sec-confirm'].forEach(id => document.getElementById(id).value = '');
       showMsg('sec-msg','Password updated successfully!','success');
       showToast('Password updated!');
     }
 
     function loadNotifications() {
       try {
-        const s = JSON.parse(localStorage.getItem('pm_notif') || '{}');
+        const s = _pmProfile().notif || {};
         document.getElementById('notif-email').checked     = s.email     ?? true;
         document.getElementById('notif-push').checked      = s.push      ?? false;
         document.getElementById('notif-reminders').checked = s.reminders ?? true;
         document.getElementById('notif-updates').checked   = s.updates   ?? false;
-      } catch(e) { document.getElementById('notif-email').checked = true; document.getElementById('notif-reminders').checked = true; }
+      } catch(e) {}
     }
-
     function saveNotifications() {
-      try { localStorage.setItem('pm_notif', JSON.stringify({ email: document.getElementById('notif-email').checked, push: document.getElementById('notif-push').checked, reminders: document.getElementById('notif-reminders').checked, updates: document.getElementById('notif-updates').checked })); } catch(e) {}
+      try { _savePmProfile({ notif:{ email:document.getElementById('notif-email').checked, push:document.getElementById('notif-push').checked, reminders:document.getElementById('notif-reminders').checked, updates:document.getElementById('notif-updates').checked } }); } catch(e) {}
       showToast('Notification preferences saved!');
     }
 
     function loadPrivacy() {
       try {
-        const s = JSON.parse(localStorage.getItem('pm_privacy') || '{}');
+        const s = _pmProfile().privacy || {};
         document.getElementById('priv-analytics').checked   = s.analytics   ?? true;
         document.getElementById('priv-personalise').checked = s.personalise ?? true;
         document.getElementById('priv-share').checked       = s.share       ?? false;
-      } catch(e) { document.getElementById('priv-analytics').checked = true; document.getElementById('priv-personalise').checked = true; }
+      } catch(e) {}
+    }
+    function savePrivacy() {
+      try { _savePmProfile({ privacy:{ analytics:document.getElementById('priv-analytics').checked, personalise:document.getElementById('priv-personalise').checked, share:document.getElementById('priv-share').checked } }); } catch(e) {}
+      showToast('Privacy settings saved!');
     }
 
-    function savePrivacy() {
-      try { localStorage.setItem('pm_privacy', JSON.stringify({ analytics: document.getElementById('priv-analytics').checked, personalise: document.getElementById('priv-personalise').checked, share: document.getElementById('priv-share').checked })); } catch(e) {}
-      showToast('Privacy settings saved!');
+    function confirmDeleteAccount() {
+      const m = document.getElementById('deleteModal');
+      m.style.display = 'flex';
+      m.onclick = e => { if (e.target === m) m.style.display = 'none'; };
     }
 
     function toggleFaq(btn) {
@@ -990,11 +1452,271 @@
 
     function openLogoutModal()  { document.getElementById('logout-modal').classList.add('active'); }
     function closeLogoutModal() { document.getElementById('logout-modal').classList.remove('active'); }
-    function confirmLogout() {
-      closeLogoutModal();
-      showToast('Signing out…');
-      setTimeout(() => { Auth.logout(); location.href = 'welcome.html'; }, 800);
+
+    function openPackmatesModal() {
+      const list = (() => { try { const r = JSON.parse(localStorage.getItem('pm_packmates')||'[]'); return Array.isArray(r) && r.length && typeof r[0]==='object' ? r : []; } catch { return []; } })();
+      const count = list.length;
+      document.getElementById('pmListCount').textContent = count + ' packmate' + (count !== 1 ? 's' : '');
+      const body = document.getElementById('pmListBody');
+      if (count === 0) {
+        body.innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>No packmates yet.<br>Discover travelers and add them!</div>`;
+      } else {
+        body.innerHTML = list.map(p => `
+          <div class="pm-item" data-avatar="${p.avatar}" onclick="openPackmateTravelerModal('${p.avatar}')">
+            <div class="pm-item-avatar" style="background:${p.color}">${p.avatar}</div>
+            <div class="pm-item-info">
+              <div class="pm-item-name">${p.name}</div>
+              <div class="pm-item-city">${p.city}</div>
+              <div class="pm-item-stats">
+                <span class="pm-item-stat"><strong>${p.trips}</strong> trips</span>
+                <span class="pm-item-stat"><strong>${p.countries}</strong> countries</span>
+              </div>
+            </div>
+            <button class="pm-item-remove" onclick="event.stopPropagation();removePackmateFromProfile('${p.avatar}',this)">Remove</button>
+          </div>`).join('');
+      }
+      document.getElementById('pmListBackdrop').classList.add('open');
+      document.body.style.overflow = 'hidden';
     }
+    function closePackmatesModal() {
+      document.getElementById('pmListBackdrop').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function removePackmateFromProfile(avatar, btn) {
+      let list = (() => { try { return JSON.parse(localStorage.getItem('pm_packmates')||'[]'); } catch { return []; } })();
+      list = list.filter(p => p.avatar !== avatar);
+      localStorage.setItem('pm_packmates', JSON.stringify(list));
+      btn.closest('.pm-item').remove();
+      const count = list.length;
+      document.getElementById('pmListCount').textContent = count + ' packmate' + (count !== 1 ? 's' : '');
+      document.getElementById('stat-packmates').textContent = count;
+      document.getElementById('meta-packmates').textContent = count + ' Packmate' + (count !== 1 ? 's' : '');
+      if (count === 0) {
+        document.getElementById('pmListBody').innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>No packmates yet.<br>Discover travelers and add them!</div>`;
+      }
+    }
+    /* ── Pexels helpers (shared with packmate modal) ── */
+    const PM_PEXELS_KEY = 'vnk5OqRIBUtBdRV9LUp1oaAn2QiAB5lO0HL8GwM5WrRRQZt5GOaFlVIq';
+    const PM_CACHE_TTL  = 7 * 24 * 60 * 60 * 1000;
+    function pmGetDestCache(n) { try { const r = localStorage.getItem('pm_dest_'+n); if (!r) return null; const { url, ts } = JSON.parse(r); if (Date.now()-ts > PM_CACHE_TTL) { localStorage.removeItem('pm_dest_'+n); return null; } return url; } catch { return null; } }
+    function pmSetDestCache(n, url) { try { localStorage.setItem('pm_dest_'+n, JSON.stringify({url,ts:Date.now()})); } catch {} }
+    async function pmFetchDestPhoto(query) { try { const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5&size=medium`,{headers:{Authorization:PM_PEXELS_KEY}}); const data = await res.json(); const p=(data.photos||[])[Math.floor(Math.random()*Math.min(5,(data.photos||[]).length))]; return p?.src?.medium||null; } catch { return null; } }
+
+    /* ── Community Traveler Data ── */
+    const PM_TRAVELERS = [
+      { name:'Sofia Martinez', city:'New York, USA', trips:14, countries:9, followers:1240, avatar:'SM', gender:'Female',
+        color:'linear-gradient(135deg,#667eea,#764ba2)', coverDest:'Santorini Greece white buildings ocean sunset',
+        memberSince:'Jan 2023', level:'Explorer ⭐⭐⭐', travelStyles:['Cultural','Foodie','City Break','Solo'],
+        bio:'Architect by day, explorer by weekend. I chase sunsets, street food, and hidden museums. Always planning the next escape ✈️',
+        places:['Santorini','Havana','Lisbon','Marrakech','Kyoto'],
+        activities:['City Walking Tours','Street Food Markets','Museum Hopping','Sunrise Hikes','Wine Tasting'],
+        packingLists:[{name:'Greece Island Hop',items:42,status:'Completed'},{name:'Marrakech Weekend',items:28,status:'Completed'},{name:'NYC Day Trips',items:15,status:'Active'}],
+        recentTrips:[{name:'Lisbon & Porto',date:'Mar 2025',status:'Completed'},{name:'Marrakech Medina',date:'Jan 2025',status:'Completed'},{name:'Greek Island Hopping',date:'Sep 2024',status:'Completed'}]
+      },
+      { name:'James Richardson', city:'London, UK', trips:22, countries:18, followers:3870, avatar:'JR', gender:'Male',
+        color:'linear-gradient(135deg,#f093fb,#f5576c)', coverDest:'Tokyo Japan street night neon lights',
+        memberSince:'Aug 2022', level:'Globetrotter ⭐⭐⭐⭐', travelStyles:['Adventure','Photography','Backpacker','Cultural'],
+        bio:'Travel photographer & food blogger. If there\'s a train to take it, I\'m on it. Documenting stories one frame at a time 📸',
+        places:['Tokyo','Patagonia','Iceland','Morocco','Sri Lanka'],
+        activities:['Photography','Food Blogging','Train Journeys','Coastal Hikes','Local Markets'],
+        packingLists:[{name:'Iceland Road Trip',items:55,status:'Completed'},{name:'Sri Lanka Trek',items:38,status:'Completed'},{name:'Morocco Medina',items:31,status:'Completed'}],
+        recentTrips:[{name:'Iceland Northern Lights',date:'Feb 2025',status:'Completed'},{name:'Sri Lanka Tea Country',date:'Nov 2024',status:'Completed'},{name:'Patagonia Trek',date:'Jul 2024',status:'Completed'}]
+      },
+      { name:'Aiko Tanaka', city:'Tokyo, Japan', trips:9, countries:7, followers:892, avatar:'AT', gender:'Female',
+        color:'linear-gradient(135deg,#4facfe,#00f2fe)', coverDest:'Bali rice terraces temple Indonesia',
+        memberSince:'Apr 2024', level:'Wanderer ⭐⭐', travelStyles:['Wellness','Minimalist','Solo','Cultural'],
+        bio:'Software engineer who travels to recharge. Obsessed with minimalist packing and finding the calmest spots in busy cities 🎒',
+        places:['Kyoto','Bali','Seoul','Chiang Mai','Reykjavik'],
+        activities:['Temple Visits','Minimalist Packing','Café Hopping','Hot Springs','Cycling'],
+        packingLists:[{name:'Bali Wellness Retreat',items:22,status:'Completed'},{name:'Seoul City Break',items:18,status:'Completed'},{name:'Chiang Mai Temples',items:25,status:'Completed'}],
+        recentTrips:[{name:'Bali Wellness Retreat',date:'Apr 2025',status:'Completed'},{name:'Seoul Street Food Tour',date:'Jan 2025',status:'Completed'},{name:'Chiang Mai Temples',date:'Oct 2024',status:'Completed'}]
+      },
+      { name:'Carlos Vega', city:'Barcelona, Spain', trips:31, countries:24, followers:6210, avatar:'CV', gender:'Male',
+        color:'linear-gradient(135deg,#f7971e,#ffd200)', coverDest:'Colombia coffee region mountains green',
+        memberSince:'Mar 2021', level:'World Citizen ⭐⭐⭐⭐⭐', travelStyles:['Adventure','Sports','Off-the-grid','Luxury'],
+        bio:'Retired footballer turned full-time traveler. Love adventure sports, off-the-beaten-path villages, and long dinners with locals 🌍',
+        places:['Colombia','Nepal','Tanzania','Georgia (Caucasus)','Cuba'],
+        activities:['Surfing','Mountain Biking','Scuba Diving','Off-road Jeep Tours','Salsa Dancing'],
+        packingLists:[{name:'Nepal Annapurna',items:68,status:'Completed'},{name:'Tanzania Safari',items:44,status:'Completed'},{name:'Colombia Adventure',items:52,status:'Completed'}],
+        recentTrips:[{name:'Nepal Annapurna Circuit',date:'May 2025',status:'Completed'},{name:'Tanzania Safari',date:'Feb 2025',status:'Completed'},{name:'Colombia Coffee Region',date:'Dec 2024',status:'Completed'}]
+      },
+      { name:'Emma Laurent', city:'Paris, France', trips:17, countries:12, followers:2150, avatar:'EL', gender:'Female',
+        color:'linear-gradient(135deg,#84fab0,#8fd3f4)', coverDest:'Amsterdam Netherlands canals boats flowers',
+        memberSince:'Jun 2022', level:'Explorer ⭐⭐⭐', travelStyles:['Slow Travel','Cultural','Luxury','Foodie'],
+        bio:'Fashion designer with a passion for slow travel. I spend weeks not days in each city. Art galleries, botanical gardens & vintage shops 🌿',
+        places:['Florence','Amsterdam','Copenhagen','Buenos Aires','New Orleans'],
+        activities:['Art Galleries','Vintage Shopping','Botanical Gardens','Cooking Classes','Jazz Bars'],
+        packingLists:[{name:'Copenhagen Design Trip',items:30,status:'Completed'},{name:'Buenos Aires Tango',items:27,status:'Completed'},{name:'Florence Art Week',items:33,status:'Completed'}],
+        recentTrips:[{name:'Copenhagen Design Week',date:'Apr 2025',status:'Completed'},{name:'Buenos Aires Tango Tour',date:'Jan 2025',status:'Completed'},{name:'Florence Renaissance Art',date:'Sep 2024',status:'Completed'}]
+      },
+      { name:'Noah Kim', city:'Sydney, Australia', trips:26, countries:20, followers:4480, avatar:'NK', gender:'Male',
+        color:'linear-gradient(135deg,#43e97b,#38f9d7)', coverDest:'Maldives overwater bungalow turquoise ocean',
+        memberSince:'Nov 2021', level:'Globetrotter ⭐⭐⭐⭐', travelStyles:['Beach','Adventure','Eco','Dive'],
+        bio:'Marine biologist & ocean lover. Every trip involves water — diving, surfing, or just watching waves. The reef is home 🌊',
+        places:['Maldives','Hawaii','Fiji','Azores','Great Barrier Reef'],
+        activities:['Scuba Diving','Surfing','Snorkeling','Whale Watching','Beach Camping'],
+        packingLists:[{name:'Maldives Liveaboard',items:48,status:'Completed'},{name:'Hawaii Big Island',items:36,status:'Completed'},{name:'Azores Whale Watch',items:29,status:'Completed'}],
+        recentTrips:[{name:'Maldives Liveaboard Dive',date:'Mar 2025',status:'Completed'},{name:'Hawaii Big Island',date:'Dec 2024',status:'Completed'},{name:'Azores Whale Watching',date:'Aug 2024',status:'Completed'}]
+      },
+      { name:'Priya Sharma', city:'Mumbai, India', trips:11, countries:8, followers:1670, avatar:'PS', gender:'Female',
+        color:'linear-gradient(135deg,#fa709a,#fee140)', coverDest:'Bhutan monastery mountains landscape',
+        memberSince:'Sep 2023', level:'Wanderer ⭐⭐', travelStyles:['Solo','Heritage','Wellness','Budget'],
+        bio:'UX designer & solo traveler. I find joy in planning detailed itineraries and ditching half of them. Chai > coffee ☕',
+        places:['Rajasthan','Bhutan','Vietnam','Jordan','Portugal'],
+        activities:['Solo Travel','Heritage Sites','Spice Market Tours','Yoga Retreats','Photography'],
+        packingLists:[{name:'Bhutan Spiritual',items:35,status:'Completed'},{name:'Jordan Desert Trek',items:42,status:'Completed'},{name:'Hoi An Old Town',items:24,status:'Completed'}],
+        recentTrips:[{name:'Bhutan Spiritual Journey',date:'Apr 2025',status:'Completed'},{name:'Jordan Petra & Wadi Rum',date:'Feb 2025',status:'Completed'},{name:'Hoi An Old Town',date:'Oct 2024',status:'Completed'}]
+      },
+      { name:'Liam Brooks', city:'Toronto, Canada', trips:19, countries:15, followers:2930, avatar:'LB', gender:'Male',
+        color:'linear-gradient(135deg,#0c7a7a,#7cc63e)', coverDest:'Norwegian fjords mountains water scenic',
+        memberSince:'Feb 2022', level:'Explorer ⭐⭐⭐', travelStyles:['Eco','Hiking','National Parks','Zero-waste'],
+        bio:'Environmental consultant who offsets every flight. Obsessed with national parks, mountain lodges, and zero-waste travel 🏔️',
+        places:['Banff','Patagonia','Norwegian Fjords','New Zealand','Yellowstone'],
+        activities:['National Park Hiking','Wildlife Photography','Backcountry Camping','Kayaking','Ski Touring'],
+        packingLists:[{name:'Norwegian Fjords',items:50,status:'Upcoming'},{name:'NZ South Island',items:46,status:'Completed'},{name:'Banff Winter',items:58,status:'Completed'}],
+        recentTrips:[{name:'Norwegian Fjords Hike',date:'Jun 2025',status:'Upcoming'},{name:'New Zealand South Island',date:'Jan 2025',status:'Completed'},{name:'Banff Winter Backcountry',date:'Mar 2025',status:'Completed'}]
+      },
+    ];
+
+    function openPackmateTravelerModal(avatar) {
+      const t = PM_TRAVELERS.find(x => x.avatar === avatar);
+      if (!t) return;
+      const m = document.getElementById('pmTravelerModal');
+      const headerBg = document.getElementById('pmTpHeaderBg');
+      headerBg.style.backgroundImage = t.color;
+      headerBg.style.backgroundSize = 'cover';
+      headerBg.style.backgroundPosition = 'center';
+      const cacheKey = 'tp_cover_' + t.avatar;
+      const cached = pmGetDestCache(cacheKey);
+      if (cached) {
+        headerBg.style.backgroundImage = `url('${cached}')`;
+      } else {
+        pmFetchDestPhoto(t.coverDest).then(url => {
+          if (url) { pmSetDestCache(cacheKey, url); headerBg.style.backgroundImage = `url('${url}')`; headerBg.style.backgroundSize = 'cover'; headerBg.style.backgroundPosition = 'center'; }
+        });
+      }
+      m.querySelector('.tp-avatar').style.background = t.color;
+      m.querySelector('.tp-avatar').textContent = t.avatar;
+      m.querySelector('.tp-name').textContent = t.name;
+      m.querySelector('.tp-location span').textContent = t.city;
+      m.querySelector('.tp-member').textContent = '📅 Joined ' + t.memberSince;
+      m.querySelector('.tp-gender').textContent = '👤 ' + t.gender;
+      m.querySelector('.tp-level').textContent = t.level;
+      m.querySelector('.tp-bio').textContent = t.bio;
+      document.getElementById('pmTpStatTrips').textContent = t.trips;
+      document.getElementById('pmTpStatCountries').textContent = t.countries;
+      document.getElementById('pmTpStatFollowers').textContent = t.followers >= 1000 ? (t.followers/1000).toFixed(1)+'k' : t.followers;
+      m.querySelector('.tp-styles-chips').innerHTML = t.travelStyles.map(s => `<span class="tp-chip">${s}</span>`).join('');
+      const pinSvg = `<svg viewBox="0 0 24 24" style="width:11px;height:11px;margin-right:3px;vertical-align:middle;flex-shrink:0" fill="#113a58"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
+      m.querySelector('.tp-places-chips').innerHTML = t.places.map(p => `<span class="tp-chip place">${pinSvg}${p}</span>`).join('');
+      m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${a}</span>`).join('');
+      const packSvg = `<svg viewBox="0 0 24 24" style="width:9px;height:9px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>`;
+      m.querySelector('.tp-packing-list').innerHTML = t.packingLists.map(r => `
+        <div class="tp-trip">
+          <div class="tp-trip-dot" style="${r.status==='Upcoming'?'background:#4facfe':r.status==='Active'?'background:#f7971e':''}"></div>
+          <div class="tp-trip-info">
+            <div class="tp-trip-name">${r.name}</div>
+            <div class="tp-trip-date">${r.items} items</div>
+          </div>
+          <span class="tp-trip-badge" style="${r.status==='Upcoming'?'background:rgba(79,172,254,.12);color:#2a7eca':r.status==='Active'?'background:rgba(247,151,30,.12);color:#c47a00':''}">${r.status}</span>
+        </div>`).join('');
+
+      const btn = m.querySelector('.tp-follow-btn');
+      const isPm = (() => { try { return JSON.parse(localStorage.getItem('pm_packmates')||'[]').some(p => p.avatar === t.avatar); } catch { return false; } })();
+      btn.textContent = isPm ? 'Packmates ✓' : 'Packmate';
+      btn.classList.toggle('following', isPm);
+      btn.onclick = () => {
+        let list = (() => { try { return JSON.parse(localStorage.getItem('pm_packmates')||'[]'); } catch { return []; } })();
+        const adding = !list.some(p => p.avatar === t.avatar);
+        if (adding) { list.push({ avatar:t.avatar, name:t.name, city:t.city, color:t.color, trips:t.trips, countries:t.countries }); }
+        else { list = list.filter(p => p.avatar !== t.avatar); }
+        localStorage.setItem('pm_packmates', JSON.stringify(list));
+        const count = list.length;
+        document.getElementById('stat-packmates').textContent = count;
+        document.getElementById('meta-packmates').textContent = count + ' Packmate' + (count !== 1 ? 's' : '');
+        btn.textContent = adding ? 'Packmates ✓' : 'Packmate';
+        btn.classList.toggle('following', adding);
+        if (!adding) {
+          const pmItem = document.querySelector(`.pm-item[data-avatar="${t.avatar}"]`);
+          if (pmItem) pmItem.remove();
+          document.getElementById('pmListCount').textContent = count + ' packmate' + (count !== 1 ? 's' : '');
+          if (count === 0) document.getElementById('pmListBody').innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>No packmates yet.<br>Discover travelers and add them!</div>`;
+          closePackmateTravelerModal();
+        }
+      };
+      document.getElementById('pmTpBackdrop').classList.add('open');
+      m.scrollTop = 0;
+    }
+    function closePackmateTravelerModal() {
+      document.getElementById('pmTpBackdrop').classList.remove('open');
+    }
+
+    function confirmLogout() { closeLogoutModal(); showToast('Signing out…'); setTimeout(() => { Auth.logout(); location.href='welcome.html'; }, 800); }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProfile();
+      loadPersonalData();
+      loadNotifications();
+      loadPrivacy();
+      loadAvatar();
+      loadStats();
+      loadStreakAndLevel();
+      loadTravelStyle();
+      loadRecentTrips();
+      loadTimeline();
+      loadAiInsights();
+
+      /* Sync profile + trips from Supabase, then re-render if data changed */
+      (async () => {
+        const before = localStorage.getItem('pm_profile');
+        const profileChanged = await DB.syncProfile();
+        if (profileChanged && localStorage.getItem('pm_profile') !== before) {
+          loadProfile(); loadPersonalData(); loadStats();
+        }
+        const tripsChanged = await DB.syncTrips();
+        if (tripsChanged) { loadStats(); loadRecentTrips(); loadTimeline(); loadStreakAndLevel(); }
+      })().catch(() => {});
+      document.getElementById('avatar-input').addEventListener('change', function() {
+        const file = this.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => { try { _savePmProfile({ avatar: e.target.result }); } catch(e) {} applyAvatar(e.target.result); showToast('Profile photo updated!'); };
+        reader.readAsDataURL(file);
+      });
+      document.getElementById('pmTpBackdrop').addEventListener('click', e => {
+        if (e.target === document.getElementById('pmTpBackdrop')) closePackmateTravelerModal();
+      });
+
+      // Location autocomplete
+      const locInput = document.getElementById('edit-location');
+      locInput.addEventListener('input', () => showLocDropdown(locInput.value.trim()));
+      locInput.addEventListener('keydown', e => {
+        const dd = document.getElementById('loc-dropdown');
+        const opts = dd.querySelectorAll('.loc-option');
+        if (!opts.length) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); locHighlight = Math.min(locHighlight+1, opts.length-1); opts.forEach((o,i)=>o.classList.toggle('active',i===locHighlight)); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); locHighlight = Math.max(locHighlight-1, 0); opts.forEach((o,i)=>o.classList.toggle('active',i===locHighlight)); }
+        else if (e.key === 'Enter' && locHighlight >= 0) { e.preventDefault(); pickCity(opts[locHighlight].dataset.val); }
+        else if (e.key === 'Escape') hideLoc();
+      });
+      locInput.addEventListener('blur', () => setTimeout(hideLoc, 150));
+
+      // Bio character counter
+      const bioInput = document.getElementById('edit-bio');
+      bioInput.addEventListener('input', () => {
+        const remaining = 50 - bioInput.value.length;
+        const counter = document.getElementById('bio-char-count');
+        counter.textContent = remaining;
+        counter.className = 'bio-char-count' + (remaining <= 10 ? ' warn' : '');
+      });
+    });
   </script>
+
+  <nav class="bottom-nav">
+    <button class="bn-btn" onclick="location.href='index.html'"><svg viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
+    <button class="bn-btn" onclick="location.href='discover.html'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>Discover</button>
+    <button class="bn-btn" onclick="location.href='packing-list.html'"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>Packing</button>
+    <button class="bn-btn" onclick="location.href='newTrip.html'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>New Trip</button>
+    <button class="bn-btn active" onclick="location.href='profile.html'"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</button>
+  </nav>
 </body>
 </html>
