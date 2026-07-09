@@ -1315,7 +1315,8 @@
             try {
                 const query = `${activityName} ${city}`;
                 const res = await fetch(
-                    `/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=1`
+                    `/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=1`,
+                    { headers: { Authorization: `Bearer ${await Auth.getTokenAsync()}` } }
                 );
                 const data = await res.json();
                 return data.photos?.[0]?.src?.large || null;
@@ -1824,7 +1825,7 @@
                     const applyBg = url => { if (url) strip.style.backgroundImage = `url('${url}')`; };
                     if (bgCached) { applyBg(bgCached); }
                     else {
-                        fetch(`/api/pexels?query=${encodeURIComponent(destination+' city landscape')}&orientation=landscape&per_page=3`)
+                        fetch(`/api/pexels?query=${encodeURIComponent(destination+' city landscape')}&orientation=landscape&per_page=3`, { headers: { Authorization: `Bearer ${await Auth.getTokenAsync()}` } })
                             .then(r => r.json()).then(d => {
                                 const url = d.photos?.[0]?.src?.large2x || d.photos?.[0]?.src?.large;
                                 if (url) { try { localStorage.setItem(bgCacheKey, JSON.stringify({url})); } catch {} applyBg(url); }

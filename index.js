@@ -513,8 +513,9 @@
             .filter(f => f.quality === 'hd' || f.quality === 'sd')
             .sort((a, b) => (b.width || 0) - (a.width || 0))[0];
         }
+        const _pexelsToken = await Auth.getTokenAsync();
         const results = await Promise.all(VIDEO_QUERIES.map(q =>
-          fetch(`/api/pexels?type=videos&query=${encodeURIComponent(q)}&orientation=landscape&per_page=15`)
+          fetch(`/api/pexels?type=videos&query=${encodeURIComponent(q)}&orientation=landscape&per_page=15`, { headers: { Authorization: `Bearer ${_pexelsToken}` } })
             .then(r => r.json()).catch(() => ({ videos: [] }))
         ));
         const urls = results.map(data => {
@@ -574,7 +575,8 @@
     async function fetchDestPhoto(query) {
       try {
         const res  = await fetch(
-          `/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5`
+          `/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5`,
+          { headers: { Authorization: `Bearer ${await Auth.getTokenAsync()}` } }
         );
         const data = await res.json();
         const photos = data.photos || [];

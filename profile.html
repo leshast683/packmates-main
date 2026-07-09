@@ -1479,7 +1479,7 @@
     const PM_CACHE_TTL  = 7 * 24 * 60 * 60 * 1000;
     function pmGetDestCache(n) { try { const r = localStorage.getItem('pm_dest_'+n); if (!r) return null; const { url, ts } = JSON.parse(r); if (Date.now()-ts > PM_CACHE_TTL) { localStorage.removeItem('pm_dest_'+n); return null; } return url; } catch { return null; } }
     function pmSetDestCache(n, url) { try { localStorage.setItem('pm_dest_'+n, JSON.stringify({url,ts:Date.now()})); } catch {} }
-    async function pmFetchDestPhoto(query) { try { const res = await fetch(`/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5`); const data = await res.json(); const p=(data.photos||[])[Math.floor(Math.random()*Math.min(5,(data.photos||[]).length))]; return p?.src?.medium||null; } catch { return null; } }
+    async function pmFetchDestPhoto(query) { try { const res = await fetch(`/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5`, { headers: { Authorization: `Bearer ${await Auth.getTokenAsync()}` } }); const data = await res.json(); const p=(data.photos||[])[Math.floor(Math.random()*Math.min(5,(data.photos||[]).length))]; return p?.src?.medium||null; } catch { return null; } }
 
     /* ── Community Traveler Data ── */
     const PM_TRAVELERS = [

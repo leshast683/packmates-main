@@ -1,6 +1,8 @@
 /**
  * /api/pexels — Pexels search proxy
  * Keeps the Pexels API key server-side instead of shipping it in client JS.
+ * Requires a logged-in user — otherwise this is an open, unmetered proxy
+ * to a quota-limited third-party API for anyone on the internet.
  */
 
 const ALLOWED_ORIGINS = ['https://packmatesai.com', 'https://www.packmatesai.com'];
@@ -13,11 +15,27 @@ module.exports = async function handler(req, res) {
     res.setHeader('Vary', 'Origin');
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed.' });
 
   const apiKey = process.env.PEXELS_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Server configuration error.' });
+
+  const SB_URL = process.env.SUPABASE_URL;
+  const SB_KEY = process.env.SUPABASE_ANON_KEY;
+  if (!SB_URL || !SB_KEY) return res.status(500).json({ error: 'Server configuration error.' });
+
+  const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
+  if (!token) return res.status(401).json({ error: 'Authentication required.' });
+  try {
+    const userRes = await fetch(`${SB_URL}/auth/v1/user`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${token}` }
+    });
+    if (!userRes.ok) return res.status(401).json({ error: 'Invalid or expired session.' });
+  } catch {
+    return res.status(401).json({ error: 'Could not verify session.' });
+  }
 
   const { query, type, per_page, orientation } = req.query || {};
   const safeQuery = String(query || '').trim().slice(0, MAX_QUERY_LEN);

@@ -50,6 +50,41 @@ module.exports = async function handler(req, res) {
     'Content-Type': 'application/json',
   };
 
+  /* ── Transfer ownership of shared trips before deleting anything ──────
+     trips.user_id cascades on auth.users deletion, which would otherwise
+     take every OTHER member's access and packing progress down with it
+     just because the creator left. If another member exists, hand the
+     trip to whoever joined earliest; only let it cascade-delete when the
+     leaving user was the trip's only member. */
+  try {
+    const ownedRes = await fetch(`${SB_URL}/rest/v1/trips?user_id=eq.${userId}&select=id`, {
+      headers: adminHeaders,
+    });
+    const owned = ownedRes.ok ? await ownedRes.json() : [];
+
+    for (const trip of owned) {
+      const memberRes = await fetch(
+        `${SB_URL}/rest/v1/trip_members?trip_id=eq.${trip.id}&user_id=neq.${userId}&order=joined_at.asc&limit=1&select=user_id`,
+        { headers: adminHeaders }
+      );
+      const [nextOwner] = memberRes.ok ? await memberRes.json() : [];
+      if (!nextOwner) continue; // sole member — let the cascade delete it below
+
+      await fetch(`${SB_URL}/rest/v1/trips?id=eq.${trip.id}`, {
+        method: 'PATCH', headers: adminHeaders,
+        body: JSON.stringify({ user_id: nextOwner.user_id }),
+      });
+      await fetch(`${SB_URL}/rest/v1/trip_members?trip_id=eq.${trip.id}&user_id=eq.${nextOwner.user_id}`, {
+        method: 'PATCH', headers: adminHeaders,
+        body: JSON.stringify({ role: 'owner' }),
+      });
+    }
+  } catch (e) {
+    console.error('[delete-account] ownership transfer error:', e);
+    /* Non-fatal — worst case a transferable trip cascade-deletes instead
+       of transferring; proceed with account deletion regardless. */
+  }
+
   /* ── Delete user data rows (order matters for FK constraints) ── */
   try {
     await fetch(`${SB_URL}/rest/v1/packing_state?user_id=eq.${userId}`, {

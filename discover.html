@@ -847,7 +847,7 @@
     }
     async function fetchDestPhoto(query) {
       try {
-        const res  = await fetch(`/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5`);
+        const res  = await fetch(`/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5`, { headers: { Authorization: `Bearer ${await Auth.getTokenAsync()}` } });
         const data = await res.json();
         const p = (data.photos||[])[Math.floor(Math.random()*Math.min(5,(data.photos||[]).length))];
         return p?.src?.medium || null;

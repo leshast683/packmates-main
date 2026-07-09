@@ -1108,7 +1108,8 @@
     async function fetchCityImage(city) {
       try {
         const res = await fetch(
-          `/api/pexels?query=${encodeURIComponent(city)}+city+travel&orientation=landscape&per_page=10`
+          `/api/pexels?query=${encodeURIComponent(city)}+city+travel&orientation=landscape&per_page=10`,
+          { headers: { Authorization: `Bearer ${await Auth.getTokenAsync()}` } }
         );
         const data = await res.json();
         const photos = data.photos || [];

@@ -19,3 +19,4 @@ directly.
 | `20260709000001_trip_members.sql` | Adds real multi-user trip support (`trip_members` table + RLS rework + join-by-code RPCs). Backfills existing trips so current owners don't lose access. |
 | `20260709000002_drop_redundant_trip_columns.sql` | Drops the `trips` columns that duplicated the `data` JSONB blob and were never queried directly. |
 | `20260709000003_validation_constraints.sql` | Adds size/shape CHECK constraints as a backstop, since clients write to Supabase directly (no API layer validates first). |
+| `20260709000004_packing_state_membership_and_index.sql` | Requires actual trip membership (not just row ownership) to read/write `packing_state`; adds a missing index on `trip_members.user_id`. |
