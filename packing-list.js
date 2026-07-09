@@ -952,8 +952,12 @@ document.getElementById('copyShareUrl').addEventListener('click', () => {
 })();
 
 function _acceptJoin(payload) {
-    // Create or overwrite the trip in localStorage
-    const tripId = payload.sid || ('shared_' + Date.now());
+    // This creates a NEW trip owned by the recipient, seeded from the
+    // sender's shared snapshot — it must NOT reuse payload.sid (the
+    // sender's own trip id). Supabase's trips table only allows the
+    // owning user_id to write a given id; reusing it would make every
+    // recipient's DB.saveTrip() upsert collide with a row they don't own.
+    const tripId = 'shared_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
     const _esc = s => String(s ?? '').replace(/[<>"'&]/g, c => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'}[c]));
     const newTrip = {
         id:          tripId,

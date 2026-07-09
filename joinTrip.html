@@ -211,21 +211,19 @@
     Auth.requireAuth('welcome.html');
 
     const input = document.getElementById('codeInput');
-    let foundTrip = null;
+    let foundPreview = null;   // { destination, fromDate, toDate, travelers } from previewTripByCode
+    let lookupToken = 0;       // guards against a stale async lookup overwriting a newer one
 
-    /* decode ?invite= URL param so share links work cross-device */
+    /* ?code= URL param so share links pre-fill the code (see shareTrip() —
+       it now shares a short invite-code link, not an embedded trip blob) */
     (function() {
       try {
-        const inv = new URLSearchParams(location.search).get('invite');
-        if (!inv) return;
-        window._urlInviteData = JSON.parse(decodeURIComponent(escape(atob(inv))));
-        const code = window._urlInviteData?.inviteCode;
-        if (code) {
-          let val = code.replace(/[^A-Z0-9]/gi, '').toUpperCase();
-          if (val.length > 4) val = val.slice(0, 4) + '-' + val.slice(4, 8);
-          input.value = val;
-          setTimeout(() => lookupCode(val), 0);
-        }
+        const code = new URLSearchParams(location.search).get('code');
+        if (!code) return;
+        let val = code.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+        if (val.length > 4) val = val.slice(0, 4) + '-' + val.slice(4, 8);
+        input.value = val;
+        if (val.length === 9) lookupCode(val);
       } catch(e) {}
     })();
 
@@ -236,28 +234,29 @@
       input.value = val;
       input.classList.remove('error');
       document.getElementById('codeError').classList.remove('visible');
-      lookupCode(val);
+      foundPreview = null;
+      document.getElementById('tripPreviewCard').classList.remove('visible');
+      if (val.length === 9) lookupCode(val);
     });
 
-    function lookupCode(code) {
-      const allTrips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
-      foundTrip = allTrips.find(t => t.inviteCode === code) || null;
-      // Cross-device fallback: use trip data embedded in the invite URL
-      if (!foundTrip && window._urlInviteData?.inviteCode === code) {
-        foundTrip = window._urlInviteData;
-      }
+    async function lookupCode(code) {
+      const token = ++lookupToken;
+      const preview = await Auth.previewTripByCode(code);
+      if (token !== lookupToken || input.value !== code) return; // stale — input changed since
 
-      const preview = document.getElementById('tripPreviewCard');
-      if (foundTrip) {
+      const previewCard = document.getElementById('tripPreviewCard');
+      if (preview) {
+        foundPreview = preview;
         const fmt = d => { if (!d) return ''; const [y,m,day] = d.split('-'); return `${+m}/${+day}/${y}`; };
-        document.getElementById('previewDest').textContent = foundTrip.destination;
+        document.getElementById('previewDest').textContent = preview.destination;
         const parts = [];
-        if (foundTrip.fromDate && foundTrip.toDate) parts.push(`${fmt(foundTrip.fromDate)} – ${fmt(foundTrip.toDate)}`);
-        if (foundTrip.travelers) parts.push(`${foundTrip.travelers} traveler${foundTrip.travelers !== 1 ? 's' : ''}`);
+        if (preview.fromDate && preview.toDate) parts.push(`${fmt(preview.fromDate)} – ${fmt(preview.toDate)}`);
+        if (preview.travelers) parts.push(`${preview.travelers} traveler${preview.travelers !== 1 ? 's' : ''}`);
         document.getElementById('previewMeta').textContent = parts.join(' · ');
-        preview.classList.add('visible');
+        previewCard.classList.add('visible');
       } else {
-        preview.classList.remove('visible');
+        foundPreview = null;
+        previewCard.classList.remove('visible');
       }
     }
 
@@ -269,9 +268,9 @@
       }
     }
 
-    function joinTrip() {
+    async function joinTrip() {
       const code = input.value.trim();
-      if (!foundTrip) {
+      if (!foundPreview) {
         input.classList.add('error');
         document.getElementById('codeError').classList.add('visible');
         return;
@@ -281,21 +280,17 @@
       btn.disabled  = true;
       btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0"/></svg> Joining…`;
 
-      /* load the trip as the active trip + save to Supabase */
-      if (typeof DB !== 'undefined') {
-        DB.saveTrip(foundTrip);
-        if (foundTrip.id && !localStorage.getItem(`pm_pack_${foundTrip.id}`)) {
-          DB.savePackState(foundTrip.id, { itemState: {}, dismissed: [], customItems: {} });
-        }
-      } else {
-        localStorage.setItem('currentTrip', JSON.stringify(foundTrip));
-        if (foundTrip.id && !localStorage.getItem(`pm_pack_${foundTrip.id}`)) {
-          localStorage.setItem(`pm_pack_${foundTrip.id}`, JSON.stringify({ itemState: {}, dismissed: [], customItems: {} }));
-        }
+      const result = await Auth.joinTripByCode(code);
+      if (!result.success) {
+        btn.disabled = false;
+        btn.innerHTML = 'Join Trip';
+        input.classList.add('error');
+        document.getElementById('codeError').textContent = result.error || 'Could not join this trip. Please try again.';
+        document.getElementById('codeError').classList.add('visible');
+        return;
       }
 
-      pushNotification('join', `You joined the trip to ${foundTrip.destination}!`, foundTrip.destination);
-
+      pushNotification('join', `You joined the trip to ${result.trip.destination}!`, result.trip.destination);
       setTimeout(() => { location.href = 'tripPreview.html'; }, 400);
     }
 

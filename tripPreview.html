@@ -1347,20 +1347,15 @@
         }
 
         // ── Invite code ──
+        // Share link carries only the invite code — joinTrip.html looks the
+        // trip up server-side (see join_trip_by_code / preview_trip_by_code
+        // in supabase/migrations). Nothing about the trip is embedded in
+        // the URL itself, so the link can't go stale and doesn't blow past
+        // practical URL length limits for trips with large packing lists.
         if (tripData.inviteCode) {
             document.getElementById('inviteCodeDisplay').textContent = tripData.inviteCode;
             document.getElementById('inviteCard').style.display = '';
-            try {
-                const payload = {
-                    id: tripData.id, destination: tripData.destination,
-                    fromDate: tripData.fromDate, toDate: tripData.toDate,
-                    travelers: tripData.travelers,
-                    activityCategories: tripData.activityCategories || [],
-                    inviteCode: tripData.inviteCode,
-                    imageUrl: tripData.imageUrl || null,
-                };
-                window._tripShareUrl = `${location.origin}/joinTrip.html?invite=${btoa(unescape(encodeURIComponent(JSON.stringify(payload))))}`;
-            } catch(e) {}
+            window._tripShareUrl = `${location.origin}/joinTrip.html?code=${encodeURIComponent(tripData.inviteCode)}`;
         }
 
         // ── Populate mobile banner overlay ──

@@ -535,15 +535,13 @@ const DB = (() => {
 
   async function sb() { return window._pm_sb || await window._pm_sbLoaded || null; }
 
+  /* trips columns: just id/user_id/invite_code/created_at + the full
+     object in `data` — see supabase/migrations for why the old per-field
+     columns were dropped. */
   function _tripRow(t, uid) {
     return {
       id: t.id, user_id: uid,
-      destination: t.destination || '', from_date: t.fromDate || null,
-      to_date: t.toDate || null, travelers: t.travelers || 1,
-      activities: t.activities || [], country: t.country || null,
-      image_url: t.imageUrl || null, invite_code: t.inviteCode || t.id,
-      owner_email: t.ownerEmail || null, airline: t.airline || null,
-      weather_tags: t.weatherTags || [],
+      invite_code: t.inviteCode || t.id,
       created_at: t.createdAt || new Date().toISOString(),
       data: t,
     };
@@ -606,13 +604,30 @@ const DB = (() => {
       _tripsGuard.markDirty();
       const client = await sb(); const uid = _uid();
       if (client && uid) {
-        client.from('trips').delete().eq('id', tripId).eq('user_id', uid)
-          .then(({ error }) => {
-            if (error) { console.error('[DB] deleteTrip:', error.message); Auth.logError(error.message, { where: 'deleteTrip' }); }
-            else { _tripsGuard.clear(); }
+        /* Try an owner-delete first — RLS only allows this to affect a row
+           if the caller owns it, so .select('id') tells us whether it
+           actually happened. If it didn't (0 rows), the caller is a
+           member who joined someone else's trip: "delete" means "leave"
+           for them instead — drop their own membership + pack state,
+           leave the trip itself intact for the owner and other members. */
+        client.from('trips').delete().eq('id', tripId).select('id')
+          .then(({ data: deletedRows, error }) => {
+            if (error) {
+              console.error('[DB] deleteTrip:', error.message);
+              Auth.logError(error.message, { where: 'deleteTrip' });
+              return;
+            }
+            _tripsGuard.clear();
+            if (deletedRows?.length) {
+              client.from('packing_state').delete().eq('trip_id', tripId).eq('user_id', uid)
+                .then(({ error }) => { if (error) { console.error('[DB] deletePackState:', error.message); Auth.logError(error.message, { where: 'deletePackState' }); } });
+            } else {
+              client.from('trip_members').delete().eq('trip_id', tripId).eq('user_id', uid)
+                .then(({ error }) => { if (error) { console.error('[DB] leaveTrip:', error.message); Auth.logError(error.message, { where: 'leaveTrip' }); } });
+              client.from('packing_state').delete().eq('trip_id', tripId).eq('user_id', uid)
+                .then(({ error }) => { if (error) { console.error('[DB] leaveTrip packState:', error.message); Auth.logError(error.message, { where: 'leaveTrip packState' }); } });
+            }
           });
-        client.from('packing_state').delete().eq('trip_id', tripId).eq('user_id', uid)
-          .then(({ error }) => { if (error) { console.error('[DB] deletePackState:', error.message); Auth.logError(error.message, { where: 'deletePackState' }); } });
       }
     },
 
@@ -641,15 +656,12 @@ const DB = (() => {
       if (_tripsGuard.isDirty()) return false;
       const client = await sb(); const uid = _uid();
       if (!client || !uid) return false;
+      /* No .eq('user_id', uid) filter — RLS now returns every trip this
+         user is a member of (owned or joined), via is_trip_member(). */
       const { data: rows, error } = await client.from('trips').select('*')
-        .eq('user_id', uid).order('created_at', { ascending: false });
-      if (error || !rows?.length) return false;
-      const converted = rows.map(r => r.data || {
-        id: r.id, destination: r.destination, fromDate: r.from_date, toDate: r.to_date,
-        travelers: r.travelers, activities: r.activities || [], country: r.country,
-        imageUrl: r.image_url, inviteCode: r.invite_code, ownerEmail: r.owner_email,
-        airline: r.airline, weatherTags: r.weather_tags || [], createdAt: r.created_at,
-      });
+        .order('created_at', { ascending: false });
+      if (error) return false;
+      const converted = (rows || []).map(r => r.data);
       localStorage.setItem('pm_trips', JSON.stringify(converted));
       const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
       if (cur) {
@@ -679,6 +691,41 @@ const DB = (() => {
         customItems: data.custom_items || {},
       }));
       return true;
+    },
+
+    /* read-only preview of a trip by invite code — safe to call before
+       joining (used for joinTrip.html's preview card). Returns null if
+       the code doesn't exist or Supabase is unavailable. */
+    async previewTripByCode(inviteCode) {
+      const client = await sb();
+      if (!client) return null;
+      const { data, error } = await client.rpc('preview_trip_by_code', { p_invite_code: inviteCode });
+      if (error || !data?.length) return null;
+      const row = data[0];
+      return { destination: row.destination, fromDate: row.from_date, toDate: row.to_date, travelers: row.travelers };
+    },
+
+    /* actually join a trip: adds the caller to trip_members server-side
+       and returns the full trip object for the client to cache locally. */
+    async joinTripByCode(inviteCode) {
+      const client = await sb();
+      if (!client) return { success: false, error: 'Connection unavailable. Please try again.' };
+      const { data, error } = await client.rpc('join_trip_by_code', { p_invite_code: inviteCode });
+      if (error || !data) {
+        Auth.logError(error?.message || 'join_trip_by_code failed', { where: 'joinTripByCode', inviteCode });
+        return { success: false, error: 'Invalid invite code.' };
+      }
+      const trip = data.data || data; // RPC returns the trips row; .data is the full trip object
+      const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+      if (!trips.find(t => t.id === trip.id)) {
+        trips.push(trip);
+        localStorage.setItem('pm_trips', JSON.stringify(trips));
+      }
+      localStorage.setItem('currentTrip', JSON.stringify(trip));
+      if (!localStorage.getItem(`pm_pack_${trip.id}`)) {
+        localStorage.setItem(`pm_pack_${trip.id}`, JSON.stringify({ itemState: {}, dismissed: [], customItems: {} }));
+      }
+      return { success: true, trip };
     },
 
     /* save profile to localStorage + Supabase */
