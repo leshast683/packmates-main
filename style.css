@@ -1,3 +1,5 @@
+@import url('fonts.css');
+
 /* ─────────────────────────────────────────────
    PAGE TRANSITIONS — desktop only
    auth.js injects these dynamically and handles mobile detection.
@@ -19,16 +21,6 @@
   body { animation: none !important; }
   .pm-exit { animation: none !important; pointer-events: none !important; }
 }
-
-/* ─────────────────────────────────────────────
-   FONTS
-───────────────────────────────────────────── */
-@font-face { font-family:'Blauer Nue'; src:url('font/Blauer-Nue-Heavy-iF6626350c62afa.otf') format('opentype'); font-weight:700; }
-@font-face { font-family:'Blauer Nue'; src:url('font/Blauer-Nue-Medium-iF6626350c78103.otf') format('opentype'); font-weight:500; }
-@font-face { font-family:'Blauer Nue'; src:url('font/Blauer-Nue-Light-iF6626350c6db36.otf') format('opentype'); font-weight:300; }
-@font-face { font-family:'Montserrat'; src:url('font/Montserrat-ExtraBold.ttf') format('truetype'); font-weight:800; }
-@font-face { font-family:'Montserrat'; src:url('font/Montserrat-Medium.ttf') format('truetype'); font-weight:500; }
-@font-face { font-family:'Montserrat'; src:url('font/Montserrat-Regular.ttf') format('truetype'); font-weight:400; }
 
 /* ─────────────────────────────────────────────
    RESET
@@ -709,3 +701,20 @@ textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(17,58,88,0.
   h1 { font-size: 1.2rem; }
   .grid { grid-template-columns: 1fr; gap: 10px; }
 }
+
+/* ── Shared confirm modal + toast (used by nav.js sign-out) ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(11,25,41,.55); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; z-index:200; padding:20px; }
+.modal-overlay.active { opacity:1; pointer-events:all; }
+.modal { background:var(--surface); border-radius:18px; padding:32px 36px; max-width:360px; width:100%; transform:scale(.95) translateY(10px); transition:transform .25s ease; box-shadow:var(--shadow-lg); text-align:center; }
+.modal-overlay.active .modal { transform:scale(1) translateY(0); }
+.modal-icon { width:52px; height:52px; background:rgba(192,57,43,.1); border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; color:#c0392b; }
+.modal-icon svg { width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; }
+.modal h2 { font-family:'Blauer Nue',sans-serif; font-size:1.15rem; font-weight:700; color:var(--text-1); margin-bottom:8px; }
+.modal p  { font-size:.82rem; color:var(--text-3); line-height:1.6; }
+.modal-actions { display:flex; gap:10px; margin-top:24px; }
+.btn-cancel { flex:1; background:var(--bg); color:var(--text-2); border:1.5px solid var(--border); font-family:'Montserrat',sans-serif; font-size:.78rem; font-weight:700; border-radius:10px; padding:11px; cursor:pointer; transition:background .18s; }
+.btn-cancel:hover { background:var(--border); }
+.btn-confirm-logout { flex:1; background:#c0392b; color:#fff; border:none; border-radius:10px; padding:11px; font-family:'Montserrat',sans-serif; font-size:.78rem; font-weight:700; cursor:pointer; transition:background .18s; }
+.btn-confirm-logout:hover { background:#a93226; }
+.toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(16px); background:var(--navy-deep); color:#fff; font-size:.78rem; font-weight:500; padding:10px 22px; border-radius:10px; opacity:0; pointer-events:none; transition:opacity .25s,transform .25s; z-index:300; white-space:nowrap; box-shadow:var(--shadow-md); }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }

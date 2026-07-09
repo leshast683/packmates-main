@@ -946,45 +946,8 @@
 </head>
 
 <body>
-    <nav class="sidebar">
-      <div class="brand">
-        <img src="img/appIcon.png" alt="Packmates" class="icon">
-        <span>Packmates</span>
-      </div>
-      <span class="nav-label">Main Menu</span>
-      <div class="nav-buttons">
-        <button type="button" onclick="location.href='index.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          <span>Home</span>
-        </button>
-        <button type="button" onclick="location.href='discover.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-          <span>Discover</span>
-        </button>
-        <button type="button" onclick="location.href='packing-list.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-          <span>Packing List</span>
-        </button>
-        <button type="button" onclick="location.href='notifications.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-          <span>Notifications</span>
-        </button>
-        <button type="button" onclick="location.href='profile.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Profile</span>
-        </button>
-      </div>
-      <div class="nav-bottom">
-        <button type="button" onclick="location.href='newTrip.html'" style="background:var(--green-bg);color:#7cc63e">
-          <svg class="nav-icon" viewBox="0 0 24 24" style="stroke:#7cc63e"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          <span>New Trip</span>
-        </button>
-        <button class="logout" type="button" onclick="Auth&&Auth.logout();location.href='welcome.html'">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          <span>Sign Out</span>
-        </button>
-      </div>
-    </nav>
+    <nav class="sidebar" data-page="tripPreview.html"></nav>
+    <script src="nav.js"></script>
 
     <div class="tripPreviewSplit">
 
@@ -1346,14 +1309,11 @@
         }
 
         // ── Pexels image fetch ──
-        const PEXELS_KEY = 'vnk5OqRIBUtBdRV9LUp1oaAn2QiAB5lO0HL8GwM5WrRRQZt5GOaFlVIq';
-
         async function fetchActivityImage(activityName, city) {
             try {
                 const query = `${activityName} ${city}`;
                 const res = await fetch(
-                    `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&orientation=landscape&per_page=1&size=large`,
-                    { headers: { Authorization: PEXELS_KEY } }
+                    `/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=1`
                 );
                 const data = await res.json();
                 return data.photos?.[0]?.src?.large || null;
@@ -1862,13 +1822,12 @@
                     </div>`;
 
                 try {
-                    const PKEY = 'vnk5OqRIBUtBdRV9LUp1oaAn2QiAB5lO0HL8GwM5WrRRQZt5GOaFlVIq';
                     const bgCacheKey = 'pm_wxbg_' + destination;
                     const bgCached = (() => { try { const r = localStorage.getItem(bgCacheKey); return r ? JSON.parse(r).url : null; } catch { return null; } })();
                     const applyBg = url => { if (url) strip.style.backgroundImage = `url('${url}')`; };
                     if (bgCached) { applyBg(bgCached); }
                     else {
-                        fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(destination+' city landscape')}&orientation=landscape&per_page=3&size=medium`, { headers:{ Authorization: PKEY } })
+                        fetch(`/api/pexels?query=${encodeURIComponent(destination+' city landscape')}&orientation=landscape&per_page=3`)
                             .then(r => r.json()).then(d => {
                                 const url = d.photos?.[0]?.src?.large2x || d.photos?.[0]?.src?.large;
                                 if (url) { try { localStorage.setItem(bgCacheKey, JSON.stringify({url})); } catch {} applyBg(url); }
