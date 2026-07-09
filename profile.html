@@ -889,9 +889,11 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
   <script src="notifications.js"></script>
   <script src="packing-icons.js?v=1"></script>
+  <script src="lib/packing-math.js"></script>
   <script>
     Auth.requireAuth('welcome.html');
 
@@ -1077,7 +1079,7 @@
         const pd      = JSON.parse(localStorage.getItem(`pm_pack_${t.id}`) || '{}');
         const total   = pd.totalSuggested ?? pd.suggestedTotal ?? Object.keys(pd.itemState || {}).length;
         const packed  = Object.values(pd.itemState || {}).filter(v => v?.packed).length;
-        const pct     = total > 0 ? Math.round(packed / total * 100) : 0;
+        const pct     = PackingMath.calcPackedPct(packed, total);
         const dates   = t.fromDate && t.toDate ? `${fmtDate(t.fromDate)} – ${fmtDate(t.toDate)}` : 'Dates TBD';
         const img     = t.imageUrl ? `<img src="${t.imageUrl}" alt="${t.destination}" loading="lazy" onerror="this.style.display='none'">` : '';
         const tripStr = encodeURIComponent(JSON.stringify(t));

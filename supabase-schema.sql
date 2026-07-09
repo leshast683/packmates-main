@@ -115,3 +115,31 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- ── error_logs ────────────────────────────────────────────────────────
+-- Client-side error reports, written via /api/log-error so failures
+-- that today only show up in a user's own browser console are visible
+-- to us. Best-effort/fire-and-forget from the client — never blocks the UI.
+CREATE TABLE IF NOT EXISTS error_logs (
+  id         BIGSERIAL PRIMARY KEY,
+  user_id    UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  page       TEXT,
+  message    TEXT,
+  stack      TEXT,
+  context    JSONB DEFAULT '{}',
+  user_agent TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Users insert their own error logs" ON error_logs;
+  DROP POLICY IF EXISTS "Users view their own error logs"   ON error_logs;
+END $$;
+
+CREATE POLICY "Users insert their own error logs" ON error_logs
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users view their own error logs" ON error_logs
+  FOR SELECT USING (auth.uid() = user_id);

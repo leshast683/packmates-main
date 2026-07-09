@@ -192,7 +192,7 @@
     const packedKeys     = allKeys.filter(k => packState[k]);
     // Use full suggested count (including dismissed) so packing 4/68 shows ~6%, not 100%
     const totalSuggested = _packRaw.totalSuggested || _packRaw.suggestedTotal || allKeys.length;
-    const pct            = totalSuggested > 0 ? Math.round(packedKeys.length / totalSuggested * 100) : 0;
+    const pct            = PackingMath.calcPackedPct(packedKeys.length, totalSuggested);
 
     const days         = hasTrip ? daysTo(trip.fromDate) : null;
     const countdownNum = !hasTrip ? '—' : days === null ? '—' : days > 0 ? days : days === 0 ? '0' : '✓';

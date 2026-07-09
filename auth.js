@@ -29,7 +29,7 @@ window._pm_sbLoaded = new Promise(resolve => {
           }
         }
       });
-    } catch(e) { console.error('[Auth] Supabase init failed:', e); }
+    } catch(e) { console.error('[Auth] Supabase init failed:', e); Auth.logError(e, { where: 'sb init' }); }
     resolve(_sbClient);
   };
   if (window.supabase) { _init(); return; }
@@ -147,7 +147,7 @@ async function _migrateLocalData(sbUser) {
 
     localStorage.setItem(migKey, '1');
     console.log('[Auth] Migrated local data → Supabase.');
-  } catch(e) { console.error('[Auth] Migration error:', e); }
+  } catch(e) { console.error('[Auth] Migration error:', e); Auth.logError(e, { where: 'migration' }); }
 }
 
 /* ── Auth ────────────────────────────────────────────────────────────── */
@@ -386,6 +386,24 @@ const Auth = (() => {
         return JSON.parse(localStorage.getItem(_SB_LKEY) || 'null')?.access_token || '';
       } catch { return ''; }
     },
+    /* Fire-and-forget error report — never throws, never blocks the caller.
+       Silently no-ops when logged out (nothing to attribute the error to). */
+    logError(message, extra) {
+      try {
+        const token = this.getToken();
+        if (!token) return;
+        fetch('/api/log-error', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            message: String(message?.message || message || 'Unknown error'),
+            stack: message?.stack || '',
+            page: location.pathname,
+            context: extra || {},
+          }),
+        }).catch(() => {});
+      } catch {}
+    },
     requireAuth(redirect = 'welcome.html') {
       if (!this.isLoggedIn()) { location.replace(redirect); return false; }
       /* Block Supabase users whose email is not yet confirmed */
@@ -538,6 +556,22 @@ const DB = (() => {
     _timers[key] = setTimeout(fn, ms);
   }
 
+  /* ── Sync guards ──────────────────────────────────────────────────────
+     syncTrips()/syncPackState() pull-and-overwrite localStorage from the
+     server. Without a guard, a sync that lands while a local write is
+     still in flight (debounce delay + network round-trip) would stomp
+     the fresh local edit with stale server data. SYNC_GRACE_MS covers
+     savePackState's 2s debounce plus a margin for the request itself;
+     the flag is cleared as soon as the write is confirmed so a real
+     server-side change (e.g. from another device) isn't blocked longer
+     than necessary. See lib/sync-guard.js (tested in test/sync-guard.test.js). */
+  const SYNC_GRACE_MS = 4000;
+  const _tripsGuard = SyncGuard.createGraceGuard(SYNC_GRACE_MS);
+  const _packGuards = {};
+  function _packGuard(tripId) {
+    return _packGuards[tripId] || (_packGuards[tripId] = SyncGuard.createGraceGuard(SYNC_GRACE_MS));
+  }
+
   return {
     /* save trip to localStorage + Supabase */
     async saveTrip(tripData) {
@@ -546,10 +580,14 @@ const DB = (() => {
       if (idx >= 0) trips[idx] = tripData; else trips.push(tripData);
       localStorage.setItem('pm_trips', JSON.stringify(trips));
       localStorage.setItem('currentTrip', JSON.stringify(tripData));
+      _tripsGuard.markDirty();
       const client = await sb(); const uid = _uid();
       if (client && uid) {
         client.from('trips').upsert(_tripRow(tripData, uid), { onConflict: 'id' })
-          .then(({ error }) => { if (error) console.error('[DB] saveTrip:', error.message); });
+          .then(({ error }) => {
+            if (error) { console.error('[DB] saveTrip:', error.message); Auth.logError(error.message, { where: 'saveTrip' }); }
+            else { _tripsGuard.clear(); }
+          });
       }
     },
 
@@ -565,18 +603,23 @@ const DB = (() => {
           ? localStorage.setItem('currentTrip', JSON.stringify(remaining[remaining.length - 1]))
           : localStorage.removeItem('currentTrip');
       }
+      _tripsGuard.markDirty();
       const client = await sb(); const uid = _uid();
       if (client && uid) {
         client.from('trips').delete().eq('id', tripId).eq('user_id', uid)
-          .then(({ error }) => { if (error) console.error('[DB] deleteTrip:', error.message); });
+          .then(({ error }) => {
+            if (error) { console.error('[DB] deleteTrip:', error.message); Auth.logError(error.message, { where: 'deleteTrip' }); }
+            else { _tripsGuard.clear(); }
+          });
         client.from('packing_state').delete().eq('trip_id', tripId).eq('user_id', uid)
-          .then(({ error }) => { if (error) console.error('[DB] deletePackState:', error.message); });
+          .then(({ error }) => { if (error) { console.error('[DB] deletePackState:', error.message); Auth.logError(error.message, { where: 'deletePackState' }); } });
       }
     },
 
     /* save packing state to localStorage + Supabase (debounced) */
     savePackState(tripId, state) {
       localStorage.setItem(`pm_pack_${tripId}`, JSON.stringify(state));
+      _packGuard(tripId).markDirty();
       _debounce('pack_' + tripId, async () => {
         const client = await sb(); const uid = _uid();
         if (!client || !uid) return;
@@ -586,12 +629,16 @@ const DB = (() => {
           dismissed:    state.dismissed   || [],
           custom_items: state.customItems || {},
         }, { onConflict: 'trip_id,user_id' })
-          .then(({ error }) => { if (error) console.error('[DB] savePackState:', error.message); });
+          .then(({ error }) => {
+            if (error) { console.error('[DB] savePackState:', error.message); Auth.logError(error.message, { where: 'savePackState' }); }
+            else { _packGuard(tripId).clear(); }
+          });
       }, 2000);
     },
 
     /* pull trips from Supabase → update localStorage (returns true if updated) */
     async syncTrips() {
+      if (_tripsGuard.isDirty()) return false;
       const client = await sb(); const uid = _uid();
       if (!client || !uid) return false;
       const { data: rows, error } = await client.from('trips').select('*')
@@ -620,6 +667,7 @@ const DB = (() => {
 
     /* pull pack state from Supabase → update localStorage */
     async syncPackState(tripId) {
+      if (_packGuard(tripId).isDirty()) return false;
       const client = await sb(); const uid = _uid();
       if (!client || !uid) return false;
       const { data, error } = await client.from('packing_state').select('*')
@@ -647,7 +695,7 @@ const DB = (() => {
         pd_phone: merged.pdPhone || null, notif:    merged.notif    || {},
         privacy:  merged.privacy || {},
       }, { onConflict: 'id' })
-        .then(({ error }) => { if (error) console.error('[DB] saveProfile:', error.message); });
+        .then(({ error }) => { if (error) { console.error('[DB] saveProfile:', error.message); Auth.logError(error.message, { where: 'saveProfile' }); } });
     },
 
     /* pull profile from Supabase → update localStorage */

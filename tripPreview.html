@@ -1093,7 +1093,9 @@
         </div>
     </div>
 
+    <script src="lib/sync-guard.js"></script>
     <script src="auth.js"></script>
+    <script src="lib/packing-math.js"></script>
     <script>
         if (typeof Auth !== 'undefined') Auth.requireAuth('welcome.html');
 
@@ -1601,7 +1603,7 @@
         function updateProgress() {
             const all    = getSuggestedItems();
             const packed = all.filter(({ key }) => !!packingState[key]).length;
-            const pct    = all.length ? Math.round(packed / all.length * 100) : 0;
+            const pct    = PackingMath.calcPackedPct(packed, all.length);
             document.getElementById('packingProgressFill').style.width = pct + '%';
             document.getElementById('packingProgressText').textContent = `${packed}/${all.length} packed`;
         }
@@ -1834,7 +1836,7 @@
                             }).catch(() => {});
                     }
                 } catch {}
-            } catch(e) { console.error('Weather fetch failed:', e); }
+            } catch(e) { console.error('Weather fetch failed:', e); Auth.logError(e, { where: 'weather fetch' }); }
         }
         fetchTripWeather();
 

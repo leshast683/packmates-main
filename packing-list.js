@@ -548,7 +548,7 @@ function updateCounts() {
         return n;
     })();
     const totalForPct = all.length + dismissedSuggestedCount;
-    const pct = totalForPct ? Math.round(packed / totalForPct * 100) : 0;
+    const pct = PackingMath.calcPackedPct(packed, totalForPct);
 
     const packedEl   = document.getElementById('packedCount');
     const totalEl    = document.getElementById('totalCount');
