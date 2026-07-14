@@ -58,6 +58,6 @@ AS $$
   FROM profiles
   WHERE discoverable = TRUE
     AND id <> auth.uid()
-  ORDER BY updated_at DESC
+  ORDER BY created_at DESC
   LIMIT p_limit;
 $$;
