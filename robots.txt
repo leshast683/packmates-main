@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /
+Allow: /welcome.html
+Allow: /login.html
+Allow: /signup.html
+Allow: /img/
+Allow: /*.css$
+Allow: /*.js$
+
+Sitemap: https://packmatesai.com/sitemap.xml
