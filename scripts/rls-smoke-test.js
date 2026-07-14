@@ -53,7 +53,14 @@ async function signupAndConfirm(label) {
   });
   if (!signup.ok) throw new Error(`signup failed for ${label}: ${signup.text}`);
 
-  // Poll Mailinator for the confirmation email (usually arrives in a few seconds)
+  // Fast path: if "Confirm email" is off (e.g. a staging project set up for
+  // quick automated testing), signup itself returns a session — no email
+  // round-trip needed at all.
+  if (signup.json?.access_token) {
+    return { email, token: signup.json.access_token, userId: signup.json.user.id };
+  }
+
+  // Otherwise poll Mailinator for the confirmation email (usually arrives in a few seconds)
   let link = null;
   for (let attempt = 0; attempt < 12 && !link; attempt++) {
     await sleep(2500);
