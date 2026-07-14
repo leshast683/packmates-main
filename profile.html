@@ -300,9 +300,10 @@
     .pm-item-info { flex:1; min-width:0; }
     .pm-item-name { font-size:.88rem; font-weight:700; color:var(--text-1); }
     .pm-item-city { font-size:.68rem; color:var(--text-3); margin-top:1px; }
-    .pm-item-stats { display:flex; gap:10px; margin-top:4px; }
+    .pm-item-stats { display:flex; flex-wrap:wrap; gap:2px 10px; margin-top:4px; }
     .pm-item-stat { font-size:.65rem; color:var(--text-3); font-weight:600; }
     .pm-item-stat strong { color:var(--text-1); }
+    .pm-item-stat--muted { flex-basis:100%; font-weight:500; opacity:.75; }
     .pm-item-remove { background:none; border:1.5px solid var(--border); border-radius:8px; padding:5px 10px; font-size:.65rem; font-weight:700; color:var(--text-3); cursor:pointer; flex-shrink:0; transition:border-color .2s,color .2s; }
     .pm-item-remove:hover { border-color:#e74c3c; color:#e74c3c; }
     .pm-item { cursor:pointer; transition:transform .15s,box-shadow .15s; }
@@ -1473,6 +1474,7 @@
               <div class="pm-item-name">${p.name || 'A packmate'}</div>
               <div class="pm-item-stats">
                 <span class="pm-item-stat"><strong>${p.shared_trip_count}</strong> shared trip${p.shared_trip_count !== 1 ? 's' : ''}</span>
+                ${p.first_shared_destination ? `<span class="pm-item-stat pm-item-stat--muted">Packmates since ${p.first_shared_destination}</span>` : ''}
               </div>
             </div>
           </div>`;

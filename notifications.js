@@ -307,13 +307,18 @@
     } catch(e) {}
   }
 
-  // ── Real social notifications: someone actually joined YOUR trip ───
+  // ── Real social notifications: trip_members inserts/deletes ────────
   // Runs alongside the bot notifications above rather than replacing
-  // them — this is the one genuinely real-user-triggered social event
-  // in the notification feed. Listens for trip_members inserts and only
-  // reacts to ones on a trip this browser has cached as owned by the
-  // current user (cheap client-side filter; the Realtime subscription
-  // itself can't filter by "trips I own" directly).
+  // them — these are the genuinely real-user-triggered social events in
+  // the notification feed. Three cases share one channel:
+  //   1. Someone else joined a trip I'm already on ("X joined your trip")
+  //   2. I was added to a trip by its owner ("X added you to a trip") —
+  //      distinguished from my OWN join_trip_by_code() call via
+  //      added_by (self for a voluntary join, the owner's id otherwise)
+  //      so this doesn't fire a redundant toast right after I join
+  //      myself.
+  //   3. I was removed from a trip — also cleans up the now-stale local
+  //      cache so the trip doesn't linger in the list.
   async function _initRealSocialEvents() {
     try {
       if (typeof window._pm_sbLoaded === 'undefined' || typeof Auth === 'undefined') return;
@@ -327,7 +332,26 @@
       sbClient.channel('trip-members-notify')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trip_members' }, async payload => {
           const row = payload.new;
-          if (!row || row.user_id === myUserId) return; // that's just me joining, not news
+          if (!row) return;
+
+          if (row.user_id === myUserId) {
+            // Someone else added me — as opposed to my own voluntary join,
+            // where added_by === myUserId and there's nothing to announce.
+            if (!row.added_by || row.added_by === myUserId) return;
+            const [members, tripRes] = await Promise.all([
+              Auth.getTripMembers(row.trip_id),
+              sbClient.from('trips').select('data').eq('id', row.trip_id).maybeSingle(),
+            ]);
+            const adder = members.find(m => m.user_id === row.added_by);
+            const name = adder?.name || 'A packmate';
+            const dest = tripRes?.data?.data?.destination || 'a trip';
+            const text = `<strong>${name}</strong> added you to their trip to ${dest}! 🎒`;
+            if (push('join', text, dest, `real_added_${row.trip_id}_${myUserId}`)) {
+              showToast(`${name} added you to their trip to ${dest}!`, 'join', dest);
+            }
+            return;
+          }
+
           const myTrips = (() => { try { return JSON.parse(localStorage.getItem('pm_trips') || '[]'); } catch { return []; } })();
           const trip = myTrips.find(t => t.id === row.trip_id);
           if (!trip) return; // not a trip I have cached — likely not mine
@@ -341,8 +365,90 @@
             showToast(`${name} joined your trip to ${dest}!`, 'join', dest);
           }
         })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'trip_members' }, payload => {
+          const row = payload.old;
+          if (!row || row.user_id !== myUserId) return; // only care about my own removal
+
+          const myTrips = (() => { try { return JSON.parse(localStorage.getItem('pm_trips') || '[]'); } catch { return []; } })();
+          const trip = myTrips.find(t => t.id === row.trip_id);
+          const dest = trip?.destination || 'a trip';
+
+          try {
+            const remaining = myTrips.filter(t => t.id !== row.trip_id);
+            localStorage.setItem('pm_trips', JSON.stringify(remaining));
+            const current = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+            if (current?.id === row.trip_id) localStorage.removeItem('currentTrip');
+          } catch {}
+
+          const text = `You were removed from the trip to <strong>${dest}</strong>.`;
+          if (push('alert', text, dest, `real_removed_${row.trip_id}_${myUserId}`)) {
+            showToast(`You were removed from the trip to ${dest}.`, 'alert', dest);
+          }
+        })
         .subscribe();
     } catch(e) {}
+  }
+
+  // ── Catch-up: real events missed while this browser wasn't open ────
+  // The Realtime listener above only fires while a page is actively
+  // subscribed — if you were added or removed while offline, you'd
+  // never hear about it and (for removal) the trip would just quietly
+  // vanish next time you looked, with no explanation. Runs once per
+  // page load; cheap, since both queries filter to rows where
+  // user_id = me and RLS already scopes the select to that.
+  async function _catchUpMissedEvents() {
+    try {
+      if (typeof window._pm_sbLoaded === 'undefined' || typeof Auth === 'undefined') return;
+      const sbClient = await window._pm_sbLoaded;
+      if (!sbClient) return;
+      const session = Auth.getSession();
+      if (!session) return;
+      const myUserId = (() => { try { return JSON.parse(localStorage.getItem('sb-ocwqpeyfxsovkqbmzlgh-auth-token'))?.user?.id; } catch { return null; } })();
+      if (!myUserId) return;
+
+      const lastCheckKey = 'pm_notif_lastcheck_' + myUserId;
+      const lastCheck = localStorage.getItem(lastCheckKey) || new Date(Date.now() - 7 * 86400000).toISOString();
+      const nowIso = new Date().toISOString();
+
+      // ── Trips I was added to by someone else since I last checked ──
+      const { data: added } = await sbClient
+        .from('trip_members')
+        .select('trip_id, added_by, joined_at')
+        .eq('user_id', myUserId)
+        .neq('added_by', myUserId)
+        .gt('joined_at', lastCheck);
+
+      for (const row of (added || [])) {
+        const [members, tripRes] = await Promise.all([
+          Auth.getTripMembers(row.trip_id),
+          sbClient.from('trips').select('data').eq('id', row.trip_id).maybeSingle(),
+        ]);
+        const adder = members.find(m => m.user_id === row.added_by);
+        const name = adder?.name || 'A packmate';
+        const dest = tripRes?.data?.data?.destination || 'a trip';
+        push('join', `<strong>${name}</strong> added you to their trip to ${dest}! 🎒`, dest, `real_added_${row.trip_id}_${myUserId}`);
+      }
+
+      // ── Trips I had cached that I'm silently no longer a member of ──
+      const myTrips = (() => { try { return JSON.parse(localStorage.getItem('pm_trips') || '[]'); } catch { return []; } })();
+      if (myTrips.length) {
+        const { data: stillMember } = await sbClient.from('trip_members').select('trip_id').eq('user_id', myUserId);
+        const stillIds = new Set((stillMember || []).map(r => r.trip_id));
+        const goneMissing = myTrips.filter(t => !stillIds.has(t.id));
+
+        if (goneMissing.length) {
+          goneMissing.forEach(t => {
+            const dest = t.destination || 'a trip';
+            push('alert', `You were removed from the trip to <strong>${dest}</strong>.`, dest, `real_removed_${t.id}_${myUserId}`);
+          });
+          localStorage.setItem('pm_trips', JSON.stringify(myTrips.filter(t => stillIds.has(t.id))));
+          const current = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+          if (current && !stillIds.has(current.id)) localStorage.removeItem('currentTrip');
+        }
+      }
+
+      localStorage.setItem(lastCheckKey, nowIso);
+    } catch (e) {}
   }
 
   // ── Init ─────────────────────────────────────────────────────────
@@ -351,6 +457,7 @@
     checkTrip();
     checkBotNotifs();
     _initRealSocialEvents();
+    _catchUpMissedEvents();
     // Bell badge runs after a tick so DOM is fully rendered
     setTimeout(updateBell, 0);
   }

@@ -1040,6 +1040,13 @@
                     </button>
                 </div>
 
+                <div class="pl-collab-bar" id="collabBar" style="display:none">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                  <div class="pl-collab-avatars" id="collabAvatars"></div>
+                  <span id="collabLabel">Viewing together</span>
+                  <div class="pl-collab-dot"></div>
+                </div>
+
                 <hr class="tripDivider">
 
                 <!-- Invite code -->
@@ -1467,6 +1474,49 @@
                 renderMembersPanel(members, myId);
             });
         }
+
+        // ── Presence: who's actually looking at this trip right now ──
+        // Joins the SAME channel name packing-list.js uses for this trip
+        // id, so "here now" is unified across both pages — someone on
+        // the packing list and someone on this preview page see each
+        // other, not two disconnected presence sets for one trip.
+        (async function initTripPresence() {
+            const tid = tripData.id;
+            if (!tid || typeof window._pm_sbLoaded === 'undefined') return;
+            const sbClient = await window._pm_sbLoaded;
+            if (!sbClient) return;
+            const { data: { session } } = await sbClient.auth.getSession();
+            if (!session) return;
+            const myUserId = session.user.id;
+            const myName = Auth.getSession()?.name || 'You';
+            const PRESENCE_COLORS = ['var(--green)','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c','#f39c12'];
+
+            function renderPresence(channel) {
+                const state = channel.presenceState();
+                const others = Object.values(state).flat().filter(p => p.user_id !== myUserId);
+                const bar = document.getElementById('collabBar');
+                const lbl = document.getElementById('collabLabel');
+                const avatarsEl = document.getElementById('collabAvatars');
+                if (!others.length) { if (bar) bar.style.display = 'none'; return; }
+                if (bar) bar.style.display = 'flex';
+                if (lbl) lbl.textContent = others.length === 1 ? `${others[0].name} is viewing this trip too` : `${others.length} packmates are viewing this trip too`;
+                if (avatarsEl) {
+                    avatarsEl.innerHTML = others.slice(0, 4).map((p, i) =>
+                        `<span style="background:${PRESENCE_COLORS[i % PRESENCE_COLORS.length]}" title="${p.name}">${(p.name || '?').trim().charAt(0).toUpperCase()}</span>`
+                    ).join('');
+                }
+            }
+
+            const channel = sbClient.channel(`packing-state-${tid}`, { config: { presence: { key: myUserId } } })
+                .on('presence', { event: 'sync' },  () => renderPresence(channel))
+                .on('presence', { event: 'join' },  () => renderPresence(channel))
+                .on('presence', { event: 'leave' }, () => renderPresence(channel))
+                .subscribe(async status => {
+                    if (status === 'SUBSCRIBED') {
+                        await channel.track({ user_id: myUserId, name: myName });
+                    }
+                });
+        })();
 
         function renderMembersPanel(members, myId) {
             // Show the panel if there's more than one member OR the owner
