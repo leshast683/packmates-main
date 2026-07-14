@@ -3,7 +3,8 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:rls": "node scripts/rls-smoke-test.js"
   },
   "devDependencies": {
     "vitest": "^3.2.7"
