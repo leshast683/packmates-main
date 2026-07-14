@@ -226,6 +226,43 @@
         .invite-copy-btn:hover { background: rgba(12,122,122,0.16); }
         .invite-copy-btn.copied { background: var(--teal-a, #0c7a7a); color: #fff; border-color: var(--teal-a, #0c7a7a); }
 
+        /* ── Trip members panel ── */
+        .members-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+        }
+        .members-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .members-list { display: flex; flex-direction: column; gap: 6px; }
+        .member-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+        .member-row-avatar {
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.72rem; font-weight: 700; color: #fff;
+            flex-shrink: 0; object-fit: cover;
+        }
+        .member-row-name { flex: 1; font-size: 0.84rem; font-weight: 600; color: var(--text-1); }
+        .member-row-role { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
+        .member-row-remove {
+            width: 24px; height: 24px; border-radius: 50%; border: none;
+            background: transparent; color: var(--text-3); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s, color 0.15s;
+        }
+        .member-row-remove:hover { background: rgba(192,57,43,0.1); color: #c0392b; }
+        .add-packmate-panel { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+        .add-packmate-empty { font-size: 0.76rem; color: var(--text-3); line-height: 1.5; }
+        .add-packmate-row {
+            display: flex; align-items: center; gap: 10px; padding: 5px 0;
+        }
+        .add-packmate-row button {
+            padding: 4px 12px; background: var(--green,#5f9d30); color: #fff;
+            border: none; border-radius: 7px; font-family: 'Montserrat', sans-serif;
+            font-size: 0.68rem; font-weight: 700; cursor: pointer;
+        }
+
         /* ── RIGHT PANEL ── */
         .tripPreviewRight {
             background: var(--surface);
@@ -1022,6 +1059,19 @@
                   </button>
                 </div>
 
+                <!-- Trip Members -->
+                <div class="members-card" id="membersCard" style="display:none">
+                  <div class="members-card-head">
+                    <span class="invite-label">Trip Members</span>
+                    <button class="invite-copy-btn" id="addPackmateBtn" style="display:none" onclick="toggleAddPackmatePanel()">+ Add packmate</button>
+                  </div>
+                  <div class="members-list" id="membersList"></div>
+                  <div class="add-packmate-panel" id="addPackmatePanel" style="display:none">
+                    <div class="add-packmate-empty" id="addPackmateEmpty" style="display:none">No packmates available to add — everyone you've traveled with is already on this trip, or you haven't shared a trip with anyone yet.</div>
+                    <div id="addPackmateList"></div>
+                  </div>
+                </div>
+
                 <section class="itinerarySection">
                     <div class="itinerary-section-head">
                         <span>Trip Itinerary</span>
@@ -1396,7 +1446,10 @@
         // ── Real trip member avatars (who actually joined, not a headcount) ──
         const AVATAR_COLORS = ['var(--green)','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c','#f39c12','#2980b9'];
         const avatarsEl = document.getElementById('travelerAvatars');
+        let _isTripOwner = false;
         if (tripData.id && typeof Auth !== 'undefined') {
+            const myId = Auth.getSession()?.userId;
+            _isTripOwner = !tripData._ownerId || tripData._ownerId === myId;
             Auth.getTripMembers(tripData.id).then(members => {
                 members.slice().reverse().forEach((m, i) => {
                     const dot = document.createElement(m.avatar ? 'img' : 'span');
@@ -1411,7 +1464,70 @@
                     }
                     avatarsEl.insertBefore(dot, avatarsEl.firstChild);
                 });
+                renderMembersPanel(members, myId);
             });
+        }
+
+        function renderMembersPanel(members, myId) {
+            // Show the panel if there's more than one member OR the owner
+            // has a way to add someone — a solo owner should still be able
+            // to add their first packmate, not just manage existing ones.
+            if (members.length < 2 && !_isTripOwner) return;
+            document.getElementById('membersCard').style.display = '';
+            if (_isTripOwner) document.getElementById('addPackmateBtn').style.display = '';
+            document.getElementById('membersList').innerHTML = members.map((m, i) => {
+                const initial = (m.name || '?').trim().charAt(0).toUpperCase();
+                const avatarInner = m.avatar ? `<img src="${m.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : initial;
+                const canRemove = _isTripOwner && m.user_id !== myId;
+                return `
+                <div class="member-row">
+                  <div class="member-row-avatar" style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}">${avatarInner}</div>
+                  <div class="member-row-name">${m.name || 'A packmate'}</div>
+                  <div class="member-row-role">${m.role === 'owner' ? 'Owner' : ''}</div>
+                  ${canRemove ? `<button class="member-row-remove" title="Remove from trip" onclick="removeMemberFromTrip('${m.user_id}','${(m.name || 'this packmate').replace(/'/g, "\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        async function removeMemberFromTrip(userId, name) {
+            if (!confirm(`Remove ${name} from this trip? They'll lose access to it and their packing progress.`)) return;
+            const result = await Auth.removeMember(tripData.id, userId);
+            if (!result.success) { alert(result.error); return; }
+            const members = await Auth.getTripMembers(tripData.id);
+            renderMembersPanel(members, Auth.getSession()?.userId);
+        }
+
+        async function refreshAddPackmateList() {
+            const [packmates, members] = await Promise.all([
+                Auth.getMyPackmates(),
+                Auth.getTripMembers(tripData.id),
+            ]);
+            const memberIds = new Set(members.map(m => m.user_id));
+            const available = packmates.filter(p => !memberIds.has(p.user_id));
+
+            document.getElementById('addPackmateEmpty').style.display = available.length ? 'none' : '';
+            document.getElementById('addPackmateList').innerHTML = available.map(p => `
+                <div class="add-packmate-row">
+                  <div class="member-row-avatar" style="background:var(--teal-a,#0c7a7a);width:26px;height:26px;font-size:0.64rem;">${(p.name||'?').trim().charAt(0).toUpperCase()}</div>
+                  <div class="member-row-name" style="font-size:0.8rem;">${p.name || 'A packmate'}</div>
+                  <button onclick="addPackmateToThisTrip('${p.user_id}',this)">Add</button>
+                </div>`).join('');
+            return members;
+        }
+
+        async function toggleAddPackmatePanel() {
+            const panel = document.getElementById('addPackmatePanel');
+            const showing = panel.style.display !== 'none';
+            panel.style.display = showing ? 'none' : '';
+            if (!showing) await refreshAddPackmateList();
+        }
+
+        async function addPackmateToThisTrip(userId, btn) {
+            btn.disabled = true; btn.textContent = 'Adding…';
+            const result = await Auth.addPackmateToTrip(tripData.id, userId);
+            if (!result.success) { alert(result.error); btn.disabled = false; btn.textContent = 'Add'; return; }
+            const members = await refreshAddPackmateList();
+            renderMembersPanel(members, Auth.getSession()?.userId);
         }
         document.getElementById('packingPanelTitle').textContent = destination;
         const metaParts = [];

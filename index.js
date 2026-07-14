@@ -94,11 +94,29 @@
         });
       }
     }
-    function deleteTrip(tripId) {
+    async function deleteTrip(tripId) {
       const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
       const target = trips.find(t => t.id === tripId);
       if (!target) return;
-      if (!confirm(`Delete trip to ${target.destination}? This cannot be undone.`)) return;
+
+      const myId = Auth.getSession()?.userId;
+      /* Trips cached before _ownerId existed won't have it — treat as
+         owner (matches the original solo-owner assumption) rather than
+         showing an unnecessarily scary "you can't undo this" for what
+         might just be your own trip. */
+      const isOwner = !target._ownerId || target._ownerId === myId;
+
+      if (isOwner) {
+        const members = await Auth.getTripMembers(tripId);
+        const othersCount = members.filter(m => m.user_id !== myId).length;
+        const warning = othersCount > 0
+          ? `Delete trip to ${target.destination}? ${othersCount} other packmate${othersCount !== 1 ? 's' : ''} will lose access to it too. This cannot be undone.`
+          : `Delete trip to ${target.destination}? This cannot be undone.`;
+        if (!confirm(warning)) return;
+      } else {
+        if (!confirm(`Leave trip to ${target.destination}? You'll no longer see it or your packing progress — the trip itself stays intact for everyone else.`)) return;
+      }
+
       DB.deleteTrip(tripId);
       location.reload();
     }
@@ -424,10 +442,13 @@
     }
     if (allTrips.length > 0) {
       document.getElementById('tripsSection').style.display = '';
+      const _myId = Auth.getSession()?.userId;
       tripsGrid.innerHTML = allTrips.slice().reverse().map(t => {
         const isActive = t.id === trip?.id;
         const tDays = t.fromDate ? daysTo(t.fromDate) : null;
         const daysLabel = tDays === null ? '' : tDays > 0 ? `${tDays}d away` : tDays === 0 ? 'Today!' : 'Underway';
+        const isOwnedByMe = !t._ownerId || t._ownerId === _myId;
+        const deleteLabel = isOwnedByMe ? 'Delete trip' : 'Leave trip';
         return `
           <div class="trip-card${isActive ? ' trip-card--active' : ''}" id="tc-${t.id}">
             <div class="trip-card-img" onclick="${isActive ? `location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}" style="position:relative">
@@ -446,7 +467,7 @@
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                     Share
                   </button>
-                  <button class="trip-card-delete" onclick="event.stopPropagation();deleteTrip('${t.id}')" title="Delete trip" aria-label="Delete trip">
+                  <button class="trip-card-delete" onclick="event.stopPropagation();deleteTrip('${t.id}')" title="${deleteLabel}" aria-label="${deleteLabel}">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                   </button>
                 </div>

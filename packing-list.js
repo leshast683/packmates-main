@@ -1058,11 +1058,9 @@ function _broadcastState() {
 // ── Supabase Realtime: live packing collaboration ACROSS devices/users ──
 // BroadcastChannel above only ever worked between tabs of the same
 // browser on the same device — not real collaboration between two
-// different people. This subscribes to postgres_changes on
-// packing_state for this trip, same pattern as index.js's trips-realtime
-// channel, so a packmate checking something off on their own phone
-// actually shows up here live.
-let _collabRealtimeMembers = new Map(); // user_id -> name, for the "who's packing" label
+// different people. Combines postgres_changes (did someone just pack
+// something) with Presence (is anyone else actually looking at this
+// list right now) on one channel for this trip.
 (async function initRealtimeCollab() {
     const tid = tripData.id;
     if (!tid || typeof window._pm_sbLoaded === 'undefined') return;
@@ -1072,25 +1070,36 @@ let _collabRealtimeMembers = new Map(); // user_id -> name, for the "who's packi
     if (!session) return;
     const myUserId = session.user.id;
 
-    if (typeof Auth !== 'undefined') {
-        Auth.getTripMembers(tid).then(members => {
-            members.forEach(m => _collabRealtimeMembers.set(m.user_id, m.name || 'A packmate'));
-        });
+    const AVATAR_COLORS = ['#7cc63e','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c','#f39c12'];
+    const myName = Auth.getSession()?.name || 'You';
+
+    // Presence: who's ACTUALLY here right now, not just "made a change
+    // recently" — the two are complementary. Presence answers "is anyone
+    // else looking at this list at this moment"; postgres_changes below
+    // answers "did someone just pack something".
+    function _renderPresence(channel) {
+        const state = channel.presenceState();
+        const others = Object.values(state).flat().filter(p => p.user_id !== myUserId);
+        const bar = document.getElementById('collabBar');
+        const lbl = document.getElementById('collabLabel');
+        const avatarsEl = document.getElementById('collabAvatars');
+        if (!others.length) { if (bar) bar.style.display = 'none'; return; }
+        if (bar) bar.style.display = 'flex';
+        if (lbl) lbl.textContent = others.length === 1 ? `${others[0].name} is here too` : `${others.length} packmates are here too`;
+        if (avatarsEl) {
+            avatarsEl.innerHTML = others.slice(0, 4).map((p, i) =>
+                `<span style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}" title="${p.name}">${(p.name || '?').trim().charAt(0).toUpperCase()}</span>`
+            ).join('');
+        }
     }
 
-    sbClient.channel(`packing-state-${tid}`)
+    const channel = sbClient.channel(`packing-state-${tid}`, { config: { presence: { key: myUserId } } })
         .on('postgres_changes', {
             event: '*', schema: 'public', table: 'packing_state',
             filter: `trip_id=eq.${tid}`,
         }, payload => {
             const row = payload.new;
             if (!row || row.user_id === myUserId) return; // ignore our own write echoing back
-
-            const bar = document.getElementById('collabBar');
-            const lbl = document.getElementById('collabLabel');
-            const who = _collabRealtimeMembers.get(row.user_id) || 'A packmate';
-            if (bar) bar.style.display = 'flex';
-            if (lbl) lbl.textContent = `${who} is packing too`;
 
             let changed = false;
             Object.entries(row.item_state || {}).forEach(([k, v]) => {
@@ -1106,7 +1115,14 @@ let _collabRealtimeMembers = new Map(); // user_id -> name, for the "who's packi
                 _syncInProgress = false;
             }
         })
-        .subscribe();
+        .on('presence', { event: 'sync' },  () => _renderPresence(channel))
+        .on('presence', { event: 'join' },  () => _renderPresence(channel))
+        .on('presence', { event: 'leave' }, () => _renderPresence(channel))
+        .subscribe(async status => {
+            if (status === 'SUBSCRIBED') {
+                await channel.track({ user_id: myUserId, name: myName });
+            }
+        });
 })();
 
 /* ── Supabase background sync: pull fresh pack state, reload once if changed ── */

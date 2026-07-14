@@ -573,13 +573,18 @@ const DB = (() => {
   return {
     /* save trip to localStorage + Supabase */
     async saveTrip(tripData) {
+      const uid = _uid();
+      /* RLS only ever lets the owner upsert a trips row (see
+         _tripRow below) — anything passed through here is, by
+         definition, owned by whoever's calling it. */
+      if (uid) tripData = { ...tripData, _ownerId: uid };
       const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
       const idx = trips.findIndex(t => t.id === tripData.id);
       if (idx >= 0) trips[idx] = tripData; else trips.push(tripData);
       localStorage.setItem('pm_trips', JSON.stringify(trips));
       localStorage.setItem('currentTrip', JSON.stringify(tripData));
       _tripsGuard.markDirty();
-      const client = await sb(); const uid = _uid();
+      const client = await sb();
       if (client && uid) {
         client.from('trips').upsert(_tripRow(tripData, uid), { onConflict: 'id' })
           .then(({ error }) => {
@@ -661,7 +666,10 @@ const DB = (() => {
       const { data: rows, error } = await client.from('trips').select('*')
         .order('created_at', { ascending: false });
       if (error) return false;
-      const converted = (rows || []).map(r => r.data);
+      /* _ownerId tags who actually owns this trip row — the cached trip
+         object (r.data) has no way to know this on its own, and the UI
+         needs it to tell an owner's "Delete" from a member's "Leave". */
+      const converted = (rows || []).map(r => ({ ...r.data, _ownerId: r.user_id }));
       localStorage.setItem('pm_trips', JSON.stringify(converted));
       const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
       if (cur) {
@@ -715,7 +723,7 @@ const DB = (() => {
         Auth.logError(error?.message || 'join_trip_by_code failed', { where: 'joinTripByCode', inviteCode });
         return { success: false, error: 'Invalid invite code.' };
       }
-      const trip = data.data || data; // RPC returns the trips row; .data is the full trip object
+      const trip = { ...(data.data || data), _ownerId: data.user_id }; // RPC returns the trips row; .data is the full trip object, user_id is the owner
       const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
       if (!trips.find(t => t.id === trip.id)) {
         trips.push(trip);
@@ -754,6 +762,31 @@ const DB = (() => {
       const { data, error } = await client.rpc('get_discoverable_travelers', { p_limit: limit });
       if (error) { console.error('[DB] getDiscoverableTravelers:', error.message); Auth.logError(error.message, { where: 'getDiscoverableTravelers' }); return []; }
       return data || [];
+    },
+
+    /* owner-only: remove a member from a trip */
+    async removeMember(tripId, userId) {
+      const client = await sb();
+      if (!client) return { success: false, error: 'Connection unavailable.' };
+      const { error } = await client.rpc('remove_trip_member', { p_trip_id: tripId, p_user_id: userId });
+      if (error) {
+        Auth.logError(error.message, { where: 'removeMember', tripId, userId });
+        return { success: false, error: error.message.includes('Only the trip owner') ? 'Only the trip owner can remove someone.' : 'Could not remove this member.' };
+      }
+      return { success: true };
+    },
+
+    /* owner-only: add someone already in the caller's real Packmates
+       list directly to a trip (see get_my_packmates()) */
+    async addPackmateToTrip(tripId, userId) {
+      const client = await sb();
+      if (!client) return { success: false, error: 'Connection unavailable.' };
+      const { error } = await client.rpc('add_packmate_to_trip', { p_trip_id: tripId, p_user_id: userId });
+      if (error) {
+        Auth.logError(error.message, { where: 'addPackmateToTrip', tripId, userId });
+        return { success: false, error: 'Could not add this packmate — you may only add people you\'ve already shared a trip with.' };
+      }
+      return { success: true };
     },
 
     /* save profile to localStorage + Supabase */
