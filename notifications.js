@@ -307,11 +307,50 @@
     } catch(e) {}
   }
 
+  // ── Real social notifications: someone actually joined YOUR trip ───
+  // Runs alongside the bot notifications above rather than replacing
+  // them — this is the one genuinely real-user-triggered social event
+  // in the notification feed. Listens for trip_members inserts and only
+  // reacts to ones on a trip this browser has cached as owned by the
+  // current user (cheap client-side filter; the Realtime subscription
+  // itself can't filter by "trips I own" directly).
+  async function _initRealSocialEvents() {
+    try {
+      if (typeof window._pm_sbLoaded === 'undefined' || typeof Auth === 'undefined') return;
+      const sbClient = await window._pm_sbLoaded;
+      if (!sbClient) return;
+      const session = Auth.getSession();
+      if (!session) return;
+      const myUserId = (() => { try { return JSON.parse(localStorage.getItem('sb-ocwqpeyfxsovkqbmzlgh-auth-token'))?.user?.id; } catch { return null; } })();
+      if (!myUserId) return;
+
+      sbClient.channel('trip-members-notify')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trip_members' }, async payload => {
+          const row = payload.new;
+          if (!row || row.user_id === myUserId) return; // that's just me joining, not news
+          const myTrips = (() => { try { return JSON.parse(localStorage.getItem('pm_trips') || '[]'); } catch { return []; } })();
+          const trip = myTrips.find(t => t.id === row.trip_id);
+          if (!trip) return; // not a trip I have cached — likely not mine
+
+          const members = await Auth.getTripMembers(row.trip_id);
+          const joiner = members.find(m => m.user_id === row.user_id);
+          const name = joiner?.name || 'Someone';
+          const dest = trip.destination || 'your trip';
+          const text = `<strong>${name}</strong> joined your trip to ${dest}! 🎒`;
+          if (push('join', text, dest, `real_join_${row.trip_id}_${row.user_id}`)) {
+            showToast(`${name} joined your trip to ${dest}!`, 'join', dest);
+          }
+        })
+        .subscribe();
+    } catch(e) {}
+  }
+
   // ── Init ─────────────────────────────────────────────────────────
   function init() {
     _injectStyles();
     checkTrip();
     checkBotNotifs();
+    _initRealSocialEvents();
     // Bell badge runs after a tick so DOM is fully rendered
     setTimeout(updateBell, 0);
   }

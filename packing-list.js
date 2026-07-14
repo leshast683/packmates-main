@@ -1055,6 +1055,60 @@ function _broadcastState() {
     try { _collabChannel.postMessage({ type: 'state', items }); } catch(e) {}
 }
 
+// ── Supabase Realtime: live packing collaboration ACROSS devices/users ──
+// BroadcastChannel above only ever worked between tabs of the same
+// browser on the same device — not real collaboration between two
+// different people. This subscribes to postgres_changes on
+// packing_state for this trip, same pattern as index.js's trips-realtime
+// channel, so a packmate checking something off on their own phone
+// actually shows up here live.
+let _collabRealtimeMembers = new Map(); // user_id -> name, for the "who's packing" label
+(async function initRealtimeCollab() {
+    const tid = tripData.id;
+    if (!tid || typeof window._pm_sbLoaded === 'undefined') return;
+    const sbClient = await window._pm_sbLoaded;
+    if (!sbClient) return;
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (!session) return;
+    const myUserId = session.user.id;
+
+    if (typeof Auth !== 'undefined') {
+        Auth.getTripMembers(tid).then(members => {
+            members.forEach(m => _collabRealtimeMembers.set(m.user_id, m.name || 'A packmate'));
+        });
+    }
+
+    sbClient.channel(`packing-state-${tid}`)
+        .on('postgres_changes', {
+            event: '*', schema: 'public', table: 'packing_state',
+            filter: `trip_id=eq.${tid}`,
+        }, payload => {
+            const row = payload.new;
+            if (!row || row.user_id === myUserId) return; // ignore our own write echoing back
+
+            const bar = document.getElementById('collabBar');
+            const lbl = document.getElementById('collabLabel');
+            const who = _collabRealtimeMembers.get(row.user_id) || 'A packmate';
+            if (bar) bar.style.display = 'flex';
+            if (lbl) lbl.textContent = `${who} is packing too`;
+
+            let changed = false;
+            Object.entries(row.item_state || {}).forEach(([k, v]) => {
+                const cur = itemState[k] || {};
+                if (cur.packed !== !!v.packed) {
+                    itemState[k] = { packed: !!v.packed, qty: v.qty || cur.qty || 1 };
+                    changed = true;
+                }
+            });
+            if (changed) {
+                _syncInProgress = true;
+                saveState(); renderList(); updateCounts();
+                _syncInProgress = false;
+            }
+        })
+        .subscribe();
+})();
+
 /* ── Supabase background sync: pull fresh pack state, reload once if changed ── */
 if (!sessionStorage.getItem('pm_pl_synced') && tripData.id) {
     (async () => {

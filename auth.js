@@ -728,6 +728,34 @@ const DB = (() => {
       return { success: true, trip };
     },
 
+    /* real trip-mates (name + avatar only, never full profile PII) —
+       replaces the placeholder dots rendered from a plain traveler count */
+    async getTripMembers(tripId) {
+      const client = await sb();
+      if (!client) return [];
+      const { data, error } = await client.rpc('get_trip_member_profiles', { p_trip_id: tripId });
+      if (error) { console.error('[DB] getTripMembers:', error.message); Auth.logError(error.message, { where: 'getTripMembers' }); return []; }
+      return data || [];
+    },
+
+    /* real packmates: everyone you've actually shared a trip with */
+    async getMyPackmates() {
+      const client = await sb();
+      if (!client) return [];
+      const { data, error } = await client.rpc('get_my_packmates');
+      if (error) { console.error('[DB] getMyPackmates:', error.message); Auth.logError(error.message, { where: 'getMyPackmates' }); return []; }
+      return data || [];
+    },
+
+    /* real, opt-in Community Travelers — only users who turned this on */
+    async getDiscoverableTravelers(limit = 12) {
+      const client = await sb();
+      if (!client) return [];
+      const { data, error } = await client.rpc('get_discoverable_travelers', { p_limit: limit });
+      if (error) { console.error('[DB] getDiscoverableTravelers:', error.message); Auth.logError(error.message, { where: 'getDiscoverableTravelers' }); return []; }
+      return data || [];
+    },
+
     /* save profile to localStorage + Supabase */
     async saveProfile(profileData) {
       const merged = { ...JSON.parse(localStorage.getItem('pm_profile') || '{}'), ...profileData };
@@ -740,7 +768,7 @@ const DB = (() => {
         avatar:   merged.avatar  || null, gender:   merged.gender   || null,
         pd_name:  merged.pdName  || null, pd_email: merged.pdEmail  || null,
         pd_phone: merged.pdPhone || null, notif:    merged.notif    || {},
-        privacy:  merged.privacy || {},
+        privacy:  merged.privacy || {}, discoverable: !!merged.discoverable,
       }, { onConflict: 'id' })
         .then(({ error }) => { if (error) { console.error('[DB] saveProfile:', error.message); Auth.logError(error.message, { where: 'saveProfile' }); } });
     },
@@ -763,6 +791,7 @@ const DB = (() => {
         pdPhone:  data.pd_phone || existing.pdPhone,
         notif:    data.notif    || existing.notif,
         privacy:  data.privacy  || existing.privacy,
+        discoverable: data.discoverable ?? existing.discoverable ?? false,
       }));
       return true;
     },

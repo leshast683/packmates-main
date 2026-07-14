@@ -727,6 +727,7 @@
               <div class="toggle-row"><div class="toggle-label"><strong>Analytics</strong><small>Help improve Packmates</small></div><label class="toggle"><input type="checkbox" id="priv-analytics" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
               <div class="toggle-row"><div class="toggle-label"><strong>Personalisation</strong><small>Tailored suggestions</small></div><label class="toggle"><input type="checkbox" id="priv-personalise" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
               <div class="toggle-row"><div class="toggle-label"><strong>Share Usage Data</strong><small>Anonymous statistics</small></div><label class="toggle"><input type="checkbox" id="priv-share" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong>Show me in Community Travelers</strong><small>Your name and photo become visible to other Packmates users on the Discover page</small></div><label class="toggle"><input type="checkbox" id="priv-discoverable" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
               <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
                 <button class="btn-save" style="flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="Auth.exportData();showToast('Your data is downloading…')">
                   <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -982,10 +983,8 @@
       const joinedStr = new Date(Number(jy), Number(jm)-1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
       document.getElementById('meta-joined').textContent = 'Joined ' + joinedStr;
 
-      // Packmates = users added via Packmate button in Discover
-      const packmatesList = JSON.parse(localStorage.getItem('pm_packmates') || '[]');
-      const packmates = packmatesList.length;
-      document.getElementById('meta-packmates').textContent = packmates + ' Packmate' + (packmates !== 1 ? 's' : '');
+      // Packmates = real people you've shared a trip with (see refreshPackmatesCount)
+      refreshPackmatesCount();
     }
 
     function loadStats() {
@@ -993,8 +992,6 @@
       document.getElementById('stat-trips').textContent = trips.length;
       const destSet = new Set(trips.map(t => t.destination).filter(Boolean));
       document.getElementById('stat-dest').textContent = destSet.size;
-      const packmatesCount = JSON.parse(localStorage.getItem('pm_packmates') || '[]').length;
-      document.getElementById('stat-packmates').textContent = packmatesCount;
       try {
         const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
         if (cur?.id) {
@@ -1406,14 +1403,21 @@
 
     function loadPrivacy() {
       try {
-        const s = _pmProfile().privacy || {};
-        document.getElementById('priv-analytics').checked   = s.analytics   ?? true;
-        document.getElementById('priv-personalise').checked = s.personalise ?? true;
-        document.getElementById('priv-share').checked       = s.share       ?? false;
+        const p = _pmProfile();
+        const s = p.privacy || {};
+        document.getElementById('priv-analytics').checked    = s.analytics    ?? true;
+        document.getElementById('priv-personalise').checked  = s.personalise  ?? true;
+        document.getElementById('priv-share').checked        = s.share        ?? false;
+        document.getElementById('priv-discoverable').checked = p.discoverable ?? false;
       } catch(e) {}
     }
     function savePrivacy() {
-      try { _savePmProfile({ privacy:{ analytics:document.getElementById('priv-analytics').checked, personalise:document.getElementById('priv-personalise').checked, share:document.getElementById('priv-share').checked } }); } catch(e) {}
+      try {
+        _savePmProfile({
+          privacy: { analytics:document.getElementById('priv-analytics').checked, personalise:document.getElementById('priv-personalise').checked, share:document.getElementById('priv-share').checked },
+          discoverable: document.getElementById('priv-discoverable').checked,
+        });
+      } catch(e) {}
       showToast('Privacy settings saved!');
     }
 
@@ -1433,27 +1437,46 @@
     function openLogoutModal()  { document.getElementById('logout-modal').classList.add('active'); }
     function closeLogoutModal() { document.getElementById('logout-modal').classList.remove('active'); }
 
-    function openPackmatesModal() {
-      const list = (() => { try { const r = JSON.parse(localStorage.getItem('pm_packmates')||'[]'); return Array.isArray(r) && r.length && typeof r[0]==='object' ? r : []; } catch { return []; } })();
+    /* Packmates = real people you've actually shared a trip with (see
+       get_my_packmates() — derived from trip_members, not a manually
+       curated list). Cached briefly so opening the modal after the badge
+       already loaded doesn't re-fetch. */
+    let _pmPackmatesCache = null;
+    async function _loadPackmates() {
+      if (_pmPackmatesCache) return _pmPackmatesCache;
+      _pmPackmatesCache = (typeof Auth !== 'undefined') ? await Auth.getMyPackmates() : [];
+      return _pmPackmatesCache;
+    }
+    async function refreshPackmatesCount() {
+      const list = await _loadPackmates();
+      const count = list.length;
+      document.getElementById('stat-packmates').textContent = count;
+      document.getElementById('meta-packmates').textContent = count + ' Packmate' + (count !== 1 ? 's' : '');
+      return count;
+    }
+    const PM_AVATAR_COLORS = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#f7971e,#ffd200)','linear-gradient(135deg,#7cc63e,#4d8225)','linear-gradient(135deg,#e74c3c,#c0392b)','linear-gradient(135deg,#1abc9c,#16a085)'];
+    async function openPackmatesModal() {
+      const list = await _loadPackmates();
       const count = list.length;
       document.getElementById('pmListCount').textContent = count + ' packmate' + (count !== 1 ? 's' : '');
       const body = document.getElementById('pmListBody');
       if (count === 0) {
-        body.innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>No packmates yet.<br>Discover travelers and add them!</div>`;
+        body.innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>No packmates yet.<br>Share a trip with someone to see them here!</div>`;
       } else {
-        body.innerHTML = list.map(p => `
-          <div class="pm-item" data-avatar="${p.avatar}" onclick="openPackmateTravelerModal('${p.avatar}')">
-            <div class="pm-item-avatar" style="background:${p.color}">${p.avatar}</div>
+        body.innerHTML = list.map((p, i) => {
+          const initial = (p.name || '?').trim().charAt(0).toUpperCase();
+          const avatarInner = p.avatar ? `<img src="${p.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : initial;
+          return `
+          <div class="pm-item">
+            <div class="pm-item-avatar" style="background:${PM_AVATAR_COLORS[i % PM_AVATAR_COLORS.length]}">${avatarInner}</div>
             <div class="pm-item-info">
-              <div class="pm-item-name">${p.name}</div>
-              <div class="pm-item-city">${p.city}</div>
+              <div class="pm-item-name">${p.name || 'A packmate'}</div>
               <div class="pm-item-stats">
-                <span class="pm-item-stat"><strong>${p.trips}</strong> trips</span>
-                <span class="pm-item-stat"><strong>${p.countries}</strong> countries</span>
+                <span class="pm-item-stat"><strong>${p.shared_trip_count}</strong> shared trip${p.shared_trip_count !== 1 ? 's' : ''}</span>
               </div>
             </div>
-            <button class="pm-item-remove" onclick="event.stopPropagation();removePackmateFromProfile('${p.avatar}',this)">Remove</button>
-          </div>`).join('');
+          </div>`;
+        }).join('');
       }
       document.getElementById('pmListBackdrop').classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -1461,19 +1484,6 @@
     function closePackmatesModal() {
       document.getElementById('pmListBackdrop').classList.remove('open');
       document.body.style.overflow = '';
-    }
-    function removePackmateFromProfile(avatar, btn) {
-      let list = (() => { try { return JSON.parse(localStorage.getItem('pm_packmates')||'[]'); } catch { return []; } })();
-      list = list.filter(p => p.avatar !== avatar);
-      localStorage.setItem('pm_packmates', JSON.stringify(list));
-      btn.closest('.pm-item').remove();
-      const count = list.length;
-      document.getElementById('pmListCount').textContent = count + ' packmate' + (count !== 1 ? 's' : '');
-      document.getElementById('stat-packmates').textContent = count;
-      document.getElementById('meta-packmates').textContent = count + ' Packmate' + (count !== 1 ? 's' : '');
-      if (count === 0) {
-        document.getElementById('pmListBody').innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>No packmates yet.<br>Discover travelers and add them!</div>`;
-      }
     }
     /* ── Pexels helpers (shared with packmate modal) ── */
     const PM_CACHE_TTL  = 7 * 24 * 60 * 60 * 1000;
@@ -1600,28 +1610,23 @@
           <span class="tp-trip-badge" style="${r.status==='Upcoming'?'background:rgba(79,172,254,.12);color:#2a7eca':r.status==='Active'?'background:rgba(247,151,30,.12);color:#c47a00':''}">${r.status}</span>
         </div>`).join('');
 
+      /* "Packmates" now means real shared-trip history (see
+         Auth.getMyPackmates()) — you can't manually add someone you've
+         never actually traveled with, bot or real. This button is a
+         lightweight "Follow" instead: purely cosmetic, separate from the
+         real packmates count, so browsing Community Travelers still feels
+         interactive without faking a travel connection that never happened. */
       const btn = m.querySelector('.tp-follow-btn');
-      const isPm = (() => { try { return JSON.parse(localStorage.getItem('pm_packmates')||'[]').some(p => p.avatar === t.avatar); } catch { return false; } })();
-      btn.textContent = isPm ? 'Packmates ✓' : 'Packmate';
-      btn.classList.toggle('following', isPm);
+      const isFollowing = (() => { try { return JSON.parse(localStorage.getItem('pm_following')||'[]').includes(t.avatar); } catch { return false; } })();
+      btn.textContent = isFollowing ? 'Following ✓' : 'Follow';
+      btn.classList.toggle('following', isFollowing);
       btn.onclick = () => {
-        let list = (() => { try { return JSON.parse(localStorage.getItem('pm_packmates')||'[]'); } catch { return []; } })();
-        const adding = !list.some(p => p.avatar === t.avatar);
-        if (adding) { list.push({ avatar:t.avatar, name:t.name, city:t.city, color:t.color, trips:t.trips, countries:t.countries }); }
-        else { list = list.filter(p => p.avatar !== t.avatar); }
-        localStorage.setItem('pm_packmates', JSON.stringify(list));
-        const count = list.length;
-        document.getElementById('stat-packmates').textContent = count;
-        document.getElementById('meta-packmates').textContent = count + ' Packmate' + (count !== 1 ? 's' : '');
-        btn.textContent = adding ? 'Packmates ✓' : 'Packmate';
+        let list = (() => { try { return JSON.parse(localStorage.getItem('pm_following')||'[]'); } catch { return []; } })();
+        const adding = !list.includes(t.avatar);
+        list = adding ? [...list, t.avatar] : list.filter(a => a !== t.avatar);
+        localStorage.setItem('pm_following', JSON.stringify(list));
+        btn.textContent = adding ? 'Following ✓' : 'Follow';
         btn.classList.toggle('following', adding);
-        if (!adding) {
-          const pmItem = document.querySelector(`.pm-item[data-avatar="${t.avatar}"]`);
-          if (pmItem) pmItem.remove();
-          document.getElementById('pmListCount').textContent = count + ' packmate' + (count !== 1 ? 's' : '');
-          if (count === 0) document.getElementById('pmListBody').innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>No packmates yet.<br>Discover travelers and add them!</div>`;
-          closePackmateTravelerModal();
-        }
       };
       document.getElementById('pmTpBackdrop').classList.add('open');
       m.scrollTop = 0;

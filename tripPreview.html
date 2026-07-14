@@ -80,6 +80,23 @@
             margin: 0;
         }
 
+        .member-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #fff;
+            border: 2px solid var(--surface, #fff);
+            flex-shrink: 0;
+            object-fit: cover;
+            margin-left: -8px;
+        }
+        .member-avatar:first-child { margin-left: 0; }
+
         .tripDivider {
             height: 4px;
             border: none;
@@ -1376,14 +1393,25 @@
             document.getElementById('tripDatesDisplay').textContent = `${formatDate(fromDate)} – ${formatDate(toDate)}`;
         }
 
-        // ── Traveler avatar circles ──
+        // ── Real trip member avatars (who actually joined, not a headcount) ──
         const AVATAR_COLORS = ['var(--green)','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c','#f39c12','#2980b9'];
         const avatarsEl = document.getElementById('travelerAvatars');
-        for (let i = 0; i < travelers; i++) {
-            const dot = document.createElement('span');
-            dot.style.background = AVATAR_COLORS[i % AVATAR_COLORS.length];
-            dot.textContent = '👤';
-            avatarsEl.insertBefore(dot, avatarsEl.firstChild);
+        if (tripData.id && typeof Auth !== 'undefined') {
+            Auth.getTripMembers(tripData.id).then(members => {
+                members.slice().reverse().forEach((m, i) => {
+                    const dot = document.createElement(m.avatar ? 'img' : 'span');
+                    dot.className = 'member-avatar';
+                    dot.title = m.name || 'Packmate';
+                    if (m.avatar) {
+                        dot.src = m.avatar;
+                        dot.loading = 'lazy';
+                    } else {
+                        dot.style.background = AVATAR_COLORS[i % AVATAR_COLORS.length];
+                        dot.textContent = (m.name || '?').trim().charAt(0).toUpperCase();
+                    }
+                    avatarsEl.insertBefore(dot, avatarsEl.firstChild);
+                });
+            });
         }
         document.getElementById('packingPanelTitle').textContent = destination;
         const metaParts = [];

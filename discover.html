@@ -139,6 +139,13 @@
       text-align:center;
       transition:transform .22s,box-shadow .22s,border-color .22s;
       cursor:pointer;
+      position:relative;
+    }
+    .traveler-real-badge {
+      position:absolute; top:10px; right:10px;
+      background:rgba(95,157,48,.12); color:var(--green,#5f9d30);
+      font-size:.55rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+      padding:2px 7px; border-radius:99px;
     }
     .traveler-card:hover {
       transform:translateY(-4px);
@@ -971,57 +978,74 @@
       },
     ];
 
-    function getPackmates() {
-      try {
-        const raw = JSON.parse(localStorage.getItem('pm_packmates') || '[]');
-        // Migrate old string-array format
-        if (raw.length && typeof raw[0] === 'string') { localStorage.removeItem('pm_packmates'); return []; }
-        return raw;
-      } catch { return []; }
+    /* "Packmate" here is a lightweight, cosmetic "Follow" — separate from
+       the real Packmates list on your profile (which is derived from
+       actual shared trip history, see Auth.getMyPackmates()). You can't
+       genuinely "packmate" with someone, bot or real stranger, you've
+       never traveled with — this just lets browsing Community Travelers
+       stay interactive without faking a travel connection. */
+    function getFollowing() {
+      try { return JSON.parse(localStorage.getItem('pm_following') || '[]'); } catch { return []; }
     }
-    function getPackmateIds() { return new Set(getPackmates().map(p => p.avatar)); }
-    function addPackmate(t) {
-      const list = getPackmates();
-      if (!list.find(p => p.avatar === t.avatar)) {
-        list.push({ avatar:t.avatar, name:t.name, city:t.city, color:t.color, trips:t.trips, countries:t.countries });
-        localStorage.setItem('pm_packmates', JSON.stringify(list));
-      }
+    function getFollowingIds() { return new Set(getFollowing()); }
+    function toggleFollow(avatar) {
+      const set = getFollowingIds();
+      const adding = !set.has(avatar);
+      adding ? set.add(avatar) : set.delete(avatar);
+      localStorage.setItem('pm_following', JSON.stringify([...set]));
+      return adding;
     }
-    function removePackmate(avatar) {
-      const list = getPackmates().filter(p => p.avatar !== avatar);
-      localStorage.setItem('pm_packmates', JSON.stringify(list));
-    }
-    function applyPackmateBtn(btn, active) {
-      btn.textContent = active ? 'Packmates ✓' : 'Packmate';
+    function applyFollowBtn(btn, active) {
+      btn.textContent = active ? 'Following ✓' : 'Follow';
       btn.style.background = active ? 'var(--green)' : '';
       btn.style.color = active ? '#fff' : '';
     }
 
     const travelersStrip = document.getElementById('travelersStrip');
-    TRAVELERS.forEach((t, idx) => {
+    function renderTravelerCard(t, idx) {
       const c = document.createElement('div');
       c.className = 'traveler-card';
-      const isPm = getPackmateIds().has(t.avatar);
+      const isFollowing = getFollowingIds().has(t.avatar);
       c.innerHTML = `
-        <div class="traveler-avatar" style="background:${t.color}">${t.avatar}</div>
-        <div class="traveler-name">${t.name.split(' ')[0]} ${t.name.split(' ')[1][0]}.</div>
+        ${t.isReal ? '<div class="traveler-real-badge" title="Real Packmates member">Member</div>' : ''}
+        <div class="traveler-avatar" style="background:${t.color}">${t.avatarImg ? `<img src="${t.avatarImg}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : t.avatar}</div>
+        <div class="traveler-name">${t.name.split(' ')[0]} ${(t.name.split(' ')[1]||'').charAt(0)}.</div>
         <div class="traveler-city">${t.city}</div>
         <div class="traveler-stats">
           <div class="traveler-stat"><span>${t.trips}</span><span>Trips</span></div>
           <div class="traveler-stat"><span>${t.countries}</span><span>Countries</span></div>
         </div>
-        <button class="follow-btn">${isPm ? 'Packmates ✓' : 'Packmate'}</button>`;
+        <button class="follow-btn">${isFollowing ? 'Following ✓' : 'Follow'}</button>`;
       const cardBtn = c.querySelector('.follow-btn');
-      if (isPm) { cardBtn.style.background = 'var(--green)'; cardBtn.style.color = '#fff'; }
+      if (isFollowing) { cardBtn.style.background = 'var(--green)'; cardBtn.style.color = '#fff'; }
       cardBtn.addEventListener('click', e => {
         e.stopPropagation();
-        const adding = !getPackmateIds().has(t.avatar);
-        adding ? addPackmate(t) : removePackmate(t.avatar);
-        applyPackmateBtn(cardBtn, adding);
+        applyFollowBtn(cardBtn, toggleFollow(t.avatar));
       });
       c.addEventListener('click', () => openTravelerModal(idx));
-      travelersStrip.appendChild(c);
-    });
+      return c;
+    }
+    TRAVELERS.forEach((t, idx) => travelersStrip.appendChild(renderTravelerCard(t, idx)));
+
+    /* Real, opt-in Community Travelers — blended in alongside the bots
+       above once they load (progressive enhancement, doesn't delay the
+       bot cards). No fabricated stats: real users just show 0s/blank
+       for fields only bots have (bio, packing history, etc). */
+    if (typeof Auth !== 'undefined') {
+      Auth.getDiscoverableTravelers().then(real => {
+        real.forEach(r => {
+          const idx = TRAVELERS.length;
+          TRAVELERS.push({
+            name: r.name || 'Packmates member', city: r.handle ? '@' + r.handle : 'Packmates community',
+            trips: 0, countries: 0, followers: 0, avatar: (r.name || '?').trim().charAt(0).toUpperCase(),
+            avatarImg: r.avatar || null, gender: '', color: 'linear-gradient(135deg,#0c7a7a,#7cc63e)',
+            coverDest: '', memberSince: '', level: '', travelStyles: [], bio: '',
+            places: [], activities: [], packingLists: [], recentTrips: [], isReal: true,
+          });
+          travelersStrip.insertBefore(renderTravelerCard(TRAVELERS[idx], idx), travelersStrip.firstChild);
+        });
+      });
+    }
 
     /* ── Traveler Modal ── */
     async function openTravelerModal(idx) {
@@ -1051,10 +1075,10 @@
       m.querySelector('.tp-avatar').textContent = t.avatar;
       m.querySelector('.tp-name').textContent = t.name;
       m.querySelector('.tp-location span').textContent = t.city;
-      m.querySelector('.tp-member').textContent = '📅 Joined ' + t.memberSince;
-      m.querySelector('.tp-gender').textContent = '👤 ' + t.gender;
-      m.querySelector('.tp-level').textContent = t.level;
-      m.querySelector('.tp-bio').textContent = t.bio;
+      m.querySelector('.tp-member').textContent = t.memberSince ? '📅 Joined ' + t.memberSince : '';
+      m.querySelector('.tp-gender').textContent = t.gender ? '👤 ' + t.gender : '';
+      m.querySelector('.tp-level').textContent = t.isReal ? '✓ Real Packmates member' : t.level;
+      m.querySelector('.tp-bio').textContent = t.bio || (t.isReal ? "This traveler hasn't added a bio yet." : '');
       m.querySelector('#tp-stat-trips').textContent = t.trips;
       m.querySelector('#tp-stat-countries').textContent = t.countries;
       m.querySelector('#tp-stat-followers').textContent = (t.followers >= 1000 ? (t.followers/1000).toFixed(1)+'k' : t.followers);
@@ -1073,18 +1097,16 @@
         </div>`).join('');
 
       const btn = m.querySelector('.tp-follow-btn');
-      const isAlreadyPm = getPackmateIds().has(t.avatar);
-      btn.textContent = isAlreadyPm ? 'Packmates ✓' : 'Packmate';
-      btn.classList.toggle('following', isAlreadyPm);
+      const isAlreadyFollowing = getFollowingIds().has(t.avatar);
+      btn.textContent = isAlreadyFollowing ? 'Following ✓' : 'Follow';
+      btn.classList.toggle('following', isAlreadyFollowing);
       btn.onclick = () => {
-        const set = getPackmates();
-        const adding = !getPackmateIds().has(t.avatar);
-        adding ? addPackmate(t) : removePackmate(t.avatar);
-        btn.textContent = adding ? 'Packmates ✓' : 'Packmate';
+        const adding = toggleFollow(t.avatar);
+        btn.textContent = adding ? 'Following ✓' : 'Follow';
         btn.classList.toggle('following', adding);
         // Sync the card button in the strip
         const cards = document.querySelectorAll('.traveler-card');
-        if (cards[idx]) applyPackmateBtn(cards[idx].querySelector('.follow-btn'), adding);
+        if (cards[idx]) applyFollowBtn(cards[idx].querySelector('.follow-btn'), adding);
       };
       document.getElementById('tpBackdrop').classList.add('open');
       document.getElementById('travelerModal').scrollTop = 0;
