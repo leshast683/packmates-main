@@ -12,9 +12,8 @@
   <meta property="og:url" content="https://packmatesai.com/login.html">
   <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="standalone.css">
   <style>
-    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-    html, body { height:100%; }
 
     :root {
       --green: #5f9d30;
@@ -97,11 +96,6 @@
       gap:10px;
       margin-bottom:32px;
     }
-    .logo img {
-      width:34px; height:34px;
-      border-radius:9px;
-      box-shadow:0 4px 16px rgba(0,0,0,0.4);
-    }
     .logo-name {
       font-family:'Blauer Nue', sans-serif;
       font-weight:700;
@@ -138,21 +132,9 @@
       text-align:left;
       display:none;
     }
-    .msg.error   { background:rgba(220,50,50,0.15); border:1px solid rgba(220,50,50,0.25); color:#ff8a8a; display:block; }
-    .msg.success { background:rgba(95,157,48,0.15); border:1px solid rgba(95,157,48,0.25); color:#a0e060; display:block; }
 
     /* Form */
     .form { display:flex; flex-direction:column; }
-
-    .field-label {
-      font-size:0.68rem;
-      font-weight:700;
-      letter-spacing:0.1em;
-      text-transform:uppercase;
-      color:rgba(255,255,255,0.5);
-      margin-bottom:7px;
-      display:block;
-    }
 
     .field {
       position:relative;
@@ -172,12 +154,6 @@
       transition:border-color 0.2s, background 0.2s, box-shadow 0.2s;
       margin:0;
     }
-    .field input::placeholder { color:rgba(255,255,255,0.25); }
-    .field input:focus {
-      border-color:var(--green);
-      background:rgba(255,255,255,0.1);
-      box-shadow:0 0 0 3px rgba(95,157,48,0.15);
-    }
 
     .toggle-pw {
       position:absolute;
@@ -191,7 +167,6 @@
       cursor:pointer;
       transition:color 0.2s;
     }
-    .toggle-pw:hover { color:rgba(255,255,255,0.7); }
 
     /* Remember + Forgot */
     .row-extras {
@@ -235,15 +210,6 @@
       position:relative;
       overflow:hidden;
     }
-    .btn-submit::before {
-      content:'';
-      position:absolute; inset:0;
-      background:linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-      opacity:0;
-      transition:opacity 0.2s;
-    }
-    .btn-submit:hover::before { opacity:1; }
-    .btn-submit:hover { background:#52892a; transform:translateY(-1px); box-shadow:0 8px 20px rgba(95,157,48,0.35); }
     .btn-submit:active { transform:translateY(0); box-shadow:none; }
 
     /* Divider */
