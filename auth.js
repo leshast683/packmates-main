@@ -802,6 +802,7 @@ const DB = (() => {
         pd_name:  merged.pdName  || null, pd_email: merged.pdEmail  || null,
         pd_phone: merged.pdPhone || null, notif:    merged.notif    || {},
         privacy:  merged.privacy || {}, discoverable: !!merged.discoverable,
+        bio:      merged.bio     || null, location: merged.location || null,
       }, { onConflict: 'id' })
         .then(({ error }) => { if (error) { console.error('[DB] saveProfile:', error.message); Auth.logError(error.message, { where: 'saveProfile' }); } });
     },
@@ -825,6 +826,8 @@ const DB = (() => {
         notif:    data.notif    || existing.notif,
         privacy:  data.privacy  || existing.privacy,
         discoverable: data.discoverable ?? existing.discoverable ?? false,
+        bio:      data.bio      || existing.bio,
+        location: data.location || existing.location,
       }));
       return true;
     },

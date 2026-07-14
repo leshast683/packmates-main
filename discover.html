@@ -1029,17 +1029,37 @@
 
     /* Real, opt-in Community Travelers — blended in alongside the bots
        above once they load (progressive enhancement, doesn't delay the
-       bot cards). No fabricated stats: real users just show 0s/blank
-       for fields only bots have (bio, packing history, etc). */
+       bot cards). Only genuinely real fields get shown (bio, location,
+       real join date, a real trip count); anything that would require
+       fabricating data (followers, countries, packing history, travel
+       style, cover photo) stays at 0/blank rather than being made up. */
+    const REAL_MEMBER_COLORS = [
+      'linear-gradient(135deg,#667eea,#764ba2)', 'linear-gradient(135deg,#f093fb,#f5576c)',
+      'linear-gradient(135deg,#4facfe,#00f2fe)', 'linear-gradient(135deg,#f7971e,#ffd200)',
+      'linear-gradient(135deg,#84fab0,#8fd3f4)', 'linear-gradient(135deg,#43e97b,#38f9d7)',
+      'linear-gradient(135deg,#fa709a,#fee140)', 'linear-gradient(135deg,#0c7a7a,#7cc63e)',
+    ];
+    function _colorForUser(userId) {
+      let h = 0;
+      for (let i = 0; i < (userId || '').length; i++) h = (h * 31 + userId.charCodeAt(i)) >>> 0;
+      return REAL_MEMBER_COLORS[h % REAL_MEMBER_COLORS.length];
+    }
+    function _fmtMemberSince(iso) {
+      if (!iso) return '';
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    }
     if (typeof Auth !== 'undefined') {
       Auth.getDiscoverableTravelers().then(real => {
         real.forEach(r => {
           const idx = TRAVELERS.length;
           TRAVELERS.push({
-            name: r.name || 'Packmates member', city: r.handle ? '@' + r.handle : 'Packmates community',
-            trips: 0, countries: 0, followers: 0, avatar: (r.name || '?').trim().charAt(0).toUpperCase(),
-            avatarImg: r.avatar || null, gender: '', color: 'linear-gradient(135deg,#0c7a7a,#7cc63e)',
-            coverDest: '', memberSince: '', level: '', travelStyles: [], bio: '',
+            name: r.name || 'Packmates member',
+            city: r.location || (r.handle ? '@' + r.handle : 'Packmates community'),
+            trips: r.trip_count || 0, countries: 0, followers: 0,
+            avatar: (r.name || '?').trim().charAt(0).toUpperCase(),
+            avatarImg: r.avatar || null, gender: '', color: _colorForUser(r.user_id),
+            coverDest: '', memberSince: _fmtMemberSince(r.member_since), level: '', travelStyles: [],
+            bio: r.bio || '',
             places: [], activities: [], packingLists: [], recentTrips: [], isReal: true,
           });
           travelersStrip.insertBefore(renderTravelerCard(TRAVELERS[idx], idx), travelersStrip.firstChild);
