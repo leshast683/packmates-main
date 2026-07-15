@@ -558,7 +558,7 @@
       }
 
       /* Start with local video immediately so card is never empty */
-      playVideo('img/hero-forest-compressed.mp4');
+      playVideo('img/hero-ready-to-start.mp4');
 
       // Rotate through cached pool immediately
       if (localStorage.getItem('pm_tip_video')) { localStorage.removeItem('pm_tip_video'); localStorage.removeItem('pm_tip_idx'); }
