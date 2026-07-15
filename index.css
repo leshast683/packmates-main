@@ -1628,7 +1628,7 @@
       .bc-progress-pct { font-size: 2rem; }
       .bc-progress-sub { font-size: 0.66rem; margin-top: 0; }
       .bc-progress-inner { gap: 10px; margin-bottom: 6px; }
-      .bc-progress-inner svg { width: 40px !important; height: 40px !important; }
+      .bc-progress-inner svg { width: 58px !important; height: 58px !important; }
       .bc-progress-bar-track { height: 2px; }
       .bc-hero-dest { font-size: 1.6rem; }
       .bc-hero-right { display: none; }
