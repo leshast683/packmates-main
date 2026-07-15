@@ -571,7 +571,11 @@ const DB = (() => {
   }
 
   return {
-    /* save trip to localStorage + Supabase */
+    /* save trip to localStorage + Supabase. Returns { success, error } —
+       the server write is genuinely awaited (not fire-and-forget) so a
+       real failure (network, RLS, a validation constraint) can actually
+       be surfaced to the user instead of silently vanishing while the
+       UI proceeds as if it worked. */
     async saveTrip(tripData) {
       const uid = _uid();
       /* RLS only ever lets the owner upsert a trips row (see
@@ -585,13 +589,15 @@ const DB = (() => {
       localStorage.setItem('currentTrip', JSON.stringify(tripData));
       _tripsGuard.markDirty();
       const client = await sb();
-      if (client && uid) {
-        client.from('trips').upsert(_tripRow(tripData, uid), { onConflict: 'id' })
-          .then(({ error }) => {
-            if (error) { console.error('[DB] saveTrip:', error.message); Auth.logError(error.message, { where: 'saveTrip' }); }
-            else { _tripsGuard.clear(); }
-          });
+      if (!client || !uid) return { success: true };
+      const { error } = await client.from('trips').upsert(_tripRow(tripData, uid), { onConflict: 'id' });
+      if (error) {
+        console.error('[DB] saveTrip:', error.message);
+        Auth.logError(error.message, { where: 'saveTrip' });
+        return { success: false, error: error.message };
       }
+      _tripsGuard.clear();
+      return { success: true };
     },
 
     /* delete trip from localStorage + Supabase */
