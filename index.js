@@ -560,6 +560,7 @@
         'img/hero-safari-zebras.mp4',
         'img/hero-rome-colosseum.mp4',
         'img/hero-turquoise-reef.mp4',
+        'img/hero-nyc-bridge.mp4',
       ];
       const FALLBACK_VIDEO = 'img/hero-forest-compressed.mp4';
 
