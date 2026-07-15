@@ -1012,31 +1012,6 @@
 </head>
 
 <body>
-    <script>
-      // TEMPORARY diagnostic — catches any uncaught error/rejection on this
-      // page and shows it in an impossible-to-miss banner, since a single
-      // early runtime error can silently stop the rest of a script block
-      // from running (itinerary, weather, AI card, etc. all live later in
-      // the same block). Remove once diagnosed.
-      window.__pmErrors = [];
-      function _pmShowErrorBanner(msg) {
-        window.__pmErrors.push(msg);
-        let el = document.getElementById('pmErrorBanner');
-        if (!el) {
-          el = document.createElement('div');
-          el.id = 'pmErrorBanner';
-          el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#c0392b;color:#fff;padding:12px 16px;font-family:monospace;font-size:12px;white-space:pre-wrap;max-height:40vh;overflow:auto;';
-          document.body.prepend(el);
-        }
-        el.textContent = window.__pmErrors.join('\n---\n');
-      }
-      window.addEventListener('error', (e) => {
-        _pmShowErrorBanner('JS ERROR: ' + e.message + '\n  at ' + e.filename + ':' + e.lineno + ':' + e.colno);
-      });
-      window.addEventListener('unhandledrejection', (e) => {
-        _pmShowErrorBanner('UNHANDLED PROMISE REJECTION: ' + (e.reason?.message || e.reason));
-      });
-    </script>
     <nav class="sidebar" data-page="tripPreview.html"></nav>
     <script src="nav.js"></script>
 
@@ -1494,7 +1469,7 @@
         if (tripData.id && typeof Auth !== 'undefined') {
             const myId = Auth.getSession()?.userId;
             _isTripOwner = !tripData._ownerId || tripData._ownerId === myId;
-            Auth.getTripMembers(tripData.id).then(members => {
+            DB.getTripMembers(tripData.id).then(members => {
                 members.slice().reverse().forEach((m, i) => {
                     const dot = document.createElement(m.avatar ? 'img' : 'span');
                     dot.className = 'member-avatar';
@@ -1578,16 +1553,16 @@
 
         async function removeMemberFromTrip(userId, name) {
             if (!confirm(`Remove ${name} from this trip? They'll lose access to it and their packing progress.`)) return;
-            const result = await Auth.removeMember(tripData.id, userId);
+            const result = await DB.removeMember(tripData.id, userId);
             if (!result.success) { alert(result.error); return; }
-            const members = await Auth.getTripMembers(tripData.id);
+            const members = await DB.getTripMembers(tripData.id);
             renderMembersPanel(members, Auth.getSession()?.userId);
         }
 
         async function refreshAddPackmateList() {
             const [packmates, members] = await Promise.all([
-                Auth.getMyPackmates(),
-                Auth.getTripMembers(tripData.id),
+                DB.getMyPackmates(),
+                DB.getTripMembers(tripData.id),
             ]);
             const memberIds = new Set(members.map(m => m.user_id));
             const available = packmates.filter(p => !memberIds.has(p.user_id));
@@ -1611,7 +1586,7 @@
 
         async function addPackmateToThisTrip(userId, btn) {
             btn.disabled = true; btn.textContent = 'Adding…';
-            const result = await Auth.addPackmateToTrip(tripData.id, userId);
+            const result = await DB.addPackmateToTrip(tripData.id, userId);
             if (!result.success) { alert(result.error); btn.disabled = false; btn.textContent = 'Add'; return; }
             const members = await refreshAddPackmateList();
             renderMembersPanel(members, Auth.getSession()?.userId);
@@ -1936,45 +1911,30 @@
                 </div>`;
             };
             if (cached) { renderBrief(cached); return; }
-            const _dbg = (msg) => { // temporary visible diagnostic — remove after debugging
-                const el = document.getElementById('bygDebug') || (() => {
-                    const d = document.createElement('div');
-                    d.id = 'bygDebug';
-                    d.style.cssText = 'grid-column:1/-1;padding:10px;background:#fff3cd;border:1px solid #e0a800;border-radius:8px;font-size:11px;font-family:monospace;white-space:pre-wrap;color:#000;';
-                    bygBody.prepend(d);
-                    return d;
-                })();
-                el.textContent += msg + '\n';
-            };
-            _dbg('DEBUG: fetchTripBrief starting, destination=' + destination);
             /* This card can otherwise sit on its loading skeleton forever if
                the request hangs (cold start, upstream AI latency, a dropped
                connection) — cap it so a genuine stall resolves into the same
                graceful "hide the card" fallback as any other failure. */
             const controller = new AbortController();
-            const timeout = setTimeout(() => { _dbg('DEBUG: 15s timeout fired, aborting'); controller.abort(); }, 15000);
+            const timeout = setTimeout(() => controller.abort(), 15000);
             try {
                 const country = tripData.country || destination;
                 const dates   = (fromDate && toDate) ? `${fromDate} to ${toDate}` : '';
-                const tok = await Auth.getTokenAsync();
-                _dbg('DEBUG: got token? ' + !!tok + ', calling fetch...');
                 const r = await fetch('/api/destination-brief', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${tok}`
+                        'Authorization': `Bearer ${await Auth.getTokenAsync()}`
                     },
                     body: JSON.stringify({ destination, country, dates }),
                     signal: controller.signal,
                 });
-                _dbg('DEBUG: fetch returned, status=' + r.status);
                 const brief = await r.json();
-                _dbg('DEBUG: parsed JSON: ' + JSON.stringify(brief).slice(0, 300));
                 if (brief && !brief.error) {
                     try { localStorage.setItem(cacheKey, JSON.stringify({ data: brief, ts: Date.now() })); } catch {}
                     renderBrief(brief);
-                } else { _dbg('DEBUG: brief had error, hiding card would happen here (disabled for debug)'); }
-            } catch (e) { _dbg('DEBUG: CAUGHT EXCEPTION: ' + e.name + ': ' + e.message); }
+                } else { bygCard.style.display = 'none'; }
+            } catch { bygCard.style.display = 'none'; }
             finally { clearTimeout(timeout); }
         })();
 

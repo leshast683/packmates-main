@@ -1421,7 +1421,7 @@
     let _pmPackmatesCache = null;
     async function _loadPackmates() {
       if (_pmPackmatesCache) return _pmPackmatesCache;
-      _pmPackmatesCache = (typeof Auth !== 'undefined') ? await Auth.getMyPackmates() : [];
+      _pmPackmatesCache = (typeof DB !== 'undefined') ? await DB.getMyPackmates() : [];
       return _pmPackmatesCache;
     }
     async function refreshPackmatesCount() {
@@ -1589,7 +1589,7 @@
         </div>`).join('');
 
       /* "Packmates" now means real shared-trip history (see
-         Auth.getMyPackmates()) — you can't manually add someone you've
+         DB.getMyPackmates()) — you can't manually add someone you've
          never actually traveled with, bot or real. This button is a
          lightweight "Follow" instead: purely cosmetic, separate from the
          real packmates count, so browsing Community Travelers still feels

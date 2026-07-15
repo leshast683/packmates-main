@@ -880,7 +880,7 @@
 
     /* "Packmate" here is a lightweight, cosmetic "Follow" — separate from
        the real Packmates list on your profile (which is derived from
-       actual shared trip history, see Auth.getMyPackmates()). You can't
+       actual shared trip history, see DB.getMyPackmates()). You can't
        genuinely "packmate" with someone, bot or real stranger, you've
        never traveled with — this just lets browsing Community Travelers
        stay interactive without faking a travel connection. */
@@ -948,8 +948,8 @@
       if (!iso) return '';
       return new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
     }
-    if (typeof Auth !== 'undefined') {
-      Auth.getDiscoverableTravelers().then(real => {
+    if (typeof DB !== 'undefined') {
+      DB.getDiscoverableTravelers().then(real => {
         real.forEach(r => {
           const idx = TRAVELERS.length;
           TRAVELERS.push({

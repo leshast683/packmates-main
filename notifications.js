@@ -339,7 +339,7 @@
             // where added_by === myUserId and there's nothing to announce.
             if (!row.added_by || row.added_by === myUserId) return;
             const [members, tripRes] = await Promise.all([
-              Auth.getTripMembers(row.trip_id),
+              DB.getTripMembers(row.trip_id),
               sbClient.from('trips').select('data').eq('id', row.trip_id).maybeSingle(),
             ]);
             const adder = members.find(m => m.user_id === row.added_by);
@@ -356,7 +356,7 @@
           const trip = myTrips.find(t => t.id === row.trip_id);
           if (!trip) return; // not a trip I have cached — likely not mine
 
-          const members = await Auth.getTripMembers(row.trip_id);
+          const members = await DB.getTripMembers(row.trip_id);
           const joiner = members.find(m => m.user_id === row.user_id);
           const name = joiner?.name || 'Someone';
           const dest = trip.destination || 'your trip';
@@ -420,7 +420,7 @@
 
       for (const row of (added || [])) {
         const [members, tripRes] = await Promise.all([
-          Auth.getTripMembers(row.trip_id),
+          DB.getTripMembers(row.trip_id),
           sbClient.from('trips').select('data').eq('id', row.trip_id).maybeSingle(),
         ]);
         const adder = members.find(m => m.user_id === row.added_by);
