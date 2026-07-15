@@ -1637,3 +1637,39 @@
         animation: none !important;
       }
     }
+
+    /* ═══════════════════════════════════════════════════
+       CONFIRM MODAL (delete / leave trip)
+    ═══════════════════════════════════════════════════ */
+    .confirm-backdrop {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(10,18,30,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .2s ease;
+    }
+    .confirm-backdrop.open { opacity: 1; pointer-events: auto; }
+    .confirm-modal {
+      background: var(--surface, #fff); border-radius: 20px; width: 100%; max-width: 380px;
+      padding: 28px 26px 24px; text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,.28);
+      transform: translateY(14px) scale(.97); transition: transform .22s cubic-bezier(.22,.97,.42,1.12);
+    }
+    .confirm-backdrop.open .confirm-modal { transform: none; }
+    .confirm-icon {
+      width: 52px; height: 52px; margin: 0 auto 16px;
+      border-radius: 50%; background: rgba(192,57,43,.1); color: #c0392b;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .confirm-title { font-size: 1.05rem; font-weight: 800; color: var(--text-1, #0a1f2e); margin-bottom: 8px; }
+    .confirm-message { font-size: .84rem; line-height: 1.55; color: var(--text-3, #5a6b78); margin-bottom: 22px; }
+    .confirm-actions { display: flex; gap: 10px; }
+    .confirm-btn {
+      flex: 1; padding: 12px; border-radius: 12px; border: none; cursor: pointer;
+      font-family: 'Montserrat', sans-serif; font-size: .82rem; font-weight: 700;
+      transition: background .15s, transform .1s;
+    }
+    .confirm-btn:active { transform: scale(.97); }
+    .confirm-btn--ghost { background: var(--bg, #eef1f5); color: var(--text-2, #38495a); }
+    .confirm-btn--ghost:hover { background: #e2e7ed; }
+    .confirm-btn--danger { background: #c0392b; color: #fff; }
+    .confirm-btn--danger:hover { background: #a5311f; }

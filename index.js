@@ -1,6 +1,42 @@
     /* ── Auth guard ── */
     Auth.requireAuth('welcome.html');
 
+    /* ── Custom confirm modal — replaces the plain OS confirm() dialog with
+       one that matches the app's own design. A DOM-based modal like this
+       has no "user activation" lifetime the way window.confirm() does, so
+       it's also just more robust than the native dialog, not only nicer
+       looking. */
+    function showConfirmModal({ title, message, okLabel = 'Delete', danger = true }) {
+      return new Promise((resolve) => {
+        const backdrop = document.getElementById('confirmBackdrop');
+        document.getElementById('confirmTitle').textContent = title;
+        document.getElementById('confirmMessage').textContent = message;
+        const okBtn = document.getElementById('confirmOkBtn');
+        okBtn.textContent = okLabel;
+        okBtn.classList.toggle('confirm-btn--danger', danger);
+        const cancelBtn = document.getElementById('confirmCancelBtn');
+
+        const cleanup = (result) => {
+          backdrop.classList.remove('open');
+          okBtn.removeEventListener('click', onOk);
+          cancelBtn.removeEventListener('click', onCancel);
+          backdrop.removeEventListener('click', onBackdropClick);
+          document.removeEventListener('keydown', onKeydown);
+          resolve(result);
+        };
+        const onOk = () => cleanup(true);
+        const onCancel = () => cleanup(false);
+        const onBackdropClick = (e) => { if (e.target === backdrop) cleanup(false); };
+        const onKeydown = (e) => { if (e.key === 'Escape') cleanup(false); };
+
+        okBtn.addEventListener('click', onOk);
+        cancelBtn.addEventListener('click', onCancel);
+        backdrop.addEventListener('click', onBackdropClick);
+        document.addEventListener('keydown', onKeydown);
+        backdrop.classList.add('open');
+      });
+    }
+
     /* ── Greeting ── */
     const session = Auth.getSession();
     const rawName = session?.name?.split(' ')[0] || 'Traveler';
@@ -106,18 +142,27 @@
          might just be your own trip. */
       const isOwner = !target._ownerId || target._ownerId === myId;
 
-      /* confirm() must fire synchronously off the click, with no `await`
-         in front of it — Safari silently drops a confirm()/alert() call
-         once the triggering click's user-activation window has expired
-         (which an await does, even a fast one), and there's no visible
-         error when that happens: the button just looks like it does
-         nothing. This used to fetch trip member count first to mention
-         "N other packmates will lose access" in the message, which is
-         exactly the kind of pre-confirm await that broke it. */
-      const warning = isOwner
+      /* Unlike window.confirm(), this custom modal has no "user activation"
+         expiry — Safari only silently drops the *native* dialog after an
+         await, so it's safe to do the async member-count lookup first here
+         and get the richer "N other packmates will lose access" message
+         back. */
+      let warning = isOwner
         ? `Delete trip to ${target.destination}? This cannot be undone.`
         : `Leave trip to ${target.destination}? You'll no longer see it or your packing progress — the trip itself stays intact for everyone else.`;
-      if (!confirm(warning)) return;
+      if (isOwner) {
+        const members = await DB.getTripMembers(tripId);
+        const othersCount = members.filter(m => m.user_id !== myId).length;
+        if (othersCount > 0) {
+          warning = `Delete trip to ${target.destination}? ${othersCount} other packmate${othersCount !== 1 ? 's' : ''} will lose access to it too. This cannot be undone.`;
+        }
+      }
+      const confirmed = await showConfirmModal({
+        title: isOwner ? 'Delete trip?' : 'Leave trip?',
+        message: warning,
+        okLabel: isOwner ? 'Delete' : 'Leave',
+      });
+      if (!confirmed) return;
 
       const result = await DB.deleteTrip(tripId);
       if (!result.success) {
