@@ -97,7 +97,6 @@
     async function deleteTrip(tripId) {
       const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
       const target = trips.find(t => t.id === tripId);
-      alert('DEBUG 1: target found? ' + !!target + (target ? (' dest=' + target.destination) : '')); // temporary diagnostic
       if (!target) return;
 
       const myId = Auth.getSession()?.userId;
@@ -106,16 +105,9 @@
          showing an unnecessarily scary "you can't undo this" for what
          might just be your own trip. */
       const isOwner = !target._ownerId || target._ownerId === myId;
-      alert('DEBUG 2: myId=' + myId + ' _ownerId=' + target._ownerId + ' isOwner=' + isOwner); // temporary diagnostic
 
       if (isOwner) {
-        let members = [];
-        try {
-          members = await Auth.getTripMembers(tripId);
-          alert('DEBUG 3: getTripMembers succeeded, count=' + members.length); // temporary diagnostic
-        } catch (e) {
-          alert('DEBUG 3-ERROR: getTripMembers threw: ' + e.message); // temporary diagnostic
-        }
+        const members = await Auth.getTripMembers(tripId);
         const othersCount = members.filter(m => m.user_id !== myId).length;
         const warning = othersCount > 0
           ? `Delete trip to ${target.destination}? ${othersCount} other packmate${othersCount !== 1 ? 's' : ''} will lose access to it too. This cannot be undone.`
@@ -125,9 +117,7 @@
         if (!confirm(`Leave trip to ${target.destination}? You'll no longer see it or your packing progress — the trip itself stays intact for everyone else.`)) return;
       }
 
-      alert('DEBUG 4: about to call DB.deleteTrip'); // temporary diagnostic
       const result = await DB.deleteTrip(tripId);
-      alert('DEBUG 5: DB.deleteTrip returned, success=' + result.success + ' error=' + result.error); // temporary diagnostic
       if (!result.success) {
         alert('Could not delete this trip. Please check your connection and try again.');
         return;
