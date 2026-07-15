@@ -1012,6 +1012,31 @@
 </head>
 
 <body>
+    <script>
+      // TEMPORARY diagnostic — catches any uncaught error/rejection on this
+      // page and shows it in an impossible-to-miss banner, since a single
+      // early runtime error can silently stop the rest of a script block
+      // from running (itinerary, weather, AI card, etc. all live later in
+      // the same block). Remove once diagnosed.
+      window.__pmErrors = [];
+      function _pmShowErrorBanner(msg) {
+        window.__pmErrors.push(msg);
+        let el = document.getElementById('pmErrorBanner');
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'pmErrorBanner';
+          el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#c0392b;color:#fff;padding:12px 16px;font-family:monospace;font-size:12px;white-space:pre-wrap;max-height:40vh;overflow:auto;';
+          document.body.prepend(el);
+        }
+        el.textContent = window.__pmErrors.join('\n---\n');
+      }
+      window.addEventListener('error', (e) => {
+        _pmShowErrorBanner('JS ERROR: ' + e.message + '\n  at ' + e.filename + ':' + e.lineno + ':' + e.colno);
+      });
+      window.addEventListener('unhandledrejection', (e) => {
+        _pmShowErrorBanner('UNHANDLED PROMISE REJECTION: ' + (e.reason?.message || e.reason));
+      });
+    </script>
     <nav class="sidebar" data-page="tripPreview.html"></nav>
     <script src="nav.js"></script>
 
