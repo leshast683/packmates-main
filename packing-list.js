@@ -903,6 +903,20 @@ function _buildShareUrl() {
 // Share modal
 const shareModal    = document.getElementById('shareModal');
 const shareUrlInput = document.getElementById('shareUrl');
+const nativeShareBtn = document.getElementById('nativeShareBtn');
+if (nativeShareBtn && navigator.share) {
+    // Only show this button where the OS actually has a share sheet to
+    // offer (AirDrop, Messages, WhatsApp, Telegram, Mail, etc.) — most
+    // desktop browsers besides Safari have no navigator.share at all, so
+    // "Copy Link" stays the only option there rather than showing a
+    // button that would just silently do nothing.
+    nativeShareBtn.style.display = 'flex';
+    nativeShareBtn.addEventListener('click', async () => {
+        try {
+            await navigator.share({ title: `${tripData.destination || 'Trip'} Packing List`, text: `Pack together for ${tripData.destination || 'this trip'} on Packmates!`, url: shareUrlInput.value });
+        } catch {} // user cancelled — not an error
+    });
+}
 document.getElementById('openShareModal').addEventListener('click', () => {
     const url = _buildShareUrl();
     shareUrlInput.value = url;

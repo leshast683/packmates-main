@@ -1025,7 +1025,7 @@
                         <button class="banner-icon-btn" onclick="location.href='index.html'" aria-label="Back to home">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         </button>
-                        <button class="banner-share-pill" onclick="copyInviteCode()">Share</button>
+                        <button class="banner-share-pill" onclick="shareInvite()">Share</button>
                     </div>
                     <div class="banner-title-area">
                         <div class="banner-city-row">
@@ -2072,6 +2072,24 @@
             });
         }
         window.copyInviteCode = copyInviteCode;
+
+        // ── "Share" pill: the OS-native share sheet (AirDrop, Messages,
+        // WhatsApp, Telegram, Mail, or anything else installed that
+        // registers as a share target) rather than a plain clipboard copy —
+        // that's what "Copy Link" is for, right next to this. Falls back to
+        // the same clipboard-copy behavior on browsers without Web Share
+        // API support (most desktop browsers besides Safari).
+        async function shareInvite() {
+            const url = window._tripShareUrl || document.getElementById('inviteCodeDisplay').textContent;
+            const dest = document.getElementById('tripTitleDisplay')?.textContent || 'my trip';
+            if (navigator.share) {
+                try { await navigator.share({ title: `Join my trip to ${dest}`, text: `Pack together for ${dest} on Packmates!`, url }); }
+                catch {} // user cancelled the share sheet — not an error
+                return;
+            }
+            copyInviteCode();
+        }
+        window.shareInvite = shareInvite;
 
         /* Background sync: pull fresh trip + pack state from Supabase */
         if (!sessionStorage.getItem('pm_tp_synced')) {
