@@ -545,16 +545,21 @@
       const videoEl = document.getElementById('tipVideo');
       if (!videoEl) return;
 
-      function playVideo(url) {
+      function playVideo(url, isFallback) {
+        if (videoEl._fbTimer) clearTimeout(videoEl._fbTimer); // avoid stacking timers across calls
         videoEl.src = url;
         videoEl.load();
         videoEl.play().catch(() => {});
         videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; };
         videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; };
-        /* If nothing plays within 4 s, fall back to local video */
-        videoEl._fbTimer = setTimeout(() => {
-          if (parseFloat(videoEl.style.opacity) < 1) playVideo('img/hero-forest-compressed.mp4');
-        }, 4000);
+        /* If nothing plays within 8s, fall back to the known-small local
+           video — 8s (not 4s) gives a real video file a fair chance to
+           load on an average connection before giving up on it. */
+        if (!isFallback) {
+          videoEl._fbTimer = setTimeout(() => {
+            if (parseFloat(videoEl.style.opacity) < 1) playVideo('img/hero-forest-compressed.mp4', true);
+          }, 8000);
+        }
       }
 
       /* Start with local video immediately so card is never empty */
