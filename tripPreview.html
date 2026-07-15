@@ -1911,30 +1911,45 @@
                 </div>`;
             };
             if (cached) { renderBrief(cached); return; }
+            const _dbg = (msg) => { // temporary visible diagnostic — remove after debugging
+                const el = document.getElementById('bygDebug') || (() => {
+                    const d = document.createElement('div');
+                    d.id = 'bygDebug';
+                    d.style.cssText = 'grid-column:1/-1;padding:10px;background:#fff3cd;border:1px solid #e0a800;border-radius:8px;font-size:11px;font-family:monospace;white-space:pre-wrap;color:#000;';
+                    bygBody.prepend(d);
+                    return d;
+                })();
+                el.textContent += msg + '\n';
+            };
+            _dbg('DEBUG: fetchTripBrief starting, destination=' + destination);
             /* This card can otherwise sit on its loading skeleton forever if
                the request hangs (cold start, upstream AI latency, a dropped
                connection) — cap it so a genuine stall resolves into the same
                graceful "hide the card" fallback as any other failure. */
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 15000);
+            const timeout = setTimeout(() => { _dbg('DEBUG: 15s timeout fired, aborting'); controller.abort(); }, 15000);
             try {
                 const country = tripData.country || destination;
                 const dates   = (fromDate && toDate) ? `${fromDate} to ${toDate}` : '';
+                const tok = await Auth.getTokenAsync();
+                _dbg('DEBUG: got token? ' + !!tok + ', calling fetch...');
                 const r = await fetch('/api/destination-brief', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${await Auth.getTokenAsync()}`
+                        'Authorization': `Bearer ${tok}`
                     },
                     body: JSON.stringify({ destination, country, dates }),
                     signal: controller.signal,
                 });
+                _dbg('DEBUG: fetch returned, status=' + r.status);
                 const brief = await r.json();
+                _dbg('DEBUG: parsed JSON: ' + JSON.stringify(brief).slice(0, 300));
                 if (brief && !brief.error) {
                     try { localStorage.setItem(cacheKey, JSON.stringify({ data: brief, ts: Date.now() })); } catch {}
                     renderBrief(brief);
-                } else { bygCard.style.display = 'none'; }
-            } catch { bygCard.style.display = 'none'; }
+                } else { _dbg('DEBUG: brief had error, hiding card would happen here (disabled for debug)'); }
+            } catch (e) { _dbg('DEBUG: CAUGHT EXCEPTION: ' + e.name + ': ' + e.message); }
             finally { clearTimeout(timeout); }
         })();
 
