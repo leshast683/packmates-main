@@ -3,6 +3,7 @@ Disallow: /
 Allow: /welcome.html
 Allow: /login.html
 Allow: /signup.html
+Allow: /packing-guide.html
 Allow: /img/
 Allow: /*.css$
 Allow: /*.js$
