@@ -95,6 +95,7 @@
       }
     }
     async function deleteTrip(tripId) {
+      alert('DEBUG: deleteTrip called with id=' + tripId); // temporary diagnostic — remove after debugging
       const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
       const target = trips.find(t => t.id === tripId);
       if (!target) return;
