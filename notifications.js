@@ -215,7 +215,12 @@
       const packRaw = JSON.parse(localStorage.getItem(`pm_pack_${id}`) || '{}');
       const items   = Object.values(packRaw.itemState || {});
       const packed  = items.filter(v => v?.packed).length;
-      const total   = items.length;
+      /* itemState only ever contains items someone has actually clicked,
+         not every suggested item — using its own length as the total
+         means checking even 1 of 40 suggested items reads as "100%
+         packed". packing-list.js/tripPreview.html persist the real
+         suggested count as totalSuggested for exactly this reason. */
+      const total   = packRaw.totalSuggested || items.length;
       const pct     = total > 0 ? Math.round(packed / total * 100) : -1;
 
       const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
@@ -260,6 +265,27 @@
       } else if (!newNotif && pct >= 50 && pct < 100 && days > 0) {
         if (push('packing', `Halfway there! You've packed 50% for ${dest}. Keep it up!`, dest, `${id}_50pct`))
           newNotif = { type: 'packing', text: `Halfway there! You've packed 50% for ${dest}.` };
+      }
+
+      // ── General "still not packed" reminder — fires roughly every 1-2
+      // days regardless of how far out the trip is (the countdown/nudge
+      // checks above are more specific and take priority; this is the
+      // catch-all for everything in between). Gated by a real elapsed-
+      // time check rather than a per-day dedup key, since "once a day"
+      // and "every day or two" aren't the same cadence. ──
+      if (!newNotif && days > 0 && pct >= 0 && pct < 100) {
+        const lastKey = `pm_packreminder_${id}`;
+        const lastShown = parseInt(localStorage.getItem(lastKey) || '0', 10);
+        const hoursSince = (now - lastShown) / 3600000;
+        if (hoursSince >= 36) {
+          const msg = pct === 0
+            ? `You haven't started packing for ${dest} yet — ${days} day${days !== 1 ? 's' : ''} to go.`
+            : `Still ${100 - pct}% left to pack for ${dest}. Pick up where you left off!`;
+          if (push('reminder', msg, dest, `${id}_stillpacking_${now}`)) {
+            newNotif = { type: 'reminder', text: msg };
+            localStorage.setItem(lastKey, String(now));
+          }
+        }
       }
 
       if (newNotif) showToast(newNotif.text, newNotif.type, '');

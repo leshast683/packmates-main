@@ -1228,8 +1228,13 @@
 
         function _savePackState() {
             if (!_PACK_KEY) return;
-            localStorage.setItem(_PACK_KEY, JSON.stringify({ itemState, dismissed: [...dismissed], customItems }));
-            if (typeof DB !== 'undefined') DB.savePackState(tripData.id, { itemState, dismissed: [...dismissed], customItems });
+            /* totalSuggested lets other pages (dashboard widget,
+               notifications) show accurate packing progress without
+               needing the full suggestion engine loaded themselves. */
+            const totalSuggested = getSuggestedItemKeys({ profile, userGender, dismissed, customItems }).length;
+            const state = { itemState, dismissed: [...dismissed], customItems, totalSuggested };
+            localStorage.setItem(_PACK_KEY, JSON.stringify(state));
+            if (typeof DB !== 'undefined') DB.savePackState(tripData.id, state);
         }
 
         // getItemKey provided by lib/packing-items.js
@@ -1263,7 +1268,7 @@
         }
 
         // ── Header ──
-        document.getElementById('tripTitleDisplay').textContent = destination;
+        document.getElementById('tripTitleDisplay').textContent = tripData.name || destination;
         if (fromDate && toDate) {
             document.getElementById('tripDatesDisplay').textContent = `${formatDate(fromDate)} – ${formatDate(toDate)}`;
         }

@@ -1618,6 +1618,12 @@
       .bc-hero { grid-column: 1; min-height: 240px; }
       .bc-countdown, .bc-progress, .bc-weather, .bc-tip, .bc-actions { grid-column: 1; }
       .bc-tip { grid-column: 1; min-height: 180px; }
+      /* Stacking to a single column left this card stretching to match
+         its old grid-row neighbor's height instead of its own (fairly
+         compact) content. */
+      .bc-progress { min-height: auto; height: auto; padding: 18px 20px; }
+      .bc-progress-pct { font-size: 2.4rem; }
+      .bc-progress-inner { gap: 14px; margin-bottom: 10px; }
       .bc-hero-dest { font-size: 1.6rem; }
       .bc-hero-right { display: none; }
       .explore-strip { gap: 10px; }

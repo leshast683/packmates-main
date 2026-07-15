@@ -896,7 +896,7 @@
       return adding;
     }
     function applyFollowBtn(btn, active) {
-      btn.textContent = active ? 'Following ✓' : 'Follow';
+      btn.textContent = active ? 'Packmate ✓' : '+ Packmate';
       btn.style.background = active ? 'var(--green)' : '';
       btn.style.color = active ? '#fff' : '';
     }
@@ -915,7 +915,7 @@
           <div class="traveler-stat"><span>${t.trips}</span><span>Trips</span></div>
           <div class="traveler-stat"><span>${t.countries}</span><span>Countries</span></div>
         </div>
-        <button class="follow-btn">${isFollowing ? 'Following ✓' : 'Follow'}</button>`;
+        <button class="follow-btn">${isFollowing ? 'Packmate ✓' : '+ Packmate'}</button>`;
       const cardBtn = c.querySelector('.follow-btn');
       if (isFollowing) { cardBtn.style.background = 'var(--green)'; cardBtn.style.color = '#fff'; }
       cardBtn.addEventListener('click', e => {
@@ -1018,11 +1018,11 @@
 
       const btn = m.querySelector('.tp-follow-btn');
       const isAlreadyFollowing = getFollowingIds().has(t.avatar);
-      btn.textContent = isAlreadyFollowing ? 'Following ✓' : 'Follow';
+      btn.textContent = isAlreadyFollowing ? 'Packmate ✓' : '+ Packmate';
       btn.classList.toggle('following', isAlreadyFollowing);
       btn.onclick = () => {
         const adding = toggleFollow(t.avatar);
-        btn.textContent = adding ? 'Following ✓' : 'Follow';
+        btn.textContent = adding ? 'Packmate ✓' : '+ Packmate';
         btn.classList.toggle('following', adding);
         // Sync the card button in the strip
         const cards = document.querySelectorAll('.traveler-card');

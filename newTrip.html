@@ -757,8 +757,13 @@
     @media (max-width: 640px) {
       body > main { overflow-y: auto; height: 100vh; }
       .nt-layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
-      .nt-preview-panel { display: none; }
-      .nt-form-panel { padding: 20px 16px 120px; height: auto; overflow: visible; }
+      /* Map used to be hidden entirely on mobile — now shown above the
+         form instead (order:-1 moves it first visually without changing
+         DOM order), with an explicit height since #ntMap fills its
+         parent via position:absolute and has nothing to size against
+         once the desktop two-column layout collapses. */
+      .nt-preview-panel { display: block; order: -1; height: 200px; position: relative; }
+      .nt-form-panel { padding: 20px 16px 120px; height: auto; overflow: visible; order: 0; }
       .nt-header { flex-direction: row; align-items: center; margin-bottom: 20px; }
       .nt-header h1 { font-size: 1.2rem; }
       .nt-dates { flex-direction: column; gap: 12px; }
@@ -910,6 +915,15 @@
 
         <form id="newTripForm">
 
+          <!-- Trip Name (optional) -->
+          <div class="nt-section">
+            <label class="nt-label" for="tripName">Trip Name <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3);">(optional)</span></label>
+            <div class="nt-input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+              <input class="nt-input" id="tripName" type="text" placeholder="e.g. Sarah's Bachelorette Trip" autocomplete="off">
+            </div>
+          </div>
+
           <!-- Destination -->
           <div class="nt-section">
             <label class="nt-label" for="tripDestination">Destination</label>
@@ -1031,15 +1045,6 @@
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_cruise.png" x="0" y="0" width="40" height="40"/></svg>
                 Cruise
               </button>
-            </div>
-          </div>
-
-          <!-- Itinerary -->
-          <div class="nt-section">
-            <label class="nt-label" for="tripActivities">Itinerary Highlights</label>
-            <div class="nt-input-wrap">
-              <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-              <input class="nt-input" id="tripActivities" type="text" placeholder="e.g. Eiffel Tower, Louvre (comma separated)">
             </div>
           </div>
 
@@ -1489,10 +1494,10 @@
 
     /* ── Save ── */
     document.getElementById('saveTripBtn').addEventListener('click', async function () {
+      const tripName       = document.getElementById('tripName').value.trim();
       const destination    = document.getElementById('tripDestination').value.trim();
       const fromDate       = document.getElementById('tripFromDate').value;
       const toDate         = document.getElementById('tripToDate').value;
-      const activitiesRaw  = document.getElementById('tripActivities').value;
       const notes          = document.getElementById('tripNotes').value;
 
       if (!destination) {
@@ -1512,16 +1517,12 @@
       const activityCategories = Array.from(document.querySelectorAll('.activity-chip.selected'))
         .map(el => el.dataset.category);
 
-      const activities = activitiesRaw
-        .split(',').map(a => a.trim()).filter(a => a.length)
-        .map(name => ({ name, type: 'Activity' }));
-
       const inviteCode = generateInviteCode();
       const tripId     = Date.now().toString(36);
 
       const tripData = {
-        id: tripId, destination, fromDate, toDate, travelers,
-        activityCategories, activities, notes,
+        id: tripId, name: tripName || null, destination, fromDate, toDate, travelers,
+        activityCategories, activities: [], notes,
         airline: selectedAirline || null,
         inviteCode, weatherTags, createdAt: new Date().toISOString(),
         ownerEmail: Auth.getSession()?.email || null,

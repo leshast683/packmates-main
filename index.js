@@ -307,7 +307,7 @@
         <div class="bc-hero-body">
           <div class="bc-hero-left">
             <div class="bc-hero-tag">Active Trip</div>
-            <div class="bc-hero-dest">${trip.destination}</div>
+            <div class="bc-hero-dest">${trip.name || trip.destination}</div>
             <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : 'Dates not set'}</div>
             ${chips ? `<div class="bc-hero-chips">${chips}</div>` : ''}
             ${packmatesHtml}
@@ -509,7 +509,7 @@
                 : '<div class="trip-card-badge trip-card-badge--switch">Switch</div>'}
             </div>
             <div class="trip-card-body" onclick="${isActive ? `location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}">
-              <div class="trip-card-title">${t.destination}</div>
+              <div class="trip-card-title">${t.name || t.destination}</div>
               <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : 'Dates not set'}${daysLabel ? ` · <span style="color:var(--green-dark,#4d8225);font-weight:600">${daysLabel}</span>` : ''}</div>
               <div class="trip-card-footer">
                 <div class="avatars" id="cardAvatars-${t.id}"></div>

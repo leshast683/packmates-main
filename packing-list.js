@@ -81,7 +81,13 @@ let customItems = _packRaw.customItems || {};
 
 function saveState() {
     if (!_PACK_KEY) return;
-    const state = { itemState, dismissed: [...dismissed], customItems };
+    /* totalSuggested lets other pages (dashboard widget, notifications)
+       show accurate packing progress without needing the full ITEM_DB
+       suggestion engine loaded — they just read this instead of counting
+       itemState's own keys, which only ever contains items someone has
+       actually clicked (so checking even 1 of 40 suggested items would
+       otherwise look like "100% packed"). */
+    const state = { itemState, dismissed: [...dismissed], customItems, totalSuggested: getSuggestedKeys().length };
     localStorage.setItem(_PACK_KEY, JSON.stringify(state));
     /* Sync to Supabase via DB layer (debounced inside DB.savePackState) */
     if (typeof DB !== 'undefined' && tripData.id) {
