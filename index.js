@@ -106,16 +106,18 @@
          might just be your own trip. */
       const isOwner = !target._ownerId || target._ownerId === myId;
 
-      if (isOwner) {
-        const members = await Auth.getTripMembers(tripId);
-        const othersCount = members.filter(m => m.user_id !== myId).length;
-        const warning = othersCount > 0
-          ? `Delete trip to ${target.destination}? ${othersCount} other packmate${othersCount !== 1 ? 's' : ''} will lose access to it too. This cannot be undone.`
-          : `Delete trip to ${target.destination}? This cannot be undone.`;
-        if (!confirm(warning)) return;
-      } else {
-        if (!confirm(`Leave trip to ${target.destination}? You'll no longer see it or your packing progress — the trip itself stays intact for everyone else.`)) return;
-      }
+      /* confirm() must fire synchronously off the click, with no `await`
+         in front of it — Safari silently drops a confirm()/alert() call
+         once the triggering click's user-activation window has expired
+         (which an await does, even a fast one), and there's no visible
+         error when that happens: the button just looks like it does
+         nothing. This used to fetch trip member count first to mention
+         "N other packmates will lose access" in the message, which is
+         exactly the kind of pre-confirm await that broke it. */
+      const warning = isOwner
+        ? `Delete trip to ${target.destination}? This cannot be undone.`
+        : `Leave trip to ${target.destination}? You'll no longer see it or your packing progress — the trip itself stays intact for everyone else.`;
+      if (!confirm(warning)) return;
 
       const result = await DB.deleteTrip(tripId);
       if (!result.success) {
