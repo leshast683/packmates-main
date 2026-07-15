@@ -1182,219 +1182,9 @@
     <script src="lib/sync-guard.js"></script>
     <script src="auth.js"></script>
     <script src="lib/packing-math.js"></script>
+    <script src="lib/packing-items.js"></script>
     <script>
         if (typeof Auth !== 'undefined') Auth.requireAuth('welcome.html');
-
-        // ── Item database (same logic as packing-list.js) ──
-        const ITEM_DB = {
-            'Essentials': [
-                { name: 'Passport' }, { name: 'ID' }, { name: 'Cash' }, { name: 'Credit Card' },
-                { name: 'Phone' }, { name: 'Charger' }, { name: 'Headphones' },
-                { name: 'Power Bank' }, { name: 'Travel Adapter' }, { name: 'Keys' },
-            ],
-            'Toiletries': [
-                { name: 'Toothbrush' }, { name: 'Toothpaste' }, { name: 'Shampoo' },
-                { name: 'Body Wash' }, { name: 'Deodorant' }, { name: 'Razor' },
-                { name: 'Moisturizer' },
-                { name: 'Sunscreen',  when: p => p.hot || p.beach || p.hiking },
-                { name: 'Lip Balm',   when: p => p.cold || p.snowy },
-                { name: 'Hair Brush' },
-            ],
-            'Clothing': [
-                { name: 'T-Shirts' },
-                { name: 'Tank Tops',          when: p => p.hot || p.beach || p.gym },
-                { name: 'Long Sleeve Shirts', when: p => !p.hot || p.hiking },
-                { name: 'Hoodie',             when: p => !p.hot && !p.beach },
-                { name: 'Sweater',            when: p => p.cold || p.snowy },
-                { name: 'Jeans',              when: p => !p.hot && !p.beach },
-                { name: 'Pants',              when: p => !p.beach || p.business },
-                { name: 'Shorts',             when: p => p.hot || p.beach || p.gym },
-                { name: 'Swimsuit',           when: p => p.beach || p.swimming },
-                { name: 'Dress / Skirt',      when: p => p.hot || p.beach || p.business },
-                { name: 'Jacket',             when: p => !p.hot && !p.beach },
-                { name: 'Rain Jacket',        when: p => p.rainy || p.hiking || p.camping },
-                { name: 'Winter Coat',        when: p => p.cold || p.snowy },
-                { name: 'Underwear' }, { name: 'Socks' }, { name: 'Pajamas' },
-                { name: 'Sports Bra',         when: p => p.gym || p.beach || p.hiking },
-                { name: 'Thermal Underwear',  when: p => p.cold || p.snowy || p.ski },
-                { name: 'Scarf',              when: p => p.cold || p.snowy },
-                { name: 'Gloves',             when: p => p.cold || p.snowy || p.ski },
-                { name: 'Beanie',             when: p => p.cold || p.snowy || p.ski },
-            ],
-            'Shoes': [
-                { name: 'Sneakers' },
-                { name: 'Sandals',     when: p => p.hot || p.beach },
-                { name: 'Flip Flops',  when: p => p.beach || p.swimming },
-                { name: 'Boots',       when: p => p.cold || p.hiking },
-                { name: 'Snow Boots',  when: p => p.snowy },
-                { name: 'Ski Boots',   when: p => p.ski },
-                { name: 'Dress Shoes', when: p => p.business },
-            ],
-            'Electronics': [
-                { name: 'Camera',         when: p => !p.business },
-                { name: 'Laptop',         when: p => p.business },
-                { name: 'Laptop Charger', when: p => p.business },
-                { name: 'Earbuds' },
-            ],
-            'Beach': [
-                { name: 'Beach Towel',  when: p => p.beach },
-                { name: 'Sunglasses',   when: p => p.beach || p.hot },
-                { name: 'Sun Hat',      when: p => p.beach || p.hot },
-                { name: 'Waterproof Bag', when: p => p.beach },
-                { name: 'Snorkel Set',  when: p => p.beach || p.swimming },
-            ],
-            'Hiking': [
-                { name: 'Trekking Poles',   when: p => p.hiking },
-                { name: 'Backpack',         when: p => p.hiking || p.camping },
-                { name: 'Insect Repellent', when: p => p.hiking || p.camping },
-                { name: 'Trail Snacks',     when: p => p.hiking || p.camping },
-                { name: 'Headlamp',         when: p => p.hiking || p.camping },
-            ],
-            'Snow Sports': [
-                { name: 'Ski Jacket',   when: p => p.ski },
-                { name: 'Ski Pants',    when: p => p.ski },
-                { name: 'Ski Goggles',  when: p => p.ski },
-                { name: 'Hand Warmers', when: p => p.ski || p.cold },
-                { name: 'Wool Socks',   when: p => p.ski || p.cold },
-            ],
-            'Rain Gear': [
-                { name: 'Compact Umbrella', when: p => p.rainy },
-                { name: 'Rain Poncho',      when: p => p.rainy },
-                { name: 'Waterproof Shoes', when: p => p.rainy },
-            ],
-            'Sun & Heat': [
-                { name: 'Reusable Water Bottle', when: p => p.hot || p.beach || p.hiking },
-                { name: 'Cooling Towel',         when: p => p.hot },
-                { name: 'Electrolyte Packets',   when: p => p.hot },
-            ],
-            'Business Trip': [
-                { name: 'Dress Shirts',   when: p => p.business },
-                { name: 'Blazer',         when: p => p.business },
-                { name: 'Business Cards', when: p => p.business },
-                { name: 'Notebook',       when: p => p.business },
-            ],
-            'Gym': [
-                { name: 'Workout Clothes', when: p => p.gym },
-                { name: 'Sports Shoes',    when: p => p.gym },
-                { name: 'Gym Towel',       when: p => p.gym },
-                { name: 'Water Bottle',    when: p => p.gym || p.hiking || p.hot },
-            ],
-            'Night Out': [
-                { name: 'Dress',                 when: p => p.nightOut },
-                { name: 'Heels',                 when: p => p.nightOut },
-                { name: 'Dress Shoes',           when: p => p.nightOut },
-                { name: 'Blazer',                when: p => p.nightOut },
-                { name: 'Clutch Purse',          when: p => p.nightOut },
-                { name: 'Perfume/Cologne',       when: p => p.nightOut },
-                { name: 'Makeup Kit',            when: p => p.nightOut },
-            ],
-            'Baby': [
-                { name: 'Diapers',           when: p => p.baby },
-                { name: 'Baby Wipes',        when: p => p.baby },
-                { name: 'Baby Bottle',       when: p => p.baby },
-                { name: 'Baby Clothes',      when: p => p.baby },
-                { name: 'Baby Blanket',      when: p => p.baby },
-                { name: 'Diaper Bag',        when: p => p.baby },
-                { name: 'Stroller',          when: p => p.baby },
-                { name: 'Baby Food Pouches', when: p => p.baby },
-            ],
-            'Theme Park': [
-                { name: 'Water Bottle', when: p => p.themePark },
-                { name: 'Sunglasses',   when: p => p.themePark },
-                { name: 'Power Bank',   when: p => p.themePark },
-                { name: 'Camera',       when: p => p.themePark },
-                { name: 'Backpack',     when: p => p.themePark },
-                { name: 'Snacks',       when: p => p.themePark },
-                { name: 'Fanny Pack',   when: p => p.themePark },
-            ],
-            'Festival': [
-                { name: 'Tent',         when: p => p.festival },
-                { name: 'Sleeping Bag', when: p => p.festival },
-                { name: 'Sunglasses',   when: p => p.festival },
-                { name: 'Water Bottle', when: p => p.festival },
-                { name: 'Power Bank',   when: p => p.festival },
-                { name: 'Fanny Pack',   when: p => p.festival },
-            ],
-            'Road Trip': [
-                { name: 'Water Bottle',  when: p => p.roadTrip },
-                { name: 'Sunglasses',    when: p => p.roadTrip },
-                { name: 'Power Bank',    when: p => p.roadTrip },
-                { name: 'Camera',        when: p => p.roadTrip },
-                { name: 'Headphones',    when: p => p.roadTrip },
-                { name: 'Snacks',        when: p => p.roadTrip },
-                { name: 'Car Charger',   when: p => p.roadTrip },
-                { name: 'Travel Pillow', when: p => p.roadTrip },
-            ],
-            'City Sightseeing': [
-                { name: 'Camera',           when: p => p.citySightseeing },
-                { name: 'Sunglasses',       when: p => p.citySightseeing },
-                { name: 'Water Bottle',     when: p => p.citySightseeing },
-                { name: 'Power Bank',       when: p => p.citySightseeing },
-                { name: 'Backpack',         when: p => p.citySightseeing },
-                { name: 'Travel Guidebook', when: p => p.citySightseeing },
-            ],
-            'Dining': [
-                { name: 'Dress',              when: p => p.dining },
-                { name: 'Dress Shoes',        when: p => p.dining },
-                { name: 'Blazer',             when: p => p.dining },
-                { name: 'Button-Down Shirts', when: p => p.dining },
-                { name: 'Dress Pants',        when: p => p.dining },
-            ],
-        };
-
-        // ── Destination lists ──
-        const BEACH_DESTS   = ['miami','hawaii','bali','cancun','maldives','ibiza','florida','bahamas','caribbean','phuket','tulum','cabo','st. lucia','dominican','jamaica','aruba','barbados','key west','malibu','santa monica','san diego','costa rica','rio'];
-        const SKI_DESTS     = ['aspen','vail','whistler','verbier','zermatt','alps','jackson hole','tahoe','banff','park city','breckenridge','steamboat','telluride','killington'];
-        const ALWAYS_COLD   = ['alaska','iceland','norway','sweden','finland','greenland','lapland','siberia','antarctica'];
-        const RAINY_DESTS   = ['london','amsterdam','portland','seattle','dublin','edinburgh','vancouver','brussels','glasgow','bergen'];
-        const HOT_DRY_DESTS = ['las vegas','phoenix','dubai','doha','riyadh','cairo','marrakech','tucson','palm springs'];
-        const FOUR_SEASON   = ['new york','nyc','chicago','boston','montreal','toronto','moscow','berlin','warsaw','denver','minneapolis','detroit','cleveland','buffalo','milwaukee','philadelphia','pittsburgh','cincinnati','columbus','indianapolis','kansas city','st. louis','omaha','baltimore','washington','paris','vienna','budapest','prague','milan','zurich','munich'];
-
-        function buildTripProfile(td) {
-            const dest  = (td.destination || '').toLowerCase();
-            const month = td.fromDate ? new Date(td.fromDate).getMonth() + 1 : null;
-            const sel   = td.activityCategories || [];
-
-            const isBeachDest  = BEACH_DESTS.some(k => dest.includes(k));
-            const isSkiDest    = SKI_DESTS.some(k => dest.includes(k));
-            const isFourSeason = FOUR_SEASON.some(c => dest.includes(c));
-
-            let hot   = isBeachDest || HOT_DRY_DESTS.some(k => dest.includes(k));
-            let cold  = ALWAYS_COLD.some(k => dest.includes(k)) || isSkiDest;
-            let snowy = cold;
-            let rainy = RAINY_DESTS.some(k => dest.includes(k));
-
-            if (month && isFourSeason && !isBeachDest && !isSkiDest) {
-                hot   = [6,7,8].includes(month);
-                cold  = [11,12,1,2,3].includes(month);
-                snowy = [12,1,2].includes(month);
-                rainy = [4,5,9,10].includes(month);
-            }
-
-            const beach           = isBeachDest || sel.includes('Beach');
-            const ski             = isSkiDest   || sel.includes('Snow Sports');
-            const hiking          = sel.includes('Hiking');
-            const camping         = sel.includes('Camping');
-            const swimming        = beach || sel.includes('Swimming');
-            const gym             = sel.includes('Gym');
-            const business        = sel.includes('Business Trip');
-            const nightOut        = sel.includes('Night Out');
-            const baby            = sel.includes('Baby');
-            const themePark       = sel.includes('Theme Park');
-            const festival        = sel.includes('Festival');
-            const roadTrip        = sel.includes('Road Trip');
-            const citySightseeing = sel.includes('City Sightseeing');
-            const dining          = sel.includes('Dining');
-
-            if (beach) hot = true;
-            if (ski)  { cold = true; snowy = true; }
-
-            return { hot, cold, snowy, rainy, beach, ski, hiking, camping, swimming, gym, business, nightOut, baby, themePark, festival, roadTrip, citySightseeing, dining };
-        }
-
-        function itemMatches(item, p) {
-            return item.when ? item.when(p) : true;
-        }
 
         // ── Pexels image fetch ──
         async function fetchActivityImage(activityName, city) {
@@ -1423,10 +1213,26 @@
         const fromDate    = tripData.fromDate    || '';
         const toDate      = tripData.toDate      || '';
         const travelers   = tripData.travelers   || 2;
-        const dismissed   = new Set(JSON.parse(localStorage.getItem('packingDismissed') || '[]'));
-        const packingState= JSON.parse(localStorage.getItem('packingState') || '{}');
+        const userGender  = (() => { try { return (Auth?.getSession?.()?.gender) || JSON.parse(localStorage.getItem('pm_session') || 'null')?.gender || 'nonbinary'; } catch { return 'nonbinary'; } })();
 
-        function getItemKey(cat, name) { return `${cat}::${name}`; }
+        /* Same per-trip pack state packing-list.html reads/writes — this
+           used to read from global (not trip-scoped!) 'packingDismissed'/
+           'packingState' keys, meaning a checkbox toggled here could leak
+           across every trip in this browser and would never actually sync
+           to the real packing list or Supabase. */
+        const _PACK_KEY = tripData.id ? `pm_pack_${tripData.id}` : null;
+        const _packRaw  = _PACK_KEY ? JSON.parse(localStorage.getItem(_PACK_KEY) || '{}') : {};
+        let itemState   = _packRaw.itemState   || {};
+        const dismissed = new Set(_packRaw.dismissed || []);
+        const customItems = _packRaw.customItems || {};
+
+        function _savePackState() {
+            if (!_PACK_KEY) return;
+            localStorage.setItem(_PACK_KEY, JSON.stringify({ itemState, dismissed: [...dismissed], customItems }));
+            if (typeof DB !== 'undefined') DB.savePackState(tripData.id, { itemState, dismissed: [...dismissed], customItems });
+        }
+
+        // getItemKey provided by lib/packing-items.js
         function formatDate(d) {
             if (!d) return '';
             const [y, m, day] = d.split('-');
@@ -1793,21 +1599,19 @@
         });
 
         // ── Packing panel ──
+        // Same canonical logic packing-list.html uses (lib/packing-items.js)
+        // — this is what was missing before, causing this panel to show a
+        // different item set than the real packing list for the same trip.
         function getSuggestedItems() {
-            const result = [];
-            Object.entries(ITEM_DB).forEach(([cat, items]) => {
-                items.forEach(item => {
-                    const key = getItemKey(cat, item.name);
-                    if (itemMatches(item, profile) && !dismissed.has(key))
-                        result.push({ cat, name: item.name, key });
-                });
+            return getSuggestedItemKeys({ profile, userGender, dismissed, customItems }).map(key => {
+                const [cat, name] = key.split('::');
+                return { cat, name, key };
             });
-            return result;
         }
 
         function updateProgress() {
             const all    = getSuggestedItems();
-            const packed = all.filter(({ key }) => !!packingState[key]).length;
+            const packed = all.filter(({ key }) => !!itemState[key]?.packed).length;
             const pct    = PackingMath.calcPackedPct(packed, all.length);
             document.getElementById('packingProgressFill').style.width = pct + '%';
             document.getElementById('packingProgressText').textContent = `${packed}/${all.length} packed`;
@@ -1829,13 +1633,14 @@
                 body.appendChild(b);
             }
 
+            const suggestedKeys = new Set(getSuggestedItemKeys({ profile, userGender, dismissed, customItems }));
+
             // Render each category — only suggested + not dismissed items
             Object.entries(ITEM_DB).forEach(([cat, dbItems]) => {
                 const items = dbItems.filter(item => {
-                    const key    = getItemKey(cat, item.name);
-                    const passes = itemMatches(item, profile) && !dismissed.has(key);
-                    if (!passes) return false;
-                    const packed = !!packingState[key];
+                    const key = getItemKey(cat, item.name);
+                    if (!suggestedKeys.has(key)) return false;
+                    const packed = !!itemState[key]?.packed;
                     if (currentFilter === 'packed')     return packed;
                     if (currentFilter === 'not-packed') return !packed;
                     return true;
@@ -1848,7 +1653,7 @@
 
                 items.forEach(item => {
                     const key    = getItemKey(cat, item.name);
-                    const packed = !!packingState[key];
+                    const packed = !!itemState[key]?.packed;
                     const row    = document.createElement('div');
                     row.className = 'packingPanelItem';
                     row.innerHTML = `
@@ -1856,14 +1661,15 @@
                         <span class="packingPanelItemName ${packed ? 'packingPanelItemName--packed' : ''}">${item.name}</span>
                         <button class="panel-dismiss" data-key="${key}" title="Remove" style="width:16px;height:16px;border-radius:50%;border:none;background:#fdecea;cursor:pointer;color:#c0392b;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;">✕</button>`;
                     row.querySelector('.packingPanelCheck').addEventListener('click', () => {
-                        packingState[key] = !packingState[key];
-                        localStorage.setItem('packingState', JSON.stringify(packingState));
+                        const wasPacked = !!itemState[key]?.packed;
+                        itemState[key] = { packed: !wasPacked, qty: itemState[key]?.qty || 1 };
+                        _savePackState();
                         renderPackingPanel();
                         updateProgress();
                     });
                     row.querySelector('.panel-dismiss').addEventListener('click', () => {
                         dismissed.add(key);
-                        localStorage.setItem('packingDismissed', JSON.stringify([...dismissed]));
+                        _savePackState();
                         renderPackingPanel();
                         updateProgress();
                     });
