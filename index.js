@@ -541,72 +541,31 @@
     }
 
     /* ── Travel video card ── */
-    (async () => {
+    (() => {
       const videoEl = document.getElementById('tipVideo');
       if (!videoEl) return;
 
-      function playVideo(url, isFallback) {
-        if (videoEl._fbTimer) clearTimeout(videoEl._fbTimer); // avoid stacking timers across calls
+      /* This card used to auto-fetch and rotate in Pexels stock aerial
+         footage, which unconditionally overrode whatever was playing —
+         instantly for a returning visitor (cached rotation pool), or
+         within a couple seconds for a first-time one (once the Pexels
+         fetch resolved). That's why a real video set here never actually
+         stayed visible. Removed entirely: this card now just plays the
+         one local video, with a same-file reload as the only fallback
+         if it fails to load at all. Also clears any previously cached
+         rotation-pool state so a returning visitor's browser doesn't
+         have stale data lying around. */
+      ['pm_tip_video', 'pm_tip_idx', 'pm_tip_videos', 'pm_tip_ver'].forEach(k => localStorage.removeItem(k));
+
+      function playVideo(url) {
         videoEl.src = url;
         videoEl.load();
         videoEl.play().catch(() => {});
         videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; };
         videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; };
-        /* If nothing plays within 8s, fall back to the known-small local
-           video — 8s (not 4s) gives a real video file a fair chance to
-           load on an average connection before giving up on it. */
-        if (!isFallback) {
-          videoEl._fbTimer = setTimeout(() => {
-            if (parseFloat(videoEl.style.opacity) < 1) playVideo('img/hero-forest-compressed.mp4', true);
-          }, 8000);
-        }
       }
-
-      /* Start with local video immediately so card is never empty */
       playVideo('img/hero-ready-to-start.mp4');
-
-      // Rotate through cached pool immediately
-      if (localStorage.getItem('pm_tip_video')) { localStorage.removeItem('pm_tip_video'); localStorage.removeItem('pm_tip_idx'); }
-      const VIDEO_VER = 'v23';
-      if (localStorage.getItem('pm_tip_ver') !== VIDEO_VER) { localStorage.removeItem('pm_tip_videos'); localStorage.removeItem('pm_tip_idx'); localStorage.setItem('pm_tip_ver', VIDEO_VER); }
-      const poolRaw = localStorage.getItem('pm_tip_videos');
-      const pool = poolRaw ? JSON.parse(poolRaw) : [];
-      if (pool.length) {
-        const idx = (parseInt(localStorage.getItem('pm_tip_idx') || '0') + 1) % pool.length;
-        localStorage.setItem('pm_tip_idx', idx);
-        playVideo(pool[idx]);
-      }
-
-      // Each query fetches top 3 results; first with a valid HD/SD file wins
-      const VIDEO_QUERIES = [
-        'aerial drone tropical beach turquoise water',
-        'aerial drone city megapolis night',
-        'moraine lake aerial drone',
-        'medieval castle aerial view drone',
-      ];
-      try {
-        function bestFile(v) {
-          return (v.video_files || [])
-            .filter(f => f.quality === 'hd' || f.quality === 'sd')
-            .sort((a, b) => (b.width || 0) - (a.width || 0))[0];
-        }
-        const _pexelsToken = await Auth.getTokenAsync();
-        const results = await Promise.all(VIDEO_QUERIES.map(q =>
-          fetch(`/api/pexels?type=videos&query=${encodeURIComponent(q)}&orientation=landscape&per_page=15`, { headers: { Authorization: `Bearer ${_pexelsToken}` } })
-            .then(r => r.json()).catch(() => ({ videos: [] }))
-        ));
-        const urls = results.map(data => {
-          for (const v of (data.videos || [])) {
-            const f = bestFile(v);
-            if (f) return f.link;
-          }
-          return null;
-        }).filter(Boolean);
-        if (urls.length) {
-          localStorage.setItem('pm_tip_videos', JSON.stringify(urls));
-          if (!pool.length) playVideo(urls[0]);
-        }
-      } catch {}
+      videoEl.onerror = () => playVideo('img/hero-forest-compressed.mp4');
     })();
 
     /* ── Micro-stats ── */
