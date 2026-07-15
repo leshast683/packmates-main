@@ -117,7 +117,11 @@
         if (!confirm(`Leave trip to ${target.destination}? You'll no longer see it or your packing progress — the trip itself stays intact for everyone else.`)) return;
       }
 
-      DB.deleteTrip(tripId);
+      const result = await DB.deleteTrip(tripId);
+      if (!result.success) {
+        alert('Could not delete this trip. Please check your connection and try again.');
+        return;
+      }
       location.reload();
     }
 

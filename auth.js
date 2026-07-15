@@ -600,7 +600,11 @@ const DB = (() => {
       return { success: true };
     },
 
-    /* delete trip from localStorage + Supabase */
+    /* delete trip from localStorage + Supabase. Returns { success, error } —
+       genuinely awaited (not fire-and-forget) since callers reload the
+       page right after calling this; a page navigation cancels any
+       fetch still in flight, so an un-awaited delete could get cut off
+       before it ever reached the server. */
     async deleteTrip(tripId) {
       const trips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
       const remaining = trips.filter(t => t.id !== tripId);
@@ -614,32 +618,32 @@ const DB = (() => {
       }
       _tripsGuard.markDirty();
       const client = await sb(); const uid = _uid();
-      if (client && uid) {
-        /* Try an owner-delete first — RLS only allows this to affect a row
-           if the caller owns it, so .select('id') tells us whether it
-           actually happened. If it didn't (0 rows), the caller is a
-           member who joined someone else's trip: "delete" means "leave"
-           for them instead — drop their own membership + pack state,
-           leave the trip itself intact for the owner and other members. */
-        client.from('trips').delete().eq('id', tripId).select('id')
-          .then(({ data: deletedRows, error }) => {
-            if (error) {
-              console.error('[DB] deleteTrip:', error.message);
-              Auth.logError(error.message, { where: 'deleteTrip' });
-              return;
-            }
-            _tripsGuard.clear();
-            if (deletedRows?.length) {
-              client.from('packing_state').delete().eq('trip_id', tripId).eq('user_id', uid)
-                .then(({ error }) => { if (error) { console.error('[DB] deletePackState:', error.message); Auth.logError(error.message, { where: 'deletePackState' }); } });
-            } else {
-              client.from('trip_members').delete().eq('trip_id', tripId).eq('user_id', uid)
-                .then(({ error }) => { if (error) { console.error('[DB] leaveTrip:', error.message); Auth.logError(error.message, { where: 'leaveTrip' }); } });
-              client.from('packing_state').delete().eq('trip_id', tripId).eq('user_id', uid)
-                .then(({ error }) => { if (error) { console.error('[DB] leaveTrip packState:', error.message); Auth.logError(error.message, { where: 'leaveTrip packState' }); } });
-            }
-          });
+      if (!client || !uid) return { success: true };
+
+      /* Try an owner-delete first — RLS only allows this to affect a row
+         if the caller owns it, so .select('id') tells us whether it
+         actually happened. If it didn't (0 rows), the caller is a
+         member who joined someone else's trip: "delete" means "leave"
+         for them instead — drop their own membership + pack state,
+         leave the trip itself intact for the owner and other members. */
+      const { data: deletedRows, error } = await client.from('trips').delete().eq('id', tripId).select('id');
+      if (error) {
+        console.error('[DB] deleteTrip:', error.message);
+        Auth.logError(error.message, { where: 'deleteTrip' });
+        return { success: false, error: error.message };
       }
+      _tripsGuard.clear();
+
+      if (deletedRows?.length) {
+        const { error: packErr } = await client.from('packing_state').delete().eq('trip_id', tripId).eq('user_id', uid);
+        if (packErr) { console.error('[DB] deletePackState:', packErr.message); Auth.logError(packErr.message, { where: 'deletePackState' }); }
+      } else {
+        const { error: memberErr } = await client.from('trip_members').delete().eq('trip_id', tripId).eq('user_id', uid);
+        if (memberErr) { console.error('[DB] leaveTrip:', memberErr.message); Auth.logError(memberErr.message, { where: 'leaveTrip' }); }
+        const { error: packErr } = await client.from('packing_state').delete().eq('trip_id', tripId).eq('user_id', uid);
+        if (packErr) { console.error('[DB] leaveTrip packState:', packErr.message); Auth.logError(packErr.message, { where: 'leaveTrip packState' }); }
+      }
+      return { success: true };
     },
 
     /* save packing state to localStorage + Supabase (debounced) */
