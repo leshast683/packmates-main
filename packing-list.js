@@ -912,6 +912,12 @@ document.getElementById('openShareModal').addEventListener('click', () => {
 document.getElementById('closeShareModal').addEventListener('click', () => shareModal.classList.remove('is-visible'));
 shareModal.addEventListener('click', e => { if (e.target === shareModal) shareModal.classList.remove('is-visible'); });
 
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (modal.classList.contains('is-visible')) closeModal();
+    if (shareModal.classList.contains('is-visible')) shareModal.classList.remove('is-visible');
+});
+
 document.getElementById('copyShareUrl').addEventListener('click', () => {
     navigator.clipboard.writeText(shareUrlInput.value).then(() => {
         const copied = document.getElementById('shareCopied');

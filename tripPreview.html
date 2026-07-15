@@ -13,6 +13,9 @@
     <meta property="og:image" content="https://packmatesai.com/img/discover-hero.jpg">
     <meta property="og:url" content="https://packmatesai.com/tripPreview.html">
     <link rel="icon" type="image/png" href="img/appIcon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0d3347">
+  <link rel="apple-touch-icon" href="/img/icon-192.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="packing-list.css">
     <style>
@@ -1535,7 +1538,7 @@
                   <div class="member-row-avatar" style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}">${avatarInner}</div>
                   <div class="member-row-name">${m.name || 'A packmate'}</div>
                   <div class="member-row-role">${m.role === 'owner' ? 'Owner' : ''}</div>
-                  ${canRemove ? `<button class="member-row-remove" title="Remove from trip" onclick="removeMemberFromTrip('${m.user_id}','${(m.name || 'this packmate').replace(/'/g, "\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
+                  ${canRemove ? `<button class="member-row-remove" title="Remove from trip" aria-label="Remove ${(m.name || 'this packmate').replace(/"/g, '&quot;')} from trip" onclick="removeMemberFromTrip('${m.user_id}','${(m.name || 'this packmate').replace(/'/g, "\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
                 </div>`;
             }).join('');
         }
@@ -1766,6 +1769,9 @@
         document.getElementById('openActivityModal').addEventListener('click',  () => activityModal.classList.add('is-visible'));
         document.getElementById('closeActivityModal').addEventListener('click', () => activityModal.classList.remove('is-visible'));
         document.getElementById('cancelActivity').addEventListener('click',     () => activityModal.classList.remove('is-visible'));
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && activityModal.classList.contains('is-visible')) activityModal.classList.remove('is-visible');
+        });
         document.getElementById('activityForm').addEventListener('submit', e => {
             e.preventDefault();
             const name = document.getElementById('activityName').value.trim();
