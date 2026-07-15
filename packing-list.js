@@ -515,7 +515,7 @@ if (nativeShareBtn && navigator.share) {
     nativeShareBtn.style.display = 'flex';
     nativeShareBtn.addEventListener('click', async () => {
         try {
-            await navigator.share({ title: `${tripData.destination || 'Trip'} Packing List`, text: `Pack together for ${tripData.destination || 'this trip'} on Packmates!`, url: shareUrlInput.value });
+            await navigator.share({ title: `${tripData.destination || 'Trip'} Packing List`, text: `Pack together for ${tripData.destination || 'this trip'} on Packmates AI!`, url: shareUrlInput.value });
         } catch {} // user cancelled — not an error
     });
 }

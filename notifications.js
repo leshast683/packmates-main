@@ -1,5 +1,5 @@
 /**
- * Packmates notification engine.
+ * Packmates AI notification engine.
  * Handles: smart trip-aware pushes, top-of-page toast, bell badge.
  * Include after auth.js on every authenticated page.
  */

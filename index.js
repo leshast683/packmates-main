@@ -293,7 +293,7 @@
 
         ${!hasTrip ? `
         <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center;">
-          <img src="img/appIcon.png" alt="Packmates" style="width:72px;height:72px;border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,0.3);object-fit:cover;">
+          <img src="img/appIcon.png" alt="Packmates AI" style="width:72px;height:72px;border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,0.3);object-fit:cover;">
           <div>
             <div style="font-family:'Blauer Nue',sans-serif;font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:6px;">Plan your next adventure</div>
             <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);max-width:280px;line-height:1.6;">Create a trip and get a smart packing list tailored to your destination and activities.</div>
@@ -457,7 +457,7 @@
       });
       document.getElementById('shareBtn').addEventListener('click', async e => {
         e.stopPropagation();
-        const text = `✈️ Heading to ${trip.destination}!\n📅 ${fmt(trip.fromDate)} – ${fmt(trip.toDate)}\n🎒 Packed with Packmates`;
+        const text = `✈️ Heading to ${trip.destination}!\n📅 ${fmt(trip.fromDate)} – ${fmt(trip.toDate)}\n🎒 Packed with Packmates AI`;
         if (navigator.share) { try { await navigator.share({ title: trip.destination + ' Trip', text }); } catch {} }
         else { try { await navigator.clipboard.writeText(text); toast('Trip details copied!'); } catch { toast('Could not copy'); } }
       });

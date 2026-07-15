@@ -1,4 +1,4 @@
-/* Packmates — Airline baggage data */
+/* Packmates AI — Airline baggage data */
 const PACKMATES_AIRLINES = [
   { name: 'American Airlines',  iata: 'AA', region: 'US',
     carry:   { dims: '56×36×23 cm', weight: 'No limit' },

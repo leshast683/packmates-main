@@ -1,6 +1,6 @@
 {
-  "name": "Packmates — Packing List & Trip Planner",
-  "short_name": "Packmates",
+  "name": "Packmates AI — Packing List & Trip Planner",
+  "short_name": "Packmates AI",
   "description": "Build smart, weather-aware packing lists and plan trips with your travel crew.",
   "start_url": "/",
   "scope": "/",

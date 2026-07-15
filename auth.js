@@ -1,5 +1,5 @@
 /**
- * Packmates — Auth layer: Supabase backend + localStorage fallback for existing users.
+ * Packmates AI — Auth layer: Supabase backend + localStorage fallback for existing users.
  * New users  → Supabase Auth (PostgreSQL).
  * Old users  → verified locally, then auto-migrated to Supabase on first login.
  */

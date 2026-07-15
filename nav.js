@@ -26,8 +26,8 @@
 
     return `
       <div class="brand">
-        <img src="img/appIcon.png" alt="Packmates" class="icon">
-        <span>Packmates</span>
+        <img src="img/appIcon.png" alt="Packmates AI" class="icon">
+        <span>Packmates AI</span>
       </div>
       <span class="nav-label">Main Menu</span>
       <div class="nav-buttons">${buttons}</div>
