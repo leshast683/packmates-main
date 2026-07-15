@@ -557,6 +557,7 @@
       const VIDEO_QUEUE = [
         'img/hero-ready-to-start.mp4',
         'img/hero-sunrise-clouds.mp4',
+        'img/hero-safari-zebras.mp4',
       ];
       const FALLBACK_VIDEO = 'img/hero-forest-compressed.mp4';
 
