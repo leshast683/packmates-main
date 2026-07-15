@@ -1911,6 +1911,12 @@
                 </div>`;
             };
             if (cached) { renderBrief(cached); return; }
+            /* This card can otherwise sit on its loading skeleton forever if
+               the request hangs (cold start, upstream AI latency, a dropped
+               connection) — cap it so a genuine stall resolves into the same
+               graceful "hide the card" fallback as any other failure. */
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 15000);
             try {
                 const country = tripData.country || destination;
                 const dates   = (fromDate && toDate) ? `${fromDate} to ${toDate}` : '';
@@ -1920,7 +1926,8 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${await Auth.getTokenAsync()}`
                     },
-                    body: JSON.stringify({ destination, country, dates })
+                    body: JSON.stringify({ destination, country, dates }),
+                    signal: controller.signal,
                 });
                 const brief = await r.json();
                 if (brief && !brief.error) {
@@ -1928,6 +1935,7 @@
                     renderBrief(brief);
                 } else { bygCard.style.display = 'none'; }
             } catch { bygCard.style.display = 'none'; }
+            finally { clearTimeout(timeout); }
         })();
 
         // ── Weather Forecast ──

@@ -53,6 +53,15 @@ module.exports = async function handler(req, res) {
   }
 
   /* ── Rate limiting: 20 calls / hour / user ───────────────────────── */
+  /* The counter PATCH below is bookkeeping — it's kicked off but not
+     awaited here, then picked back up (Promise.allSettled) right before
+     the Claude response returns. That runs it concurrently with the
+     Claude call instead of serially in front of it (a full extra
+     Supabase round-trip previously sat on the critical path of every
+     "Before You Go" load), while still finishing before the function's
+     execution ends — unlike true fire-and-forget, which risks the
+     invocation being torn down before a dangling promise completes. */
+  let rateLimitWrite = Promise.resolve();
   try {
     const profileRes = await fetch(
       `${SB_URL}/rest/v1/profiles?id=eq.${userId}&select=brief_count,brief_window_start`,
@@ -75,7 +84,7 @@ module.exports = async function handler(req, res) {
 
         const newCount       = windowAge >= 3_600_000 ? 1 : count + 1;
         const newWindowStart = windowAge >= 3_600_000 ? new Date().toISOString() : profile.brief_window_start;
-        await fetch(`${SB_URL}/rest/v1/profiles?id=eq.${userId}`, {
+        rateLimitWrite = fetch(`${SB_URL}/rest/v1/profiles?id=eq.${userId}`, {
           method:  'PATCH',
           headers: {
             apikey: SB_KEY, Authorization: `Bearer ${token}`,
@@ -127,6 +136,12 @@ module.exports = async function handler(req, res) {
     });
 
     const data = await r.json();
+    /* By now the rate-limit PATCH kicked off earlier has almost certainly
+       already settled in the background (it's a single fast Supabase
+       write vs. the Claude call above) — awaiting it here just confirms
+       it finishes within this invocation's lifetime, at effectively no
+       added latency. */
+    await rateLimitWrite.catch(() => {});
     const text = data?.content?.[0]?.text || '';
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) return res.status(500).json({ error: 'Bad AI response.' });
@@ -138,6 +153,7 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: 'AI returned a malformed response.' });
     }
   } catch {
+    await rateLimitWrite.catch(() => {});
     return res.status(500).json({ error: 'AI service temporarily unavailable.' });
   }
 };
