@@ -545,17 +545,21 @@
       const videoEl = document.getElementById('tipVideo');
       if (!videoEl) return;
 
-      /* This card used to auto-fetch and rotate in Pexels stock aerial
-         footage, which unconditionally overrode whatever was playing —
-         instantly for a returning visitor (cached rotation pool), or
-         within a couple seconds for a first-time one (once the Pexels
-         fetch resolved). That's why a real video set here never actually
-         stayed visible. Removed entirely: this card now just plays the
-         one local video, with a same-file reload as the only fallback
-         if it fails to load at all. Also clears any previously cached
-         rotation-pool state so a returning visitor's browser doesn't
-         have stale data lying around. */
-      ['pm_tip_video', 'pm_tip_idx', 'pm_tip_videos', 'pm_tip_ver'].forEach(k => localStorage.removeItem(k));
+      /* This card used to auto-fetch Pexels stock aerial footage, which
+         unconditionally overrode whatever was playing - instantly for a
+         returning visitor (cached rotation pool), or within a couple
+         seconds for a first-time one (once the fetch resolved). That's
+         why a real video set here never actually stayed visible.
+         Replaced with a simple local-only rotation: one entry picked per
+         page load, no network fetch, so nothing can silently swap it out
+         mid-view. Add more filenames to VIDEO_QUEUE as they're supplied -
+         everything else here already supports more than one. */
+      const VIDEO_QUEUE = [
+        'img/hero-ready-to-start.mp4',
+      ];
+      const FALLBACK_VIDEO = 'img/hero-forest-compressed.mp4';
+
+      ['pm_tip_video', 'pm_tip_videos'].forEach(k => localStorage.removeItem(k)); // old Pexels-pool keys
 
       function playVideo(url) {
         videoEl.src = url;
@@ -564,8 +568,11 @@
         videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; };
         videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; };
       }
-      playVideo('img/hero-ready-to-start.mp4');
-      videoEl.onerror = () => playVideo('img/hero-forest-compressed.mp4');
+
+      const idx = (parseInt(localStorage.getItem('pm_tip_idx') || '-1', 10) + 1) % VIDEO_QUEUE.length;
+      localStorage.setItem('pm_tip_idx', idx);
+      playVideo(VIDEO_QUEUE[idx]);
+      videoEl.onerror = () => playVideo(FALLBACK_VIDEO);
     })();
 
     /* ── Micro-stats ── */
