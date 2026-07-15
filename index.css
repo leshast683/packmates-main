@@ -1641,6 +1641,7 @@
       .packed-chip-circle svg, .packed-chip-circle img { width: 28px; height: 28px; }
       .bento-section-header h2 { font-size: 1rem; }
       .bc-countdown-num { font-size: 3rem !important; }
+      .bc-lug-icon-area { display: none; }
       .toast { bottom: 88px; max-width: calc(100vw - 32px); white-space: normal; text-align: center; }
       .home-search-dd { min-width: 0; width: 100vw; left: 0; right: 0; max-width: 100vw; }
 
