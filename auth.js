@@ -862,14 +862,21 @@ function escapeHtml(str) {
   document.body.classList.remove('pm-exit');
   window.addEventListener('pageshow', e => { if (e.persisted) document.body.classList.remove('pm-exit'); });
   /* Belt-and-suspenders: confirmed in testing that a fresh document can still end up
-     with .pm-exit applied to its own body well after load (root cause not fully
-     pinned down — suspected interaction between the Navigation API intercept below
-     and Chrome's cross-document view transition). Since .pm-exit is a permanent,
-     !important, unrecoverable dead-end (opacity:0 + pointer-events:none forever),
-     force-clear it once, well past the 180ms exit-animation window, no matter what
-     caused it. A page that's legitimately mid-exit is being destroyed by navigation
+     with .pm-exit applied to its own body — sometimes over a second after load,
+     i.e. well after any single one-shot timeout would help (root cause not fully
+     pinned down — reproduces even with a valid, freshly-established session, and
+     traced to a *second* classList.add('pm-exit') call landing on the new document
+     itself, not a leftover from the page it navigated from). Since .pm-exit is a
+     permanent, !important, unrecoverable dead-end (opacity:0 + pointer-events:none
+     forever), sweep it away repeatedly for the first few seconds of this document's
+     life, no matter how many times or how late something re-applies it. A page
+     that's legitimately mid-exit is being destroyed by navigation within ~180ms
      anyway, so this can't interfere with the real transition. */
-  setTimeout(() => document.body.classList.remove('pm-exit'), 600);
+  let _pmExitSweeps = 0;
+  const _pmExitSweep = setInterval(() => {
+    document.body.classList.remove('pm-exit');
+    if (++_pmExitSweeps >= 20) clearInterval(_pmExitSweep);
+  }, 250);
 
   const _mobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
   const _ts = document.createElement('style');
