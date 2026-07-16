@@ -1,0 +1,21 @@
+{
+  "name": "packmates-ios",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Native iOS shell for Packmates AI (packmatesai.com), built with Capacitor.",
+  "scripts": {
+    "sync": "cap sync ios",
+    "open": "cap open ios",
+    "assets": "capacitor-assets generate --ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.4.2",
+    "@capacitor/ios": "^8.4.2",
+    "@capacitor/status-bar": "^8.0.3",
+    "@capacitor/splash-screen": "^8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.4.2",
+    "@capacitor/assets": "^3.0.5"
+  }
+}

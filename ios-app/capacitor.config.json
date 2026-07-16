@@ -1,0 +1,27 @@
+{
+  "appId": "com.packmatesai.app",
+  "appName": "Packmates AI",
+  "webDir": "www",
+  "server": {
+    "url": "https://packmatesai.com",
+    "cleartext": false,
+    "allowNavigation": ["packmatesai.com", "*.packmatesai.com"]
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "allowsLinkPreview": false,
+    "backgroundColor": "#0d3347"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2500,
+      "backgroundColor": "#0d3347",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "LIGHT",
+      "backgroundColor": "#0d3347",
+      "overlaysWebView": false
+    }
+  }
+}

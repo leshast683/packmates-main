@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW"></script>
   <script>
@@ -50,7 +50,7 @@
       animation: fadeUp 0.4s ease both;
     }
     @media (max-width: 480px) {
-      body > main { align-items: flex-start; padding: 20px 16px 40px; }
+      body > main { align-items: flex-start; padding: calc(20px + env(safe-area-inset-top)) 16px 40px; }
       .jt-card { padding: 28px 20px 24px; border-radius: 20px; }
     }
 

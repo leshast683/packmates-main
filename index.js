@@ -761,7 +761,10 @@
         .subscribe();
     })().catch(() => {});
 
-    /* ── Service worker (offline support) ── */
-    if ('serviceWorker' in navigator) {
+    /* ── Service worker (offline support) ──
+       Skipped inside the Capacitor iOS app: service workers behave inconsistently in
+       Capacitor's WebView, and there's no meaningful extra "offline" benefit there
+       beyond what Supabase/network already requires. */
+    if ('serviceWorker' in navigator && !window.Capacitor) {
       navigator.serviceWorker.register('/service-worker.js').catch(() => {});
     }

@@ -96,6 +96,8 @@ body {
   display: flex;
   flex-direction: column;
   padding: 0 10px;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
   position: relative;
   overflow: hidden;
   box-shadow: inset -1px 0 0 rgba(255,255,255,0.04), 2px 0 24px rgba(8,34,51,0.18);
@@ -625,14 +627,14 @@ textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(17,58,88,0.
   display: none;
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  height: 62px;
+  height: calc(62px + env(safe-area-inset-bottom));
   background: var(--teal-2);
   border-top: 1px solid rgba(255,255,255,0.07);
   box-shadow: 0 -4px 24px rgba(8,34,51,0.22);
   z-index: 200;
   align-items: stretch;
   justify-content: space-around;
-  padding: 0 4px;
+  padding: 0 4px calc(env(safe-area-inset-bottom));
 }
 .bottom-nav .bn-btn {
   display: flex;
@@ -688,7 +690,11 @@ textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(17,58,88,0.
   body { grid-template-columns: 1fr; overflow-x: hidden; }
   .sidebar { display: none; }
   .bottom-nav { display: flex; }
-  body > main { padding: 16px 14px 80px; overflow-y: auto; height: 100vh; }
+  body > main {
+    padding: calc(16px + env(safe-area-inset-top)) 14px calc(80px + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    height: 100vh;
+  }
   h1 { font-size: 1.2rem; }
   .grid { grid-template-columns: 1fr; gap: 10px; }
 }

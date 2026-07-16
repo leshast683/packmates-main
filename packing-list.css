@@ -1023,7 +1023,7 @@ body > main {
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  body > main { padding: 18px 16px 40px; }
+  body > main { padding: calc(18px + env(safe-area-inset-top)) 16px 40px; }
   .pl-stats-bar { gap: 14px; padding: 14px 16px; }
   .pl-progress-wrap { display: none; }
   .pl-controls { flex-direction: column; align-items: stretch; }
@@ -1032,7 +1032,7 @@ body > main {
 }
 
 @media (max-width: 640px) {
-  body > main { padding: 14px 12px 80px; overflow-y: auto; height: 100vh; }
+  body > main { padding: calc(14px + env(safe-area-inset-top)) 12px calc(80px + env(safe-area-inset-bottom)); overflow-y: auto; height: 100vh; }
   /* When destination image exists, remove top padding so banner bleeds to the edge */
   body > main.has-city-banner { padding-top: 0; overflow-x: hidden; }
   .pl-header { flex-direction: column; align-items: flex-start; gap: 8px; }

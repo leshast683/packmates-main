@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW"></script>
   <script>
@@ -267,7 +267,7 @@
       .notif-stats { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 640px) {
-      body > main { padding: 18px 14px 80px; }
+      body > main { padding: calc(18px + env(safe-area-inset-top)) 14px calc(80px + env(safe-area-inset-bottom)); }
       .notif-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
       .nstat { padding: 14px 12px; }
       .notif-page-head h1 { font-size: 1.3rem; }

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW"></script>
   <script>
@@ -349,7 +349,7 @@
 
     /* ── 768px: tablet portrait / collapsed sidebar ── */
     @media (max-width:768px) {
-      body > main { padding:20px 18px 40px; display:block; }
+      body > main { padding:calc(20px + env(safe-area-inset-top)) 18px 40px; display:block; }
       .profile-hero-banner { height:auto; min-height:290px; }
       .hero-banner-inner { padding:20px 18px 0; }
       .profile-streak-card { padding:10px 14px; min-width:96px; top:14px; right:14px; }
@@ -359,7 +359,7 @@
 
     /* ── 640px: mobile ── */
     @media (max-width:640px) {
-      body > main { padding:0 0 80px; display:block; }
+      body > main { padding:0 0 calc(80px + env(safe-area-inset-bottom)); display:block; }
 
       /* Hero */
       .profile-hero { border-radius:0 0 20px 20px; margin-bottom:12px; }

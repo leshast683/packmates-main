@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Packmates AI</title>
+  <style>
+    html, body {
+      height: 100%; margin: 0;
+      background: #0d3347;
+      color: rgba(255,255,255,0.72);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    p { font-size: 0.95rem; line-height: 1.6; max-width: 320px; }
+  </style>
+</head>
+<body>
+  <!--
+    Fallback only: Capacitor requires webDir to exist, but capacitor.config.json's
+    server.url points the real app at https://packmatesai.com directly. This page
+    only appears if that remote load fails outright (e.g. no network on first launch).
+  -->
+  <p>Packmates AI needs an internet connection to load. Check your connection and reopen the app.</p>
+</body>
+</html>
