@@ -851,6 +851,17 @@ function escapeHtml(str) {
 
 /* ── Page transitions ────────────────────────────────────────────────── */
 (function () {
+  /* A page that arrives via Chrome's cross-document view-transition (triggered by
+     @view-transition{navigation:auto} below) can occasionally carry the outgoing
+     page's .pm-exit class onto the new document. Since .pm-exit sets
+     animation:...both!important with no code that ever removes the class, a page
+     that starts with it stays permanently opacity:0 and pointer-events:none —
+     a blank, unclickable page with zero console errors. Clear it defensively,
+     both for a normal fresh load and for a bfcache restore (which skips
+     re-running this script entirely, hence the separate pageshow listener). */
+  document.body.classList.remove('pm-exit');
+  window.addEventListener('pageshow', e => { if (e.persisted) document.body.classList.remove('pm-exit'); });
+
   const _mobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
   const _ts = document.createElement('style');
   if (_mobile) {
