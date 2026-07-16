@@ -851,69 +851,30 @@ function escapeHtml(str) {
 
 /* ── Page transitions ────────────────────────────────────────────────── */
 (function () {
-  /* A page that arrives via Chrome's cross-document view-transition (triggered by
-     @view-transition{navigation:auto} below) can occasionally carry the outgoing
-     page's .pm-exit class onto the new document. Since .pm-exit sets
-     animation:...both!important with no code that ever removes the class, a page
-     that starts with it stays permanently opacity:0 and pointer-events:none —
-     a blank, unclickable page with zero console errors. Clear it defensively,
-     both for a normal fresh load and for a bfcache restore (which skips
-     re-running this script entirely, hence the separate pageshow listener). */
-  document.body.classList.remove('pm-exit');
-  window.addEventListener('pageshow', e => { if (e.persisted) document.body.classList.remove('pm-exit'); });
-  /* Belt-and-suspenders: confirmed in testing that a fresh document can still end up
-     with .pm-exit applied to its own body — sometimes over a second after load,
-     i.e. well after any single one-shot timeout would help (root cause not fully
-     pinned down — reproduces even with a valid, freshly-established session, and
-     traced to a *second* classList.add('pm-exit') call landing on the new document
-     itself, not a leftover from the page it navigated from). Since .pm-exit is a
-     permanent, !important, unrecoverable dead-end (opacity:0 + pointer-events:none
-     forever), sweep it away repeatedly for the first few seconds of this document's
-     life, no matter how many times or how late something re-applies it. A page
-     that's legitimately mid-exit is being destroyed by navigation within ~180ms
-     anyway, so this can't interfere with the real transition. */
-  let _pmExitSweeps = 0;
-  const _pmExitSweep = setInterval(() => {
-    document.body.classList.remove('pm-exit');
-    if (++_pmExitSweeps >= 20) clearInterval(_pmExitSweep);
-  }, 250);
-
+  /* Previously this delayed every same-origin navigation by ~175ms via the
+     Navigation API's e.intercept(), toggling a .pm-exit class (animation:...
+     both!important) to fade the old page out first. In testing that turned out
+     to be unreliable across a real cross-document navigation: .pm-exit could
+     end up applied to the *new* document (sometimes over a second after it
+     loaded), and since nothing but this code ever cleared it, the class's
+     animation:...both!important left the page permanently opacity:0 and
+     pointer-events:none — a blank, unclickable page with zero console errors.
+     Sweeping the class away defensively just traded that for a worse-looking
+     failure (Chrome's native view-transition old-page snapshot staying stuck
+     on screen on top of the live new page). @view-transition{navigation:auto}
+     below already gives Chrome a native, browser-managed cross-document fade
+     with no custom class-toggling involved — so that's all that's kept. */
   const _mobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
   const _ts = document.createElement('style');
   if (_mobile) {
-    _ts.textContent =
-      '@view-transition{navigation:none}' +
-      'body{animation:none!important}' +
-      '.pm-exit{animation:none!important;pointer-events:none!important}';
+    _ts.textContent = '@view-transition{navigation:none}body{animation:none!important}';
   } else {
     _ts.textContent =
       '@view-transition{navigation:auto}' +
       '@keyframes pm-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}' +
-      '@keyframes pm-out{to{opacity:0;transform:translateY(-5px) scale(.99)}}' +
-      '::view-transition-old(root){animation:180ms ease-out both pm-out}' +
-      '::view-transition-new(root){animation:300ms cubic-bezier(0,0,.2,1) both pm-in}' +
-      'body{animation:pm-in 300ms cubic-bezier(0,0,.2,1) both}' +
-      '.pm-exit{animation:pm-out 180ms ease-out both!important;pointer-events:none!important}';
+      '::view-transition-old(root){animation:180ms ease-out both}' +
+      '::view-transition-new(root){animation:300ms cubic-bezier(0,0,.2,1) both}' +
+      'body{animation:pm-in 300ms cubic-bezier(0,0,.2,1) both}';
   }
   document.head.appendChild(_ts);
-  if (window.navigation && typeof window.navigation.addEventListener === 'function') {
-    window.navigation.addEventListener('navigate', function(e) {
-      if (!e.canIntercept || e.hashChange || e.downloadRequest != null) return;
-      if (e.navigationType === 'reload') return;
-      try { if (new URL(e.destination.url).origin !== location.origin) return; } catch { return; }
-      if (_mobile) return;
-      e.intercept({ handler: () => new Promise(r => { document.body.classList.add('pm-exit'); setTimeout(r, 175); }) });
-    });
-    return;
-  }
-  document.addEventListener('click', function(e) {
-    const a = e.target.closest('a[href]');
-    if (!a || a.target === '_blank' || e.metaKey || e.ctrlKey || e.shiftKey) return;
-    const href = a.getAttribute('href');
-    if (!href || /^(#|javascript:|mailto:|tel:)/.test(href)) return;
-    if (_mobile) return;
-    e.preventDefault();
-    document.body.classList.add('pm-exit');
-    setTimeout(() => { location.href = a.href; }, 180);
-  }, true);
 })();

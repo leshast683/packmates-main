@@ -19,7 +19,6 @@
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none !important; }
   body { animation: none !important; }
-  .pm-exit { animation: none !important; pointer-events: none !important; }
 }
 
 /* ─────────────────────────────────────────────
