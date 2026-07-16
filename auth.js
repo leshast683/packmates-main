@@ -861,20 +861,23 @@ function escapeHtml(str) {
      pointer-events:none — a blank, unclickable page with zero console errors.
      Sweeping the class away defensively just traded that for a worse-looking
      failure (Chrome's native view-transition old-page snapshot staying stuck
-     on screen on top of the live new page). @view-transition{navigation:auto}
-     below already gives Chrome a native, browser-managed cross-document fade
-     with no custom class-toggling involved — so that's all that's kept. */
+     on screen on top of the live new page). Also dropped the body{animation:
+     pm-in...} entrance fade that used to run alongside this: testing showed
+     it can get stuck at its 0%-opacity frame indefinitely (animationPlayState
+     stayed "running" for 7+ seconds without ever progressing) on a page that
+     arrived via a cross-document view transition. Root cause unconfirmed —
+     couldn't rule out a headless-Chromium-only rendering quirk — but the
+     failure mode is a permanently invisible page, so it's not worth the risk
+     for a 300ms cosmetic fade. @view-transition{navigation:auto} below still
+     gives Chrome a native, browser-managed cross-document fade on its own;
+     it operates on separate compositor-level snapshots, not the real body's
+     own opacity, so it can't leave the actual page invisible. */
   const _mobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
   const _ts = document.createElement('style');
-  if (_mobile) {
-    _ts.textContent = '@view-transition{navigation:none}body{animation:none!important}';
-  } else {
-    _ts.textContent =
-      '@view-transition{navigation:auto}' +
-      '@keyframes pm-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}' +
+  _ts.textContent = _mobile
+    ? '@view-transition{navigation:none}'
+    : '@view-transition{navigation:auto}' +
       '::view-transition-old(root){animation:180ms ease-out both}' +
-      '::view-transition-new(root){animation:300ms cubic-bezier(0,0,.2,1) both}' +
-      'body{animation:pm-in 300ms cubic-bezier(0,0,.2,1) both}';
-  }
+      '::view-transition-new(root){animation:300ms cubic-bezier(0,0,.2,1) both}';
   document.head.appendChild(_ts);
 })();

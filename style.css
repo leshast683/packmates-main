@@ -2,17 +2,8 @@
 
 /* ─────────────────────────────────────────────
    PAGE TRANSITIONS — desktop only
-   auth.js injects these dynamically and handles mobile detection.
-   These rules are kept as a secondary source for pages that load
-   style.css but serve as a no-op since auth.js overrides them.
+   auth.js injects the actual @view-transition rules dynamically.
 ───────────────────────────────────────────── */
-@keyframes pm-page-out {
-  to { opacity: 0; transform: translateY(-5px) scale(0.995); }
-}
-@keyframes pm-page-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: none; }
-}
 
 /* Mobile: disable all page transitions */
 @media (max-width: 767px) {
