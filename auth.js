@@ -861,6 +861,15 @@ function escapeHtml(str) {
      re-running this script entirely, hence the separate pageshow listener). */
   document.body.classList.remove('pm-exit');
   window.addEventListener('pageshow', e => { if (e.persisted) document.body.classList.remove('pm-exit'); });
+  /* Belt-and-suspenders: confirmed in testing that a fresh document can still end up
+     with .pm-exit applied to its own body well after load (root cause not fully
+     pinned down — suspected interaction between the Navigation API intercept below
+     and Chrome's cross-document view transition). Since .pm-exit is a permanent,
+     !important, unrecoverable dead-end (opacity:0 + pointer-events:none forever),
+     force-clear it once, well past the 180ms exit-animation window, no matter what
+     caused it. A page that's legitimately mid-exit is being destroyed by navigation
+     anyway, so this can't interfere with the real transition. */
+  setTimeout(() => document.body.classList.remove('pm-exit'), 600);
 
   const _mobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
   const _ts = document.createElement('style');
