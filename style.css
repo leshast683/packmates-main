@@ -667,6 +667,37 @@ textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(17,58,88,0.
 .bottom-nav .bn-btn:hover { color: #fff; }
 .bottom-nav .bn-btn.active svg { stroke: var(--green); }
 
+/* New Trip — raised, bigger center FAB */
+.bottom-nav .bn-btn.bn-fab {
+  flex: 0 0 74px;
+  margin-top: -26px;
+  color: #fff;
+}
+.bottom-nav .bn-btn.bn-fab .bn-fab-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5faf2e 0%, #4a8a24 100%);
+  box-shadow: 0 8px 18px rgba(74,140,36,0.45), 0 0 0 5px var(--teal-2);
+  margin-bottom: 4px;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.bottom-nav .bn-btn.bn-fab .bn-fab-circle svg {
+  width: 28px; height: 28px;
+  stroke: #fff;
+  stroke-width: 2;
+}
+.bottom-nav .bn-btn.bn-fab:hover .bn-fab-circle,
+.bottom-nav .bn-btn.bn-fab.active .bn-fab-circle {
+  box-shadow: 0 10px 22px rgba(74,140,36,0.55), 0 0 0 5px var(--teal-2);
+  transform: scale(1.05);
+}
+.bottom-nav .bn-btn.bn-fab.active,
+.bottom-nav .bn-btn.bn-fab:hover { color: #fff; }
+
 /* ─────────────────────────────────────────────
    RESPONSIVE
 ───────────────────────────────────────────── */
