@@ -120,7 +120,7 @@
       display:flex;
       flex-direction:column;
       justify-content:space-between;
-      padding:44px 10%;
+      padding:calc(44px + env(safe-area-inset-top)) 10% 44px;
       background: linear-gradient(160deg, var(--teal-2) 0%, var(--teal-1) 100%);
       border-right:1px solid rgba(255,255,255,0.07);
     }
@@ -551,7 +551,7 @@
       html,body { overflow:auto; }
       body { grid-template-columns:1fr; }
       .right { display:none; }
-      .left { min-height:100vh; padding:36px 8%; }
+      .left { min-height:100vh; padding:calc(36px + env(safe-area-inset-top)) 8% 36px; }
       .main-title { font-size:2.8rem; }
     }
   </style>

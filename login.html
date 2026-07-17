@@ -271,7 +271,7 @@
     .switch a { color:var(--green); text-decoration:none; font-weight:700; transition:opacity 0.2s; }
     .switch a:hover { opacity:0.8; }
     @media (max-width: 480px) {
-      body { padding: 16px; align-items: flex-start; padding-top: 28px; overflow-y: auto; }
+      body { padding: 16px; align-items: flex-start; padding-top: calc(28px + env(safe-area-inset-top)); overflow-y: auto; }
       .card { padding: 32px 24px 28px; border-radius: 20px; }
     }
   </style>
