@@ -16,7 +16,9 @@
     "SplashScreen": {
       "launchShowDuration": 2500,
       "backgroundColor": "#0d3347",
-      "showSpinner": false
+      "showSpinner": true,
+      "spinnerColor": "#5f9d30",
+      "iosSpinnerStyle": "large"
     },
     "StatusBar": {
       "style": "LIGHT",
