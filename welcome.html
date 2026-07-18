@@ -553,6 +553,9 @@
       .right { display:none; }
       .left { min-height:100vh; padding:calc(36px + env(safe-area-inset-top)) 8% 36px; }
       .main-title { font-size:2.8rem; }
+      /* .right (floating card/badges) is hidden here, but the orbs are body-level
+         and were still drifting forever in the background — keep the page stable. */
+      .orb { animation: none; }
     }
   </style>
 </head>

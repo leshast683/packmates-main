@@ -872,7 +872,11 @@ function escapeHtml(str) {
      gives Chrome a native, browser-managed cross-document fade on its own;
      it operates on separate compositor-level snapshots, not the real body's
      own opacity, so it can't leave the actual page invisible. */
-  const _mobile = window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
+  /* The native app is always mobile-width, but it's a known, modern WebKit
+     engine (unlike arbitrary mobile browsers), so it doesn't carry the same
+     compatibility risk the mobile-web check below is guarding against. */
+  const _isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  const _mobile = !_isNativeApp && (window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent));
   const _ts = document.createElement('style');
   _ts.textContent = _mobile
     ? '@view-transition{navigation:none}'
