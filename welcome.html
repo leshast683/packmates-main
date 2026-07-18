@@ -548,10 +548,10 @@
 
     /* ── Mobile ── */
     @media (max-width:768px) {
-      html,body { overflow:auto; }
-      body { grid-template-columns:1fr; }
+      html,body { overflow:hidden; height:100%; overscroll-behavior:none; }
+      body { grid-template-columns:1fr; position:fixed; inset:0; }
       .right { display:none; }
-      .left { min-height:100vh; padding:calc(36px + env(safe-area-inset-top)) 8% 36px; }
+      .left { height:100%; min-height:0; padding:calc(20px + env(safe-area-inset-top)) 8% calc(20px + env(safe-area-inset-bottom)); overflow-y:auto; }
       .main-title { font-size:2.8rem; }
       /* .right (floating card/badges) is hidden here, but the orbs are body-level
          and were still drifting forever in the background — keep the page stable. */
