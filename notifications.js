@@ -75,7 +75,7 @@
         user-select: none;
       }
       .pm-toast.pm-toast--visible {
-        top: 16px;
+        top: calc(16px + env(safe-area-inset-top));
         opacity: 1;
         pointer-events: auto;
       }
