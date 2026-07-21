@@ -10,7 +10,7 @@
   "ios": {
     "contentInset": "automatic",
     "allowsLinkPreview": false,
-    "backgroundColor": "#0d3347"
+    "backgroundColor": "#eef1f5"
   },
   "plugins": {
     "SplashScreen": {
