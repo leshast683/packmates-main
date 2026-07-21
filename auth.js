@@ -889,7 +889,7 @@ function escapeHtml(str) {
   _ts.textContent = _mobile
     ? '@view-transition{navigation:none}'
     : '@view-transition{navigation:auto}' +
-      '::view-transition-group(root){animation-duration:180ms}' +
-      '::view-transition-old(root),::view-transition-new(root){animation-timing-function:ease-in-out}';
+      '::view-transition-group(root){animation-duration:150ms}' +
+      '::view-transition-old(root),::view-transition-new(root){animation-timing-function:ease-out}';
   document.head.appendChild(_ts);
 })();
