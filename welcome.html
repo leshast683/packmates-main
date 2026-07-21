@@ -475,6 +475,12 @@
       margin-top:16px;
       animation:fadeUp 0.8s 0.9s ease both;
     }
+    /* The .left-panel copy is for narrow screens only (see @media below,
+       which also hides .feature-pills there) — on wide screens the
+       .right-panel copy already shows it, so keep this one out of the way
+       and out of layout (not just invisible) so it can't affect .left's
+       flex sizing/scroll height on desktop. */
+    .pa-widget--mobile { display:none; }
     .pa-track { overflow:hidden; width:292px; } /* 5 × 52px + 4 × 8px */
     .pa-icons-row {
       display:flex;
@@ -556,6 +562,12 @@
       /* .right (floating card/badges) is hidden here, but the orbs are body-level
          and were still drifting forever in the background — keep the page stable. */
       .orb { animation: none; }
+      /* Swap the plain feature-pill list for the same animated packing-icon
+         widget .right shows on wide screens — only the widget itself, not
+         the floating badges/mockup card/stats row that live alongside it
+         there. */
+      .feature-pills { display:none; }
+      .pa-widget--mobile { display:block; margin-top:4px; }
     }
   </style>
 </head>
@@ -590,6 +602,21 @@
         <span class="pill"><span class="pill-icon">✈️</span> AI Packing Lists</span>
         <span class="pill"><span class="pill-icon">🤝</span> Real-time Collab</span>
         <span class="pill"><span class="pill-icon">🌤</span> Weather Aware</span>
+      </div>
+
+      <!-- Mobile/narrow-screen only (see .pa-widget--mobile CSS): same
+           animated packing-icon widget shown in .right on wide screens,
+           replacing the pills above — .right (and this animation with it)
+           is display:none under 768px, so phones never saw it otherwise. -->
+      <div class="pa-widget pa-widget--mobile" id="paWidgetMobile">
+        <div class="pa-cursor" id="paCursorMobile">
+          <svg width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 2L2 18L6 14L8.5 21L11 20L8.5 13L14 13L2 2Z" fill="white" stroke="#0d2030" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="pa-track">
+          <div class="pa-icons-row" id="paIconsRowMobile"></div>
+        </div>
       </div>
 
       <div class="ctas">
@@ -704,23 +731,15 @@
         'Backpack','Shaving Cream','Swimming Trunks','Tripod','Action Camera',
         'Belt'
       ];
-
-      const row    = document.getElementById('paIconsRow');
-      const cursor = document.getElementById('paCursor');
-      const STEP   = 60;
+      const STEP    = 60;
       const VISIBLE = 5;
       const BUFFER  = 3;
-      let poolIdx = 0;
-      let pool = [...ITEMS].sort(() => Math.random() - 0.5);
 
-      function nextName() {
-        if (poolIdx >= pool.length) { pool = [...ITEMS].sort(() => Math.random() - 0.5); poolIdx = 0; }
-        return pool[poolIdx++];
-      }
-
-      /* Pre-render every icon into a hidden container attached to the live DOM.
-         Attaching to DOM is required for SVG <image> elements to actually fetch
-         their src URLs — detached elements are never fetched by the browser. */
+      /* Icon rendering/preloading is shared across every instance of this
+         widget on the page (currently two: .right's desktop copy and
+         .left's mobile copy, see .pa-widget--mobile) — same icon set, so
+         no reason to fetch/cache it twice. Each instance below only owns
+         its own DOM row/cursor and animation timing state. */
       const _preloadWrap = document.createElement('div');
       _preloadWrap.style.cssText = 'position:fixed;top:-9999px;left:-9999px;visibility:hidden;pointer-events:none;';
       document.body.appendChild(_preloadWrap);
@@ -758,14 +777,65 @@
         });
       });
 
+      /* One independent animation loop per widget instance — its own
+         shuffled item pool, its own row/cursor DOM, its own timers. Two
+         instances running (one typically display:none via CSS depending
+         on viewport width) is cheap: a handful of DOM nodes swapped every
+         2.2s each, not worth gating on visibility. */
+      function createInstance(row, cursor) {
+        let poolIdx = 0;
+        let pool = [...ITEMS].sort(() => Math.random() - 0.5);
+        function nextName() {
+          if (poolIdx >= pool.length) { pool = [...ITEMS].sort(() => Math.random() - 0.5); poolIdx = 0; }
+          return pool[poolIdx++];
+        }
+
+        function tick() {
+          const target = row.children[2];
+          if (!target) return;
+
+          cursor.classList.remove('click');
+          void cursor.offsetWidth;
+          cursor.classList.add('click');
+
+          setTimeout(() => {
+            target.classList.add('active');
+            setTimeout(() => {
+              target.classList.remove('active');
+              row.style.transition = 'transform 0.52s cubic-bezier(0.4,0,0.2,1)';
+              row.style.transform = `translateX(-${BUFFER * STEP}px)`;
+              setTimeout(() => {
+                for (let i = 0; i < BUFFER; i++) {
+                  if (row.firstElementChild) row.firstElementChild.remove();
+                }
+                for (let i = 0; i < BUFFER; i++) row.appendChild(makeIcon(nextName()));
+                row.style.transition = 'none';
+                row.style.transform = 'translateX(0)';
+              }, 540);
+            }, 160);
+          }, 210);
+        }
+
+        return function start() {
+          for (let i = 0; i < VISIBLE + BUFFER; i++) row.appendChild(makeIcon(nextName()));
+          tick();
+          setInterval(tick, 2200);
+        };
+      }
+
+      const starters = [
+        ['paIconsRow', 'paCursor'],
+        ['paIconsRowMobile', 'paCursorMobile'],
+      ]
+        .filter(([rowId, cursorId]) => document.getElementById(rowId) && document.getElementById(cursorId))
+        .map(([rowId, cursorId]) => createInstance(document.getElementById(rowId), document.getElementById(cursorId)));
+
       let _animStarted = false;
       function startAnim() {
         if (_animStarted) return;
         _animStarted = true;
         _preloadWrap.remove();
-        for (let i = 0; i < VISIBLE + BUFFER; i++) row.appendChild(makeIcon(nextName()));
-        tick();
-        setInterval(tick, 2200);
+        starters.forEach(start => start());
       }
 
       /* Track completion with new Image() so we start only after cache is warm */
@@ -781,32 +851,6 @@
           img.src = url;
         });
         setTimeout(startAnim, 3000); /* fallback — give network time */
-      }
-
-      function tick() {
-        const target = row.children[2];
-        if (!target) return;
-
-        cursor.classList.remove('click');
-        void cursor.offsetWidth;
-        cursor.classList.add('click');
-
-        setTimeout(() => {
-          target.classList.add('active');
-          setTimeout(() => {
-            target.classList.remove('active');
-            row.style.transition = 'transform 0.52s cubic-bezier(0.4,0,0.2,1)';
-            row.style.transform = `translateX(-${BUFFER * STEP}px)`;
-            setTimeout(() => {
-              for (let i = 0; i < BUFFER; i++) {
-                if (row.firstElementChild) row.firstElementChild.remove();
-              }
-              for (let i = 0; i < BUFFER; i++) row.appendChild(makeIcon(nextName()));
-              row.style.transition = 'none';
-              row.style.transform = 'translateX(0)';
-            }, 540);
-          }, 160);
-        }, 210);
       }
     })();
   </script>
