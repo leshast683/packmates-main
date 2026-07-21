@@ -877,11 +877,19 @@ function escapeHtml(str) {
      compatibility risk the mobile-web check below is guarding against. */
   const _isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   const _mobile = !_isNativeApp && (window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent));
+  /* A synchronized crossfade (old and new both fading over the *same*
+     short window) reads as one organic motion. Mismatched old/new
+     durations — e.g. old fading out over 180ms while new fades in over
+     300ms — instead read as two sequential motions, which is what made
+     this feel like a "website" navigating rather than an app switching
+     screens. Setting the duration on the transition *group* keeps the
+     browser's default synchronized old/new crossfade pairing intact,
+     just tuned to a snappier, more native-feeling speed. */
   const _ts = document.createElement('style');
   _ts.textContent = _mobile
     ? '@view-transition{navigation:none}'
     : '@view-transition{navigation:auto}' +
-      '::view-transition-old(root){animation:180ms ease-out both}' +
-      '::view-transition-new(root){animation:300ms cubic-bezier(0,0,.2,1) both}';
+      '::view-transition-group(root){animation-duration:180ms}' +
+      '::view-transition-old(root),::view-transition-new(root){animation-timing-function:ease-in-out}';
   document.head.appendChild(_ts);
 })();
