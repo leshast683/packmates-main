@@ -414,7 +414,17 @@
       flex-direction: column;
       position: relative;
       overflow: hidden;
+      /* Leaflet measures #ntMap's box on construction, before its
+         invalidateSize() calls (below, in the init script) correct it —
+         on a fresh page load that first measurement can land mid-layout
+         and come out oversized, briefly showing an unstyled full-screen
+         map. Stay invisible until JS confirms the size is right, then
+         fade in; nothing else lives in this panel, so hiding it hides
+         nothing else. */
+      opacity: 0;
+      transition: opacity 0.2s ease;
     }
+    .nt-preview-panel.nt-map-ready { opacity: 1; }
 
     .nt-preview-bg {
       position: absolute; inset: 0;
@@ -1115,7 +1125,10 @@
     }).addTo(ntMap);
     L.control.zoom({ position: 'bottomright' }).addTo(ntMap);
     /* Ensure tiles render once layout is stable */
-    requestAnimationFrame(() => ntMap.invalidateSize());
+    requestAnimationFrame(() => {
+      ntMap.invalidateSize();
+      document.querySelector('.nt-preview-panel').classList.add('nt-map-ready');
+    });
     setTimeout(() => ntMap.invalidateSize(), 350);
 
     let destMarker = null;
