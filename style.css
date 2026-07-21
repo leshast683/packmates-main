@@ -16,7 +16,13 @@
    RESET
 ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-html, body { height:100%; }
+/* Matches --bg below. Without this, the document has no background of its
+   own until the page's content paints in, so a full page navigation shows
+   a flash of the browser's plain white default first — most noticeable as
+   the app's native page-to-page navigation, which has no crossfade to mask
+   it. Harmless for the website too: every page's own content already sits
+   on this same color, so this is invisible there, just closes the gap. */
+html, body { height:100%; background:#eef1f5; }
 
 /* ─────────────────────────────────────────────
    DESIGN TOKENS
