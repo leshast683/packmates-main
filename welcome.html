@@ -555,9 +555,24 @@
     /* ── Mobile ── */
     @media (max-width:768px) {
       html,body { overflow:hidden; height:100%; overscroll-behavior:none; }
-      body { grid-template-columns:1fr; position:fixed; inset:0; }
+      /* min-height:0 cancels the base rule's min-height:100vh: on iOS,
+         100vh can be taller than the actual visible viewport, which left
+         body's box taller than the screen despite position:fixed;inset:0
+         (inset alone doesn't override an existing min-height floor) —
+         the excess showed as light native-background bands (see
+         capacitor.config.json's ios.backgroundColor) above and below the
+         dark content instead of the WKWebView's own background painting
+         edge-to-edge like it should. */
+      body { grid-template-columns:1fr; position:fixed; inset:0; min-height:0; }
       .right { display:none; }
       .left { height:100%; min-height:0; padding:calc(20px + env(safe-area-inset-top)) 8% calc(20px + env(safe-area-inset-bottom)); overflow-y:auto; justify-content:flex-start; gap:28px; }
+      /* .headline's desktop rule (flex:1; justify-content:center; padding:
+         32px 0) vertically centers its own content within whatever space
+         flex:1 grows it to — harmless on desktop where .left is a fixed-
+         height centered column, but on this flex-start/scrollable mobile
+         .left it left a large empty gap above "Smart Travel Companion".
+         Let it size to its content instead. */
+      .headline { flex:none; justify-content:flex-start; padding:0; }
       .main-title { font-size:2.8rem; }
       /* .right (floating card/badges) is hidden here, but the orbs are body-level
          and were still drifting forever in the background — keep the page stable. */
