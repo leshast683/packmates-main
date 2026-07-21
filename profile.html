@@ -1441,15 +1441,33 @@
     function openLogoutModal()  { document.getElementById('logout-modal').classList.add('active'); }
     function closeLogoutModal() { document.getElementById('logout-modal').classList.remove('active'); }
 
-    /* Packmates = real people you've actually shared a trip with (see
-       get_my_packmates() — derived from trip_members, not a manually
-       curated list). Cached briefly so opening the modal after the badge
-       already loaded doesn't re-fetch. */
+    /* Packmates shown here are two different things stitched together:
+       (1) real people you've actually shared a trip with (see
+       get_my_packmates() — derived from trip_members), cached since it's
+       a network call and doesn't change mid-session; and (2) Community
+       Travelers you've tapped "+ Packmate" on from Discover — a cosmetic
+       local follow (see discover.html's toggleFollow/pm_following), not a
+       real connection, but the user should still see who they've
+       followed reflected here. (2) is read fresh every time, never
+       cached, specifically because the app's native-app tab shell (see
+       lib/app-shell.js) can keep this page alive in the background while
+       the user follows someone from a *different*, also-alive Discover
+       tab — a stale local cache would silently miss that. */
     let _pmPackmatesCache = null;
-    async function _loadPackmates() {
+    async function _loadRealPackmates() {
       if (_pmPackmatesCache) return _pmPackmatesCache;
       _pmPackmatesCache = (typeof DB !== 'undefined') ? await DB.getMyPackmates() : [];
       return _pmPackmatesCache;
+    }
+    function _loadFollowedTravelers() {
+      let ids;
+      try { ids = new Set(JSON.parse(localStorage.getItem('pm_following') || '[]')); } catch { ids = new Set(); }
+      if (!ids.size) return [];
+      return PM_TRAVELERS.filter(t => ids.has(t.avatar)).map(t => ({ name: t.name, city: t.city, _followed: true }));
+    }
+    async function _loadPackmates() {
+      const real = await _loadRealPackmates();
+      return real.concat(_loadFollowedTravelers());
     }
     async function refreshPackmatesCount() {
       const list = await _loadPackmates();
@@ -1458,6 +1476,10 @@
       document.getElementById('meta-packmates').textContent = count + ' Packmate' + (count !== 1 ? 's' : '');
       return count;
     }
+    // Reacts live to a follow/unfollow made from a different, concurrently
+    // alive tab (see comment above) — the 'storage' event only fires in
+    // *other* same-origin browsing contexts, never the one that wrote it.
+    window.addEventListener('storage', e => { if (e.key === 'pm_following') refreshPackmatesCount(); });
     const PM_AVATAR_COLORS = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#f7971e,#ffd200)','linear-gradient(135deg,#7cc63e,#4d8225)','linear-gradient(135deg,#e74c3c,#c0392b)','linear-gradient(135deg,#1abc9c,#16a085)'];
     async function openPackmatesModal() {
       const list = await _loadPackmates();
@@ -1476,8 +1498,11 @@
             <div class="pm-item-info">
               <div class="pm-item-name">${p.name || 'A packmate'}</div>
               <div class="pm-item-stats">
-                <span class="pm-item-stat"><strong>${p.shared_trip_count}</strong> shared trip${p.shared_trip_count !== 1 ? 's' : ''}</span>
-                ${p.first_shared_destination ? `<span class="pm-item-stat pm-item-stat--muted">Packmates since ${p.first_shared_destination}</span>` : ''}
+                ${p._followed
+                  ? `<span class="pm-item-stat pm-item-stat--muted">${p.city || 'Followed on Discover'}</span>`
+                  : `<span class="pm-item-stat"><strong>${p.shared_trip_count}</strong> shared trip${p.shared_trip_count !== 1 ? 's' : ''}</span>
+                     ${p.first_shared_destination ? `<span class="pm-item-stat pm-item-stat--muted">Packmates since ${p.first_shared_destination}</span>` : ''}`
+                }
               </div>
             </div>
           </div>`;
