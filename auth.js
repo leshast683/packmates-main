@@ -883,15 +883,20 @@ function escapeHtml(str) {
      300ms — instead read as two sequential motions, which is what made
      this feel like a "website" navigating rather than an app switching
      screens. */
-  /* ::view-transition-group(root) also carries the browser's own default
-     animation, which interpolates the captured snapshot's size/position
-     between the old and new page. Whenever two pages differ in content
-     height (nearly always, except Home), that reads as the whole screen
-     sliding/shifting right as the page opens. We want a plain crossfade,
-     not a resize/slide, so the group's own animation must be turned off —
-     duration/easing now live on the old/new fade layers instead. */
+  /* Cross-document view transitions are OFF for the native app too (not
+     just mobile web). WebKit's ::view-transition-group(root) carries a
+     built-in animation that interpolates the captured snapshot's size and
+     position between the old and new page, and on this WKWebView build it
+     kept warping/tearing the page (a diagonal wedge torn through the hero
+     photo) even with the group's own `animation` explicitly disabled —
+     that override, which fully stops the morph in Chromium, isn't enough
+     here. Rather than keep fighting an engine-specific quirk we can't
+     live-debug, we just don't opt in: plain navigation, no crossfade, no
+     tearing. The native background-color match (capacitor.config.json)
+     and page prefetch (capacitor-nav.js) still do the real work of making
+     navigation feel instant rather than like a page reload. */
   const _ts = document.createElement('style');
-  _ts.textContent = _mobile
+  _ts.textContent = (_mobile || _isNativeApp)
     ? '@view-transition{navigation:none}'
     : '@view-transition{navigation:auto}' +
       '::view-transition-group(root){animation:none}' +
