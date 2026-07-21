@@ -753,14 +753,26 @@ function _broadcastState() {
         });
 })();
 
-/* ── Supabase background sync: pull fresh pack state, reload once if changed ── */
+/* ── Supabase background sync: pull fresh pack state, re-render in place if changed ── */
 if (!sessionStorage.getItem('pm_pl_synced') && tripData.id) {
     (async () => {
         const before = localStorage.getItem(`pm_pack_${tripData.id}`);
         const changed = await DB.syncPackState(tripData.id);
         if (changed && localStorage.getItem(`pm_pack_${tripData.id}`) !== before) {
             sessionStorage.setItem('pm_pl_synced', '1');
-            location.reload();
+            /* Used to be location.reload() here. On a cold app launch this
+               almost always fires (local cache is stale/empty vs. Supabase),
+               so it read as the packing page "reloading twice" right after
+               opening the app — a full page reload for what's really just
+               a data refresh. Apply the freshly-synced state to the same
+               in-memory variables the realtime collab handler above already
+               updates live, and re-render, instead of reloading. */
+            const fresh = JSON.parse(localStorage.getItem(`pm_pack_${tripData.id}`) || '{}');
+            itemState   = fresh.itemState   || {};
+            dismissed   = new Set(fresh.dismissed || []);
+            customItems = fresh.customItems || {};
+            renderList();
+            updateCounts();
         }
     })().catch(() => {});
 }
