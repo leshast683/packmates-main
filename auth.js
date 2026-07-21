@@ -882,14 +882,19 @@ function escapeHtml(str) {
      durations — e.g. old fading out over 180ms while new fades in over
      300ms — instead read as two sequential motions, which is what made
      this feel like a "website" navigating rather than an app switching
-     screens. Setting the duration on the transition *group* keeps the
-     browser's default synchronized old/new crossfade pairing intact,
-     just tuned to a snappier, more native-feeling speed. */
+     screens. */
+  /* ::view-transition-group(root) also carries the browser's own default
+     animation, which interpolates the captured snapshot's size/position
+     between the old and new page. Whenever two pages differ in content
+     height (nearly always, except Home), that reads as the whole screen
+     sliding/shifting right as the page opens. We want a plain crossfade,
+     not a resize/slide, so the group's own animation must be turned off —
+     duration/easing now live on the old/new fade layers instead. */
   const _ts = document.createElement('style');
   _ts.textContent = _mobile
     ? '@view-transition{navigation:none}'
     : '@view-transition{navigation:auto}' +
-      '::view-transition-group(root){animation-duration:150ms}' +
-      '::view-transition-old(root),::view-transition-new(root){animation-timing-function:ease-out}';
+      '::view-transition-group(root){animation:none}' +
+      '::view-transition-old(root),::view-transition-new(root){animation-duration:150ms;animation-timing-function:ease-out}';
   document.head.appendChild(_ts);
 })();
