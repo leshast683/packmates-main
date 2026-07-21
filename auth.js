@@ -25,7 +25,17 @@ window._pm_sbLoaded = new Promise(resolve => {
         if (event === 'SIGNED_OUT' && !window._pm_intentional_signout) {
           const pub = ['welcome.html','login.html','signup.html','reset.html'];
           if (!pub.some(p => location.pathname.endsWith(p))) {
-            location.replace('login.html?expired=1');
+            /* window.top, not location: the native app's app-shell (see
+               lib/app-shell.js) keeps several of these pages alive at once
+               in background iframes, each running its own independent copy
+               of this script/client. Redirecting via plain `location` would
+               only navigate whichever single frame happened to detect the
+               sign-out, leaving other live frames stuck showing stale
+               content behind a login screen only one of them shows. Always
+               collapsing to the top window means the whole app reacts
+               once, consistently, regardless of which frame noticed first.
+               No-op on the public website, where top is always self. */
+            window.top.location.replace('login.html?expired=1');
           }
         }
       });
