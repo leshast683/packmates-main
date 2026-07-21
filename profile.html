@@ -124,8 +124,7 @@
     #avatar-input { display:none; }
 
     .hero-info { flex:1; min-width:0; padding-top:4px; }
-    .hero-greeting { font-family:'Blauer Nue',sans-serif; font-size:1.7rem; font-weight:700; color:#fff; letter-spacing:-.02em; margin:0 0 2px; text-shadow:0 2px 8px rgba(0,0,0,.35); }
-    .hero-handle { font-size:.82rem; color:rgba(255,255,255,.62); font-weight:500; margin-bottom:11px; }
+    .hero-greeting { font-family:'Blauer Nue',sans-serif; font-size:1.7rem; font-weight:700; color:#fff; letter-spacing:-.02em; margin:0 0 11px; text-shadow:0 2px 8px rgba(0,0,0,.35); }
     .hero-meta { display:flex; align-items:center; flex-wrap:wrap; gap:0; font-size:.74rem; color:rgba(255,255,255,.8); font-weight:500; }
     .hero-meta-item { display:flex; align-items:center; gap:5px; }
     .hero-meta-item svg { width:13px; height:13px; stroke:rgba(255,255,255,.65); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
@@ -411,8 +410,7 @@
 
       /* Text - leave right gap so streak card doesn't overlap */
       .hero-info { padding-right:108px; }
-      .hero-greeting { font-size:1.25rem; }
-      .hero-handle { font-size:.74rem; margin-bottom:8px; }
+      .hero-greeting { font-size:1.25rem; margin-bottom:8px; }
       .btn-edit-profile { margin-top:10px; padding:7px 14px; font-size:.72rem; }
 
       /* Meta row */
@@ -553,7 +551,6 @@
                 <h1 class="hero-greeting" id="hero-greeting">Hey, Traveler! 👋</h1>
                 <span class="profile-gender-chip" id="display-gender-chip" style="display:none"></span>
               </div>
-              <div class="hero-handle" id="display-handle">@traveler</div>
               <div class="hero-meta">
                 <span class="hero-meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="meta-location">Explorer</span></span>
                 <span class="hero-meta-sep">|</span>
@@ -571,7 +568,6 @@
             <!-- Edit inputs (hidden by default) -->
             <div class="profile-edit-inputs" id="profile-edit">
               <input type="text" id="edit-name" placeholder="Display name">
-              <input type="text" id="edit-handle" placeholder="@handle">
               <div class="loc-wrap">
                 <input type="text" id="edit-location" placeholder="Your city (e.g. San Francisco, CA)" autocomplete="off">
                 <div class="loc-dropdown" id="loc-dropdown"></div>
@@ -963,10 +959,8 @@
       const session = Auth.getSession();
       const p = _pmProfile();
       const dName   = p.name   || session?.name  || 'Traveler';
-      const dHandle = p.handle || (session?.email ? '@' + session.email.split('@')[0] : '@traveler');
       const firstName = dName.split(' ')[0];
       document.getElementById('hero-greeting').textContent  = `Hey, ${firstName}! 👋`;
-      document.getElementById('display-handle').textContent = dHandle;
       document.getElementById('avatar-initials').textContent = dName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
       if (session?.email && !p.pdEmail) _savePmProfile({ pdEmail: session.email });
       if (session?.name  && !p.pdName)  _savePmProfile({ pdName:  session.name });
@@ -1236,7 +1230,6 @@
       if (editingProfile) {
         const p = _pmProfile(), s = Auth.getSession();
         document.getElementById('edit-name').value     = p.name     || s?.name   || 'Traveler';
-        document.getElementById('edit-handle').value   = p.handle   || (s?.email ? '@'+s.email.split('@')[0] : '@traveler');
         document.getElementById('edit-location').value = p.location || '';
         const bioInput = document.getElementById('edit-bio');
         bioInput.value = p.bio || '';
@@ -1248,19 +1241,17 @@
         disp.style.display='none'; edit.style.display='flex';
       } else {
         const name     = document.getElementById('edit-name').value.trim()     || 'Traveler';
-        const handle   = document.getElementById('edit-handle').value.trim()   || '@traveler';
         const location = document.getElementById('edit-location').value.trim();
         const bio      = document.getElementById('edit-bio').value.trim().slice(0,50);
         hideLoc();
         try {
-          _savePmProfile({ name, handle, location, bio });
+          _savePmProfile({ name, location, bio });
           /* Sync name to Supabase auth metadata so Auth.getSession() returns the new name */
           if (window._pm_sbLoaded) window._pm_sbLoaded.then(sb => {
             if (sb) sb.auth.updateUser({ data: { name } }).catch(() => {});
           });
         } catch(e) {}
         document.getElementById('hero-greeting').textContent   = `Hey, ${name.split(' ')[0]}! 👋`;
-        document.getElementById('display-handle').textContent  = handle;
         document.getElementById('meta-location').textContent   = location || document.getElementById('meta-location').textContent;
         document.getElementById('avatar-initials').textContent = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
         const bioEl = document.getElementById('display-bio');
