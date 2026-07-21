@@ -256,6 +256,12 @@
     );
     const hasTrip   = !!trip?.destination;
     const bento     = document.getElementById('bentoGrid');
+    // App-only: the Quick Actions card (New Trip / Packing List / Trip
+    // Details / Discover / Join Trip) just duplicates what's already one
+    // tap away in the app's persistent bottom nav — redundant there in a
+    // way it isn't on desktop/web, which has no equivalent nav. Website
+    // unaffected.
+    const _isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
     const allKeys        = Object.keys(packState);
     const packedKeys     = allKeys.filter(k => packState[k]);
@@ -414,7 +420,8 @@
         </div>
       </div>
 
-      <!-- ACTIONS -->
+      <!-- ACTIONS (web only — see _isNativeApp above) -->
+      ${_isNativeApp ? '' : `
       <div class="bc bc-actions">
         <div class="bc-actions-title">Quick Actions</div>
         <button class="bc-action-btn" onclick="location.href='newTrip.html'">
@@ -437,7 +444,8 @@
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
           <span class="bca-label">Join Trip</span><span class="bca-arrow">›</span>
         </button>
-      </div>`;
+      </div>`}
+    `;
 
     /* ── Animate progress rings on every load ── */
     /* getBoundingClientRect forces a reflow so the browser commits the initial

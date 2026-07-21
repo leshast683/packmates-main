@@ -360,6 +360,20 @@
 
     /* ── Packmate Traveler Profile Modal ── */
     .tp-backdrop { position:fixed; inset:0; z-index:400; background:rgba(10,18,30,.65); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .25s; }
+    /* Real packmates (real shared-trip history) only have a few genuine
+       facts to show (name, avatar, shared trips) — everything else in
+       this modal (bio, follower/country counts, travel style, favorite
+       places/activities, packing lists) only exists for the fictional
+       Community Travelers you can "Follow", and would otherwise be shown
+       blank/undefined for a real person. Hide it all in real-packmate
+       mode instead of fabricating or showing broken-looking gaps. */
+    #pmTravelerModal.tp-real-mode .tp-follow-btn,
+    #pmTravelerModal.tp-real-mode .tp-location,
+    #pmTravelerModal.tp-real-mode .tp-bio,
+    #pmTravelerModal.tp-real-mode .tp-stats-row,
+    #pmTravelerModal.tp-real-mode .tp-section-title,
+    #pmTravelerModal.tp-real-mode .tp-chips,
+    #pmTravelerModal.tp-real-mode .tp-trips-list { display:none; }
 
 
     /* ── TIMELINE + AI INSIGHTS GRID ── */
@@ -1463,7 +1477,10 @@
       let ids;
       try { ids = new Set(JSON.parse(localStorage.getItem('pm_following') || '[]')); } catch { ids = new Set(); }
       if (!ids.size) return [];
-      return PM_TRAVELERS.filter(t => ids.has(t.avatar)).map(t => ({ name: t.name, city: t.city, _followed: true }));
+      // avatarCode (not "avatar") deliberately: PM_TRAVELERS' avatar field
+      // is a short initials code (e.g. "SM"), not a photo URL, and the list
+      // rendering below treats a truthy p.avatar as an <img src>.
+      return PM_TRAVELERS.filter(t => ids.has(t.avatar)).map(t => ({ name: t.name, city: t.city, avatarCode: t.avatar, _followed: true }));
     }
     async function _loadPackmates() {
       const real = await _loadRealPackmates();
@@ -1486,15 +1503,23 @@
       const count = list.length;
       document.getElementById('pmListCount').textContent = count + ' packmate' + (count !== 1 ? 's' : '');
       const body = document.getElementById('pmListBody');
+      body.innerHTML = '';
       if (count === 0) {
         body.innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>No packmates yet.<br>Share a trip with someone to see them here!</div>`;
       } else {
-        body.innerHTML = list.map((p, i) => {
+        // Built as real DOM nodes (not one big innerHTML string) so each
+        // item's tap handler can close over its own packmate object/color
+        // directly, instead of round-tripping through a serialized
+        // onclick="" string — simpler and safer given names can contain
+        // quotes/HTML-ish characters.
+        list.forEach((p, i) => {
           const initial = (p.name || '?').trim().charAt(0).toUpperCase();
           const avatarInner = p.avatar ? `<img src="${p.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : initial;
-          return `
-          <div class="pm-item">
-            <div class="pm-item-avatar" style="background:${PM_AVATAR_COLORS[i % PM_AVATAR_COLORS.length]}">${avatarInner}</div>
+          const color = PM_AVATAR_COLORS[i % PM_AVATAR_COLORS.length];
+          const item = document.createElement('div');
+          item.className = 'pm-item';
+          item.innerHTML = `
+            <div class="pm-item-avatar" style="background:${color}">${avatarInner}</div>
             <div class="pm-item-info">
               <div class="pm-item-name">${p.name || 'A packmate'}</div>
               <div class="pm-item-stats">
@@ -1504,9 +1529,17 @@
                      ${p.first_shared_destination ? `<span class="pm-item-stat pm-item-stat--muted">Packmates since ${p.first_shared_destination}</span>` : ''}`
                 }
               </div>
-            </div>
-          </div>`;
-        }).join('');
+            </div>`;
+          item.addEventListener('click', () => {
+            closePackmatesModal();
+            if (p._followed) {
+              openPackmateTravelerModal(p.avatarCode);
+            } else {
+              openRealPackmateModal(p, color);
+            }
+          });
+          body.appendChild(item);
+        });
       }
       document.getElementById('pmListBackdrop').classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -1601,6 +1634,7 @@
       const t = PM_TRAVELERS.find(x => x.avatar === avatar);
       if (!t) return;
       const m = document.getElementById('pmTravelerModal');
+      m.classList.remove('tp-real-mode');
       const headerBg = document.getElementById('pmTpHeaderBg');
       headerBg.style.backgroundImage = t.color;
       headerBg.style.backgroundSize = 'cover';
@@ -1661,6 +1695,39 @@
       document.getElementById('pmTpBackdrop').classList.add('open');
       m.scrollTop = 0;
     }
+
+    /* Real packmates (get_my_packmates()) only carry name/avatar/shared-trip
+       facts — reuses the same modal as openPackmateTravelerModal above, but
+       in "real mode" (see .tp-real-mode CSS), which hides every section
+       that would otherwise show blank/undefined for a real person. */
+    function openRealPackmateModal(p, color) {
+      const m = document.getElementById('pmTravelerModal');
+      m.classList.add('tp-real-mode');
+      const headerBg = document.getElementById('pmTpHeaderBg');
+      headerBg.style.backgroundImage = color;
+      headerBg.style.backgroundSize = 'cover';
+      headerBg.style.backgroundPosition = 'center';
+      const avatarEl = m.querySelector('.tp-avatar');
+      avatarEl.style.background = color;
+      avatarEl.innerHTML = p.avatar
+        ? `<img src="${p.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
+        : (p.name || '?').trim().charAt(0).toUpperCase();
+      m.querySelector('.tp-name').textContent = p.name || 'A packmate';
+      const memberEl = m.querySelector('.tp-member');
+      memberEl.style.display = '';
+      memberEl.textContent = '🤝 ' + p.shared_trip_count + ' shared trip' + (p.shared_trip_count !== 1 ? 's' : '');
+      const destEl = m.querySelector('.tp-gender');
+      if (p.first_shared_destination) {
+        destEl.style.display = '';
+        destEl.textContent = '📍 Packmates since ' + p.first_shared_destination;
+      } else {
+        destEl.style.display = 'none';
+      }
+      m.querySelector('.tp-level').textContent = '';
+      document.getElementById('pmTpBackdrop').classList.add('open');
+      m.scrollTop = 0;
+    }
+
     function closePackmateTravelerModal() {
       document.getElementById('pmTpBackdrop').classList.remove('open');
     }
