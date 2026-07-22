@@ -3,13 +3,19 @@
     ═══════════════════════════════════════════════════ */
     .dash-header {
       display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 100;
+    }
+
+    .dash-header-top {
+      display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 20px;
       flex-wrap: wrap;
-      position: relative;
-      z-index: 100;
     }
 
     .dash-greeting { line-height: 1.2; }
@@ -28,50 +34,46 @@
       margin-top: 2px;
     }
 
-    .dash-header-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 10px;
-    }
-
     .dash-header-icons {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .dash-header-controls {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 10px;
     }
 
     .dash-icon-btn {
-      width: 40px; height: 40px;
+      width: 46px; height: 46px;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       background: var(--surface);
       border: 1.5px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       color: var(--text-2);
       cursor: pointer;
       transition: background 0.18s, border-color 0.18s, color 0.18s;
+      box-shadow: 0 4px 14px rgba(8,34,51,0.1);
     }
-    .dash-icon-btn svg { width: 19px; height: 19px; }
+    .dash-icon-btn svg { width: 21px; height: 21px; }
     .dash-icon-btn:hover { background: var(--bg); border-color: var(--green); color: var(--green); }
 
     .dash-avatar {
-      width: 40px; height: 40px;
+      width: 46px; height: 46px;
       flex-shrink: 0;
       border-radius: 50%;
       overflow: hidden;
       display: flex; align-items: center; justify-content: center;
       background: rgba(180,220,205,.88);
+      box-shadow: 0 4px 14px rgba(8,34,51,0.14);
       border: 1.5px solid var(--border);
       font-family: 'Blauer Nue', sans-serif;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: #113a58;
       cursor: pointer;
       transition: border-color 0.18s;
@@ -1710,8 +1712,8 @@
       .trips-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 640px) {
-      .dash-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .dash-header-right { width: 100%; }
+      .dash-header { gap: 10px; }
+      .dash-header-top { width: 100%; }
       .dash-header-controls { width: 100%; }
       .search-box { flex: 1; min-width: 0; }
       .btn-new-trip { display: none; }
