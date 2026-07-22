@@ -555,17 +555,21 @@
     /* ── Mobile ── */
     @media (max-width:768px) {
       html,body { overflow:hidden; height:100%; overscroll-behavior:none; }
-      /* min-height:0 cancels the base rule's min-height:100vh: on iOS,
-         100vh can be taller than the actual visible viewport, which left
-         body's box taller than the screen despite position:fixed;inset:0
-         (inset alone doesn't override an existing min-height floor) —
-         the excess showed as light native-background bands (see
-         capacitor.config.json's ios.backgroundColor) above and below the
-         dark content instead of the WKWebView's own background painting
-         edge-to-edge like it should. */
-      body { grid-template-columns:1fr; position:fixed; inset:0; min-height:0; }
+      /* .left was sized as a CSS Grid item (body's display:grid columns).
+         On this WKWebView, a grid item's painted/rendered box doesn't
+         reliably extend under the safe area (notch/home-indicator) even
+         when it's supposed to fill 100% of a body that's pinned edge to
+         edge — confirmed by isolating it: swapping .left to size itself
+         directly via position:fixed;inset:0 (bypassing grid placement
+         entirely) fixed it outright, with no other change needed. Every
+         earlier attempt at this (min-height, height vs 100vh, dropping
+         position:fixed on body, dropping display:grid on body) had zero
+         effect, because the grid-item sizing on .left itself was always
+         the actual cause. body's own grid still exists but is irrelevant
+         now since .left no longer participates in its layout. */
+      body { grid-template-columns:1fr; }
       .right { display:none; }
-      .left { height:100%; min-height:0; padding:calc(20px + env(safe-area-inset-top)) 8% calc(20px + env(safe-area-inset-bottom)); overflow-y:auto; justify-content:flex-start; gap:28px; }
+      .left { position:fixed; inset:0; height:auto; padding:calc(20px + env(safe-area-inset-top)) 8% calc(20px + env(safe-area-inset-bottom)); overflow-y:auto; justify-content:flex-start; gap:28px; }
       /* .headline's desktop rule (flex:1; justify-content:center; padding:
          32px 0) vertically centers its own content within whatever space
          flex:1 grows it to — harmless on desktop where .left is a fixed-
