@@ -21,13 +21,9 @@
       color: var(--text-1);
     }
 
-    .dash-greeting h1 .greeting-name {
+    .dash-greeting-name {
+      font-size: 0.95rem;
       color: var(--green, #5f9d30);
-    }
-
-    .dash-greeting .sub {
-      font-size: 0.75rem;
-      color: var(--text-3);
       font-weight: 500;
       margin-top: 2px;
     }

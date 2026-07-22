@@ -43,9 +43,8 @@
     const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
     const h = new Date().getHours();
     const greetWord = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
-    document.getElementById('greetingText').innerHTML = `${greetWord}, <span class="greeting-name">${firstName}</span>`;
-    document.getElementById('dateText').textContent =
-      new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+    document.getElementById('greetingText').textContent = greetWord;
+    document.getElementById('greetingName').textContent = firstName;
 
     /* ── Home search autocomplete ── */
     let homeAcTimer;
