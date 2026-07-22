@@ -42,7 +42,7 @@
     const rawName = session?.name?.split(' ')[0] || 'Traveler';
     const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
     const h = new Date().getHours();
-    const greetWord = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    const greetWord = h < 12 ? 'Good morning,' : h < 18 ? 'Good afternoon,' : 'Good evening,';
     document.getElementById('greetingText').textContent = greetWord;
     document.getElementById('greetingName').textContent = firstName;
 
