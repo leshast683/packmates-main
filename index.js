@@ -304,7 +304,7 @@
         <div class="bc-hero-body">
           <div class="bc-hero-left">
             <div class="bc-hero-dest">${trip.name || trip.destination}</div>
-            <div class="bc-hero-location">${trip.destination}</div>
+            <div class="bc-hero-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>${trip.destination}</div>
             <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : 'Dates not set'}</div>
           </div>
           <div class="bc-hero-right">

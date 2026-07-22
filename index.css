@@ -274,16 +274,20 @@
       text-overflow: ellipsis;
     }
 
-    /* Trip name's destination, shown underneath it only when the trip
-       has a custom name (so it isn't just repeating the same text) —
-       see index.js's hero render. */
+    /* Trip's destination, shown underneath its name — see index.js's
+       hero render. */
     .bc-hero-location {
+      display: flex;
+      align-items: center;
+      gap: 5px;
       font-size: 0.95rem;
       font-weight: 500;
       color: rgba(255,255,255,0.6);
       letter-spacing: 0.01em;
       margin-bottom: 10px;
     }
+
+    .bc-hero-location svg { flex-shrink: 0; }
 
     .bc-hero-dates {
       font-size: 0.78rem;
