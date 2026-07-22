@@ -46,6 +46,21 @@
     document.getElementById('greetingText').textContent = greetWord;
     document.getElementById('greetingName').textContent = firstName;
 
+    /* ── Header avatar (same source as profile.html's own avatar) ── */
+    (function loadHeaderAvatar() {
+      let photo = null;
+      try { photo = JSON.parse(localStorage.getItem('pm_profile') || '{}').avatar || null; } catch {}
+      const el = document.getElementById('dashAvatar');
+      if (photo) {
+        document.getElementById('dashAvatarImg').src = photo;
+        el.classList.add('has-photo');
+      } else {
+        const fullName = session?.name || firstName;
+        document.getElementById('dashAvatarInitials').textContent =
+          fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      }
+    })();
+
     /* ── Home search autocomplete ── */
     let homeAcTimer;
 

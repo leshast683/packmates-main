@@ -34,6 +34,40 @@
       gap: 10px;
     }
 
+    .dash-icon-btn {
+      width: 40px; height: 40px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: background 0.18s, border-color 0.18s, color 0.18s;
+    }
+    .dash-icon-btn svg { width: 19px; height: 19px; }
+    .dash-icon-btn:hover { background: var(--bg); border-color: var(--green); color: var(--green); }
+
+    .dash-avatar {
+      width: 40px; height: 40px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(180,220,205,.88);
+      border: 1.5px solid var(--border);
+      font-family: 'Blauer Nue', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #113a58;
+      cursor: pointer;
+      transition: border-color 0.18s;
+    }
+    .dash-avatar:hover { border-color: var(--green); }
+    .dash-avatar img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .dash-avatar.has-photo span { display: none; }
+    .dash-avatar.has-photo img  { display: block; }
+
     /* Search */
     .search-box {
       display: flex;
