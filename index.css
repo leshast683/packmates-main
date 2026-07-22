@@ -22,9 +22,9 @@
     }
 
     .dash-greeting-name {
-      font-size: 1.25rem;
+      font-size: 1.6rem;
       color: var(--green, #5f9d30);
-      font-weight: 500;
+      font-weight: 700;
       margin-top: 2px;
     }
 
