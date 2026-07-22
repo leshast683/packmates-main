@@ -27,11 +27,23 @@
       color: var(--text-1);
     }
 
+    .dash-greeting-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
     .dash-greeting-name {
       font-size: 1.6rem;
       color: var(--green, #5f9d30);
       font-weight: 700;
-      margin-top: 2px;
+    }
+
+    .dash-greeting-icon {
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
     }
 
     .dash-header-icons {

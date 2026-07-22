@@ -42,9 +42,14 @@
     const rawName = session?.name?.split(' ')[0] || 'Traveler';
     const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
     const h = new Date().getHours();
-    const greetWord = h < 12 ? 'Good morning,' : h < 18 ? 'Good afternoon,' : 'Good evening,';
+    const timeOfDay = h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening';
+    const greetWord = { morning: 'Good morning,', afternoon: 'Good afternoon,', evening: 'Good evening,' }[timeOfDay];
     document.getElementById('greetingText').textContent = greetWord;
     document.getElementById('greetingName').textContent = firstName;
+    const greetingIcon = document.getElementById('greetingIcon');
+    greetingIcon.src = `img/${timeOfDay}.png`;
+    greetingIcon.alt = timeOfDay;
+    greetingIcon.style.display = '';
 
     /* ── Header avatar (same source as profile.html's own avatar) ── */
     (function loadHeaderAvatar() {
