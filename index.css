@@ -167,6 +167,7 @@
       border-radius: 18px;
       overflow: hidden;
       position: relative;
+      box-shadow: 0 8px 28px rgba(8,34,51,0.14);
     }
 
     /* ── HERO CARD ── */
@@ -174,11 +175,22 @@
       grid-column: 1 / 9;
       grid-row: 1 / 3;
       background: var(--navy-deep);
-      min-height: 400px;
+      min-height: 440px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+    }
+
+    /* Share, floating over the top-right corner of the hero photo instead
+       of sitting in the text block at the bottom — its own click handler
+       already stops the card's own "go to trip" navigation (see
+       #shareBtn's listener in index.js), so this works the same,
+       positioned differently. */
+    .bc-hero-btn--corner {
+      position: absolute;
+      top: 16px; right: 16px;
+      z-index: 3;
     }
 
     .bc-hero-img {
@@ -265,15 +277,18 @@
     }
 
     .bc-hero-chip {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.16);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff;
       font-size: 0.62rem;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: 3px 9px;
-      border-radius: 6px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     }
 
     .bc-hero-actions {
@@ -281,9 +296,11 @@
     }
 
     .bc-hero-btn {
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.16);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.24);
+      color: #fff;
       font-family: 'Montserrat', sans-serif;
       font-size: 0.72rem;
       font-weight: 700;
@@ -292,9 +309,10 @@
       cursor: pointer;
       display: inline-flex; align-items: center; gap: 5px;
       transition: background 0.2s, color 0.2s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.16);
     }
 
-    .bc-hero-btn:hover { background: rgba(255,255,255,0.22); color: #fff; }
+    .bc-hero-btn:hover { background: rgba(255,255,255,0.28); color: #fff; }
 
     .bc-hero-weather {
       background: rgba(255,255,255,0.1);
@@ -1599,7 +1617,7 @@
 
     @media (max-width: 900px) {
       .bento { grid-template-columns: 1fr 1fr; }
-      .bc-hero { grid-column: 1 / 3; grid-row: 1; min-height: 280px; }
+      .bc-hero { grid-column: 1 / 3; grid-row: 1; min-height: 310px; }
       .bc-countdown { grid-column: 1; grid-row: 2; }
       .bc-progress { grid-column: 2; grid-row: 2; }
       .bc-weather { grid-column: 1; }
@@ -1615,7 +1633,7 @@
       .dash-stats { gap: 0; }
       .dash-stat { flex: 1; }
       .bento { grid-template-columns: 1fr; gap: 10px; }
-      .bc-hero { grid-column: 1; grid-row: auto; min-height: 240px; }
+      .bc-hero { grid-column: 1; grid-row: auto; min-height: 270px; }
       .bc-countdown, .bc-progress, .bc-weather, .bc-tip, .bc-actions { grid-column: 1; grid-row: auto; }
       .bc-tip { grid-column: 1; min-height: 180px; }
       /* Stacking to a single column left this card stretching to match

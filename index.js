@@ -274,21 +274,8 @@
     const countdownUnit= !hasTrip ? 'no trip yet' : days === null ? '' : days > 0 ? 'days away' : days === 0 ? 'today!' : 'underway';
     const chips        = hasTrip ? (trip.activityCategories||[]).slice(0,5).map(a=>`<span class="bc-hero-chip">${a}</span>`).join('') : '';
 
-    /* ── Pre-compute packmates + nudge link ── */
+    /* ── Pre-compute nudge link ── */
     const nudgeLink = hasTrip ? 'packing-list.html' : 'newTrip.html';
-    let packmatesHtml = '';
-    if (hasTrip) {
-      const tn = Math.min(parseInt(trip.travelers) || 1, 5);
-      let stack = '';
-      for (let i = 0; i < tn; i++) {
-        const col = i === 0 ? '#0d3347' : AVATAR_COLORS[i % AVATAR_COLORS.length];
-        const lbl = i === 0 ? firstName.charAt(0).toUpperCase() : '✦';
-        const fs  = i > 0 ? 'font-size:0.5rem;' : '';
-        stack += `<div class="bc-pm-avatar" style="background:${col};${fs}">${lbl}</div>`;
-      }
-      const tnLabel = tn > 1 ? `You + ${tn - 1} more` : 'Solo trip';
-      packmatesHtml = `<div class="bc-packmates-row"><div class="bc-packmates-stack">${stack}</div><span class="bc-packmates-label">${tnLabel}</span></div>`;
-    }
 
     /* ── Always render full bento ── */
     bento.innerHTML = `
@@ -310,20 +297,16 @@
           </button>
         </div>` : `
         <!-- Active trip hero -->
+        <button class="bc-hero-btn bc-hero-btn--corner" id="shareBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share
+        </button>
         <div class="bc-hero-body">
           <div class="bc-hero-left">
             <div class="bc-hero-tag">Active Trip</div>
             <div class="bc-hero-dest">${trip.name || trip.destination}</div>
             <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : 'Dates not set'}</div>
             ${chips ? `<div class="bc-hero-chips">${chips}</div>` : ''}
-            ${packmatesHtml}
-            <div class="bc-hero-actions">
-              <button class="bc-hero-btn" id="shareBtn">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                Share
-              </button>
-              <span class="bc-hero-weather" id="weatherBadge">🌡 —</span>
-            </div>
           </div>
           <div class="bc-hero-right">
             ${ring(pct, 96, 7)}
@@ -486,8 +469,6 @@
         iconEl.className = 'bc-weather-icon ' + wxAnimClass(w.code);
         document.getElementById('weatherTemp').textContent = w.temp + '°F';
         document.getElementById('weatherCond').textContent = 'Current conditions';
-        const wb = document.getElementById('weatherBadge');
-        if (wb) wb.textContent = `${w.icon} ${w.temp}°F`;
       });
     }
 
