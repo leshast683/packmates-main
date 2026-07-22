@@ -30,7 +30,7 @@
     .dash-greeting-name-row {
       display: flex;
       align-items: center;
-      gap: 2px;
+      gap: 1px;
       margin-top: 2px;
     }
 
