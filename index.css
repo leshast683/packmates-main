@@ -30,6 +30,19 @@
 
     .dash-header-right {
       display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .dash-header-icons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dash-header-controls {
+      display: flex;
       align-items: center;
       gap: 10px;
     }
@@ -1699,6 +1712,7 @@
     @media (max-width: 640px) {
       .dash-header { flex-direction: column; align-items: flex-start; gap: 10px; }
       .dash-header-right { width: 100%; }
+      .dash-header-controls { width: 100%; }
       .search-box { flex: 1; min-width: 0; }
       .btn-new-trip { display: none; }
       .dash-stats { gap: 0; }
