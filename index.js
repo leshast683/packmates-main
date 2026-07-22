@@ -447,11 +447,13 @@
       document.getElementById('heroCard').addEventListener('click', e => {
         if (!e.target.closest('#shareBtn')) location.href = 'tripPreview.html';
       });
-      document.getElementById('shareBtn').addEventListener('click', async e => {
+      document.getElementById('shareBtn').addEventListener('click', e => {
         e.stopPropagation();
-        const text = `✈️ Heading to ${trip.destination}!\n📅 ${fmt(trip.fromDate)} – ${fmt(trip.toDate)}\n🎒 Packed with Packmates AI`;
-        if (navigator.share) { try { await navigator.share({ title: trip.destination + ' Trip', text }); } catch {} }
-        else { try { await navigator.clipboard.writeText(text); toast('Trip details copied!'); } catch { toast('Could not copy'); } }
+        // Was sharing plain text with no link — shareTrip() (used by the
+        // trip cards further down) builds a real join link that opens
+        // straight into this trip's shared packing list, so reuse it here
+        // instead of a separate, link-less implementation.
+        shareTrip(trip.id);
       });
       const bg = document.getElementById('heroBg');
       document.getElementById('heroCard').addEventListener('mousemove', e => {
