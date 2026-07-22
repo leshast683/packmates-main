@@ -305,15 +305,15 @@
         <div class="bc-hero-body">
           <div class="bc-hero-left">
             <div class="bc-hero-dest">${trip.name || trip.destination}</div>
-            ${trip.name && trip.name !== trip.destination ? `<div class="bc-hero-location">${trip.destination}</div>` : ''}
+            <div class="bc-hero-location">${trip.destination}</div>
             <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : 'Dates not set'}</div>
-            ${chips ? `<div class="bc-hero-chips">${chips}</div>` : ''}
           </div>
           <div class="bc-hero-right">
             ${ring(pct, 96, 7)}
             <div class="bc-hero-ring-label">${totalSuggested > 0 ? `${packedKeys.length} of ${totalSuggested}<br>items packed` : 'No items yet'}</div>
           </div>
-        </div>`}
+        </div>
+        ${chips ? `<div class="bc-hero-chips bc-hero-chips--bottom">${chips}</div>` : ''}`}
       </div>
 
       <!-- COUNTDOWN / BOARDING PASS -->

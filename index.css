@@ -237,8 +237,10 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(95,157,48,0.25);
-      border: 1px solid rgba(95,157,48,0.4);
+      background: rgba(95,157,48,0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(125,217,74,0.45);
       color: #7dd94a;
       font-size: 0.62rem;
       font-weight: 700;
@@ -247,6 +249,7 @@
       padding: 3px 10px;
       border-radius: 6px;
       margin-bottom: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.16);
     }
 
     .bc-hero-tag::before {
@@ -296,6 +299,18 @@
 
     .bc-hero-chips {
       display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+
+    /* Sits on its own near the card's bottom edge instead of stacked
+       right under the dates, since .bc-hero-body (name/location/dates)
+       is vertically centered in the card now — this keeps the chips
+       visually anchored to the bottom regardless of where that centered
+       block lands. */
+    .bc-hero-chips--bottom {
+      position: absolute;
+      left: 28px; right: 28px; bottom: 22px;
+      z-index: 2;
+      margin-bottom: 0;
     }
 
     .bc-hero-chip {
