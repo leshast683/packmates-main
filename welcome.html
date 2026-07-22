@@ -158,7 +158,7 @@
       letter-spacing:0.22em;
       text-transform:uppercase;
       color:var(--green2);
-      margin-bottom:34px;
+      margin-bottom:44px;
       animation:fadeUp 0.6s 0.1s ease both;
     }
     .eyebrow-dot {
@@ -238,7 +238,7 @@
     }
 
     .btn-primary {
-      padding:14px 40px;
+      padding:14px 46px;
       background:var(--green);
       color:#fff;
       border:none;
@@ -469,7 +469,7 @@
 
     /* Packing animation widget */
     .pa-widget {
-      width:100%; max-width:340px;
+      width:100%; max-width:360px;
       position:relative;
       padding-bottom:40px;
       margin-top:16px;
@@ -481,21 +481,21 @@
        and out of layout (not just invisible) so it can't affect .left's
        flex sizing/scroll height on desktop. */
     .pa-widget--mobile { display:none; }
-    .pa-track { overflow:hidden; width:322px; } /* 5 × 58px + 4 × 8px */
+    .pa-track { overflow:hidden; width:326px; } /* 5 × 59px + 4 × 8px */
     .pa-icons-row {
       display:flex;
       align-items:center;
       will-change:transform;
     }
     .pa-icon {
-      width:58px; height:58px; flex-shrink:0;
+      width:59px; height:59px; flex-shrink:0;
       border-radius:14px;
-      background:rgba(255,255,255,0.22);
+      background:rgba(255,255,255,0.28);
       border:1px solid rgba(255,255,255,0.13);
       display:flex; align-items:center; justify-content:center;
       margin-right:8px;
     }
-    .pa-icon svg, .pa-icon img { width:33px; height:33px; display:block; flex-shrink:0; }
+    .pa-icon svg, .pa-icon img { width:35px; height:35px; display:block; flex-shrink:0; }
     .pa-icon.active {
       border-color:rgba(124,198,62,0.78);
       background:rgba(95,157,48,0.18);
@@ -569,14 +569,14 @@
          now since .left no longer participates in its layout. */
       body { grid-template-columns:1fr; }
       .right { display:none; }
-      .left { position:fixed; inset:0; height:auto; padding:calc(32px + env(safe-area-inset-top)) 8% calc(20px + env(safe-area-inset-bottom)); overflow-y:auto; justify-content:flex-start; gap:28px; }
+      .left { position:fixed; inset:0; height:auto; padding:calc(44px + env(safe-area-inset-top)) 8% calc(20px + env(safe-area-inset-bottom)); overflow-y:auto; justify-content:flex-start; gap:28px; }
       /* .headline's desktop rule (flex:1; justify-content:center; padding:
          32px 0) vertically centers its own content within whatever space
          flex:1 grows it to — harmless on desktop where .left is a fixed-
          height centered column, but on this flex-start/scrollable mobile
          .left it left a large empty gap above "Smart Travel Companion".
          Let it size to its content instead. */
-      .headline { flex:none; justify-content:flex-start; padding:0; }
+      .headline { flex:none; justify-content:flex-start; padding:0; margin-top:12px; }
       .main-title { font-size:2.8rem; }
       /* .right (floating card/badges) is hidden here, but the orbs are body-level
          and were still drifting forever in the background — keep the page stable. */
@@ -751,7 +751,7 @@
         'Belt','Smart Watch','Panama Hat','Headphones',
         'Waterproof Phone Case','Body Glitter','Aqua Shoes','Snorkel Set'
       ];
-      const STEP    = 66; // must match .pa-icon's width (58px) + margin-right (8px)
+      const STEP    = 67; // must match .pa-icon's width (59px) + margin-right (8px)
       const VISIBLE = 5;
       const BUFFER  = 3;
 
