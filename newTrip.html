@@ -1189,6 +1189,13 @@
     /* ── Destination autocomplete ── */
     let acDebounce;
     let focusedIdx = -1;
+    /* Set on selection from the geocoding dropdown below (the only place
+       a destination's country is ever known) — read at trip-save time so
+       buildTripProfile() (lib/packing-items.js) can suggest Passport only
+       for international trips. Left null if the user types a destination
+       without picking a suggestion; treated as "unknown, assume
+       international" downstream rather than silently dropping Passport. */
+    let selectedDestinationCountry = null;
 
     async function fetchSuggestions(query) {
       try {
@@ -1211,7 +1218,7 @@
       focusedIdx = -1;
       dd.innerHTML = results.map((r, i) => {
         const sub = [r.admin1, r.country].filter(Boolean).join(', ');
-        return `<div class="nt-ac-item" data-idx="${i}" data-name="${r.name}" data-sub="${sub}" data-lat="${r.latitude}" data-lon="${r.longitude}"
+        return `<div class="nt-ac-item" data-idx="${i}" data-name="${r.name}" data-sub="${sub}" data-lat="${r.latitude}" data-lon="${r.longitude}" data-country="${r.country || ''}"
                   onmousedown="selectSuggestion(event,this)">
           <div class="nt-ac-pin"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
           <div><div class="nt-ac-main">${r.name}</div>${sub ? `<div class="nt-ac-sub">${sub}</div>` : ''}</div>
@@ -1229,6 +1236,7 @@
       e.preventDefault();
       const name = el.dataset.name;
       document.getElementById('tripDestination').value = name;
+      selectedDestinationCountry = el.dataset.country || null;
       hideDropdown();
       updatePreview();
       scheduleWeatherFetch();
@@ -1515,6 +1523,9 @@
     document.getElementById('tripDestination').addEventListener('input', () => {
       updatePreview();
       const dest = document.getElementById('tripDestination').value.trim();
+      // Typing invalidates whatever was picked from the dropdown before —
+      // only a fresh selectSuggestion() call (below) sets this again.
+      selectedDestinationCountry = null;
 
       /* autocomplete */
       clearTimeout(acDebounce);
@@ -1574,6 +1585,11 @@
         id: tripId, name: tripName || null, destination, fromDate, toDate, travelers,
         activityCategories, activities: [], notes,
         airline: selectedAirline || null,
+        // From the geocoding dropdown selection above — null if the user
+        // typed a destination without picking a suggestion. Used by
+        // buildTripProfile() (lib/packing-items.js) to suggest Passport
+        // only for international trips.
+        destinationCountry: selectedDestinationCountry,
         inviteCode, weatherTags, createdAt: new Date().toISOString(),
         ownerEmail: Auth.getSession()?.email || null,
       };
