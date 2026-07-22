@@ -297,14 +297,15 @@
           </button>
         </div>` : `
         <!-- Active trip hero -->
+        <div class="bc-hero-tag bc-hero-tag--corner">Active Trip</div>
         <button class="bc-hero-btn bc-hero-btn--corner" id="shareBtn">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           Share
         </button>
         <div class="bc-hero-body">
           <div class="bc-hero-left">
-            <div class="bc-hero-tag">Active Trip</div>
             <div class="bc-hero-dest">${trip.name || trip.destination}</div>
+            ${trip.name && trip.name !== trip.destination ? `<div class="bc-hero-location">${trip.destination}</div>` : ''}
             <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : 'Dates not set'}</div>
             ${chips ? `<div class="bc-hero-chips">${chips}</div>` : ''}
           </div>

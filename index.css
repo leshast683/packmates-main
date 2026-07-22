@@ -175,11 +175,11 @@
       grid-column: 1 / 9;
       grid-row: 1 / 3;
       background: var(--navy-deep);
-      min-height: 440px;
+      min-height: 480px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      justify-content: center;
     }
 
     /* Share, floating over the top-right corner of the hero photo instead
@@ -191,6 +191,17 @@
       position: absolute;
       top: 16px; right: 16px;
       z-index: 3;
+    }
+
+    /* "Active Trip" tag, floating in the top-left corner (mirrors Share
+       in the top-right) instead of sitting inline above the trip name —
+       leaves the name/location block alone in the vertical middle of the
+       card, which .bc-hero's justify-content:center now centers. */
+    .bc-hero-tag--corner {
+      position: absolute;
+      top: 16px; left: 16px;
+      z-index: 3;
+      margin-bottom: 0;
     }
 
     .bc-hero-img {
@@ -253,7 +264,7 @@
 
     .bc-hero-dest {
       font-family: 'Blauer Nue', sans-serif;
-      font-size: 2.8rem;
+      font-size: 3.1rem;
       font-weight: 700;
       color: #fff;
       letter-spacing: -0.03em;
@@ -262,6 +273,17 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    /* Trip name's destination, shown underneath it only when the trip
+       has a custom name (so it isn't just repeating the same text) —
+       see index.js's hero render. */
+    .bc-hero-location {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.01em;
+      margin-bottom: 10px;
     }
 
     .bc-hero-dates {
@@ -1612,12 +1634,12 @@
     /* ── RESPONSIVE BENTO ── */
     @media (max-width: 1200px) {
       .bc-hero { grid-column: 1 / 9; }
-      .bc-hero-dest { font-size: 2.2rem; }
+      .bc-hero-dest { font-size: 2.4rem; }
     }
 
     @media (max-width: 900px) {
       .bento { grid-template-columns: 1fr 1fr; }
-      .bc-hero { grid-column: 1 / 3; grid-row: 1; min-height: 310px; }
+      .bc-hero { grid-column: 1 / 3; grid-row: 1; min-height: 340px; }
       .bc-countdown { grid-column: 1; grid-row: 2; }
       .bc-progress { grid-column: 2; grid-row: 2; }
       .bc-weather { grid-column: 1; }
@@ -1633,7 +1655,7 @@
       .dash-stats { gap: 0; }
       .dash-stat { flex: 1; }
       .bento { grid-template-columns: 1fr; gap: 10px; }
-      .bc-hero { grid-column: 1; grid-row: auto; min-height: 270px; }
+      .bc-hero { grid-column: 1; grid-row: auto; min-height: 295px; }
       .bc-countdown, .bc-progress, .bc-weather, .bc-tip, .bc-actions { grid-column: 1; grid-row: auto; }
       .bc-tip { grid-column: 1; min-height: 180px; }
       /* Stacking to a single column left this card stretching to match
@@ -1648,7 +1670,7 @@
       .bc-progress-inner { gap: 10px; margin-bottom: 6px; }
       .bc-progress-inner svg { width: 58px !important; height: 58px !important; }
       .bc-progress-bar-track { height: 2px; }
-      .bc-hero-dest { font-size: 1.6rem; }
+      .bc-hero-dest { font-size: 1.8rem; }
       .bc-hero-right { display: none; }
       .explore-strip { gap: 10px; }
       .explore-card { min-width: 140px; height: 160px; }
