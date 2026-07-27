@@ -78,6 +78,8 @@ let itemState   = _packRaw.itemState   || {};
 let dismissed   = new Set(_packRaw.dismissed   || []);
 // customItems: { category: [name, ...] }  — user-added
 let customItems = _packRaw.customItems || {};
+// finished: user tapped "Finish Packing" — list view collapses to packed-only
+let finished    = _packRaw.finished || false;
 
 function saveState() {
     if (!_PACK_KEY) return;
@@ -87,7 +89,7 @@ function saveState() {
        itemState's own keys, which only ever contains items someone has
        actually clicked (so checking even 1 of 40 suggested items would
        otherwise look like "100% packed"). */
-    const state = { itemState, dismissed: [...dismissed], customItems, totalSuggested: getSuggestedKeys().length };
+    const state = { itemState, dismissed: [...dismissed], customItems, finished, totalSuggested: getSuggestedKeys().length };
     localStorage.setItem(_PACK_KEY, JSON.stringify(state));
     /* Sync to Supabase via DB layer (debounced inside DB.savePackState) */
     if (typeof DB !== 'undefined' && tripData.id) {
@@ -209,8 +211,46 @@ function updateCounts() {
             localStorage.setItem(_PACK_KEY, JSON.stringify(raw));
         } catch(e) {}
     }
+    updateFinishBar(packed, all.length);
     _broadcastState();
 }
+
+// ── Finish Packing ──
+function updateFinishBar(packedCount, totalCount) {
+    const bar   = document.getElementById('finishFixedBar');
+    const title = document.getElementById('finishFixedTitle');
+    const sub   = document.getElementById('finishFixedSub');
+    const label = document.getElementById('finishFixedBtnLabel');
+    if (!bar) return;
+
+    bar.classList.toggle('pl-finish-fixed-bar--done', finished);
+    if (finished) {
+        if (title) title.textContent = 'Packing complete ✓';
+        if (sub)   sub.textContent   = `${packedCount} item${packedCount !== 1 ? 's' : ''} packed — edit anytime if you forgot something`;
+        if (label) label.textContent = 'Edit List';
+    } else {
+        if (title) title.textContent = 'Ready to finish?';
+        if (sub)   sub.textContent   = `${packedCount} of ${totalCount} packed — lock in your progress`;
+        if (label) label.textContent = 'Finish Packing';
+    }
+
+    // Editing controls (filters, search, add item) only make sense while
+    // actively packing — once finished the list is a read-mostly packed-only
+    // summary, and "Edit List" is the way back into full editing mode.
+    const controls = document.querySelector('.pl-controls');
+    const addBtn   = document.getElementById('openAddItemModal');
+    if (controls) controls.style.display = finished ? 'none' : '';
+    if (addBtn)   addBtn.style.display   = finished ? 'none' : '';
+}
+
+function setFinished(val) {
+    finished = val;
+    saveState();
+    renderList();
+    updateCounts();
+}
+
+document.getElementById('finishPackingBtn')?.addEventListener('click', () => setFinished(!finished));
 
 function restoreDismissed() {
     dismissed.clear();
@@ -258,7 +298,7 @@ function buildItemRow(cat, name, isCustom) {
                     <button class="qty-btn" data-key="${key}" data-delta="-1" style="width:18px;height:18px;border-radius:50%;border:1px solid #cdd6de;background:#f7fafc;cursor:pointer;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;">−</button>
                     <span class="packing-quantity qty-display" data-key="${key}">x${state.qty}</span>
                     <button class="qty-btn" data-key="${key}" data-delta="1" style="width:18px;height:18px;border-radius:50%;border:1px solid #cdd6de;background:#f7fafc;cursor:pointer;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;">+</button>
-                    ${ALWAYS_SUGGEST_CATS.has(cat) ? '' : `<button class="dismiss-btn" data-key="${key}" data-cat="${cat}" data-name="${name}" title="Remove suggestion" style="width:18px;height:18px;border-radius:50%;border:none;background:#fdecea;cursor:pointer;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;color:#c0392b;">✕</button>`}
+                    <button class="dismiss-btn" data-key="${key}" data-cat="${cat}" data-name="${name}" title="Delete item" style="width:18px;height:18px;border-radius:50%;border:none;background:#fdecea;cursor:pointer;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;color:#c0392b;">✕</button>
                 </div>
             </div>
             <div class="packing-item-meta">
@@ -324,6 +364,7 @@ function buildCategorySection(cat, itemEntries) {
         }
         const key    = getItemKey(cat, name);
         const packed = itemState[key]?.packed || false;
+        if (finished) return packed;
         if (currentFilter === 'packed')     return packed;
         if (currentFilter === 'not-packed') return !packed;
         return true;
@@ -399,6 +440,7 @@ function renderList() {
             if (currentSearch && !name.toLowerCase().includes(currentSearch)) return;
             const key    = getItemKey(cat, name);
             const packed = itemState[key]?.packed || false;
+            if (finished && !packed) return;
             if (currentFilter === 'packed'     && !packed) return;
             if (currentFilter === 'not-packed' && packed)  return;
             section.appendChild(buildItemRow(cat, name, true));
@@ -406,15 +448,17 @@ function renderList() {
         if (section.children.length > 1) body.appendChild(section);
     });
 
-    // "Show all / Fewer items" toggle
-    const toggle = document.createElement('button');
-    toggle.style.cssText = 'margin:16px auto 4px;display:block;background:none;border:1px solid #cdd6de;border-radius:999px;padding:6px 18px;font-size:0.78rem;cursor:pointer;color:#4b5a66;font-family:inherit;';
-    toggle.textContent = showAllItems ? '↑ Show suggested items only' : '↓ Browse all items';
-    toggle.addEventListener('click', () => {
-        showAllItems = !showAllItems;
-        renderList();
-    });
-    body.appendChild(toggle);
+    // "Show all / Fewer items" toggle (not relevant once packing is finished)
+    if (!finished) {
+        const toggle = document.createElement('button');
+        toggle.style.cssText = 'margin:16px auto 4px;display:block;background:none;border:1px solid #cdd6de;border-radius:999px;padding:6px 18px;font-size:0.78rem;cursor:pointer;color:#4b5a66;font-family:inherit;';
+        toggle.textContent = showAllItems ? '↑ Show suggested items only' : '↓ Browse all items';
+        toggle.addEventListener('click', () => {
+            showAllItems = !showAllItems;
+            renderList();
+        });
+        body.appendChild(toggle);
+    }
 }
 
 // ── Filters ──

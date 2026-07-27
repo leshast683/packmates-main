@@ -1006,6 +1006,10 @@
       opacity: 0; transition: opacity 0.18s;
     }
     .trip-card:hover .trip-card-badge--switch { opacity: 1; }
+    .trip-card-badge--past {
+      background: rgba(11,25,41,0.68); backdrop-filter: blur(4px);
+    }
+    .trip-card--past .trip-card-img img { filter: grayscale(0.35) brightness(0.88); }
     .trip-card-delete {
       width: 28px; height: 28px;
       border: 1px solid var(--border); background: var(--bg);

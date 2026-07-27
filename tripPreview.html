@@ -1042,7 +1042,10 @@
             <div class="tripPreviewMain">
                 <div class="tripPreviewHeader">
                     <div>
-                        <h1 id="tripTitleDisplay">Trip</h1>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                            <h1 id="tripTitleDisplay">Trip</h1>
+                            <span id="pastTripBadge" style="display:none;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:rgba(11,25,41,.65);padding:4px 10px;border-radius:99px;">Past Trip</span>
+                        </div>
                         <div class="avatars" id="travelerAvatars">
                             <p id="tripDatesDisplay"></p>
                         </div>
@@ -1272,6 +1275,9 @@
         if (fromDate && toDate) {
             document.getElementById('tripDatesDisplay').textContent = `${formatDate(fromDate)} – ${formatDate(toDate)}`;
         }
+        const isPastTrip = toDate ? new Date(toDate + 'T23:59:59') < new Date() : false;
+        const pastBadgeEl = document.getElementById('pastTripBadge');
+        if (pastBadgeEl) pastBadgeEl.style.display = isPastTrip ? 'inline-block' : 'none';
 
         // ── Real trip member avatars (who actually joined, not a headcount) ──
         const AVATAR_COLORS = ['var(--green)','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c','#f39c12','#2980b9'];

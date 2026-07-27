@@ -508,20 +508,23 @@
       tripsGrid.innerHTML = allTrips.slice().reverse().map(t => {
         const isActive = t.id === trip?.id;
         const tDays = t.fromDate ? daysTo(t.fromDate) : null;
-        const daysLabel = tDays === null ? '' : tDays > 0 ? `${tDays}d away` : tDays === 0 ? 'Today!' : 'Underway';
+        const isPast = t.toDate ? new Date(t.toDate + 'T23:59:59') < new Date() : false;
+        const daysLabel = isPast ? 'Past trip' : tDays === null ? '' : tDays > 0 ? `${tDays}d away` : tDays === 0 ? 'Today!' : 'Underway';
         const isOwnedByMe = !t._ownerId || t._ownerId === _myId;
         const deleteLabel = isOwnedByMe ? 'Delete trip' : 'Leave trip';
         return `
-          <div class="trip-card${isActive ? ' trip-card--active' : ''}" id="tc-${t.id}">
+          <div class="trip-card${isActive ? ' trip-card--active' : ''}${isPast ? ' trip-card--past' : ''}" id="tc-${t.id}">
             <div class="trip-card-img" onclick="${isActive ? `location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}" style="position:relative">
               <img src="${t.imageUrl || 'img/placeholderTrip.png'}" alt="${t.destination}" loading="lazy">
-              ${isActive
+              ${isPast
+                ? '<div class="trip-card-badge trip-card-badge--past">Past Trip</div>'
+                : isActive
                 ? '<div class="trip-card-badge">Active</div>'
                 : '<div class="trip-card-badge trip-card-badge--switch">Switch</div>'}
             </div>
             <div class="trip-card-body" onclick="${isActive ? `location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}">
               <div class="trip-card-title">${t.name || t.destination}</div>
-              <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : 'Dates not set'}${daysLabel ? ` · <span style="color:var(--green-dark,#4d8225);font-weight:600">${daysLabel}</span>` : ''}</div>
+              <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : 'Dates not set'}${daysLabel ? ` · <span style="color:${isPast ? 'var(--text-3)' : 'var(--green-dark,#4d8225)'};font-weight:600">${daysLabel}</span>` : ''}</div>
               <div class="trip-card-footer">
                 <div class="avatars" id="cardAvatars-${t.id}"></div>
                 <div style="display:flex;align-items:center;gap:6px">

@@ -170,6 +170,18 @@
     <!-- List body -->
     <div class="pl-list" id="packingListBody"></div>
 
+    <!-- Finish Packing sticky action bar -->
+    <div class="pl-finish-fixed-bar" id="finishFixedBar">
+      <div class="pl-finish-fixed-info">
+        <strong id="finishFixedTitle">Ready to finish?</strong>
+        <span id="finishFixedSub">Lock in your progress — you can edit again anytime</span>
+      </div>
+      <button class="pl-finish-fixed-btn" id="finishPackingBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="finishFixedBtnLabel">Finish Packing</span>
+      </button>
+    </div>
+
     <!-- Finish packing banner (shown at 100%) -->
     <div class="pl-finish-banner" id="finishPackingBanner">
       <div class="pl-finish-glow"></div>
@@ -293,7 +305,7 @@
   <script src="packing-icons.js?v=1"></script>
   <script src="lib/packing-math.js"></script>
   <script src="lib/packing-items.js"></script>
-  <script src="packing-list.js?v=48"></script>
+  <script src="packing-list.js?v=49"></script>
   <nav class="bottom-nav">
     <button class="bn-btn" data-tab="index.html" onclick="location.href='index.html'">
       <svg viewBox="0 0 24 24"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>

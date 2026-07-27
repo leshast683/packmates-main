@@ -832,6 +832,54 @@ body > main {
 .city-banner { display: none; }
 
 /* ══════════════════════════
+   FINISH PACKING STICKY BAR
+══════════════════════════ */
+.pl-finish-fixed-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 -4px 20px rgba(8,34,51,0.1);
+}
+
+.pl-finish-fixed-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.pl-finish-fixed-info strong { font-family: 'Blauer Nue', sans-serif; font-size: 0.86rem; font-weight: 700; color: var(--text-1); }
+.pl-finish-fixed-info span { font-size: 0.7rem; color: var(--text-3); }
+
+.pl-finish-fixed-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 11px 20px;
+  background: linear-gradient(135deg, #7cc63e, #5f9d30);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem; font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(95,157,48,0.35);
+}
+.pl-finish-fixed-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(95,157,48,0.4); }
+
+.pl-finish-fixed-bar--done .pl-finish-fixed-btn {
+  background: var(--surface);
+  color: var(--text-2);
+  border: 1.5px solid var(--border);
+  box-shadow: none;
+}
+.pl-finish-fixed-bar--done .pl-finish-fixed-btn:hover { border-color: var(--border-2); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(8,34,51,0.1); }
+
+/* ══════════════════════════
    FINISH PACKING BANNER
 ══════════════════════════ */
 .pl-finish-banner {
@@ -1042,4 +1090,5 @@ body > main {
   .pl-category-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .pl-finish-banner { flex-direction: column; align-items: flex-start; gap: 12px; }
   .pl-finish-btn { align-self: flex-end; }
+  .pl-finish-fixed-bar { margin-bottom: calc(8px + env(safe-area-inset-bottom)); }
 }
