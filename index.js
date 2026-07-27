@@ -524,7 +524,7 @@
             </div>
             <div class="trip-card-body" onclick="${isActive ? `location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}">
               <div class="trip-card-title">${t.name || t.destination}</div>
-              <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : 'Dates not set'}${daysLabel ? ` · <span style="color:${isPast ? 'var(--text-3)' : 'var(--green-dark,#4d8225)'};font-weight:600">${daysLabel}</span>` : ''}</div>
+              <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : 'Dates not set'}${daysLabel ? ` · <span style="color:${isPast ? '#e67e22' : 'var(--green-dark,#4d8225)'};font-weight:600">${daysLabel}</span>` : ''}</div>
               <div class="trip-card-footer">
                 <div class="avatars" id="cardAvatars-${t.id}"></div>
                 <div style="display:flex;align-items:center;gap:6px">
