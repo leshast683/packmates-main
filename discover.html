@@ -674,10 +674,6 @@
         </div>
         <div class="tp-name-row">
           <div class="tp-name"></div>
-          <svg class="tp-verified" viewBox="0 0 24 24" style="display:none">
-            <path fill="#3b82f6" d="M12 2l2.4 1.2 2.6-.6 1.4 2.3 2.4 1.2-.3 2.6L22 11l-1.5 2.3.3 2.6-2.4 1.2-1.4 2.3-2.6-.6L12 20l-2.4-1.2-2.6.6-1.4-2.3-2.4-1.2.3-2.6L2 11l1.5-2.3-.3-2.6 2.4-1.2 1.4-2.3 2.6.6z"/>
-            <path fill="#fff" d="M9.2 12.1l1.9 1.9 3.7-4.2" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          </svg>
         </div>
         <div class="tp-location">
           <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
@@ -699,8 +695,8 @@
             <span class="tp-stat-num" id="tp-stat-countries">—</span><span class="tp-stat-lbl">Countries</span>
           </div>
           <div class="tp-stat">
-            <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-            <span class="tp-stat-num" id="tp-stat-followers">—</span><span class="tp-stat-lbl">Followers</span>
+            <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><polyline points="9 12 11 14 15 10"/></svg></div>
+            <span class="tp-stat-num" id="tp-stat-packed">—</span><span class="tp-stat-lbl">Items Packed</span>
           </div>
         </div>
         <div class="tp-section-title">🧭 Travel Style</div>
@@ -1075,7 +1071,6 @@
       m.querySelector('.tp-avatar').style.background = t.color;
       m.querySelector('.tp-avatar').textContent = t.avatar;
       m.querySelector('.tp-name').textContent = t.name;
-      m.querySelector('.tp-verified').style.display = t.isReal ? 'none' : '';
       m.querySelector('.tp-location span').textContent = t.city;
       m.querySelector('.tp-member').textContent = t.memberSince ? '📅 Joined ' + t.memberSince : '';
       m.querySelector('.tp-gender').textContent = t.gender ? '👤 ' + t.gender : '';
@@ -1083,7 +1078,8 @@
       m.querySelector('.tp-bio').textContent = t.bio || (t.isReal ? "This traveler hasn't added a bio yet." : '');
       m.querySelector('#tp-stat-trips').textContent = t.trips;
       m.querySelector('#tp-stat-countries').textContent = t.countries;
-      m.querySelector('#tp-stat-followers').textContent = (t.followers >= 1000 ? (t.followers/1000).toFixed(1)+'k' : t.followers);
+      const itemsPacked = (t.packingLists || []).reduce((sum, r) => sum + (parseInt(r.items) || 0), 0);
+      m.querySelector('#tp-stat-packed').textContent = (itemsPacked >= 1000 ? (itemsPacked/1000).toFixed(1)+'k' : itemsPacked);
       m.querySelector('.tp-styles-chips').innerHTML = t.travelStyles.map(s => `<span class="tp-chip">${styleIcon(s)} ${s}</span>`).join('');
       const pinSvg = `<svg viewBox="0 0 24 24" style="width:11px;height:11px;flex-shrink:0" fill="#113a58"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
       m.querySelector('.tp-places-chips').innerHTML = t.places.map(p =>
