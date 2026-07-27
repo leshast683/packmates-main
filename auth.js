@@ -663,16 +663,23 @@ const DB = (() => {
       _debounce('pack_' + tripId, async () => {
         const client = await sb(); const uid = _uid();
         if (!client || !uid) return;
-        client.from('packing_state').upsert({
+        const payload = {
           trip_id: tripId, user_id: uid,
           item_state:   state.itemState   || {},
           dismissed:    state.dismissed   || [],
           custom_items: state.customItems || {},
-        }, { onConflict: 'trip_id,user_id' })
-          .then(({ error }) => {
-            if (error) { console.error('[DB] savePackState:', error.message); Auth.logError(error.message, { where: 'savePackState' }); }
-            else { _packGuard(tripId).clear(); }
-          });
+          finished:     !!state.finished,
+        };
+        let { error } = await client.from('packing_state').upsert(payload, { onConflict: 'trip_id,user_id' });
+        if (error && /finished/.test(error.message || '')) {
+          /* packing_state.finished migration not applied yet on this
+             project — retry without it so item_state/dismissed/
+             custom_items still sync instead of the whole row failing. */
+          delete payload.finished;
+          ({ error } = await client.from('packing_state').upsert(payload, { onConflict: 'trip_id,user_id' }));
+        }
+        if (error) { console.error('[DB] savePackState:', error.message); Auth.logError(error.message, { where: 'savePackState' }); }
+        else { _packGuard(tripId).clear(); }
       }, 2000);
     },
 
@@ -713,17 +720,19 @@ const DB = (() => {
       const { data, error } = await client.from('packing_state').select('*')
         .eq('trip_id', tripId).eq('user_id', uid).maybeSingle();
       if (error || !data) return false;
-      /* Merge onto (not replace) the existing local blob — fields with no
-         Supabase column yet, like "finished" from the Finish Packing
-         toggle, live only in localStorage. A plain overwrite here would
-         silently wipe them back to unset every time this background sync
-         runs, undoing "finished" shortly after the user set it. */
+      /* Merge onto (not replace) the existing local blob. "finished" only
+         gets trusted from Supabase once the column actually exists there
+         (data.finished !== undefined) — on a project where the migration
+         hasn't been applied yet, select('*') simply won't return that key,
+         and blindly coercing a missing value to false would silently wipe
+         a locally-set "finished" back to unset on every background sync. */
       const existing = JSON.parse(localStorage.getItem(`pm_pack_${tripId}`) || '{}');
       localStorage.setItem(`pm_pack_${tripId}`, JSON.stringify({
         ...existing,
         itemState:   data.item_state   || {},
         dismissed:   data.dismissed    || [],
         customItems: data.custom_items || {},
+        finished:    data.finished !== undefined ? !!data.finished : !!existing.finished,
       }));
       return true;
     },
