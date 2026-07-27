@@ -1,6 +1,21 @@
     /* ── Auth guard ── */
     Auth.requireAuth('welcome.html');
 
+    /* Header avatar/notification-bell aren't .bottom-nav buttons, so the
+       app-shell's own click interception never sees them — without this
+       they'd fall through to a real location.href and tear the whole
+       iframe-tab shell down for what should be an instant tab switch.
+       window.top (not window) because this same index.html can also be
+       running as one of the shell's own embedded background tabs, in
+       which case PmAppShell only exists on the actual host document. */
+    function pmGoTab(page) {
+      if (window.top && window.top.PmAppShell && window.top.PmAppShell.switchTab) {
+        window.top.PmAppShell.switchTab(page);
+      } else {
+        location.href = page;
+      }
+    }
+
     /* ── Custom confirm modal — replaces the plain OS confirm() dialog with
        one that matches the app's own design. A DOM-based modal like this
        has no "user activation" lifetime the way window.confirm() does, so
