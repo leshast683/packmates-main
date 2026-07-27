@@ -713,7 +713,14 @@ const DB = (() => {
       const { data, error } = await client.from('packing_state').select('*')
         .eq('trip_id', tripId).eq('user_id', uid).maybeSingle();
       if (error || !data) return false;
+      /* Merge onto (not replace) the existing local blob — fields with no
+         Supabase column yet, like "finished" from the Finish Packing
+         toggle, live only in localStorage. A plain overwrite here would
+         silently wipe them back to unset every time this background sync
+         runs, undoing "finished" shortly after the user set it. */
+      const existing = JSON.parse(localStorage.getItem(`pm_pack_${tripId}`) || '{}');
       localStorage.setItem(`pm_pack_${tripId}`, JSON.stringify({
+        ...existing,
         itemState:   data.item_state   || {},
         dismissed:   data.dismissed    || [],
         customItems: data.custom_items || {},
