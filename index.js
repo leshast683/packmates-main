@@ -288,6 +288,7 @@
     const totalSuggested = _packRaw.totalSuggested || _packRaw.suggestedTotal || allKeys.length;
     const pct            = PackingMath.calcPackedPct(packedKeys.length, totalSuggested);
 
+    const isPastTrip   = hasTrip && trip.toDate ? new Date(trip.toDate + 'T23:59:59') < new Date() : false;
     const days         = hasTrip ? daysTo(trip.fromDate) : null;
     const countdownNum = !hasTrip ? '—' : days === null ? '—' : days > 0 ? days : days === 0 ? '0' : '✓';
     const countdownUnit= !hasTrip ? 'no trip yet' : days === null ? '' : days > 0 ? 'days away' : days === 0 ? 'today!' : 'underway';
@@ -316,7 +317,7 @@
           </button>
         </div>` : `
         <!-- Active trip hero -->
-        <div class="bc-hero-tag bc-hero-tag--corner">Active Trip</div>
+        <div class="bc-hero-tag bc-hero-tag--corner${isPastTrip ? ' bc-hero-tag--past' : ''}">${isPastTrip ? 'Past Trip' : 'Active Trip'}</div>
         <button class="bc-hero-btn bc-hero-btn--corner" id="shareBtn">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           Share

@@ -322,6 +322,13 @@
       50% { opacity: 0.5; transform: scale(0.8); }
     }
 
+    .bc-hero-tag--past {
+      background: rgba(230,126,34,0.3);
+      border: 1px solid rgba(230,126,34,0.5);
+      color: #f5a623;
+    }
+    .bc-hero-tag--past::before { display: none; }
+
     .bc-hero-dest {
       font-family: 'Blauer Nue', sans-serif;
       font-size: 3.1rem;
