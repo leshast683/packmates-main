@@ -957,7 +957,7 @@
     }
 
     .trip-card-img {
-      height: 122px;
+      height: 110px;
       background: var(--border);
       overflow: hidden;
       position: relative;
