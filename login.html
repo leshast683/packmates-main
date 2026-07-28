@@ -473,10 +473,15 @@
         msg.className = 'msg success'; msg.textContent = 'Signing in…';
         /* Session now exists, so index.html's own auth guard will pass -
            start loading it during the same 700ms the success message is
-           shown, so revealing it feels instant instead of a hard reload. */
-        if (window.PmAuthFlow) window.PmAuthFlow.preload('index.html');
+           shown, so revealing it feels instant instead of a hard reload.
+           window.top (not window): this page can itself be running inside
+           welcome.html's own auth-flow iframe, where auth-flow.js's own
+           window.self!==window.top guard leaves it inert on THIS window -
+           window.top is where the real, active instance always lives. */
+        var _authFlow = window.top.PmAuthFlow;
+        if (_authFlow) _authFlow.preload('index.html');
         setTimeout(() => {
-          if (window.PmAuthFlow) window.PmAuthFlow.reveal('index.html');
+          if (_authFlow) _authFlow.reveal('index.html');
           else location.replace('index.html');
         }, 700);
       } else if (result.error === 'EMAIL_NOT_CONFIRMED') {

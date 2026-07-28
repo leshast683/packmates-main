@@ -378,9 +378,13 @@
 
     /* Session exists by the time this is ever called, so index.html's
        own auth guard will pass - reveal a freshly-loaded copy instead
-       of a hard reload. */
+       of a hard reload. window.top (not window): this page can itself be
+       running inside welcome.html's own auth-flow iframe, where
+       auth-flow.js's own window.self!==window.top guard leaves it inert
+       on THIS window - window.top is where the real, active instance
+       always lives. */
     function _goHome() {
-      if (window.PmAuthFlow) window.PmAuthFlow.reveal('index.html');
+      if (window.top.PmAuthFlow) window.top.PmAuthFlow.reveal('index.html');
       else location.replace('index.html');
     }
 
