@@ -737,7 +737,7 @@
             <div class="settings-panel-inner">
               <div class="plan-card"><div><strong>Free Tier</strong><small>Up to 3 packing lists · Basic features</small></div><span class="settings-row-badge badge--navy">Active</span></div>
               <p style="font-size:.8rem;color:var(--text-3);line-height:1.65;">Upgrade to Pro for unlimited lists, smart weather packing, and real-time collaboration.</p>
-              <button class="btn-upgrade" onclick="showToast('Pro plan is coming in the future!')">Upgrade to Pro →</button>
+              <button class="btn-upgrade" onclick="showToast('Pro plan is coming in the future!', 5000, 'top')">Upgrade to Pro →</button>
             </div>
           </div>
 
@@ -951,9 +951,11 @@
       v.play().catch(() => {});
     })();
 
-    function showToast(msg, d=2500) {
+    function showToast(msg, d=2500, pos='bottom') {
       const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
+      t.textContent = msg;
+      t.classList.toggle('toast--top', pos === 'top');
+      t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), d);
     }
     function showMsg(id, msg, type) {

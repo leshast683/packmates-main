@@ -734,10 +734,6 @@ textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(17,58,88,0.
   }
   h1 { font-size: 1.2rem; }
   .grid { grid-template-columns: 1fr; gap: 10px; }
-  /* Default bottom:28px sits inside the bottom-nav's own footprint
-     (calc(62px + safe-area)) and both use similarly dark colors, so a
-     toast reads as basically invisible there — clear the nav entirely. */
-  .toast { bottom: calc(78px + env(safe-area-inset-bottom)); }
 }
 
 /* ── Shared confirm modal + toast (used by nav.js sign-out) ── */
@@ -756,6 +752,21 @@ textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(17,58,88,0.
 .btn-confirm-logout:hover { background:#a93226; }
 .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(16px); background:var(--navy-deep); color:#fff; font-size:.78rem; font-weight:500; padding:10px 22px; border-radius:10px; opacity:0; pointer-events:none; transition:opacity .25s,transform .25s; z-index:300; white-space:nowrap; box-shadow:var(--shadow-md); }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+/* Top variant — for messages that need to stand out more (e.g. away from
+   the bottom-nav entirely) rather than the default brief bottom toast. */
+.toast--top { bottom:auto; top:calc(18px + env(safe-area-inset-top)); transform:translateX(-50%) translateY(-16px); white-space:normal; text-align:center; max-width:86%; }
+.toast--top.show { transform:translateX(-50%) translateY(0); }
+@media (max-width:640px) {
+  /* This has to come after the base .toast rule above (not the earlier
+     mobile media query near the top of the file) - same selector
+     specificity, and CSS ties resolve by source order, so an identical
+     selector defined later always wins regardless of which one is
+     "supposed to" apply for the viewport. Default bottom:28px sits
+     inside the bottom-nav's own footprint (calc(62px + safe-area)) and
+     both use similarly dark colors, so a bottom toast reads as
+     basically invisible there — clear the nav entirely. */
+  .toast:not(.toast--top) { bottom: calc(78px + env(safe-area-inset-bottom)); }
+}
 
 /* ── Deduplicated shared rules (previously copy-pasted identically across multiple pages) ── */
 .tp-backdrop.open { opacity:1; pointer-events:all; }
