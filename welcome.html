@@ -871,9 +871,20 @@
            is loaded and already animating the instant the splash screen
            lifts, instead of popping in after a fixed-duration splash that
            has no idea whether assets are actually ready. */
-        if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
-          window.Capacitor.Plugins.SplashScreen.hide();
+        function hideSplash() {
+          if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
+            window.Capacitor.Plugins.SplashScreen.hide();
+          }
         }
+        /* The starters.forEach() call above only queues the icon rows'
+           DOM - it doesn't guarantee WKWebView has actually painted a
+           frame with them in it yet. Calling hide() in the same tick let
+           the splash lift a frame early, so the carousel was still
+           visibly empty for a moment right after. Two nested rAFs wait
+           for a real completed paint cycle before lifting: the first
+           fires just before the browser paints the frame queued above,
+           the second fires only after that paint has happened. */
+        requestAnimationFrame(() => requestAnimationFrame(hideSplash));
       }
 
       /* Track completion with new Image() so we start only after cache is warm */
