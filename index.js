@@ -238,6 +238,7 @@
 
     /* ── Weather ── */
     const WMO = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+    const WMO_LABEL = {0:'Sunny',1:'Mostly Sunny',2:'Partly Cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Light Drizzle',53:'Drizzle',55:'Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',80:'Showers',81:'Showers',82:'Heavy Showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
 
     function wxAnimClass(code) {
       if (code === 0 || code === 1)                          return 'wx-sunny';
@@ -261,9 +262,25 @@
         const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)).json();
         if (!g.results?.[0]) return null;
         const {latitude:lat, longitude:lon} = g.results[0];
-        const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`)).json();
-        const cw = w.current_weather;
-        const data = { temp: Math.round(cw.temperature), icon: WMO[cw.weathercode] || '🌡️', code: cw.weathercode };
+        const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`)).json();
+        const c = w.current;
+        const d = w.daily;
+        const days = (d?.time || []).map((dateStr, i) => ({
+          label: i === 0 ? 'Today' : new Date(dateStr + 'T12:00').toLocaleDateString('en-US', { weekday: 'short' }),
+          code: d.weather_code[i],
+          icon: WMO[d.weather_code[i]] || '🌡️',
+          hi: Math.round(d.temperature_2m_max[i]),
+          lo: Math.round(d.temperature_2m_min[i]),
+        }));
+        const data = {
+          temp: Math.round(c.temperature_2m),
+          feelsLike: Math.round(c.apparent_temperature),
+          humidity: Math.round(c.relative_humidity_2m),
+          wind: Math.round(c.wind_speed_10m),
+          icon: WMO[c.weather_code] || '🌡️',
+          code: c.weather_code,
+          days,
+        };
         try { localStorage.setItem(cacheKey, JSON.stringify({ data, ts: Date.now() })); } catch {}
         return data;
       } catch { return null; }
@@ -444,15 +461,45 @@
 
       <!-- WEATHER -->
       <div class="bc bc-weather">
-        <div class="bc-weather-label">Destination Weather</div>
-        <div class="bc-weather-main" id="weatherMain">
-          <div class="bc-weather-icon wx-idle" id="wIcon">${hasTrip ? '⛅' : '☀️'}</div>
-          <div class="bc-weather-info">
-            <div class="bc-weather-temp" id="weatherTemp">${hasTrip ? '—°F' : '—'}</div>
-            <div class="bc-weather-cond" id="weatherCond">${hasTrip ? 'Loading…' : 'Plan a trip first'}</div>
-            <div class="bc-weather-city">${hasTrip ? trip.destination : 'No destination'}</div>
+        ${hasTrip ? `
+        <div class="bc-weather-top">
+          <svg class="bc-weather-pin" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          <span class="bc-weather-place">${trip.destination.toUpperCase()}</span>
+        </div>
+        <div class="bc-weather-main">
+          <div class="bc-weather-now">
+            <div class="bc-weather-icon wx-idle" id="wIcon">⛅</div>
+            <div class="bc-weather-now-text">
+              <div class="bc-weather-temp" id="weatherTemp">—°F</div>
+              <div class="bc-weather-cond" id="weatherCond">Loading…</div>
+              <div class="bc-weather-feels" id="weatherFeels"></div>
+            </div>
+          </div>
+          <div class="bc-weather-divider"></div>
+          <div class="bc-weather-stats">
+            <div class="bc-weather-stat">
+              <span class="bc-weather-stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2 2 0 00-4 0v11.26a4 4 0 104 0z"/></svg>Feels like</span>
+              <span class="bc-weather-stat-val" id="statFeels">—</span>
+            </div>
+            <div class="bc-weather-stat">
+              <span class="bc-weather-stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s6 7.2 6 11.5a6 6 0 11-12 0C6 9.2 12 2 12 2z"/></svg>Humidity</span>
+              <span class="bc-weather-stat-val" id="statHumidity">—</span>
+            </div>
+            <div class="bc-weather-stat">
+              <span class="bc-weather-stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h9a3 3 0 100-3M4 16h13a3 3 0 110 3M4 12h7"/></svg>Wind</span>
+              <span class="bc-weather-stat-val" id="statWind">—</span>
+            </div>
           </div>
         </div>
+        <div class="bc-weather-forecast" id="weatherForecast"></div>
+        ` : `
+        <div class="bc-weather-label">Destination Weather</div>
+        <div class="bc-weather-empty">
+          <div class="bc-weather-icon wx-idle">☀️</div>
+          <div class="bc-weather-cond">Plan a trip first</div>
+          <div class="bc-weather-city">No destination</div>
+        </div>
+        `}
       </div>
 
       <!-- TRAVEL VIDEO CARD -->
@@ -531,7 +578,22 @@
         iconEl.textContent = w.icon;
         iconEl.className = 'bc-weather-icon ' + wxAnimClass(w.code);
         document.getElementById('weatherTemp').textContent = w.temp + '°F';
-        document.getElementById('weatherCond').textContent = 'Current conditions';
+        document.getElementById('weatherCond').textContent = WMO_LABEL[w.code] || 'Current conditions';
+        document.getElementById('weatherFeels').textContent = `Feels like ${w.feelsLike}°`;
+        document.getElementById('statFeels').textContent = w.feelsLike + '°F';
+        document.getElementById('statHumidity').textContent = w.humidity + '%';
+        document.getElementById('statWind').textContent = w.wind + ' mph';
+        const forecastEl = document.getElementById('weatherForecast');
+        if (forecastEl && w.days?.length) {
+          forecastEl.innerHTML = w.days.map((d, i) => `
+            <div class="bc-weather-day${i === 0 ? ' bc-weather-day--today' : ''}">
+              <div class="bc-weather-day-label">${d.label}</div>
+              <div class="bc-weather-day-icon">${d.icon}</div>
+              <div class="bc-weather-day-hi">${d.hi}°</div>
+              <div class="bc-weather-day-lo">${d.lo}°</div>
+            </div>
+          `).join('');
+        }
       });
     }
 
