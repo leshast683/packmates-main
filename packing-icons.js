@@ -33,6 +33,7 @@ portable_speaker:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><i
 bottle:`<svg viewBox="0 0 20 20" fill="none"><rect x="6.5" y="5.5" width="6" height="12" rx="2.5" fill="#0369a1" opacity="0.35"/><rect x="7" y="5" width="6" height="12" rx="2.5" fill="#0369a1"/><rect x="6" y="4.5" width="6" height="12" rx="2.5" fill="#38bdf8"/><rect x="6" y="4.5" width="6" height="5" rx="2.5" fill="#7dd3fc"/><rect x="7.5" y="2" width="3" height="3" rx="1.5" fill="#0284c7"/><rect x="8.5" y="1" width="1.5" height="1.5" rx="0.5" fill="#0ea5e9"/><line x1="7" y1="9.5" x2="11.5" y2="9.5" stroke="#bae6fd" stroke-width="0.7" opacity="0.8"/><ellipse cx="7.5" cy="5.5" rx="1.5" ry="0.7" fill="rgba(255,255,255,0.35)"/></svg>`,
 deodorant:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ZItoIQlaF0DEvRmduhr0U6hTHSE4sC.png" x="0" y="0" width="20" height="20"/></svg>`,
 razor:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-f9yGhonZlOCD6T8TK90BDDYxg8d0YK.png" x="0" y="0" width="20" height="20"/></svg>`,
+nail_clippers:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/nail_clippers.png" x="0" y="0" width="20" height="20"/></svg>`,
 sunscreen:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ixp9yadIpp3NmeQqoOdHkQHpqiwkwR.png" x="0" y="0" width="20" height="20"/></svg>`,
 lip_balm:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-dRTPgE3MmCK504LAdEjKyEec0G0Iiy.png" x="0" y="0" width="20" height="20"/></svg>`,
 hair_brush:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-pJqISMaDiCKUTHyyVYaaBEa6MvD2lu.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -244,6 +245,7 @@ function getItemIcon(name, cat) {
   if (n.includes('toothbrush'))                          return PACKING_ICONS.toothbrush;
   if (n.includes('toothpaste'))                          return PACKING_ICONS.toothpaste;
   if (n.includes('razor'))                               return PACKING_ICONS.razor;
+  if (n.includes('nail clipper'))                        return PACKING_ICONS.nail_clippers;
   if (n.includes('sunscreen') || n.includes('spf'))      return PACKING_ICONS.sunscreen;
   if (n.includes('lip balm'))                            return PACKING_ICONS.lip_balm;
   if (n.includes('hair brush'))                          return PACKING_ICONS.hair_brush;
