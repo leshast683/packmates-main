@@ -697,17 +697,28 @@ const DB = (() => {
          object (r.data) has no way to know this on its own, and the UI
          needs it to tell an owner's "Delete" from a member's "Leave". */
       const converted = (rows || []).map(r => ({ ...r.data, _ownerId: r.user_id }));
-      localStorage.setItem('pm_trips', JSON.stringify(converted));
+      /* Merge onto (not replace) the existing local list. If a trip is
+         ever missing from this query for any reason (an RLS edge case,
+         a save that hadn't finished syncing yet, a network blip on a
+         previous sync) a plain overwrite would silently and permanently
+         wipe it from local storage the next time this runs — it just
+         vanishes from "Your Trips" with no error. Keep any locally-known
+         trip not present in the fresh result; Supabase's copy wins for
+         anything that exists in both. */
+      const existingTrips = JSON.parse(localStorage.getItem('pm_trips') || '[]');
+      const freshIds = new Set(converted.map(t => t.id));
+      const merged = [...converted, ...existingTrips.filter(t => !freshIds.has(t.id))];
+      localStorage.setItem('pm_trips', JSON.stringify(merged));
       const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
       if (cur) {
-        const updated = converted.find(t => t.id === cur.id);
+        const updated = merged.find(t => t.id === cur.id);
         updated
           ? localStorage.setItem('currentTrip', JSON.stringify(updated))
-          : converted.length
-            ? localStorage.setItem('currentTrip', JSON.stringify(converted[0]))
+          : merged.length
+            ? localStorage.setItem('currentTrip', JSON.stringify(merged[0]))
             : localStorage.removeItem('currentTrip');
-      } else if (converted.length) {
-        localStorage.setItem('currentTrip', JSON.stringify(converted[0]));
+      } else if (merged.length) {
+        localStorage.setItem('currentTrip', JSON.stringify(merged[0]));
       }
       return true;
     },
