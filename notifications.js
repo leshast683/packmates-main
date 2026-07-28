@@ -24,8 +24,17 @@
     if (k) localStorage.setItem(k, JSON.stringify(list));
   }
 
+  // ── Settings (Profile > Notifications toggles) ────────────────────
+  function _notifSettings() {
+    try { return JSON.parse(localStorage.getItem('pm_profile') || '{}').notif || {}; } catch { return {}; }
+  }
+
   // ── Push (returns true if genuinely new) ─────────────────────────
+  // Respects the "Push Notifications" master toggle in Profile >
+  // Notifications (Settings > Notifications > Push Notifications,
+  // "In-app alerts") - same default (off) as that toggle's own UI.
   function push(type, text, tripName, dedupId) {
+    if (_notifSettings().push === false) return false; // undefined/true = on (default)
     const list = _load();
     if (dedupId && list.some(n => n.dedupId === dedupId)) return false;
     list.unshift({
@@ -200,8 +209,13 @@
   }
 
   // ── Smart trip-context notifications ─────────────────────────────
+  // Everything this generates (countdown milestones, packing-progress
+  // nudges, "still not packed" reminders) is what Settings > Notifications
+  // > "Packing Reminders" describes, so it's gated on that toggle
+  // specifically, on top of push()'s own master "Push Notifications" gate.
   function checkTrip() {
     try {
+      if (_notifSettings().reminders === false) return; // undefined/true = on (default)
       const trip = JSON.parse(localStorage.getItem('currentTrip') || 'null');
       if (!trip?.id || !trip?.destination || !trip?.fromDate) return;
 

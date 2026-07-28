@@ -720,7 +720,7 @@
             <div class="settings-panel-inner">
               <div class="plan-card"><div><strong>Free Tier</strong><small>Up to 3 packing lists · Basic features</small></div><span class="settings-row-badge badge--navy">Active</span></div>
               <p style="font-size:.8rem;color:var(--text-3);line-height:1.65;">Upgrade to Pro for unlimited lists, smart weather packing, and real-time collaboration.</p>
-              <button class="btn-upgrade" onclick="showToast('Redirecting to checkout…')">Upgrade to Pro →</button>
+              <button class="btn-upgrade" onclick="showToast('Pro plan is coming in the future!')">Upgrade to Pro →</button>
             </div>
           </div>
 
@@ -1409,7 +1409,7 @@
       try {
         const s = _pmProfile().notif || {};
         document.getElementById('notif-email').checked     = s.email     ?? true;
-        document.getElementById('notif-push').checked      = s.push      ?? false;
+        document.getElementById('notif-push').checked      = s.push      ?? true;
         document.getElementById('notif-reminders').checked = s.reminders ?? true;
         document.getElementById('notif-updates').checked   = s.updates   ?? false;
       } catch(e) {}
@@ -1752,7 +1752,7 @@
         const before = localStorage.getItem('pm_profile');
         const profileChanged = await DB.syncProfile();
         if (profileChanged && localStorage.getItem('pm_profile') !== before) {
-          loadProfile(); loadPersonalData(); loadStats();
+          loadProfile(); loadPersonalData(); loadStats(); loadNotifications(); loadPrivacy();
         }
         const tripsChanged = await DB.syncTrips();
         if (tripsChanged) { loadStats(); loadRecentTrips(); loadTimeline(); loadStreakAndLevel(); }
