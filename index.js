@@ -1,5 +1,17 @@
     /* ── Auth guard ── */
-    Auth.requireAuth('welcome.html');
+    const _pmAuthed = Auth.requireAuth('welcome.html');
+
+    /* App-only: capacitor.config.json sets SplashScreen.launchAutoHide to
+       false so it stays up until explicitly hidden - welcome.html hides it
+       once its own assets are ready, but an already-logged-in user landing
+       directly on index.html (the common case: reopening the app) needs
+       this page to hide it instead, since welcome.html is never reached.
+       Only fires when requireAuth actually passed - if it's about to
+       redirect to welcome.html instead, hiding here first would flash this
+       page's own loading state before that redirect completes. */
+    if (_pmAuthed && window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
+      window.Capacitor.Plugins.SplashScreen.hide();
+    }
 
     /* Header avatar/notification-bell aren't .bottom-nav buttons, so the
        app-shell's own click interception never sees them — without this

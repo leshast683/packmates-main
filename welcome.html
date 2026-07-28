@@ -865,6 +865,15 @@
         _animStarted = true;
         _preloadWrap.remove();
         starters.forEach(start => start());
+        /* App-only: capacitor.config.json sets SplashScreen.launchAutoHide
+           to false specifically so it can stay up until this fires -
+           everything visible on this page (the icon carousel above all)
+           is loaded and already animating the instant the splash screen
+           lifts, instead of popping in after a fixed-duration splash that
+           has no idea whether assets are actually ready. */
+        if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
+          window.Capacitor.Plugins.SplashScreen.hide();
+        }
       }
 
       /* Track completion with new Image() so we start only after cache is warm */

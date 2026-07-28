@@ -4,6 +4,23 @@
  * Old users  → verified locally, then auto-migrated to Supabase on first login.
  */
 
+/* ── Native splash screen safety net ─────────────────────────────────────
+   capacitor.config.json sets SplashScreen.launchAutoHide:false so it stays
+   up until explicitly hidden — welcome.html hides it once its icon
+   carousel has actually finished preloading, and index.html hides it
+   immediately for an already-logged-in user who lands there directly with
+   nothing extra to wait for. This is a pure safety net on top of those:
+   if some other entry point ever forgets to call hide(), or one of those
+   two calls never fires for an unexpected reason, the whole app would
+   otherwise be stuck behind the splash screen forever instead of just
+   showing content a bit later than ideal. */
+(function () {
+  if (!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())) return;
+  setTimeout(function () {
+    try { window.Capacitor.Plugins.SplashScreen.hide(); } catch (e) {}
+  }, 4000);
+})();
+
 /* ── Supabase CDN + client ───────────────────────────────────────────── */
 const _SB_URL  = 'https://ocwqpeyfxsovkqbmzlgh.supabase.co';
 const _SB_KEY  = 'sb_publishable_xS8gLHbIxrR62lI178O3ag_DtXp66Rv';
