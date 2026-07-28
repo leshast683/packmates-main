@@ -118,6 +118,7 @@ ski_boots:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image hr
 flip_flops:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-jVQKf4o5VsajzoHbIU37DMrJwowKUm.png" x="0" y="0" width="20" height="20"/></svg>`,
 usb_drive:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-t28cyW0ZqUKV1htNhbo0SzC8il3KPY.png" x="0" y="0" width="20" height="20"/></svg>`,
 tripod:`<svg viewBox="0 0 20 20" fill="none"><rect x="8.5" y="1.5" width="4" height="6" rx="2" fill="#1f2937" opacity="0.35"/><rect x="9" y="1" width="4" height="6" rx="2" fill="#374151"/><rect x="8" y="0.5" width="4" height="6" rx="2" fill="#4b5563"/><rect x="8" y="0.5" width="4" height="2.5" rx="2" fill="#6b7280"/><line x1="10" y1="6.5" x2="3" y2="19" stroke="#374151" stroke-width="2.5" stroke-linecap="round"/><line x1="10" y1="6.5" x2="10" y2="19" stroke="#374151" stroke-width="2.5" stroke-linecap="round"/><line x1="10" y1="6.5" x2="17" y2="19" stroke="#374151" stroke-width="2.5" stroke-linecap="round"/><circle cx="10" cy="6.5" r="2.5" fill="#6b7280"/><circle cx="10" cy="6.5" r="1.2" fill="#374151"/></svg>`,
+selfie_stick:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/selfie_stick.png" x="0" y="0" width="20" height="20"/></svg>`,
 beach_towel:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ttKfYZ4l4M0s8G8tY5sxxdsai6ROmm.png" x="0" y="0" width="20" height="20"/></svg>`,
 gym_towel:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-UiLLbLcRMRZ5D6QgrgEYHvx2ut3ZGR.png" x="0" y="0" width="20" height="20"/></svg>`,
 beach_bag:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_beach_bag.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -236,6 +237,7 @@ function getItemIcon(name, cat) {
   if (n.includes('adapter') || n.includes('adaptor'))    return PACKING_ICONS.travel_adapter;
   if (n.includes('usb'))                                 return PACKING_ICONS.usb_drive;
   if (n.includes('tripod'))                              return PACKING_ICONS.tripod;
+  if (n.includes('selfie stick'))                        return PACKING_ICONS.selfie_stick;
   // Toiletries — each item unique
   if (n.includes('toothbrush'))                          return PACKING_ICONS.toothbrush;
   if (n.includes('toothpaste'))                          return PACKING_ICONS.toothpaste;
