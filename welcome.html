@@ -874,5 +874,20 @@
       }
     })();
   </script>
+  <script src="lib/auth-flow.js"></script>
+  <script>
+    if (window.PmAuthFlow) {
+      var _preload = function () { window.PmAuthFlow.preload('login.html'); window.PmAuthFlow.preload('signup.html'); };
+      if ('requestIdleCallback' in window) requestIdleCallback(_preload, { timeout: 2000 });
+      else setTimeout(_preload, 300);
+
+      document.querySelectorAll('.ctas a[href="login.html"]').forEach(a => {
+        a.addEventListener('click', e => { e.preventDefault(); window.PmAuthFlow.reveal('login.html'); });
+      });
+      document.querySelectorAll('.ctas a[href="signup.html"]').forEach(a => {
+        a.addEventListener('click', e => { e.preventDefault(); window.PmAuthFlow.reveal('signup.html'); });
+      });
+    }
+  </script>
 </body>
 </html>

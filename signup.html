@@ -329,6 +329,7 @@
 
   <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
+  <script src="lib/auth-flow.js"></script>
   <script>
     if (Auth.isLoggedIn()) location.replace('index.html');
 
@@ -366,6 +367,14 @@
     let _signedUpPw    = ''; /* kept in memory only — never stored */
     let _pollTimer     = null;
 
+    /* Session exists by the time this is ever called, so index.html's
+       own auth guard will pass - reveal a freshly-loaded copy instead
+       of a hard reload. */
+    function _goHome() {
+      if (window.PmAuthFlow) window.PmAuthFlow.reveal('index.html');
+      else location.replace('index.html');
+    }
+
     /* ── Same-browser detection: fires immediately when session is established ── */
     (async function() {
       const sb = await window._pm_sbLoaded;
@@ -374,7 +383,7 @@
         if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
           subscription.unsubscribe();
           if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
-          location.replace('index.html');
+          _goHome();
         }
       });
     })();
@@ -388,7 +397,7 @@
         const { data } = await sb.auth.signInWithPassword({ email, password: pw });
         if (data?.session) {
           clearInterval(_pollTimer); _pollTimer = null; _signedUpPw = '';
-          location.replace('index.html');
+          _goHome();
         }
       }, 5000);
       /* Stop polling after 20 minutes and wipe password from memory */
