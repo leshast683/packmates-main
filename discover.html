@@ -484,11 +484,11 @@
       color:#0a5050;
     }
     .ti-pack-chip svg, .ti-pack-chip img { width:14px; height:14px; flex-shrink:0; }
-    .ti-travelers-list { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
     .ti-traveler-row {
       display:flex; align-items:center; gap:12px;
       padding:10px 12px; background:var(--bg);
       border-radius:12px; border:1px solid var(--border);
+      margin-bottom:8px;
     }
     .ti-trav-av {
       width:40px; height:40px; border-radius:50%; flex-shrink:0;
@@ -1390,7 +1390,7 @@
 
       // travelers
       document.getElementById('tiPanelTravelers').innerHTML =
-        `<div class="ti-travelers-list">${s.travelersList.map(t => `
+        s.travelersList.map(t => `
           <div class="ti-traveler-row">
             <div class="ti-trav-av" style="background:${t.color}">${t.av}</div>
             <div class="ti-trav-info">
@@ -1398,8 +1398,8 @@
               <div class="ti-trav-city">${t.city}</div>
             </div>
             <span class="ti-trav-tag ${t.tag === 'Trip Organizer' ? 'organizer' : ''}">${t.tag}</span>
-          </div>`).join('')}</div>
-        ${s.extra > 0 ? `<div class="ti-extra-note">+${s.extra} more travelers on this trip</div>` : ''}`;
+          </div>`).join('') +
+        (s.extra > 0 ? `<div class="ti-extra-note">+${s.extra} more travelers on this trip</div>` : '');
 
       // reset tabs
       document.querySelectorAll('.ti-tab').forEach((b,i) => b.classList.toggle('active', i===0));
