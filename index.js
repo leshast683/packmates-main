@@ -24,7 +24,14 @@
       if (window.top && window.top.PmAppShell && window.top.PmAppShell.switchTab) {
         window.top.PmAppShell.switchTab(page);
       } else {
-        location.href = page;
+        // window.top, not location: if this copy of index.html is showing
+        // via lib/auth-flow.js's #pmAuthFlow reveal, it's still technically
+        // an iframe (app-shell.js stays inert there on purpose) - a plain
+        // location.href would navigate only that iframe to a page with no
+        // #pmAuthFlow marker of its own, which loses its bottom-nav. Always
+        // break out to a real top-level navigation instead; harmless when
+        // this already *is* the top level (window.top === window there).
+        window.top.location.href = page;
       }
     }
 
