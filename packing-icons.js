@@ -29,6 +29,7 @@ makeup_palette:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><ima
 hair_gel:`<svg viewBox="0 0 20 20" fill="none"><rect x="6.5" y="4.5" width="8" height="13" rx="2.5" fill="#1e3a5f" opacity="0.3"/><rect x="7" y="4" width="8" height="13" rx="2.5" fill="#1e40af"/><rect x="6" y="3.5" width="8" height="13" rx="2.5" fill="#3b82f6"/><rect x="6" y="3.5" width="8" height="5" rx="2.5" fill="#60a5fa"/><rect x="7.5" y="1" width="5" height="3" rx="1.5" fill="#1e40af"/><rect x="8" y="0.5" width="4" height="1.2" rx="0.5" fill="#93c5fd"/><line x1="7" y1="10.5" x2="14" y2="10.5" stroke="#1e3a8a" stroke-width="0.8"/><ellipse cx="8" cy="4.5" rx="1.5" ry="0.7" fill="rgba(255,255,255,0.35)"/></svg>`,
 hair_styling:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-RCs6a5lnmDpabnkGxGlPRFAZV2yCV3.png" x="0" y="0" width="20" height="20"/></svg>`,
 portable_fan:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-khBy1zgHQ8zb5pt9AZnBflDKfviFIX.png" x="0" y="0" width="20" height="20"/></svg>`,
+portable_speaker:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/portable_speaker.png" x="0" y="0" width="20" height="20"/></svg>`,
 bottle:`<svg viewBox="0 0 20 20" fill="none"><rect x="6.5" y="5.5" width="6" height="12" rx="2.5" fill="#0369a1" opacity="0.35"/><rect x="7" y="5" width="6" height="12" rx="2.5" fill="#0369a1"/><rect x="6" y="4.5" width="6" height="12" rx="2.5" fill="#38bdf8"/><rect x="6" y="4.5" width="6" height="5" rx="2.5" fill="#7dd3fc"/><rect x="7.5" y="2" width="3" height="3" rx="1.5" fill="#0284c7"/><rect x="8.5" y="1" width="1.5" height="1.5" rx="0.5" fill="#0ea5e9"/><line x1="7" y1="9.5" x2="11.5" y2="9.5" stroke="#bae6fd" stroke-width="0.7" opacity="0.8"/><ellipse cx="7.5" cy="5.5" rx="1.5" ry="0.7" fill="rgba(255,255,255,0.35)"/></svg>`,
 deodorant:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ZItoIQlaF0DEvRmduhr0U6hTHSE4sC.png" x="0" y="0" width="20" height="20"/></svg>`,
 razor:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-f9yGhonZlOCD6T8TK90BDDYxg8d0YK.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -402,6 +403,7 @@ function getItemIcon(name, cat) {
   if (n.includes('goggle'))                              return PACKING_ICONS.goggles;
   if (n.includes('swim cap'))                            return PACKING_ICONS.swim_cap;
   if (n.includes('portable fan'))                        return PACKING_ICONS.portable_fan;
+  if (n.includes('portable speaker') || n.includes('bluetooth speaker')) return PACKING_ICONS.portable_speaker;
   // Camping / Outdoors
   if (n.includes('tent'))                                return PACKING_ICONS.tent;
   if (n.includes('sleeping pad') || n.includes('foam mat') || n.includes('camp mat')) return PACKING_ICONS.sleeping_pad;
