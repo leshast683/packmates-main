@@ -734,6 +734,10 @@ textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(17,58,88,0.
   }
   h1 { font-size: 1.2rem; }
   .grid { grid-template-columns: 1fr; gap: 10px; }
+  /* Default bottom:28px sits inside the bottom-nav's own footprint
+     (calc(62px + safe-area)) and both use similarly dark colors, so a
+     toast reads as basically invisible there — clear the nav entirely. */
+  .toast { bottom: calc(78px + env(safe-area-inset-bottom)); }
 }
 
 /* ── Shared confirm modal + toast (used by nav.js sign-out) ── */

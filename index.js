@@ -295,7 +295,13 @@
     // tap away in the app's persistent bottom nav — redundant there in a
     // way it isn't on desktop/web, which has no equivalent nav. Website
     // unaffected.
-    const _isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    // Also true when loaded via lib/auth-flow.js's post-login reveal
+    // (marked with #pmAuthFlow) — that iframe is a final destination, not
+    // one of lib/app-shell.js's own tabs, so the usual Capacitor bridge
+    // check ought to still hold there, but this is a defensive fallback
+    // in case bridge injection into that particular iframe ever proves
+    // less reliable than it is for the shell's own tab iframes.
+    const _isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
 
     const allKeys        = Object.keys(packState);
     const packedKeys     = allKeys.filter(k => packState[k]);
