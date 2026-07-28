@@ -56,6 +56,7 @@ beanie:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href=
 swimsuit:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-C6d9HfLLNfniScaSDDzYHYzQf06hr5.png" x="0" y="0" width="20" height="20"/></svg>`,
 underwear:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-j311WLBz7dERAzTfAqZqpCAlh8Kv3T.png" x="0" y="0" width="20" height="20"/></svg>`,
 sneaker:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-kDQMGK825nue93CX9JpWUWLCVJsD98.png" x="0" y="0" width="20" height="20"/></svg>`,
+walking_shoes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/walking_shoes.png" x="0" y="0" width="20" height="20"/></svg>`,
 sandal:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-DWMYeBZmNCGvylKhjqjHV3CRGeQvDR.png" x="0" y="0" width="20" height="20"/></svg>`,
 boots:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-8FdFcdbAGGWvjntzWv0JfI4ZXopXxB.png" x="0" y="0" width="20" height="20"/></svg>`,
 heels:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-KjfXgQXsBKzA8UjO5mY2h8W1af3YD1.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -361,6 +362,7 @@ function getItemIcon(name, cat) {
   if (n.includes('croc'))                                return PACKING_ICONS.crocs;
   if (n.includes('sandal'))                              return PACKING_ICONS.sandal;
   if (n.includes('tennis shoe'))                         return PACKING_ICONS.tennis_shoes;
+  if (n.includes('walking shoe'))                        return PACKING_ICONS.walking_shoes;
   if (n.includes('sneaker'))                             return PACKING_ICONS.canvas_shoes;
   if (n.includes('running shoe') || (n.includes('sport') && n.includes('shoe'))) return PACKING_ICONS.sneaker;
   // Bags
