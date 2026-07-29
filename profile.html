@@ -614,8 +614,8 @@
                 <div class="loc-dropdown" id="loc-dropdown"></div>
               </div>
               <div class="bio-field-wrap">
-                <input type="text" id="edit-bio" placeholder="Short bio (max 50 chars)" maxlength="50" autocomplete="off">
-                <span class="bio-char-count" id="bio-char-count">50</span>
+                <input type="text" id="edit-bio" placeholder="Short bio (max 30 chars)" maxlength="30" autocomplete="off">
+                <span class="bio-char-count" id="bio-char-count">30</span>
               </div>
               <div class="profile-edit-btns">
                 <button class="btn-edit-profile" onclick="toggleProfileEdit()">Save</button>
@@ -1309,16 +1309,16 @@
         document.getElementById('edit-location').value = p.location || '';
         const bioInput = document.getElementById('edit-bio');
         bioInput.value = p.bio || '';
-        const remaining = 50 - bioInput.value.length;
+        const remaining = 30 - bioInput.value.length;
         const counter = document.getElementById('bio-char-count');
         counter.textContent = remaining;
-        counter.className = 'bio-char-count' + (remaining <= 10 ? ' warn' : '');
+        counter.className = 'bio-char-count' + (remaining <= 6 ? ' warn' : '');
         hideLoc();
         disp.style.display='none'; edit.style.display='flex';
       } else {
         const name     = document.getElementById('edit-name').value.trim()     || 'Traveler';
         const location = document.getElementById('edit-location').value.trim();
-        const bio      = document.getElementById('edit-bio').value.trim().slice(0,50);
+        const bio      = document.getElementById('edit-bio').value.trim().slice(0,30);
         hideLoc();
         try {
           _savePmProfile({ name, location, bio });
@@ -1846,10 +1846,10 @@
       // Bio character counter
       const bioInput = document.getElementById('edit-bio');
       bioInput.addEventListener('input', () => {
-        const remaining = 50 - bioInput.value.length;
+        const remaining = 30 - bioInput.value.length;
         const counter = document.getElementById('bio-char-count');
         counter.textContent = remaining;
-        counter.className = 'bio-char-count' + (remaining <= 10 ? ' warn' : '');
+        counter.className = 'bio-char-count' + (remaining <= 6 ? ' warn' : '');
       });
     });
   </script>
