@@ -21,6 +21,7 @@ wipes_pack:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image h
 antibacterial_wipes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-NB6ynt4KVjucDWUAJn9mWzIgOp8MSt.png" x="0" y="0" width="20" height="20"/></svg>`,
 hand_sanitizer:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/hand_sanitizer.png" x="0" y="0" width="20" height="20"/></svg>`,
 hairspray:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/hairspray.png" x="0" y="0" width="20" height="20"/></svg>`,
+earrings_male:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/earrings_male.png" x="0" y="0" width="20" height="20"/></svg>`,
 face_mask:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/face_mask.png" x="0" y="0" width="20" height="20"/></svg>`,
 allergy_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/allergy_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
 prescription_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/prescription_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -213,8 +214,12 @@ const CAT_FALLBACK_ICONS = {
   'Windy Weather':'jacket','Cold Weather':'boots',
 };
 
-function getItemIcon(name, cat) {
+function getItemIcon(name, cat, gender) {
   const n = name.toLowerCase();
+  // Accessories with separate male/female icon art - name match picks the
+  // item, gender picks which variant. Falls back to whichever variant
+  // exists if the other gender's icon hasn't been added yet.
+  if (n.includes('earring'))                             return (gender === 'female' ? PACKING_ICONS.earrings_female : PACKING_ICONS.earrings_male) || PACKING_ICONS.earrings_male || PACKING_ICONS.earrings_female;
   // Essentials / Documents
   if (n.includes('passport'))                            return PACKING_ICONS.passport;
   if (n === 'id')                                        return PACKING_ICONS.id_card;
