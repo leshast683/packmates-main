@@ -22,9 +22,13 @@ antibacterial_wipes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
 hand_sanitizer:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/hand_sanitizer.png" x="0" y="0" width="20" height="20"/></svg>`,
 hairspray:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/hairspray.png" x="0" y="0" width="20" height="20"/></svg>`,
 earrings_male:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/earrings_male.png" x="0" y="0" width="20" height="20"/></svg>`,
+earrings_female:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/earrings_female.png" x="0" y="0" width="20" height="20"/></svg>`,
 bracelet_male:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/bracelet_male.png" x="0" y="0" width="20" height="20"/></svg>`,
+bracelet_female:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/bracelet_female.png" x="0" y="0" width="20" height="20"/></svg>`,
 chain_male:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/chain_male.png" x="0" y="0" width="20" height="20"/></svg>`,
+necklace_female:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/necklace_female.png" x="0" y="0" width="20" height="20"/></svg>`,
 ring_male:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/ring_male.png" x="0" y="0" width="20" height="20"/></svg>`,
+ring_female:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/ring_female.png" x="0" y="0" width="20" height="20"/></svg>`,
 face_mask:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/face_mask.png" x="0" y="0" width="20" height="20"/></svg>`,
 allergy_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/allergy_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
 prescription_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/prescription_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -220,14 +224,17 @@ const CAT_FALLBACK_ICONS = {
 function getItemIcon(name, cat, gender) {
   const n = name.toLowerCase();
   // Accessories with separate male/female icon art - name match picks the
-  // item, gender picks which variant. Falls back to whichever variant
-  // exists if the other gender's icon hasn't been added yet.
-  if (n.includes('earring'))                             return (gender === 'female' ? PACKING_ICONS.earrings_female : PACKING_ICONS.earrings_male) || PACKING_ICONS.earrings_male || PACKING_ICONS.earrings_female;
-  if (n.includes('bracelet'))                            return (gender === 'female' ? PACKING_ICONS.bracelet_female : PACKING_ICONS.bracelet_male) || PACKING_ICONS.bracelet_male || PACKING_ICONS.bracelet_female;
-  if (n.includes('chain'))                               return (gender === 'female' ? PACKING_ICONS.chain_female : PACKING_ICONS.chain_male) || PACKING_ICONS.chain_male || PACKING_ICONS.chain_female;
+  // item, gender picks which variant. Only an explicit 'male' gender gets
+  // the male icon; female AND nonbinary/unset default to the female icon
+  // (falls back to whichever variant exists if the other hasn't been
+  // added yet).
+  if (n.includes('earring'))                             return (gender === 'male' ? PACKING_ICONS.earrings_male : PACKING_ICONS.earrings_female) || PACKING_ICONS.earrings_female || PACKING_ICONS.earrings_male;
+  if (n.includes('bracelet'))                            return (gender === 'male' ? PACKING_ICONS.bracelet_male : PACKING_ICONS.bracelet_female) || PACKING_ICONS.bracelet_female || PACKING_ICONS.bracelet_male;
+  if (n.includes('chain'))                               return (gender === 'male' ? PACKING_ICONS.chain_male : PACKING_ICONS.chain_female) || PACKING_ICONS.chain_female || PACKING_ICONS.chain_male;
+  if (n.includes('necklace'))                            return (gender === 'male' ? PACKING_ICONS.necklace_male : PACKING_ICONS.necklace_female) || PACKING_ICONS.necklace_female || PACKING_ICONS.necklace_male;
   // Checked after 'earring' above - 'Earrings' also contains the substring
   // 'ring', so order matters here.
-  if (n.includes('ring'))                                return (gender === 'female' ? PACKING_ICONS.ring_female : PACKING_ICONS.ring_male) || PACKING_ICONS.ring_male || PACKING_ICONS.ring_female;
+  if (n.includes('ring'))                                return (gender === 'male' ? PACKING_ICONS.ring_male : PACKING_ICONS.ring_female) || PACKING_ICONS.ring_female || PACKING_ICONS.ring_male;
   // Essentials / Documents
   if (n.includes('passport'))                            return PACKING_ICONS.passport;
   if (n === 'id')                                        return PACKING_ICONS.id_card;
