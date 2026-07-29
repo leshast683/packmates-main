@@ -446,20 +446,16 @@
           if (!row || row.user_id !== myUserId) return; // only care about my own removal
 
           const myTrips = (() => { try { return JSON.parse(localStorage.getItem('pm_trips') || '[]'); } catch { return []; } })();
-          const trip = myTrips.find(t => t.id === row.trip_id);
-          const dest = trip?.destination || 'a trip';
 
+          // Cleans up the now-stale local cache so the trip doesn't linger
+          // in the list - no notification for this one, per product
+          // decision (the trip just quietly disappears).
           try {
             const remaining = myTrips.filter(t => t.id !== row.trip_id);
             localStorage.setItem('pm_trips', JSON.stringify(remaining));
             const current = JSON.parse(localStorage.getItem('currentTrip') || 'null');
             if (current?.id === row.trip_id) localStorage.removeItem('currentTrip');
           } catch {}
-
-          const text = `You were removed from the trip to <strong>${dest}</strong>.`;
-          if (push('alert', text, dest, `real_removed_${row.trip_id}_${myUserId}`)) {
-            showToast(`You were removed from the trip to ${dest}.`, 'alert', dest);
-          }
         })
         .subscribe();
     } catch(e) {}
@@ -513,10 +509,8 @@
         const goneMissing = myTrips.filter(t => !stillIds.has(t.id));
 
         if (goneMissing.length) {
-          goneMissing.forEach(t => {
-            const dest = t.destination || 'a trip';
-            push('alert', `You were removed from the trip to <strong>${dest}</strong>.`, dest, `real_removed_${t.id}_${myUserId}`);
-          });
+          // No notification for these, per product decision - just clean
+          // up the stale local cache so removed trips quietly disappear.
           localStorage.setItem('pm_trips', JSON.stringify(myTrips.filter(t => stillIds.has(t.id))));
           const current = JSON.parse(localStorage.getItem('currentTrip') || 'null');
           if (current && !stillIds.has(current.id)) localStorage.removeItem('currentTrip');
