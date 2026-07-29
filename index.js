@@ -513,7 +513,7 @@
 
       <!-- ACTIONS (web only — see _isNativeApp above) -->
       ${_isNativeApp ? '' : `
-      <div class="bc bc-actions">
+      <div class="bc bc-actions" id="quickActionsCard">
         <div class="bc-actions-title">Quick Actions</div>
         <button class="bc-action-btn" onclick="location.href='newTrip.html'">
           <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -537,6 +537,22 @@
         </button>
       </div>`}
     `;
+
+    // Self-heal _isNativeApp: right after sign-in, this page can be the
+    // very first top-level navigation of the whole app session (welcome ->
+    // login -> here), landing before Capacitor's WKWebView bridge script
+    // has necessarily finished attaching window.Capacitor to *this*
+    // document - unlike a cold app launch, where the bridge is guaranteed
+    // ready before any page loads. When that race is lost, _isNativeApp
+    // reads false and Quick Actions renders even though this is the native
+    // app. Re-check shortly after and remove it retroactively if so -
+    // cheap, and only ever does something on that rare mis-detected load.
+    if (!_isNativeApp) {
+      setTimeout(() => {
+        const nowNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+        if (nowNative) document.getElementById('quickActionsCard')?.remove();
+      }, 400);
+    }
 
     /* ── Animate progress rings on every load ── */
     /* getBoundingClientRect forces a reflow so the browser commits the initial
