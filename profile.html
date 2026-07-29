@@ -1055,18 +1055,35 @@
       document.getElementById('streakDays').textContent = streakVal || '—';
       document.getElementById('streakSub').textContent  = streakSub;
 
-      const LEVELS = [
-        { min:0,  pct:5,  label:'5% to Adventurer' },
-        { min:1,  pct:28, label:'28% to Adventurer' },
-        { min:2,  pct:50, label:'50% to Adventurer' },
-        { min:3,  pct:65, label:'65% to Adventurer' },
-        { min:5,  pct:78, label:'78% to Adventurer' },
-        { min:8,  pct:88, label:'Adventurer · 88% to Globetrotter' },
-        { min:15, pct:96, label:'Globetrotter' },
+      // Badge levels are based on lifetime items packed (across every
+      // trip), not trip count - counting each item once per trip the
+      // moment it's checked off, same as the "X of Y items packed" count
+      // shown elsewhere (not quantity-weighted).
+      const TIERS = [
+        { name:'Beginner',      min:0 },
+        { name:'Adventurer',    min:100 },
+        { name:'Wanderer',      min:250 },
+        { name:'Explorer',      min:500 },
+        { name:'Globetrotter',  min:1000 },
+        { name:'World Citizen', min:2000 },
       ];
-      const lvl = [...LEVELS].reverse().find(l => trips.length >= l.min) || LEVELS[0];
-      setTimeout(() => { document.getElementById('explorerFill').style.width = lvl.pct + '%'; }, 120);
-      document.getElementById('explorerPctText').textContent = lvl.label;
+      let totalItemsPacked = 0;
+      trips.forEach(t => {
+        try {
+          const pd = JSON.parse(localStorage.getItem(`pm_pack_${t.id}`) || '{}');
+          totalItemsPacked += Object.values(pd.itemState || {}).filter(v => v?.packed).length;
+        } catch(e) {}
+      });
+      const tierIdx = [...TIERS].reverse().findIndex(t => totalItemsPacked >= t.min);
+      const curIdx  = TIERS.length - 1 - tierIdx;
+      const cur     = TIERS[curIdx];
+      const next    = TIERS[curIdx + 1];
+      const pct     = next ? Math.min(100, Math.round((totalItemsPacked - cur.min) / (next.min - cur.min) * 100)) : 100;
+      const label   = !next ? cur.name
+                    : curIdx === 0 ? `${pct}% to ${next.name}`
+                    : `${cur.name} · ${pct}% to ${next.name}`;
+      setTimeout(() => { document.getElementById('explorerFill').style.width = pct + '%'; }, 120);
+      document.getElementById('explorerPctText').textContent = label;
     }
 
     function loadTravelStyle() {
