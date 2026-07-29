@@ -198,7 +198,7 @@
     reminder:    { cls: 'pm-ti-blue',   img: 'img/notif_reminder.png',    label: 'Reminder' },
     alert:       { cls: 'pm-ti-orange', img: 'img/notif_alert.png',       label: 'Heads Up' },
     trip:        { cls: 'pm-ti-green',  img: 'img/notif_trip.png',        label: 'Trip' },
-    join:        { cls: 'pm-ti-purple', emoji: '👥', label: 'Joined' },
+    join:        { cls: 'pm-ti-purple', img: 'img/notif_join.png',      label: 'Joined' },
     social:      { cls: 'pm-ti-purple', img: 'img/notif_social.png',      label: 'Packmate' },
     achievement: { cls: 'pm-ti-amber',  img: 'img/notif_achievement.png', label: 'Level Up!' },
     weather:     { cls: 'pm-ti-blue',   img: 'img/notif_weather.png',     label: 'Weather Update' },
