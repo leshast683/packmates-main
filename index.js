@@ -508,6 +508,7 @@
         <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(160deg,rgba(7,30,42,0.0) 0%,rgba(7,30,42,0.08) 100%);border-radius:inherit;pointer-events:none;"></div>
         <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:20px 22px;">
           <div style="font-size:1rem;font-weight:700;color:#fff;line-height:1.25;text-shadow:0 1px 8px rgba(0,0,0,0.4);" id="nudgeTitle">Ready to start?</div>
+          ${hasTrip ? `<div style="font-size:0.8rem;font-weight:600;color:rgba(255,255,255,0.8);margin-top:4px;text-shadow:0 1px 8px rgba(0,0,0,0.4);">${trip.destination}</div>` : ''}
         </div>
       </div>
 
