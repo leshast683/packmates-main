@@ -296,6 +296,9 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('makeup remover'))                      return PACKING_ICONS.makeup_remover;
   if (n.includes('antibacterial wipe')) return PACKING_ICONS.antibacterial_wipes;
   if (n.includes('makeup wipe') || n.includes('wipe')) return PACKING_ICONS.wipes_pack;
+  // Checked before the generic 'spray' catch-all below, which would
+  // otherwise also match 'hairspray' and win first.
+  if (n.includes('hairspray') || n.includes('hair spray'))             return PACKING_ICONS.hairspray;
   if (n.includes('moisturizing spray') || n.includes('spray')) return PACKING_ICONS.spray_bottle;
   if (n.includes('shampoo'))                             return PACKING_ICONS.shampoo;
   if (n.includes('perfume') || n.includes('cologne'))    return PACKING_ICONS.perfume;
@@ -304,7 +307,6 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('hair straightener') || n.includes('flat iron')) return PACKING_ICONS.hair_straightener;
   if (n.includes('hair styling') || n.includes('hair product'))        return PACKING_ICONS.hair_styling;
   if (n.includes('hair gel') || n.includes('hair wax'))                return PACKING_ICONS.hair_gel;
-  if (n.includes('hairspray') || n.includes('hair spray'))             return PACKING_ICONS.hairspray;
   if (n.includes('hair tie') || n.includes('hair ties') || n.includes('scrunchie') || n.includes('hair band')) return PACKING_ICONS.hair_ties;
   if (n.includes('feminine hygiene') || n.includes('tampon') || n.includes('pad') && n.includes('hygiene')) return PACKING_ICONS.feminine_hygiene;
   if (n.includes('shaving cream') || n.includes('shaving gel') || n.includes('shave cream')) return PACKING_ICONS.shaving_cream;
