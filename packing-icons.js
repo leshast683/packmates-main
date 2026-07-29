@@ -221,6 +221,22 @@ const CAT_FALLBACK_ICONS = {
   'Windy Weather':'jacket','Cold Weather':'boots',
 };
 
+// Accessories (Earrings/Bracelet/Ring/Chain/Necklace) always render with
+// gendered icon art even though some of them (Earrings/Bracelet/Ring) are
+// suggested to every user regardless of gender - packing-list.js's own
+// gender badge only reflects *suggestion* restriction, so it'd stay blank
+// for those three despite the icon itself being gendered. Mirrors
+// getItemIcon's own male/female choice below so the badge always matches
+// what's actually on screen: only an explicit 'male' gender counts as
+// male, everything else (female/nonbinary/unset) counts as female.
+function getIconGenderMark(name, gender) {
+  const n = name.toLowerCase();
+  if (n.includes('earring') || n.includes('bracelet') || n.includes('chain') || n.includes('necklace') || n.includes('ring')) {
+    return gender === 'male' ? 'male' : 'female';
+  }
+  return null;
+}
+
 function getItemIcon(name, cat, gender) {
   const n = name.toLowerCase();
   // Accessories with separate male/female icon art - name match picks the

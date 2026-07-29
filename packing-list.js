@@ -277,7 +277,7 @@ function buildItemRow(cat, name, isCustom) {
     article.dataset.status = packed ? 'packed' : 'not-packed';
 
     const iconSvg = getItemIcon(name, cat, userGender);
-    const itemGender = isCustom ? null : getItemGender(cat, name);
+    const itemGender = isCustom ? null : (getItemGender(cat, name) || getIconGenderMark(name, userGender));
     const iconStyle = itemGender === 'male'
         ? ' style="background:rgba(59,130,246,0.12);border-color:rgba(59,130,246,0.25);"'
         : itemGender === 'female'
