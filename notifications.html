@@ -492,20 +492,21 @@
       ];
     }
 
-    /* ── Type → avatar config (emoji, matching the toast pop-up) ── */
+    /* ── Type → avatar config (custom icon art, matching the toast pop-up) ── */
     const TYPE_CFG = {
-      trip:        { cls:'av-green', emoji:'✈️' },
-      packing:     { cls:'av-green', emoji:'🎒' },
-      reminder:    { cls:'av-navy',  emoji:'⏰' },
-      alert:       { cls:'av-teal',  emoji:'⚠️' },
+      trip:        { cls:'av-green', img:'img/notif_trip.png' },
+      packing:     { cls:'av-green', img:'img/notif_packing.png' },
+      reminder:    { cls:'av-navy',  img:'img/notif_reminder.png' },
+      alert:       { cls:'av-teal',  img:'img/notif_alert.png' },
       like:        { cls:'av-rose',  emoji:'❤️' },
-      social:      { cls:'av-navy',  emoji:'👥' },
-      achievement: { cls:'av-amber', emoji:'🏆' },
+      social:      { cls:'av-navy',  img:'img/notif_social.png' },
+      achievement: { cls:'av-amber', img:'img/notif_achievement.png' },
+      weather:     { cls:'av-navy',  img:'img/notif_weather.png' },
     };
 
     /* ── Type → filter category ── */
     const TYPE_FILTER = {
-      trip:'trip', packing:'packing', reminder:'alert', alert:'alert', like:'social', social:'social', achievement:'alert',
+      trip:'trip', packing:'packing', reminder:'alert', alert:'alert', like:'social', social:'social', achievement:'alert', weather:'trip',
     };
 
     function timeAgo(iso) {
@@ -531,9 +532,10 @@
     function buildItemHTML(n) {
       const cfg = TYPE_CFG[n.type] || TYPE_CFG.alert;
       const filterCat = TYPE_FILTER[n.type] || 'alert';
+      const iconHTML = cfg.img ? `<img src="${cfg.img}" alt="">` : cfg.emoji;
       return `
         <div class="notif-item${n.read?'':' unread'}" data-id="${n.id}" data-type="${filterCat}" onclick="markRead(this)">
-          <div class="notif-avatar ${cfg.cls}">${cfg.emoji}</div>
+          <div class="notif-avatar ${cfg.cls}">${iconHTML}</div>
           <div class="notif-body">
             <div class="notif-text">${n.text}</div>
             <span class="notif-time">${timeAgo(n.time)}</span>

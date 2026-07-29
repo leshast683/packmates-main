@@ -109,6 +109,7 @@
         position: relative;
         z-index: 1;
       }
+      .pm-toast-icon img { width: 26px; height: 26px; object-fit: contain; display: block; }
       /* colour variants (soft pastel tint behind the emoji) */
       .pm-ti-green  { background: rgba(95,157,48,0.15); }
       .pm-ti-orange { background: rgba(230,126,34,0.15); }
@@ -187,18 +188,20 @@
         pointer-events: none;
         z-index: 0;
       }
+      .pm-toast-stamp img { width: 46px; height: 46px; object-fit: contain; display: block; }
     `;
     document.head.appendChild(el);
   }
 
   const _ICONS = {
-    packing:     { cls: 'pm-ti-green',  emoji: '🎒', label: 'Pack Up' },
-    reminder:    { cls: 'pm-ti-blue',   emoji: '⏰', label: 'Reminder' },
-    alert:       { cls: 'pm-ti-orange', emoji: '⚠️', label: 'Heads Up' },
-    trip:        { cls: 'pm-ti-green',  emoji: '✈️', label: 'Trip' },
+    packing:     { cls: 'pm-ti-green',  img: 'img/notif_packing.png',     label: 'Pack Up' },
+    reminder:    { cls: 'pm-ti-blue',   img: 'img/notif_reminder.png',    label: 'Reminder' },
+    alert:       { cls: 'pm-ti-orange', img: 'img/notif_alert.png',       label: 'Heads Up' },
+    trip:        { cls: 'pm-ti-green',  img: 'img/notif_trip.png',        label: 'Trip' },
     join:        { cls: 'pm-ti-purple', emoji: '👥', label: 'Joined' },
-    social:      { cls: 'pm-ti-purple', emoji: '👥', label: 'Packmate' },
-    achievement: { cls: 'pm-ti-amber',  emoji: '🏆', label: 'Level Up!' },
+    social:      { cls: 'pm-ti-purple', img: 'img/notif_social.png',      label: 'Packmate' },
+    achievement: { cls: 'pm-ti-amber',  img: 'img/notif_achievement.png', label: 'Level Up!' },
+    weather:     { cls: 'pm-ti-blue',   img: 'img/notif_weather.png',     label: 'Weather Update' },
   };
 
   function showToast(text, type, tripName) {
@@ -215,10 +218,11 @@
 
     const meta = _ICONS[type] || _ICONS.packing;
     const full = tripName ? `${text} — ${tripName}` : text;
+    const iconHTML = meta.img ? `<img src="${meta.img}" alt="">` : meta.emoji;
 
     toast.innerHTML = `
-      <div class="pm-toast-stamp">${meta.emoji}</div>
-      <div class="pm-toast-icon ${meta.cls}">${meta.emoji}</div>
+      <div class="pm-toast-stamp">${iconHTML}</div>
+      <div class="pm-toast-icon ${meta.cls}">${iconHTML}</div>
       <div class="pm-toast-body">
         <div class="pm-toast-top-row">
           <div class="pm-toast-label">${meta.label}</div>
