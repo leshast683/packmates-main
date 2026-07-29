@@ -580,7 +580,6 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      min-height: 180px;
       box-shadow: 0 2px 8px rgba(12,122,122,0.25), 0 8px 24px rgba(12,122,122,0.15);
     }
     .bc-weather-label {
@@ -715,7 +714,6 @@
     }
     .bc-weather-day-icon { font-size: 1.5rem; line-height: 1; }
     .bc-weather-day-hi { font-size: 0.8rem; font-weight: 700; color: #fff; }
-    .bc-weather-day-lo { font-size: 0.68rem; font-weight: 500; color: rgba(255,255,255,0.5); }
 
     /* No-trip placeholder state */
     .bc-weather-empty {
@@ -1894,7 +1892,6 @@
       .bc-weather-day-icon { font-size: 1.2rem; }
       .bc-weather-day-label { font-size: 0.6rem; }
       .bc-weather-day-hi { font-size: 0.72rem; }
-      .bc-weather-day-lo { font-size: 0.6rem; }
 
       /* Disable bento stagger animations on mobile — GPU-expensive and add ~500ms of perceived lag */
       .bc, .bento-section, .trips-grid-wrap, .dash-header {

@@ -606,7 +606,6 @@
               <div class="bc-weather-day-label">${d.label}</div>
               <div class="bc-weather-day-icon">${d.icon}</div>
               <div class="bc-weather-day-hi">${d.hi}°</div>
-              ${i === 0 ? '' : `<div class="bc-weather-day-lo">${d.lo}°</div>`}
             </div>
           `).join('');
         }
