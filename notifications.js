@@ -62,26 +62,33 @@
     const el = document.createElement('style');
     el.id = 'pm-notify-css';
     el.textContent = `
-      /* ── Toast ── */
+      /* ── Toast ──
+         Card anatomy modeled on the app's notification-card mockup: a
+         pastel-tinted 3D-style icon square, bold title + lighter subtitle,
+         a small time stamp in the top-right corner, and a large faint
+         "travel stamp" echo of the icon bottom-right for texture. */
       .pm-toast {
         position: fixed;
-        top: -100px;
+        top: -140px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 99998;
-        background: #192919;
-        border: 1px solid rgba(95,157,48,0.30);
-        border-radius: 18px;
-        padding: 13px 16px 13px 14px;
+        background: rgba(255,255,255,0.92);
+        border: 1px solid rgba(255,255,255,0.6);
+        border-radius: 20px;
+        padding: 14px 16px;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 12px;
         width: min(calc(100vw - 32px), 400px);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(95,157,48,0.10);
+        box-shadow: 0 16px 40px rgba(13,51,71,0.22), 0 0 0 1px rgba(13,51,71,0.04);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         transition: top 0.42s cubic-bezier(0.34,1.42,0.64,1), opacity 0.3s ease;
         opacity: 0;
         pointer-events: none;
         user-select: none;
+        overflow: hidden;
       }
       .pm-toast.pm-toast--visible {
         top: calc(16px + env(safe-area-inset-top));
@@ -90,53 +97,58 @@
       }
 
       .pm-toast-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        font-size: 1.3rem;
+        box-shadow: inset 0 0 0 1px rgba(13,51,71,0.05);
+        position: relative;
+        z-index: 1;
       }
-      .pm-toast-icon svg {
-        width: 17px; height: 17px;
-        fill: none;
-        stroke-width: 2.2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-      /* colour variants */
-      .pm-ti-green  { background: rgba(95,157,48,0.20); }
-      .pm-ti-green  svg { stroke: #8be05a; }
-      .pm-ti-orange { background: rgba(230,126,34,0.20); }
-      .pm-ti-orange svg { stroke: #f39c12; }
-      .pm-ti-blue   { background: rgba(74,144,217,0.20); }
-      .pm-ti-blue   svg { stroke: #6ab4f5; }
-      .pm-ti-purple { background: rgba(155,89,182,0.20); }
-      .pm-ti-purple svg { stroke: #c39bd3; }
+      /* colour variants (soft pastel tint behind the emoji) */
+      .pm-ti-green  { background: rgba(95,157,48,0.15); }
+      .pm-ti-orange { background: rgba(230,126,34,0.15); }
+      .pm-ti-blue   { background: rgba(74,144,217,0.15); }
+      .pm-ti-purple { background: rgba(155,89,182,0.15); }
+      .pm-ti-amber  { background: rgba(217,164,6,0.16); }
 
       .pm-toast-body {
         flex: 1;
         min-width: 0;
+        position: relative;
+        z-index: 1;
+      }
+      .pm-toast-top-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
       }
       .pm-toast-label {
-        font-size: 0.66rem;
+        font-size: 0.9rem;
         font-weight: 700;
-        letter-spacing: 0.07em;
-        text-transform: uppercase;
-        margin-bottom: 2px;
-        opacity: 0.7;
+        color: var(--navy-deep, #0d3347);
+        line-height: 1.25;
       }
-      .pm-ti-green  ~ .pm-toast-body .pm-toast-label { color: #8be05a; }
-      .pm-ti-orange ~ .pm-toast-body .pm-toast-label { color: #f39c12; }
-      .pm-ti-blue   ~ .pm-toast-body .pm-toast-label { color: #6ab4f5; }
-      .pm-ti-purple ~ .pm-toast-body .pm-toast-label { color: #c39bd3; }
+      .pm-toast-time {
+        font-size: 0.66rem;
+        font-weight: 600;
+        color: rgba(13,51,71,0.38);
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
 
       .pm-toast-text {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
         font-weight: 500;
-        color: rgba(255,255,255,0.88);
+        color: rgba(13,51,71,0.6);
         line-height: 1.35;
+        margin-top: 2px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -144,7 +156,7 @@
       .pm-toast-close {
         background: none;
         border: none;
-        color: rgba(255,255,255,0.35);
+        color: rgba(13,51,71,0.3);
         cursor: pointer;
         padding: 5px;
         border-radius: 8px;
@@ -152,19 +164,41 @@
         align-items: center;
         transition: color 0.15s;
         flex-shrink: 0;
+        position: relative;
+        z-index: 1;
       }
-      .pm-toast-close:hover { color: rgba(255,255,255,0.75); }
+      .pm-toast-close:hover { color: rgba(13,51,71,0.6); }
+
+      /* Decorative "travel stamp" - large faint icon echo, bottom-right,
+         behind the text (z-index below .pm-toast-body/.pm-toast-close). */
+      .pm-toast-stamp {
+        position: absolute;
+        right: -14px;
+        bottom: -22px;
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        border: 1.5px dashed rgba(13,51,71,0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.1rem;
+        opacity: 0.14;
+        pointer-events: none;
+        z-index: 0;
+      }
     `;
     document.head.appendChild(el);
   }
 
   const _ICONS = {
-    packing:  { cls: 'pm-ti-green',  svg: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>',   label: 'Pack Up' },
-    reminder: { cls: 'pm-ti-blue',   svg: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',                             label: 'Reminder' },
-    alert:    { cls: 'pm-ti-orange', svg: '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>', label: 'Heads Up' },
-    trip:     { cls: 'pm-ti-green',  svg: '<path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>', label: 'Trip' },
-    join:     { cls: 'pm-ti-purple', svg: '<path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>', label: 'Joined' },
-    social:   { cls: 'pm-ti-purple', svg: '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>', label: 'Packmate' },
+    packing:     { cls: 'pm-ti-green',  emoji: '🎒', label: 'Pack Up' },
+    reminder:    { cls: 'pm-ti-blue',   emoji: '⏰', label: 'Reminder' },
+    alert:       { cls: 'pm-ti-orange', emoji: '⚠️', label: 'Heads Up' },
+    trip:        { cls: 'pm-ti-green',  emoji: '✈️', label: 'Trip' },
+    join:        { cls: 'pm-ti-purple', emoji: '👥', label: 'Joined' },
+    social:      { cls: 'pm-ti-purple', emoji: '👥', label: 'Packmate' },
+    achievement: { cls: 'pm-ti-amber',  emoji: '🏆', label: 'Level Up!' },
   };
 
   function showToast(text, type, tripName) {
@@ -183,11 +217,13 @@
     const full = tripName ? `${text} — ${tripName}` : text;
 
     toast.innerHTML = `
-      <div class="pm-toast-icon ${meta.cls}">
-        <svg viewBox="0 0 24 24">${meta.svg}</svg>
-      </div>
+      <div class="pm-toast-stamp">${meta.emoji}</div>
+      <div class="pm-toast-icon ${meta.cls}">${meta.emoji}</div>
       <div class="pm-toast-body">
-        <div class="pm-toast-label">${meta.label}</div>
+        <div class="pm-toast-top-row">
+          <div class="pm-toast-label">${meta.label}</div>
+          <div class="pm-toast-time">now</div>
+        </div>
         <div class="pm-toast-text" title="${full}">${full}</div>
       </div>
       <button class="pm-toast-close" aria-label="Dismiss"

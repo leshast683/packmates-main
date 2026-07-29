@@ -943,6 +943,7 @@
   <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
   <script src="notifications.js"></script>
+  <script src="lib/badge-levels.js"></script>
   <script src="packing-icons.js?v=1"></script>
   <script src="lib/packing-math.js"></script>
   <script>
@@ -1068,28 +1069,20 @@
       document.getElementById('streakSub').textContent  = streakSub;
 
       // Badge levels are based on lifetime items packed (across every
-      // trip), not trip count - counting each item once per trip the
-      // moment it's checked off, same as the "X of Y items packed" count
-      // shown elsewhere (not quantity-weighted).
-      const TIERS = [
-        { name:'Beginner',      min:0,    icon:'img/badge_beginner.png' },
-        { name:'Adventurer',    min:100,  icon:'img/badge_adventurer.png' },
-        { name:'Wanderer',      min:250,  icon:'img/badge_wanderer.png' },
-        { name:'Explorer',      min:500,  icon:'img/badge_explorer.png' },
-        { name:'Globetrotter',  min:1000, icon:'img/badge_globetrotter.png' },
-        { name:'World Citizen', min:2000, icon:'img/badge_world_citizen.png' },
-      ];
-      let totalItemsPacked = 0;
-      trips.forEach(t => {
-        try {
-          const pd = JSON.parse(localStorage.getItem(`pm_pack_${t.id}`) || '{}');
-          totalItemsPacked += Object.values(pd.itemState || {}).filter(v => v?.packed).length;
-        } catch(e) {}
-      });
-      const tierIdx = [...TIERS].reverse().findIndex(t => totalItemsPacked >= t.min);
-      const curIdx  = TIERS.length - 1 - tierIdx;
-      const cur     = TIERS[curIdx];
-      const next    = TIERS[curIdx + 1];
+      // trip) - see lib/badge-levels.js, the single source of truth also
+      // used by packing-list.js to fire the level-up notification.
+      const LEVEL_ICONS = {
+        'Beginner':      'img/badge_beginner.png',
+        'Adventurer':    'img/badge_adventurer.png',
+        'Wanderer':      'img/badge_wanderer.png',
+        'Explorer':      'img/badge_explorer.png',
+        'Globetrotter':  'img/badge_globetrotter.png',
+        'World Citizen': 'img/badge_world_citizen.png',
+      };
+      const totalItemsPacked = BadgeLevels.getTotalItemsPacked();
+      const cur     = BadgeLevels.getBadgeTier(totalItemsPacked);
+      const curIdx  = BadgeLevels.BADGE_TIERS.indexOf(cur);
+      const next    = BadgeLevels.BADGE_TIERS[curIdx + 1];
       const pct     = next ? Math.min(100, Math.round((totalItemsPacked - cur.min) / (next.min - cur.min) * 100)) : 100;
       const label   = next ? `${pct}% to ${next.name}` : '';
       setTimeout(() => { document.getElementById('explorerFill').style.width = pct + '%'; }, 120);
@@ -1097,7 +1090,8 @@
       document.getElementById('explorerPctText').textContent = label;
 
       const iconBox = document.getElementById('explorerLevelIcon');
-      if (cur.icon) {
+      const iconSrc = LEVEL_ICONS[cur.name];
+      if (iconSrc) {
         // Falls back to the default star SVG for any tier whose
         // badge_*.png hasn't been added yet, rather than showing a broken
         // image - uses a fixed constant rather than the element's current
@@ -1108,7 +1102,7 @@
         img.alt = cur.name + ' badge';
         img.onload = () => { iconBox.innerHTML = ''; iconBox.appendChild(img); };
         img.onerror = () => { iconBox.classList.remove('explorer-level-icon--custom'); iconBox.innerHTML = DEFAULT_LEVEL_ICON_SVG; };
-        img.src = cur.icon;
+        img.src = iconSrc;
       }
     }
 

@@ -317,6 +317,7 @@ function buildItemRow(cat, name, isCustom) {
         updateCounts();
         // Trigger milestone notifications after state changes
         if (window.Notify) setTimeout(() => Notify.checkTrip(), 0);
+        if (window.BadgeLevels) setTimeout(() => BadgeLevels.checkBadgeLevelUp(), 0);
     });
 
     // Qty buttons
