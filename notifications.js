@@ -346,25 +346,56 @@
     } catch (e) {}
   }
 
-  // ── Weather-change notifications ────────────────────────────────
-  // Compares the current trip destination's forecast against the last
-  // snapshot seen for that trip (cached in localStorage) and notifies
-  // when it changed in a way that actually affects what to pack - rain
-  // newly appearing or disappearing, or a swing into/out of cold. Uses
-  // the same "Packing Reminders" toggle as checkTrip()'s other proactive
-  // nudges, since there's no dedicated weather-notification setting.
-  const WMO_RAINY = new Set([51,53,55,61,63,65,71,73,75,80,81,82,95,96,99]);
-  const WMO_COLD_THRESHOLD = 45; // °F - below this, "pack warm layers" applies
+  // ── Weather-change notifications + adaptive packing list ──────────
+  // Polls the current trip destination's real forecast, derives a full
+  // hot/cold/snowy/rainy/windy profile from it, and caches that as
+  // pm_wx_live_{tripId} - lib/packing-items.js's buildTripProfile() reads
+  // that cache and folds it into the trip profile, so the packing list
+  // itself adapts (e.g. Umbrella actually gets suggested) whenever the
+  // real weather shifts, not just the static destination/season guess.
+  // Separately, compares against the last-seen profile to fire a
+  // notification only on a genuine change. Uses the same "Packing
+  // Reminders" toggle as checkTrip()'s other proactive nudges, since
+  // there's no dedicated weather-notification setting.
+  const WMO_RAIN_CODES = new Set([51,53,55,61,63,65,80,81,82,95,96,99]);
+  const WMO_SNOW_CODES = new Set([71,73,75,77,85,86]);
+  const WX_HOT_THRESHOLD  = 85; // °F max - at/above this, "hot" applies
+  const WX_COLD_THRESHOLD = 45; // °F min - below this, "cold" applies
+  const WX_WIND_THRESHOLD = 20; // mph max - at/above this, "windy" applies
 
   async function _fetchDailyForecast(city) {
     try {
       const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)).json();
       if (!g.results?.[0]) return null;
       const { latitude: lat, longitude: lon } = g.results[0];
-      const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto&forecast_days=7`)).json();
+      const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`)).json();
       return w.daily || null;
     } catch { return null; }
   }
+
+  // Any single day tripping a threshold is enough - packing has to cover
+  // the worst day of the trip, not the average.
+  function _deriveWeatherFlags(daily) {
+    const codes = daily.weather_code || [];
+    const maxT  = daily.temperature_2m_max || [];
+    const minT  = daily.temperature_2m_min || [];
+    const wind  = daily.wind_speed_10m_max || [];
+    return {
+      hot:   maxT.some(t => t >= WX_HOT_THRESHOLD),
+      cold:  minT.some(t => t < WX_COLD_THRESHOLD),
+      rainy: codes.some(c => WMO_RAIN_CODES.has(c)),
+      snowy: codes.some(c => WMO_SNOW_CODES.has(c)),
+      windy: wind.some(s => s >= WX_WIND_THRESHOLD),
+    };
+  }
+
+  const _WX_CHANGE_MSG = {
+    rainy: 'rain is now in the forecast for {dest}. We recommend packing an umbrella or rain jacket.',
+    snowy: 'snow is now in the forecast for {dest}. We recommend packing warm, waterproof layers.',
+    cold:  "it's turning colder in {dest}. We recommend packing warmer layers.",
+    hot:   "it's heating up in {dest}. We recommend packing lighter clothing and sunscreen.",
+    windy: "it's looking windy in {dest}. We recommend packing a windbreaker.",
+  };
 
   async function checkWeatherChange() {
     try {
@@ -382,33 +413,38 @@
       if (!daily?.weather_code?.length) return;
       localStorage.setItem(lastKey, String(Date.now()));
 
+      const curFlags = _deriveWeatherFlags(daily);
+      // Always keep this fresh regardless of whether anything changed -
+      // this is the live override the packing list actually reads.
+      localStorage.setItem(`pm_wx_live_${trip.id}`, JSON.stringify(curFlags));
+
       const snapKey = `pm_wxsnapshot_${trip.id}`;
       const prevRaw = localStorage.getItem(snapKey);
-      localStorage.setItem(snapKey, JSON.stringify({ code: daily.weather_code, min: daily.temperature_2m_min }));
-      if (!prevRaw) return; // first time checking this trip - nothing to compare against yet
+      localStorage.setItem(snapKey, JSON.stringify(curFlags));
+      if (!prevRaw) return; // first check for this trip - nothing to compare against yet
 
-      let prev;
-      try { prev = JSON.parse(prevRaw); } catch { return; }
-      const curCode = daily.weather_code, curMin = daily.temperature_2m_min;
-      const prevCode = prev.code || [], prevMin = prev.min || [];
-      const days = Math.min(curCode.length, prevCode.length);
+      let prevFlags;
+      try { prevFlags = JSON.parse(prevRaw); } catch { return; }
 
-      const newlyRainy   = Array.from({length: days}, (_,i)=>i).some(i => WMO_RAINY.has(curCode[i]) && !WMO_RAINY.has(prevCode[i]));
-      const noLongerRainy = !newlyRainy && Array.from({length: days}, (_,i)=>i).some(i => WMO_RAINY.has(prevCode[i]) && !WMO_RAINY.has(curCode[i]));
-      const newlyCold    = Array.from({length: days}, (_,i)=>i).some(i => curMin[i] < WMO_COLD_THRESHOLD && !(prevMin[i] < WMO_COLD_THRESHOLD));
-
-      let text = null;
       const dest = trip.destination;
-      if (newlyRainy) {
-        text = `Your destination weather had changed — rain is now in the forecast for ${dest}. We recommend packing an umbrella or rain jacket.`;
-      } else if (newlyCold) {
-        text = `Your destination weather had changed — it's turning colder in ${dest}. We recommend packing warmer layers.`;
-      } else if (noLongerRainy) {
+      // Priority order: precipitation first (biggest packing impact), then
+      // temperature swings, then wind - fire at most one notification per
+      // check so one forecast refresh can't spam several toasts at once.
+      let text = null, changeKey = null;
+      for (const k of ['rainy', 'snowy', 'cold', 'hot', 'windy']) {
+        if (curFlags[k] && !prevFlags[k]) {
+          text = `Your destination weather had changed — ${_WX_CHANGE_MSG[k].replace('{dest}', dest)}`;
+          changeKey = k;
+          break;
+        }
+      }
+      if (!text && !curFlags.rainy && prevFlags.rainy) {
         text = `Good news — the forecast for ${dest} cleared up! Rain is no longer expected.`;
+        changeKey = 'rainy_off';
       }
       if (!text) return;
 
-      const dedupId = `weather_${trip.id}_${new Date().toDateString()}`;
+      const dedupId = `weather_${trip.id}_${changeKey}_${new Date().toDateString()}`;
       if (push('weather', text, dest, dedupId)) {
         showToast(text, 'weather', dest);
       }
