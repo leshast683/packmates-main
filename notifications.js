@@ -346,6 +346,75 @@
     } catch (e) {}
   }
 
+  // ── Weather-change notifications ────────────────────────────────
+  // Compares the current trip destination's forecast against the last
+  // snapshot seen for that trip (cached in localStorage) and notifies
+  // when it changed in a way that actually affects what to pack - rain
+  // newly appearing or disappearing, or a swing into/out of cold. Uses
+  // the same "Packing Reminders" toggle as checkTrip()'s other proactive
+  // nudges, since there's no dedicated weather-notification setting.
+  const WMO_RAINY = new Set([51,53,55,61,63,65,71,73,75,80,81,82,95,96,99]);
+  const WMO_COLD_THRESHOLD = 45; // °F - below this, "pack warm layers" applies
+
+  async function _fetchDailyForecast(city) {
+    try {
+      const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)).json();
+      if (!g.results?.[0]) return null;
+      const { latitude: lat, longitude: lon } = g.results[0];
+      const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto&forecast_days=7`)).json();
+      return w.daily || null;
+    } catch { return null; }
+  }
+
+  async function checkWeatherChange() {
+    try {
+      if (_notifSettings().reminders === false) return; // undefined/true = on (default)
+      const trip = JSON.parse(localStorage.getItem('currentTrip') || 'null');
+      if (!trip?.id || !trip?.destination) return;
+
+      // Checking the forecast is a network call - only do it a few times
+      // a day per trip, not on every single page load.
+      const lastKey = `pm_wxcheck_${trip.id}`;
+      const last = parseInt(localStorage.getItem(lastKey) || '0', 10);
+      if (Date.now() - last < 6 * 3600000) return;
+
+      const daily = await _fetchDailyForecast(trip.destination);
+      if (!daily?.weather_code?.length) return;
+      localStorage.setItem(lastKey, String(Date.now()));
+
+      const snapKey = `pm_wxsnapshot_${trip.id}`;
+      const prevRaw = localStorage.getItem(snapKey);
+      localStorage.setItem(snapKey, JSON.stringify({ code: daily.weather_code, min: daily.temperature_2m_min }));
+      if (!prevRaw) return; // first time checking this trip - nothing to compare against yet
+
+      let prev;
+      try { prev = JSON.parse(prevRaw); } catch { return; }
+      const curCode = daily.weather_code, curMin = daily.temperature_2m_min;
+      const prevCode = prev.code || [], prevMin = prev.min || [];
+      const days = Math.min(curCode.length, prevCode.length);
+
+      const newlyRainy   = Array.from({length: days}, (_,i)=>i).some(i => WMO_RAINY.has(curCode[i]) && !WMO_RAINY.has(prevCode[i]));
+      const noLongerRainy = !newlyRainy && Array.from({length: days}, (_,i)=>i).some(i => WMO_RAINY.has(prevCode[i]) && !WMO_RAINY.has(curCode[i]));
+      const newlyCold    = Array.from({length: days}, (_,i)=>i).some(i => curMin[i] < WMO_COLD_THRESHOLD && !(prevMin[i] < WMO_COLD_THRESHOLD));
+
+      let text = null;
+      const dest = trip.destination;
+      if (newlyRainy) {
+        text = `Your destination weather had changed — rain is now in the forecast for ${dest}. We recommend packing an umbrella or rain jacket.`;
+      } else if (newlyCold) {
+        text = `Your destination weather had changed — it's turning colder in ${dest}. We recommend packing warmer layers.`;
+      } else if (noLongerRainy) {
+        text = `Good news — the forecast for ${dest} cleared up! Rain is no longer expected.`;
+      }
+      if (!text) return;
+
+      const dedupId = `weather_${trip.id}_${new Date().toDateString()}`;
+      if (push('weather', text, dest, dedupId)) {
+        showToast(text, 'weather', dest);
+      }
+    } catch (e) {}
+  }
+
   // ── Bot social notifications ──────────────────────────────────────
   const _BOT_TRAVELERS = [
     { name:'Sofia Martinez',   dests:['Santorini','Havana','Lisbon','Marrakech','Kyoto'] },
@@ -529,6 +598,7 @@
   function init() {
     _injectStyles();
     checkTrip();
+    checkWeatherChange();
     checkBotNotifs();
     _initRealSocialEvents();
     _catchUpMissedEvents();
@@ -543,5 +613,5 @@
   }
 
   // ── Public API ───────────────────────────────────────────────────
-  window.Notify = { push, showToast, unreadCount, updateBell, checkTrip };
+  window.Notify = { push, showToast, unreadCount, updateBell, checkTrip, checkWeatherChange };
 })();
