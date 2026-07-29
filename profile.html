@@ -555,7 +555,7 @@
         <video class="hero-bg-video" id="heroBgVideo" autoplay muted loop playsinline preload="none"></video>
 
         <!-- Streak card -->
-        <div class="profile-streak-card">
+        <div class="profile-streak-card" id="profileStreakCard">
           <div class="profile-streak-title">Packing Streak</div>
           <div class="profile-streak-num" id="streakDays">—</div>
           <div class="profile-streak-unit">days</div>
@@ -626,7 +626,7 @@
           </div>
 
           <!-- Explorer level glass bar -->
-          <div class="explorer-level">
+          <div class="explorer-level" id="explorerLevelBar">
             <div class="explorer-level-icon" id="explorerLevelIcon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
             <div class="explorer-level-body">
               <div class="explorer-level-title"><span><span id="explorerLevelName">Beginner</span> Level</span> <span class="explorer-pct" id="explorerPctText">—</span></div>
@@ -1315,6 +1315,8 @@
         counter.className = 'bio-char-count' + (remaining <= 6 ? ' warn' : '');
         hideLoc();
         disp.style.display='none'; edit.style.display='flex';
+        document.getElementById('profileStreakCard').style.display = 'none';
+        document.getElementById('explorerLevelBar').style.display  = 'none';
       } else {
         const name     = document.getElementById('edit-name').value.trim()     || 'Traveler';
         const location = document.getElementById('edit-location').value.trim();
@@ -1333,6 +1335,8 @@
         const bioEl = document.getElementById('display-bio');
         if (bioEl) { bioEl.textContent = bio; bioEl.style.display = bio ? '' : 'none'; }
         disp.style.display=''; edit.style.display='none';
+        document.getElementById('profileStreakCard').style.display = '';
+        document.getElementById('explorerLevelBar').style.display  = '';
         showToast('Profile updated!');
       }
     }
@@ -1341,6 +1345,8 @@
       hideLoc();
       document.getElementById('profile-display').style.display = '';
       document.getElementById('profile-edit').style.display    = 'none';
+      document.getElementById('profileStreakCard').style.display = '';
+      document.getElementById('explorerLevelBar').style.display  = '';
     }
 
     /* ── Location autocomplete ── */
