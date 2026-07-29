@@ -605,13 +605,20 @@
       allTrips.push(trip);
       localStorage.setItem('pm_trips', JSON.stringify(allTrips));
     }
+    const isTripPast = t => t.toDate ? new Date(t.toDate + 'T23:59:59') < new Date() : false;
     if (allTrips.length > 0) {
       document.getElementById('tripsSection').style.display = '';
       const _myId = Auth.getSession()?.userId;
-      tripsGrid.innerHTML = allTrips.slice().reverse().map(t => {
+      // Newest-first within each group, but active/upcoming trips always
+      // precede past ones — Array#sort is stable, so this partition alone
+      // (without a secondary date comparator) keeps that reverse-chronological
+      // order intact inside both groups.
+      tripsGrid.innerHTML = allTrips.slice().reverse()
+        .sort((a, b) => Number(isTripPast(a)) - Number(isTripPast(b)))
+        .map(t => {
         const isActive = t.id === trip?.id;
         const tDays = t.fromDate ? daysTo(t.fromDate) : null;
-        const isPast = t.toDate ? new Date(t.toDate + 'T23:59:59') < new Date() : false;
+        const isPast = isTripPast(t);
         const daysLabel = isPast ? 'Past trip' : tDays === null ? '' : tDays > 0 ? `${tDays}d away` : tDays === 0 ? 'Today!' : 'Underway';
         const isOwnedByMe = !t._ownerId || t._ownerId === _myId;
         const deleteLabel = isOwnedByMe ? 'Delete trip' : 'Leave trip';
