@@ -185,8 +185,14 @@
       width:36px; height:36px; flex-shrink:0; border-radius:10px;
       background:rgba(124,198,62,.18); border:1.5px solid rgba(124,198,62,.32);
       display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
     }
     .explorer-level-icon svg { width:17px; height:17px; stroke:#7cc63e; fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+    /* Per-tier badge art (img/badge_*.png) already comes as a full square
+       icon with its own dark background + glow border baked in, so drop
+       this box's own background/border rather than double up. */
+    .explorer-level-icon--custom { background:none; border-color:transparent; }
+    .explorer-level-icon img { width:100%; height:100%; object-fit:cover; display:block; }
     .explorer-level-body { flex:1; }
     .explorer-level-title { font-size:.78rem; font-weight:700; color:#fff; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
     .explorer-pct { font-size:.72rem; font-weight:600; color:rgba(255,255,255,.6); }
@@ -617,7 +623,7 @@
 
           <!-- Explorer level glass bar -->
           <div class="explorer-level">
-            <div class="explorer-level-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+            <div class="explorer-level-icon" id="explorerLevelIcon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
             <div class="explorer-level-body">
               <div class="explorer-level-title"><span><span id="explorerLevelName">Beginner</span> Level</span> <span class="explorer-pct" id="explorerPctText">—</span></div>
               <div class="explorer-track"><div class="explorer-fill" id="explorerFill" style="width:0%"></div></div>
@@ -1041,6 +1047,8 @@
       } catch(e) {}
     }
 
+    const DEFAULT_LEVEL_ICON_SVG = '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+
     function loadStreakAndLevel() {
       const trips = getAllTrips();
       let streakVal = 0, streakSub = 'Keep it up! ✈️';
@@ -1060,12 +1068,12 @@
       // moment it's checked off, same as the "X of Y items packed" count
       // shown elsewhere (not quantity-weighted).
       const TIERS = [
-        { name:'Beginner',      min:0 },
-        { name:'Adventurer',    min:100 },
-        { name:'Wanderer',      min:250 },
-        { name:'Explorer',      min:500 },
-        { name:'Globetrotter',  min:1000 },
-        { name:'World Citizen', min:2000 },
+        { name:'Beginner',      min:0,    icon:'img/badge_beginner.png' },
+        { name:'Adventurer',    min:100,  icon:'img/badge_adventurer.png' },
+        { name:'Wanderer',      min:250,  icon:'img/badge_wanderer.png' },
+        { name:'Explorer',      min:500,  icon:'img/badge_explorer.png' },
+        { name:'Globetrotter',  min:1000, icon:'img/badge_globetrotter.png' },
+        { name:'World Citizen', min:2000, icon:'img/badge_world_citizen.png' },
       ];
       let totalItemsPacked = 0;
       trips.forEach(t => {
@@ -1083,6 +1091,21 @@
       setTimeout(() => { document.getElementById('explorerFill').style.width = pct + '%'; }, 120);
       document.getElementById('explorerLevelName').textContent = cur.name;
       document.getElementById('explorerPctText').textContent = label;
+
+      const iconBox = document.getElementById('explorerLevelIcon');
+      if (cur.icon) {
+        // Falls back to the default star SVG for any tier whose
+        // badge_*.png hasn't been added yet, rather than showing a broken
+        // image - uses a fixed constant rather than the element's current
+        // innerHTML, since this function re-runs on trip changes and the
+        // box may already be showing a *different* tier's image by then.
+        iconBox.classList.add('explorer-level-icon--custom');
+        const img = new Image();
+        img.alt = cur.name + ' badge';
+        img.onload = () => { iconBox.innerHTML = ''; iconBox.appendChild(img); };
+        img.onerror = () => { iconBox.classList.remove('explorer-level-icon--custom'); iconBox.innerHTML = DEFAULT_LEVEL_ICON_SVG; };
+        img.src = cur.icon;
+      }
     }
 
     function loadTravelStyle() {
