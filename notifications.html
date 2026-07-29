@@ -192,53 +192,72 @@
     .btn-filter-icon svg { width: 15px; height: 15px; stroke: var(--text-3); fill: none; stroke-width: 2; stroke-linecap: round; }
 
     /* ── Notification list container ── */
+    /* No longer a single card wrapping every row - each .notif-item is now
+       its own glass card, so this is just a plain layout wrapper. */
     .notif-list-outer {
-      background: var(--surface); border-radius: 18px;
-      border: 1px solid rgba(0,0,0,.05);
-      box-shadow: 0 1px 4px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
-      overflow: hidden;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      overflow: visible;
       flex-shrink: 0;
       animation: fadeUp .35s .15s ease both;
     }
 
     /* ── Group header ── */
     .notif-group-head {
-      padding: 10px 20px 8px;
+      padding: 4px 6px 10px;
       font-family: 'Blauer Nue', sans-serif;
       font-size: .78rem; font-weight: 700; color: var(--text-3);
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
+      border-bottom: none;
+      background: transparent;
     }
-    .notif-group-head:not(:first-child) { border-top: 1px solid var(--border); }
+    .notif-group-head:not(:first-child) { border-top: none; margin-top: 6px; }
 
-    /* ── Notification item ── */
+    /* ── Notification item — modern frosted-glass card ── */
     .notif-item {
       display: flex; align-items: center; gap: 14px;
-      padding: 14px 20px; cursor: pointer; transition: background .14s;
-      border-bottom: 1px solid var(--border); position: relative;
+      padding: 14px 16px; cursor: pointer;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(13,51,71,0.04), 0 4px 16px rgba(13,51,71,0.06);
+      margin-bottom: 10px;
+      transition: background .16s, box-shadow .16s, transform .16s;
+      position: relative;
     }
-    .notif-item:last-child { border-bottom: none; }
-    .notif-item:hover { background: var(--bg); }
-    .notif-item.unread { background: rgba(95,157,48,.03); }
-    .notif-item.unread:hover { background: rgba(95,157,48,.06); }
+    .notif-item:last-child { margin-bottom: 0; }
+    @media (hover: hover) and (pointer: fine) {
+      .notif-item:hover {
+        background: rgba(255,255,255,0.82);
+        box-shadow: 0 8px 24px rgba(13,51,71,0.1);
+        transform: translateY(-1px);
+      }
+    }
+    .notif-item.unread {
+      background: rgba(224,241,208,0.55);
+      border-color: rgba(124,198,62,0.32);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .notif-item.unread:hover { background: rgba(224,241,208,0.75); }
+    }
 
-    /* Circle avatar */
+    /* Icon square - pastel tint + emoji, matching the toast pop-up */
     .notif-avatar {
-      width: 46px; height: 46px; border-radius: 50%;
+      width: 44px; height: 44px; border-radius: 13px;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; font-size: 1.15rem; overflow: hidden;
-      background: #e8f0e4;
+      flex-shrink: 0; font-size: 1.3rem; overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(13,51,71,0.05);
     }
-    .notif-avatar svg { width: 20px; height: 20px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .av-green  { background: linear-gradient(145deg,#7cc63e,#4d8225); }
-    .av-navy   { background: linear-gradient(145deg,#1a5878,#0d2d40); }
-    .av-teal   { background: linear-gradient(145deg,#0c7a7a,#055555); }
-    .av-amber  { background: linear-gradient(145deg,#f59e0b,#b45309); }
-    .av-rose   { background: linear-gradient(145deg,#e11d48,#9f1239); }
-    .av-green  svg, .av-navy svg, .av-teal svg, .av-amber svg, .av-rose svg { stroke: rgba(255,255,255,.95); }
+    .av-green  { background: rgba(95,157,48,0.16); }
+    .av-navy   { background: rgba(26,88,120,0.14); }
+    .av-teal   { background: rgba(12,122,122,0.15); }
+    .av-amber  { background: rgba(217,164,6,0.16); }
+    .av-rose   { background: rgba(225,29,72,0.14); }
 
     /* Photo avatar */
-    .notif-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .notif-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 
     .notif-body { flex: 1; min-width: 0; }
     .notif-text { font-size: .84rem; font-weight: 500; color: var(--text-2); line-height: 1.45; }
@@ -473,15 +492,15 @@
       ];
     }
 
-    /* ── Type → avatar config ── */
+    /* ── Type → avatar config (emoji, matching the toast pop-up) ── */
     const TYPE_CFG = {
-      trip:     { cls:'av-green', svg:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
-      packing:  { cls:'av-green', svg:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
-      reminder: { cls:'av-navy',  svg:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' },
-      alert:    { cls:'av-teal',  svg:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' },
-      like:     { cls:'av-rose',  svg:'<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>' },
-      social:   { cls:'av-navy',  svg:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>' },
-      achievement: { cls:'av-amber', svg:'<path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M17 5h3a2 2 0 012 2 4 4 0 01-4 4"/><path d="M7 5H4a2 2 0 00-2 2 4 4 0 004 4"/>' },
+      trip:        { cls:'av-green', emoji:'✈️' },
+      packing:     { cls:'av-green', emoji:'🎒' },
+      reminder:    { cls:'av-navy',  emoji:'⏰' },
+      alert:       { cls:'av-teal',  emoji:'⚠️' },
+      like:        { cls:'av-rose',  emoji:'❤️' },
+      social:      { cls:'av-navy',  emoji:'👥' },
+      achievement: { cls:'av-amber', emoji:'🏆' },
     };
 
     /* ── Type → filter category ── */
@@ -514,9 +533,7 @@
       const filterCat = TYPE_FILTER[n.type] || 'alert';
       return `
         <div class="notif-item${n.read?'':' unread'}" data-id="${n.id}" data-type="${filterCat}" onclick="markRead(this)">
-          <div class="notif-avatar ${cfg.cls}">
-            <svg viewBox="0 0 24 24">${cfg.svg}</svg>
-          </div>
+          <div class="notif-avatar ${cfg.cls}">${cfg.emoji}</div>
           <div class="notif-body">
             <div class="notif-text">${n.text}</div>
             <span class="notif-time">${timeAgo(n.time)}</span>
