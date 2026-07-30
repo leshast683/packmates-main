@@ -159,9 +159,9 @@ function buildWelcomeEmailHtml(firstName) {
                 </p>
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                   <tr>
-                    <td width="44" valign="top" style="padding:0 12px 16px 0;">
-                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:36px;height:36px;background:rgba(17,58,88,0.1);border-radius:11px;">
-                        <tr><td align="center" valign="middle" style="width:36px;height:36px;"><img src="https://packmatesai.com/img/notif_trip.png" width="20" height="20" alt="" style="display:block;" /></td></tr>
+                    <td width="52" valign="top" style="padding:0 12px 16px 0;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:44px;height:44px;background:rgba(17,58,88,0.1);border-radius:11px;">
+                        <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="https://packmatesai.com/img/notif_trip.png" width="26" height="26" alt="" style="display:block;" /></td></tr>
                       </table>
                     </td>
                     <td valign="middle" class="email-text-1" style="padding:0 0 16px;color:#0a1f2e;font-size:15px;line-height:1.5;">
@@ -169,9 +169,9 @@ function buildWelcomeEmailHtml(firstName) {
                     </td>
                   </tr>
                   <tr>
-                    <td width="44" valign="top" style="padding:0 12px 16px 0;">
-                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:36px;height:36px;background:rgba(12,122,122,0.1);border-radius:11px;">
-                        <tr><td align="center" valign="middle" style="width:36px;height:36px;"><img src="https://packmatesai.com/img/notif_social.png" width="20" height="20" alt="" style="display:block;" /></td></tr>
+                    <td width="52" valign="top" style="padding:0 12px 16px 0;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:44px;height:44px;background:rgba(12,122,122,0.1);border-radius:11px;">
+                        <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="https://packmatesai.com/img/notif_social.png" width="26" height="26" alt="" style="display:block;" /></td></tr>
                       </table>
                     </td>
                     <td valign="middle" class="email-text-1" style="padding:0 0 16px;color:#0a1f2e;font-size:15px;line-height:1.5;">
@@ -179,9 +179,9 @@ function buildWelcomeEmailHtml(firstName) {
                     </td>
                   </tr>
                   <tr>
-                    <td width="44" valign="top" style="padding:0 12px 0 0;">
-                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:36px;height:36px;background:rgba(95,157,48,0.12);border-radius:11px;">
-                        <tr><td align="center" valign="middle" style="width:36px;height:36px;"><img src="https://packmatesai.com/img/notif_achievement.png" width="20" height="20" alt="" style="display:block;" /></td></tr>
+                    <td width="52" valign="top" style="padding:0 12px 0 0;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:44px;height:44px;background:rgba(95,157,48,0.12);border-radius:11px;">
+                        <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="https://packmatesai.com/img/notif_achievement.png" width="26" height="26" alt="" style="display:block;" /></td></tr>
                       </table>
                     </td>
                     <td valign="middle" class="email-text-1" style="padding:0;color:#0a1f2e;font-size:15px;line-height:1.5;">

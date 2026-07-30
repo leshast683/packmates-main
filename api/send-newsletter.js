@@ -154,6 +154,7 @@ const DARK_MODE_CSS = `
         .email-text-2 { color: #9db3c2 !important; }
         .email-text-3 { color: #6c8496 !important; }
         td.email-footer { border-top-color: #223140 !important; }
+        table.email-icon-tray { background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.1) !important; }
       }`;
 
 function buildNewsletterHtml(n, userId, token) {
@@ -196,14 +197,20 @@ function buildNewsletterHtml(n, userId, token) {
             </tr>
             <tr>
               <td style="padding:20px 32px 4px;">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                  <tr>${ICON_SHOWCASE.map(icon => `
-                    <td align="center" style="padding:0 4px;">
-                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:44px;height:44px;background:${icon.bg};border-radius:13px;margin:0 auto;">
-                        <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="${icon.src}" width="24" height="24" alt="" style="display:block;" /></td></tr>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-icon-tray" style="background:rgba(255,255,255,0.7);border:1px solid rgba(17,58,88,0.08);border-radius:16px;">
+                  <tr>
+                    <td style="padding:14px 8px;">
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                        <tr>${ICON_SHOWCASE.map(icon => `
+                          <td align="center" style="padding:0 4px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" style="width:44px;height:44px;background:${icon.bg};border-radius:13px;margin:0 auto;">
+                              <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="${icon.src}" width="24" height="24" alt="" style="display:block;" /></td></tr>
+                            </table>
+                            <div class="email-text-3" style="margin-top:6px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:#7a9aad;">${icon.label}</div>
+                          </td>`).join('')}
+                        </tr>
                       </table>
-                      <div class="email-text-3" style="margin-top:6px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:#7a9aad;">${icon.label}</div>
-                    </td>`).join('')}
+                    </td>
                   </tr>
                 </table>
               </td>
