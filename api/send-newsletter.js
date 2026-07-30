@@ -174,6 +174,21 @@ function buildNewsletterHtml(n, userId, token) {
                   </tr>
                 </table>` : '';
 
+  /* Optional per-week custom header image (newsletters.header_image_url,
+     set by hand in Table Editor). Fluid width (no fixed height) is what
+     makes this look right on both desktop and mobile mail clients — it
+     just scales to whatever the card's own max-width already is, same as
+     the gradient header it replaces. Falls back to the default
+     gradient+logo+headline banner when not set. */
+  const header = n.header_image_url ? `
+              <td style="padding:0;line-height:0;background:#0d3347;">
+                <img src="${escapeAttr(n.header_image_url)}" width="480" alt="${escapeAttr(n.headline)}" style="display:block;width:100%;max-width:480px;height:auto;border:0;" />
+              </td>` : `
+              <td style="background-color:#0d3347;background:linear-gradient(135deg,#5f9d30,#0d3347);padding:28px 32px;text-align:center;">
+                <img src="https://packmatesai.com/img/icon-192.png" width="44" height="44" alt="Packmates AI" style="border-radius:12px;display:block;margin:0 auto 12px;" />
+                <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.02em;">${escapeHtml(n.headline)}</div>
+              </td>`;
+
   return `<!doctype html>
 <html>
   <head>
@@ -189,11 +204,7 @@ function buildNewsletterHtml(n, userId, token) {
       <tr>
         <td align="center">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(13,51,71,0.12);">
-            <tr>
-              <td style="background-color:#0d3347;background:linear-gradient(135deg,#5f9d30,#0d3347);padding:28px 32px;text-align:center;">
-                <img src="https://packmatesai.com/img/icon-192.png" width="44" height="44" alt="Packmates AI" style="border-radius:12px;display:block;margin:0 auto 12px;" />
-                <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.02em;">${escapeHtml(n.headline)}</div>
-              </td>
+            <tr>${header}
             </tr>
             <tr>
               <td style="padding:20px 32px 4px;">
