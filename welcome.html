@@ -743,6 +743,16 @@
           await new Promise(r => setTimeout(r, 800));
           const { data } = await sb.auth.getSession();
           if (data?.session) {
+            /* This redirect only happens via emailRedirectTo, i.e. right
+               after the user clicked a confirmation link — fire the
+               one-time welcome email here. Fire-and-forget: never block
+               the redirect on it, and the endpoint is idempotent
+               (profiles.welcome_email_sent) so a failed/duplicate call
+               is harmless. */
+            fetch('/api/send-welcome-email', {
+              method: 'POST',
+              headers: { Authorization: `Bearer ${data.session.access_token}` },
+            }).catch(() => {});
             location.replace('index.html');
             return;
           }

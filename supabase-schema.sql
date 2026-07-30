@@ -25,6 +25,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS pd_email  TEXT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS pd_phone  TEXT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS notif     JSONB DEFAULT '{}';
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS privacy   JSONB DEFAULT '{}';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS welcome_email_sent BOOLEAN DEFAULT FALSE;
 
 -- ── trips ─────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS trips (
