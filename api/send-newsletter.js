@@ -241,6 +241,8 @@ const DARK_MODE_CSS = `
         .email-text-3 { color: #6c8496 !important; }
         td.email-footer { border-top-color: #223140 !important; }
         table.email-icon-chip { background: rgba(255,255,255,0.92) !important; border-color: rgba(17,58,88,0.08) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+        table.email-fact-box { background: rgba(47,181,181,0.12) !important; }
+        td.email-fact-box-cell { border-left-color: #2fb5b5 !important; }
       }`;
 
 /* One icon+text row for the checklist layouts — the icon sits in the same
@@ -255,6 +257,25 @@ function buildTipRow(iconSrc, text) {
                     </td>
                     <td valign="middle" class="email-text-1" style="padding:0 0 14px;color:#0a1f2e;font-size:14.5px;line-height:1.5;">${text}</td>
                   </tr>`;
+}
+
+/* A visually distinct "did you know"-style callout for an interesting
+   aside (a stat, a cultural fact, a planning tip) that shouldn't just
+   blend into the surrounding prose paragraphs. Written in `body` as a
+   paragraph starting with "★ " — unlike the plain-white stat/icon-chip
+   boxes, this one uses a tinted background that legitimately flips with
+   the theme (both the tint and the text use the normal .email-text-*
+   dark-mode classes), since a colored tint doesn't wash out the way a
+   forced-white box would. */
+function buildFactBox(text) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-fact-box" style="background:rgba(12,122,122,0.06);border-radius:10px;margin:4px 0 16px;">
+                  <tr>
+                    <td class="email-fact-box-cell" style="padding:14px 16px;border-left:3px solid #0c7a7a;">
+                      <div class="email-text-3" style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#7a9aad;margin-bottom:5px;">Did you know</div>
+                      <div class="email-text-1" style="font-size:14px;line-height:1.55;color:#0a1f2e;">${escapeHtml(text)}</div>
+                    </td>
+                  </tr>
+                </table>`;
 }
 
 /* Tip copy is written as "Short label — detail." — bold the label, keep
@@ -304,6 +325,9 @@ function renderChecklistContent(n) {
         legacyIdx++;
       }
       tipRows += buildTipRow(iconSrc, formatTipText(text));
+    } else if (p.startsWith('★ ')) {
+      flushTips();
+      body += buildFactBox(p.slice(2).trim());
     } else {
       flushTips();
       body += `<p class="email-text-1" style="margin:0 0 16px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(p)}</p>`;
@@ -372,7 +396,9 @@ function renderIconGrid(items, intro, outroParas) {
   for (let i = 0; i < cells.length; i += 3) rows += `\n                  <tr>${cells.slice(i, i + 3).join('')}</tr>`;
 
   const outroHtml = outroParas
-    .map(p => `<p class="email-text-2" style="margin:0 0 12px;color:#3d5a70;font-size:14px;line-height:1.6;">${escapeHtml(p)}</p>`)
+    .map(p => p.startsWith('★ ')
+      ? buildFactBox(p.slice(2).trim())
+      : `<p class="email-text-2" style="margin:0 0 12px;color:#3d5a70;font-size:14px;line-height:1.6;">${escapeHtml(p)}</p>`)
     .join('');
 
   return `
