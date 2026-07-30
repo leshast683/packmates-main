@@ -30,17 +30,25 @@ module.exports = async function handler(req, res) {
     'Content-Type': 'application/json',
   };
 
-  /* ── 1. Find the next queued newsletter ── */
+  /* ── 1. Find the next queued newsletter that's currently in its send
+     window. A row outside its window (send_after/send_before) is skipped
+     in favor of the next eligible one, and stays 'queued' rather than
+     being marked 'sent' — so e.g. a summer-themed send that never went
+     out in time won't fire once it's out of season. ── */
   let newsletter;
   try {
     const r = await fetch(
-      `${SB_URL}/rest/v1/newsletters?status=eq.queued&order=created_at.asc&limit=1`,
+      `${SB_URL}/rest/v1/newsletters?status=eq.queued&order=created_at.asc`,
       { headers: adminHeaders }
     );
     if (!r.ok) throw new Error(await r.text());
     const rows = await r.json();
-    if (!rows.length) return res.status(200).json({ success: true, skipped: 'no queued newsletter' });
-    newsletter = rows[0];
+    const today = new Date().toISOString().slice(0, 10);
+    newsletter = rows.find(row =>
+      (!row.send_after || today >= row.send_after) &&
+      (!row.send_before || today <= row.send_before)
+    );
+    if (!newsletter) return res.status(200).json({ success: true, skipped: rows.length ? 'queued newsletter(s) outside send window' : 'no queued newsletter' });
   } catch (e) {
     console.error('[send-newsletter] fetch newsletter error:', e);
     return res.status(500).json({ error: 'Failed to load newsletter.' });
