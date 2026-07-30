@@ -166,7 +166,7 @@ function buildNewsletterHtml(n, userId, token) {
   const cta = (n.cta_text && n.cta_url) ? `
                 <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px auto 0;">
                   <tr>
-                    <td style="border-radius:12px;background:#0c7a7a;">
+                    <td style="border-radius:12px;background-color:#0d3347;background:linear-gradient(135deg,#5f9d30,#0d3347);">
                       <a href="${escapeAttr(n.cta_url)}" style="display:inline-block;padding:14px 32px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;border-radius:12px;">
                         ${escapeHtml(n.cta_text)}
                       </a>
@@ -190,7 +190,7 @@ function buildNewsletterHtml(n, userId, token) {
         <td align="center">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(13,51,71,0.12);">
             <tr>
-              <td style="background:linear-gradient(135deg,#113a58,#0d3347);padding:28px 32px;text-align:center;">
+              <td style="background-color:#0d3347;background:linear-gradient(135deg,#5f9d30,#0d3347);padding:28px 32px;text-align:center;">
                 <img src="https://packmatesai.com/img/icon-192.png" width="44" height="44" alt="Packmates AI" style="border-radius:12px;display:block;margin:0 auto 12px;" />
                 <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.02em;">${escapeHtml(n.headline)}</div>
               </td>
