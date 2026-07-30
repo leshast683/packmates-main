@@ -154,7 +154,7 @@ const DARK_MODE_CSS = `
         .email-text-2 { color: #9db3c2 !important; }
         .email-text-3 { color: #6c8496 !important; }
         td.email-footer { border-top-color: #223140 !important; }
-        table.email-icon-chip { background: rgba(255,255,255,0.1) !important; border-color: rgba(255,255,255,0.14) !important; }
+        table.email-icon-chip { background: rgba(255,255,255,0.92) !important; border-color: rgba(17,58,88,0.08) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.35); }
       }`;
 
 function buildNewsletterHtml(n, userId, token) {
