@@ -137,11 +137,11 @@ async function markSent(SB_URL, adminHeaders, id) {
    https URLs, which is what email clients need (unlike data URIs, many
    clients strip or refuse to render those). */
 const ICON_SHOWCASE = [
-  { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-YxxWewuwXdRncaZSbQNORwOieVOP39.png', label: 'Passport', bg: 'rgba(17,58,88,0.1)' },
-  { src: 'https://packmatesai.com/img/camera.png', label: 'Camera', bg: 'rgba(12,122,122,0.1)' },
-  { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-0CfnFe8TfwtwCzUStRx2sclgeZgqGI.png', label: 'Sunglasses', bg: 'rgba(95,157,48,0.12)' },
-  { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-53doFZDyMbmChPPHfnbbPjt0Zvlzq7.png', label: 'Backpack', bg: 'rgba(217,164,6,0.14)' },
-  { src: 'https://packmatesai.com/img/portable_speaker.png', label: 'Speaker', bg: 'rgba(214,90,110,0.14)' },
+  { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-YxxWewuwXdRncaZSbQNORwOieVOP39.png', label: 'Passport' },
+  { src: 'https://packmatesai.com/img/camera.png', label: 'Camera' },
+  { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-0CfnFe8TfwtwCzUStRx2sclgeZgqGI.png', label: 'Sunglasses' },
+  { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-53doFZDyMbmChPPHfnbbPjt0Zvlzq7.png', label: 'Backpack' },
+  { src: 'https://packmatesai.com/img/portable_speaker.png', label: 'Speaker' },
 ];
 
 /* Same dark-mode approach as api/send-welcome-email.js — see the comment
@@ -154,7 +154,7 @@ const DARK_MODE_CSS = `
         .email-text-2 { color: #9db3c2 !important; }
         .email-text-3 { color: #6c8496 !important; }
         td.email-footer { border-top-color: #223140 !important; }
-        table.email-icon-tray { background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.1) !important; }
+        table.email-icon-chip { background: rgba(255,255,255,0.1) !important; border-color: rgba(255,255,255,0.14) !important; }
       }`;
 
 function buildNewsletterHtml(n, userId, token) {
@@ -197,20 +197,14 @@ function buildNewsletterHtml(n, userId, token) {
             </tr>
             <tr>
               <td style="padding:20px 32px 4px;">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-icon-tray" style="background:rgba(255,255,255,0.7);border:1px solid rgba(17,58,88,0.08);border-radius:16px;">
-                  <tr>
-                    <td style="padding:14px 8px;">
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                        <tr>${ICON_SHOWCASE.map(icon => `
-                          <td align="center" style="padding:0 4px;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" style="width:44px;height:44px;background:${icon.bg};border-radius:13px;margin:0 auto;">
-                              <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="${icon.src}" width="24" height="24" alt="" style="display:block;" /></td></tr>
-                            </table>
-                            <div class="email-text-3" style="margin-top:6px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:#7a9aad;">${icon.label}</div>
-                          </td>`).join('')}
-                        </tr>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>${ICON_SHOWCASE.map(icon => `
+                    <td align="center" style="padding:0 4px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" class="email-icon-chip" style="width:44px;height:44px;background:rgba(255,255,255,0.7);border:1px solid rgba(17,58,88,0.08);border-radius:13px;margin:0 auto;">
+                        <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="${icon.src}" width="24" height="24" alt="" style="display:block;" /></td></tr>
                       </table>
-                    </td>
+                      <div class="email-text-3" style="margin-top:6px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:#7a9aad;">${icon.label}</div>
+                    </td>`).join('')}
                   </tr>
                 </table>
               </td>
