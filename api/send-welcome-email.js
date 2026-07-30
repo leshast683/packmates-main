@@ -1,5 +1,5 @@
 /**
- * /api/send-welcome-email — sends a one-time "Welcome to PackMates" email
+ * /api/send-welcome-email — sends a one-time "Welcome to Packmates" email
  * via Resend, fired by welcome.html right after a confirmation-link redirect
  * lands with a real session (i.e. right after the address is confirmed).
  * Guards: CORS · JWT auth via Supabase REST · idempotent claim via
@@ -92,9 +92,9 @@ module.exports = async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'PackMates <welcome@packmatesai.com>',
+        from: 'Packmates AI <welcome@packmatesai.com>',
         to: userEmail,
-        subject: 'Welcome to PackMates 🧳',
+        subject: 'Welcome to Packmates AI 🧳',
         html: buildWelcomeEmailHtml(firstName),
       }),
     });
@@ -120,14 +120,14 @@ function buildWelcomeEmailHtml(firstName) {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(13,51,71,0.12);">
             <tr>
               <td style="background:linear-gradient(135deg,#113a58,#0d3347);padding:36px 32px;text-align:center;">
-                <img src="https://packmatesai.com/img/icon-192.png" width="56" height="56" alt="PackMates" style="border-radius:14px;display:block;margin:0 auto 16px;" />
-                <div style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.02em;">Welcome to PackMates, ${escapeHtml(firstName)}!</div>
+                <img src="https://packmatesai.com/img/icon-192.png" width="56" height="56" alt="Packmates" style="border-radius:14px;display:block;margin:0 auto 16px;" />
+                <div style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.02em;">Welcome to Packmates AI, ${escapeHtml(firstName)}!</div>
               </td>
             </tr>
             <tr>
               <td style="padding:32px;">
                 <p style="margin:0 0 16px;color:#0a1f2e;font-size:16px;line-height:1.6;">
-                  Your account is confirmed and ready to go. PackMates builds smart, weather-aware packing lists for every trip — so you never over-pack, under-pack, or forget the one thing you actually needed.
+                  Your account is confirmed and ready to go. Packmates AI builds smart, weather-aware packing lists for every trip — so you never over-pack, under-pack, or forget the one thing you actually needed.
                 </p>
                 <p style="margin:0 0 24px;color:#3d5a70;font-size:15px;line-height:1.6;">
                   Here's what you can do right away:
@@ -164,7 +164,7 @@ function buildWelcomeEmailHtml(firstName) {
               <td style="padding:20px 32px 32px;border-top:1px solid #eef1f5;text-align:center;">
                 <p style="margin:0;color:#7a9aad;font-size:12px;line-height:1.6;">
                   Need help? Reach us any time at <a href="mailto:support@packmatesai.com" style="color:#0c7a7a;">support@packmatesai.com</a>.<br />
-                  PackMates AI · <a href="https://packmatesai.com" style="color:#7a9aad;">packmatesai.com</a>
+                  Packmates AI · <a href="https://packmatesai.com" style="color:#7a9aad;">packmatesai.com</a>
                 </p>
               </td>
             </tr>
