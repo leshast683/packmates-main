@@ -223,6 +223,12 @@ function updateFinishBar(packedCount, totalCount) {
     const label = document.getElementById('finishFixedBtnLabel');
     if (!bar) return;
 
+    // Only worth prompting "ready to finish?" once packing is mostly done -
+    // stays hidden below 75% (still shown once finished, regardless of
+    // percentage, so "Edit List" remains reachable).
+    const pct = PackingMath.calcPackedPct(packedCount, totalCount);
+    bar.style.display = (finished || pct >= 75) ? '' : 'none';
+
     bar.classList.toggle('pl-finish-fixed-bar--done', finished);
     if (finished) {
         if (title) title.textContent = 'Packing complete ✓';
