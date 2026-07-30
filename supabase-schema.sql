@@ -97,11 +97,12 @@ CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
   BEGIN
-    INSERT INTO public.profiles (id, name, gender)
+    INSERT INTO public.profiles (id, name, gender, notif)
     VALUES (
       NEW.id,
       COALESCE(NEW.raw_user_meta_data->>'name', ''),
-      COALESCE(NEW.raw_user_meta_data->>'gender', NULL)
+      COALESCE(NEW.raw_user_meta_data->>'gender', NULL),
+      '{"updates": true}'::jsonb
     )
     ON CONFLICT (id) DO NOTHING;
   EXCEPTION WHEN OTHERS THEN
