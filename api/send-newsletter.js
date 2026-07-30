@@ -154,10 +154,13 @@ const ICON_SHOWCASE = [
   { src: 'https://packmatesai.com/img/portable_speaker.png', label: 'Speaker' },
 ];
 
-/* Themed icon sets for newsletters.layout = 'city-checklist' / 'cold-checklist'.
-   Matched positionally to the "tip" paragraphs in the row's `body` (i.e.
-   every paragraph except the first and last, which are treated as
-   intro/outro prose) — see renderChecklistContent(). */
+/* Backward-compat only: the icon sets originally hardcoded per layout name,
+   from before tips could name their own icon (see ICON_LIBRARY below).
+   Still used as a positional fallback for the two already-queued rows
+   that predate that syntax (layout='city-checklist' / 'cold-checklist'
+   with plain "Label — detail" tips, no "icon_key | " prefix) so they keep
+   rendering exactly as originally approved. Don't add to this — new
+   content should reference ICON_LIBRARY keys directly instead. */
 const LAYOUT_ICON_SETS = {
   'city-checklist': [
     'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-KuYCB2ggXWqJ9fLErN8ArVlWCqFtTU.png', // charger
@@ -170,6 +173,49 @@ const LAYOUT_ICON_SETS = {
     'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SK0Aaj1m2uTI5PZjoFR0OG5vvC2LnS.png', // beanie
     'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-dRTPgE3MmCK504LAdEjKyEec0G0Iiy.png', // lip balm
   ],
+};
+
+/* Shared icon library — pulled from the same real app icon art used
+   throughout packing-icons.js. Any checklist/icon-grid tip can reference
+   any of these by key ("• charger | Portable charger — ..."), so new
+   newsletters never need a code change to use a different icon; this map
+   just needs a new entry if a future topic wants an icon not listed yet.
+   Falls back to `passport` for an unrecognized key rather than erroring,
+   so a typo in Table Editor degrades gracefully instead of breaking the
+   send. */
+const ICON_LIBRARY = {
+  charger: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-KuYCB2ggXWqJ9fLErN8ArVlWCqFtTU.png',
+  backpack: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-53doFZDyMbmChPPHfnbbPjt0Zvlzq7.png',
+  walking_shoes: 'https://packmatesai.com/img/walking_shoes.png',
+  jacket: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-elw4GyvNsROSSzsDAUmaiKotqamYXy.png',
+  gloves: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-f6aak6Yv0iNA0ticTbBK4UWIFFmhbc.png',
+  beanie: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SK0Aaj1m2uTI5PZjoFR0OG5vvC2LnS.png',
+  lip_balm: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-dRTPgE3MmCK504LAdEjKyEec0G0Iiy.png',
+  passport: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-YxxWewuwXdRncaZSbQNORwOieVOP39.png',
+  camera: 'https://packmatesai.com/img/camera.png',
+  sunglasses: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-0CfnFe8TfwtwCzUStRx2sclgeZgqGI.png',
+  portable_speaker: 'https://packmatesai.com/img/portable_speaker.png',
+  cash: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-wnzXfGqb6aI838iS9TCufJSh2ToJP8.png',
+  phone: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-4InIbjutnVbO2RgfQjb4X5InSQnbWH.png',
+  power_bank: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-KUiU6Lyx7ucBrdj6KmS1tmfbFOuHht.png',
+  travel_adapter: 'https://packmatesai.com/img/travel-adapter.png',
+  toothbrush: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-F5zA09gQTWbAIIRCjJTQ5FT7mORctP.png',
+  scarf: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-Qt5El3U2ZF2YXGHQzXibfjhxrRGHFu.png',
+  boots: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-8FdFcdbAGGWvjntzWv0JfI4ZXopXxB.png',
+  hiking_boots: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-IggFBTZj6FLZJOSOZIjFlIU8ntmuyv.png',
+  sun_hat: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tMMTRyfcwkP5GmHmEsBD2lZdN12BRz.png',
+  panama_hat: 'https://packmatesai.com/img/panama_hat.png',
+  umbrella: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-UoaYOG517tIhHK4E1CCxU83D6Add6c.png',
+  ear_plugs: 'https://packmatesai.com/img/item_ear_plugs.png',
+  insect_repellent: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-AkYUY4ijrAx50lIj9SJ1z5oVjn0uee.png',
+  blazer: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-kMTBDO8YMouYhgo7LcVhz6KO8yiWWM.png',
+  travel_pillow: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-smLqiLswTcAJ08IJnAfs3gyvfv0hlS.png',
+  motion_sickness_med: 'https://packmatesai.com/img/motion_sickness_med.png',
+  prescription_medication: 'https://packmatesai.com/img/prescription_medication.png',
+  allergy_medication: 'https://packmatesai.com/img/allergy_medication.png',
+  sunscreen: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ixp9yadIpp3NmeQqoOdHkQHpqiwkwR.png',
+  reusable_water_bottle: 'https://packmatesai.com/img/item_reusable_water_bottle.png',
+  dress: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-sjnsZFCzT6VnSOqmWOg9YE53KR68pi.png',
 };
 
 /* newsletters.layout = 'badges' shows the real 6-tier badge progression
@@ -220,21 +266,24 @@ function formatTipText(raw) {
   return `<strong>${escapeHtml(raw.slice(0, idx))}</strong> — ${escapeHtml(raw.slice(idx + 3))}`;
 }
 
-/* layout: 'city-checklist' | 'cold-checklist'. A paragraph is a tip row
-   (icon + text, matched positionally to that layout's icon set) only if
-   it starts with "• " — everything else is prose, rendered wherever it
-   falls in the body. That marker (rather than "first/last paragraph")
-   is what lets a row have more than one intro or outro paragraph without
-   it accidentally being parsed as a tip. 'cold-checklist' additionally
-   gets a stat callout box up top, since "average temp vs. real feel" is
-   the whole point of that send. */
+/* layout: 'checklist' (also: legacy 'city-checklist' / 'cold-checklist').
+   A paragraph is a tip row only if it starts with "• " — everything else
+   is prose, rendered wherever it falls in the body. That marker (rather
+   than "first/last paragraph") is what lets a row have more than one
+   intro or outro paragraph without it accidentally being parsed as a tip.
+
+   Tip syntax: "• icon_key | Label — detail" — icon_key is any key from
+   ICON_LIBRARY. The " | icon_key" part is optional for backward
+   compatibility: a tip with no pipe falls back to that layout's original
+   hardcoded LAYOUT_ICON_SETS array (positional), so the two already-
+   queued rows that predate per-tip icons keep rendering unchanged. */
 function renderChecklistContent(n) {
-  const icons = LAYOUT_ICON_SETS[n.layout] || [];
+  const legacyIcons = LAYOUT_ICON_SETS[n.layout] || [];
   const paras = n.body.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
 
   let body = '';
   let tipRows = '';
-  let tipIdx = 0;
+  let legacyIdx = 0;
   const flushTips = () => {
     if (!tipRows) return;
     body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 16px;">${tipRows}
@@ -243,8 +292,18 @@ function renderChecklistContent(n) {
   };
   paras.forEach(p => {
     if (p.startsWith('• ')) {
-      tipRows += buildTipRow(icons[tipIdx % icons.length], formatTipText(p.slice(2).trim()));
-      tipIdx++;
+      const raw = p.slice(2).trim();
+      const pipeIdx = raw.indexOf(' | ');
+      let iconSrc, text;
+      if (pipeIdx !== -1) {
+        iconSrc = ICON_LIBRARY[raw.slice(0, pipeIdx).trim()] || ICON_LIBRARY.passport;
+        text = raw.slice(pipeIdx + 3).trim();
+      } else {
+        iconSrc = legacyIcons[legacyIdx % (legacyIcons.length || 1)] || ICON_LIBRARY.passport;
+        text = raw;
+        legacyIdx++;
+      }
+      tipRows += buildTipRow(iconSrc, formatTipText(text));
     } else {
       flushTips();
       body += `<p class="email-text-1" style="margin:0 0 16px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(p)}</p>`;
@@ -252,7 +311,21 @@ function renderChecklistContent(n) {
   });
   flushTips();
 
-  const statBlock = n.layout === 'cold-checklist' ? `
+  /* Stat callout box — generic (newsletters.stat_left/stat_right/
+     stat_caption/stat_footer, all optional), so any checklist send can
+     opt into one. The already-queued cold-weather row predates those
+     columns, so it falls back to its original hardcoded 40°F/20°F copy
+     when they're unset and layout is still 'cold-checklist', keeping
+     that row's approved appearance unchanged. */
+  const hasCustomStat = n.stat_left && n.stat_right;
+  const showLegacyColdStat = n.layout === 'cold-checklist' && !hasCustomStat;
+  const showStat = hasCustomStat || showLegacyColdStat;
+  const statCaption = hasCustomStat ? (n.stat_caption || '') : 'Average vs. real feel';
+  const statLeft = hasCustomStat ? n.stat_left : '40°F';
+  const statRight = hasCustomStat ? n.stat_right : '20°F';
+  const statFooter = hasCustomStat ? (n.stat_footer || '') : "that's the number your jacket actually needs to handle";
+
+  const statBlock = showStat ? `
             <tr>
               <td style="padding:20px 32px 0;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-icon-chip" style="background:rgba(255,255,255,0.7);border:1px solid rgba(17,58,88,0.08);border-radius:16px;">
@@ -263,13 +336,13 @@ function renderChecklistContent(n) {
                            mode too, so its text must stay dark regardless of theme —
                            using .email-text-* here would turn the text light and make
                            it vanish against the still-light box. -->
-                      <div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#7a9aad;margin-bottom:6px;">Average vs. real feel</div>
-                      <div style="font-size:26px;font-weight:800;">
-                        <span style="color:#0a1f2e;">40°F</span>
+                      ${statCaption ? `<div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#7a9aad;margin-bottom:6px;">${escapeHtml(statCaption)}</div>` : ''}
+                      <div style="font-size:24px;font-weight:800;">
+                        <span style="color:#0a1f2e;">${escapeHtml(statLeft)}</span>
                         <span style="color:#7a9aad;font-size:15px;">&nbsp;&rarr;&nbsp;</span>
-                        <span style="color:#0c7a7a;">20°F</span>
+                        <span style="color:#0c7a7a;">${escapeHtml(statRight)}</span>
                       </div>
-                      <div style="font-size:12px;color:#3d5a70;margin-top:4px;">that's the number your jacket actually needs to handle</div>
+                      ${statFooter ? `<div style="font-size:12px;color:#3d5a70;margin-top:4px;">${escapeHtml(statFooter)}</div>` : ''}
                     </td>
                   </tr>
                 </table>
@@ -278,30 +351,25 @@ function renderChecklistContent(n) {
 
   return `${statBlock}
             <tr>
-              <td style="padding:${n.layout === 'cold-checklist' ? '16px' : '24px'} 32px 8px;">
+              <td style="padding:${showStat ? '16px' : '24px'} 32px 8px;">
                 ${body}
               </td>
             </tr>`;
 }
 
-/* layout: 'badges' — shows the real 6-tier level progression instead of
-   a generic icon set, since the icons ARE the feature being promoted.
-   Rendered as a 3-column x 2-row grid (not one row of 6 + connecting
-   arrows) — a single row of 6 fixed-width icons plus arrow columns
-   doesn't fit a phone-width card without overflowing; a grid does. */
-function renderBadgesContent(n) {
-  const paras = n.body.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
-  const intro = paras[0];
-  const outroParas = paras.slice(1);
-
-  const cells = BADGE_STRIP.map(b => `
+/* Shared by 'badges' and 'icon-grid' — a 3-column grid of icon+label
+   cells (wraps to as many rows as needed), intro prose above, any
+   number of outro paragraphs below. A single row of fixed-width icons
+   (the original badge-strip design) doesn't fit a phone-width card once
+   there are more than ~4 items; a grid does regardless of count. */
+function renderIconGrid(items, intro, outroParas) {
+  const cells = items.map(it => `
                     <td align="center" width="33%" style="padding:0 4px 16px;">
-                      <img src="${b.src}" width="40" height="40" alt="${escapeAttr(b.label)}" style="display:block;margin:0 auto 5px;" />
-                      <div class="email-text-3" style="font-size:10px;font-weight:600;color:#7a9aad;">${escapeHtml(b.label)}</div>
+                      <img src="${it.src}" width="40" height="40" alt="${escapeAttr(it.label)}" style="display:block;margin:0 auto 5px;" />
+                      <div class="email-text-3" style="font-size:10px;font-weight:600;color:#7a9aad;">${escapeHtml(it.label)}</div>
                     </td>`);
-  const strip = `
-                  <tr>${cells.slice(0, 3).join('')}</tr>
-                  <tr>${cells.slice(3, 6).join('')}</tr>`;
+  let rows = '';
+  for (let i = 0; i < cells.length; i += 3) rows += `\n                  <tr>${cells.slice(i, i + 3).join('')}</tr>`;
 
   const outroHtml = outroParas
     .map(p => `<p class="email-text-2" style="margin:0 0 12px;color:#3d5a70;font-size:14px;line-height:1.6;">${escapeHtml(p)}</p>`)
@@ -311,12 +379,45 @@ function renderBadgesContent(n) {
             <tr>
               <td style="padding:24px 32px 8px;">
                 <p class="email-text-1" style="margin:0 0 18px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(intro)}</p>
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;">
-                  ${strip}
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;">${rows}
                 </table>
                 ${outroHtml}
               </td>
             </tr>`;
+}
+
+/* layout: 'badges' — shows the real 6-tier level progression instead of
+   a generic icon set, since the icons ARE the feature being promoted. */
+function renderBadgesContent(n) {
+  const paras = n.body.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+  return renderIconGrid(BADGE_STRIP, paras[0], paras.slice(1));
+}
+
+/* layout: 'icon-grid' — a general-purpose version of the badges layout
+   for "here's a handful of items" content (e.g. commonly-forgotten
+   items) where a description per item isn't needed, just icon + label.
+   Grid items are written as "• icon_key | Label" bullet lines in `body`
+   (same "• " marker convention as the checklist layout); any non-bullet
+   paragraph is intro/outro prose, same rules as renderChecklistContent. */
+function renderIconGridContent(n) {
+  const paras = n.body.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+  const items = [];
+  const prose = [];
+  paras.forEach(p => {
+    if (p.startsWith('• ')) {
+      const raw = p.slice(2).trim();
+      const pipeIdx = raw.indexOf(' | ');
+      if (pipeIdx !== -1) {
+        const key = raw.slice(0, pipeIdx).trim();
+        items.push({ src: ICON_LIBRARY[key] || ICON_LIBRARY.passport, label: raw.slice(pipeIdx + 3).trim() });
+      } else {
+        items.push({ src: ICON_LIBRARY.passport, label: raw });
+      }
+    } else {
+      prose.push(p);
+    }
+  });
+  return renderIconGrid(items, prose[0] || '', prose.slice(1));
 }
 
 /* Default layout (no newsletters.layout set) — the original design: a
@@ -362,14 +463,18 @@ function buildNewsletterHtml(n, userId, token) {
                 </table>` : '';
 
   /* Per-week layout (newsletters.layout, set by hand in Table Editor):
-     'city-checklist' / 'cold-checklist' → icon+text tip rows (cold also
-     gets a stat callout); 'badges' → the real level-progression strip;
+     'checklist' (or legacy 'city-checklist' / 'cold-checklist') → icon+text
+     tip rows, optionally with a stat callout (see stat_left/stat_right);
+     'icon-grid' → a general icon+label grid for "here's a handful of
+     items" content; 'badges' → the real level-progression strip;
      anything else (including unset) → the original icon-showcase design. */
-  const content = n.layout === 'city-checklist' || n.layout === 'cold-checklist'
+  const content = n.layout === 'checklist' || n.layout === 'city-checklist' || n.layout === 'cold-checklist'
     ? renderChecklistContent(n)
-    : n.layout === 'badges'
-      ? renderBadgesContent(n)
-      : renderDefaultContent(n);
+    : n.layout === 'icon-grid'
+      ? renderIconGridContent(n)
+      : n.layout === 'badges'
+        ? renderBadgesContent(n)
+        : renderDefaultContent(n);
 
   /* Optional per-week custom header image (newsletters.header_image_url,
      set by hand in Table Editor). Fluid width (no fixed height) is what
