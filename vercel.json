@@ -47,5 +47,8 @@
         { "key": "Accept-Ranges",  "value": "bytes" }
       ]
     }
+  ],
+  "crons": [
+    { "path": "/api/send-newsletter", "schedule": "0 14 * * 1" }
   ]
 }
