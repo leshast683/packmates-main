@@ -131,11 +131,36 @@ async function markSent(SB_URL, adminHeaders, id) {
   }
 }
 
+/* Same fixed set every week — a recurring "here's what our icons look
+   like" flourish, independent of that week's queued content. Mixed
+   local (img/) and Vercel Blob URLs are both fine here: real, permanent
+   https URLs, which is what email clients need (unlike data URIs, many
+   clients strip or refuse to render those). */
+const ICON_SHOWCASE = [
+  { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-YxxWewuwXdRncaZSbQNORwOieVOP39.png', label: 'Passport', bg: 'rgba(17,58,88,0.1)' },
+  { src: 'https://packmatesai.com/img/camera.png', label: 'Camera', bg: 'rgba(12,122,122,0.1)' },
+  { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-0CfnFe8TfwtwCzUStRx2sclgeZgqGI.png', label: 'Sunglasses', bg: 'rgba(95,157,48,0.12)' },
+  { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-53doFZDyMbmChPPHfnbbPjt0Zvlzq7.png', label: 'Backpack', bg: 'rgba(217,164,6,0.14)' },
+  { src: 'https://packmatesai.com/img/portable_speaker.png', label: 'Speaker', bg: 'rgba(214,90,110,0.14)' },
+];
+
+/* Same dark-mode approach as api/send-welcome-email.js — see the comment
+   there for why this is needed instead of relying on client auto-invert. */
+const DARK_MODE_CSS = `
+      @media (prefers-color-scheme: dark) {
+        body.email-bg, table.email-bg { background: #0b141c !important; }
+        table.email-card { background: #101c26 !important; box-shadow: 0 4px 20px rgba(0,0,0,0.45) !important; }
+        .email-text-1 { color: #eaf2f7 !important; }
+        .email-text-2 { color: #9db3c2 !important; }
+        .email-text-3 { color: #6c8496 !important; }
+        td.email-footer { border-top-color: #223140 !important; }
+      }`;
+
 function buildNewsletterHtml(n, userId, token) {
   const unsubUrl = `https://packmatesai.com/api/unsubscribe-newsletter?u=${encodeURIComponent(userId)}&t=${encodeURIComponent(token)}`;
   const paragraphs = n.body
     .split(/\n\s*\n/)
-    .map(p => `<p style="margin:0 0 16px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
+    .map(p => `<p class="email-text-1" style="margin:0 0 16px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
     .join('');
   const cta = (n.cta_text && n.cta_url) ? `
                 <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px auto 0;">
@@ -150,11 +175,19 @@ function buildNewsletterHtml(n, userId, token) {
 
   return `<!doctype html>
 <html>
-  <body style="margin:0;padding:0;background:#eef1f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef1f5;padding:32px 16px;">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <style>
+      ${DARK_MODE_CSS}
+    </style>
+  </head>
+  <body class="email-bg" style="margin:0;padding:0;background:#eef1f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-bg" style="background:#eef1f5;padding:32px 16px;">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(13,51,71,0.12);">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(13,51,71,0.12);">
             <tr>
               <td style="background:linear-gradient(135deg,#113a58,#0d3347);padding:28px 32px;text-align:center;">
                 <img src="https://packmatesai.com/img/icon-192.png" width="44" height="44" alt="Packmates AI" style="border-radius:12px;display:block;margin:0 auto 12px;" />
@@ -162,14 +195,28 @@ function buildNewsletterHtml(n, userId, token) {
               </td>
             </tr>
             <tr>
-              <td style="padding:28px 32px;">
+              <td style="padding:20px 32px 4px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>${ICON_SHOWCASE.map(icon => `
+                    <td align="center" style="padding:0 4px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:44px;height:44px;background:${icon.bg};border-radius:13px;margin:0 auto;">
+                        <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="${icon.src}" width="24" height="24" alt="" style="display:block;" /></td></tr>
+                      </table>
+                      <div class="email-text-3" style="margin-top:6px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:#7a9aad;">${icon.label}</div>
+                    </td>`).join('')}
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 32px 28px;">
                 ${paragraphs}
                 ${cta}
               </td>
             </tr>
             <tr>
-              <td style="padding:18px 32px 28px;border-top:1px solid #eef1f5;text-align:center;">
-                <p style="margin:0;color:#7a9aad;font-size:12px;line-height:1.6;">
+              <td class="email-footer" style="padding:18px 32px 28px;border-top:1px solid #eef1f5;text-align:center;">
+                <p class="email-text-3" style="margin:0;color:#7a9aad;font-size:12px;line-height:1.6;">
                   Packmates AI · <a href="https://packmatesai.com" style="color:#7a9aad;">packmatesai.com</a><br />
                   <a href="${unsubUrl}" style="color:#7a9aad;text-decoration:underline;">Unsubscribe from this newsletter</a>
                 </p>

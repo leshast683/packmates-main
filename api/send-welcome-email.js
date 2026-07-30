@@ -110,14 +110,39 @@ module.exports = async function handler(req, res) {
   return res.status(200).json({ success: true });
 };
 
+/* Dark-mode support: `color-scheme` meta + this override block tells
+   clients we've handled dark mode ourselves, so they don't fall back to
+   their own auto-invert heuristic (which otherwise can mangle the brand
+   gradient/colors unpredictably). Inline styles stay as the light-mode
+   values for clients that ignore <style> blocks entirely (old Outlook);
+   !important is required here since inline style otherwise always wins
+   over a stylesheet regardless of specificity. */
+const DARK_MODE_CSS = `
+      @media (prefers-color-scheme: dark) {
+        body.email-bg, table.email-bg { background: #0b141c !important; }
+        table.email-card { background: #101c26 !important; box-shadow: 0 4px 20px rgba(0,0,0,0.45) !important; }
+        .email-text-1 { color: #eaf2f7 !important; }
+        .email-text-2 { color: #9db3c2 !important; }
+        .email-text-3 { color: #6c8496 !important; }
+        td.email-footer { border-top-color: #223140 !important; }
+      }`;
+
 function buildWelcomeEmailHtml(firstName) {
   return `<!doctype html>
 <html>
-  <body style="margin:0;padding:0;background:#eef1f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef1f5;padding:32px 16px;">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <style>
+      ${DARK_MODE_CSS}
+    </style>
+  </head>
+  <body class="email-bg" style="margin:0;padding:0;background:#eef1f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-bg" style="background:#eef1f5;padding:32px 16px;">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(13,51,71,0.12);">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(13,51,71,0.12);">
             <tr>
               <td style="background:linear-gradient(135deg,#113a58,#0d3347);padding:36px 32px;text-align:center;">
                 <img src="https://packmatesai.com/img/icon-192.png" width="56" height="56" alt="Packmates" style="border-radius:14px;display:block;margin:0 auto 16px;" />
@@ -126,26 +151,41 @@ function buildWelcomeEmailHtml(firstName) {
             </tr>
             <tr>
               <td style="padding:32px;">
-                <p style="margin:0 0 16px;color:#0a1f2e;font-size:16px;line-height:1.6;">
+                <p class="email-text-1" style="margin:0 0 16px;color:#0a1f2e;font-size:16px;line-height:1.6;">
                   Your account is confirmed and ready to go. Packmates AI builds smart, weather-aware packing lists for every trip — so you never over-pack, under-pack, or forget the one thing you actually needed.
                 </p>
-                <p style="margin:0 0 24px;color:#3d5a70;font-size:15px;line-height:1.6;">
+                <p class="email-text-2" style="margin:0 0 24px;color:#3d5a70;font-size:15px;line-height:1.6;">
                   Here's what you can do right away:
                 </p>
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                   <tr>
-                    <td style="padding:0 0 14px;color:#0a1f2e;font-size:15px;line-height:1.5;">
-                      <span style="color:#0c7a7a;font-weight:700;">✓&nbsp;</span>Create a trip and get a packing list tailored to your destination's real forecast
+                    <td width="44" valign="top" style="padding:0 12px 16px 0;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:36px;height:36px;background:rgba(17,58,88,0.1);border-radius:11px;">
+                        <tr><td align="center" valign="middle" style="width:36px;height:36px;"><img src="https://packmatesai.com/img/notif_trip.png" width="20" height="20" alt="" style="display:block;" /></td></tr>
+                      </table>
+                    </td>
+                    <td valign="middle" class="email-text-1" style="padding:0 0 16px;color:#0a1f2e;font-size:15px;line-height:1.5;">
+                      Create a trip and get a packing list tailored to your destination's real forecast
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding:0 0 14px;color:#0a1f2e;font-size:15px;line-height:1.5;">
-                      <span style="color:#0c7a7a;font-weight:700;">✓&nbsp;</span>Invite packmates to share the same list and split what to bring
+                    <td width="44" valign="top" style="padding:0 12px 16px 0;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:36px;height:36px;background:rgba(12,122,122,0.1);border-radius:11px;">
+                        <tr><td align="center" valign="middle" style="width:36px;height:36px;"><img src="https://packmatesai.com/img/notif_social.png" width="20" height="20" alt="" style="display:block;" /></td></tr>
+                      </table>
+                    </td>
+                    <td valign="middle" class="email-text-1" style="padding:0 0 16px;color:#0a1f2e;font-size:15px;line-height:1.5;">
+                      Invite packmates to share the same list and split what to bring
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding:0;color:#0a1f2e;font-size:15px;line-height:1.5;">
-                      <span style="color:#0c7a7a;font-weight:700;">✓&nbsp;</span>Track your packing streak and level up as you travel more
+                    <td width="44" valign="top" style="padding:0 12px 0 0;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" style="width:36px;height:36px;background:rgba(95,157,48,0.12);border-radius:11px;">
+                        <tr><td align="center" valign="middle" style="width:36px;height:36px;"><img src="https://packmatesai.com/img/notif_achievement.png" width="20" height="20" alt="" style="display:block;" /></td></tr>
+                      </table>
+                    </td>
+                    <td valign="middle" class="email-text-1" style="padding:0;color:#0a1f2e;font-size:15px;line-height:1.5;">
+                      Track your packing streak and level up as you travel more
                     </td>
                   </tr>
                 </table>
@@ -161,8 +201,8 @@ function buildWelcomeEmailHtml(firstName) {
               </td>
             </tr>
             <tr>
-              <td style="padding:20px 32px 32px;border-top:1px solid #eef1f5;text-align:center;">
-                <p style="margin:0;color:#7a9aad;font-size:12px;line-height:1.6;">
+              <td class="email-footer" style="padding:20px 32px 32px;border-top:1px solid #eef1f5;text-align:center;">
+                <p class="email-text-3" style="margin:0;color:#7a9aad;font-size:12px;line-height:1.6;">
                   Need help? Reach us any time at <a href="mailto:support@packmatesai.com" style="color:#0c7a7a;">support@packmatesai.com</a>.<br />
                   Packmates AI · <a href="https://packmatesai.com" style="color:#7a9aad;">packmatesai.com</a>
                 </p>
