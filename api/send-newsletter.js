@@ -211,27 +211,46 @@ function buildTipRow(iconSrc, text) {
                   </tr>`;
 }
 
-/* Tip copy is written as "Short label — detail." in the body field —
-   bold the label, keep the detail as regular text. Falls back to plain
-   text if a tip doesn't follow that shape. */
+/* Tip copy is written as "Short label — detail." — bold the label, keep
+   the detail as regular text. Falls back to plain text if it doesn't
+   follow that shape. */
 function formatTipText(raw) {
   const idx = raw.indexOf(' — ');
   if (idx === -1) return escapeHtml(raw);
   return `<strong>${escapeHtml(raw.slice(0, idx))}</strong> — ${escapeHtml(raw.slice(idx + 3))}`;
 }
 
-/* layout: 'city-checklist' | 'cold-checklist' — first body paragraph is
-   intro prose, last is outro prose, everything between becomes one
-   icon+text tip row (matched positionally to that layout's icon set).
-   'cold-checklist' additionally gets a stat callout box up top, since
-   "average temp vs. real feel" is the whole point of that send. */
+/* layout: 'city-checklist' | 'cold-checklist'. A paragraph is a tip row
+   (icon + text, matched positionally to that layout's icon set) only if
+   it starts with "• " — everything else is prose, rendered wherever it
+   falls in the body. That marker (rather than "first/last paragraph")
+   is what lets a row have more than one intro or outro paragraph without
+   it accidentally being parsed as a tip. 'cold-checklist' additionally
+   gets a stat callout box up top, since "average temp vs. real feel" is
+   the whole point of that send. */
 function renderChecklistContent(n) {
   const icons = LAYOUT_ICON_SETS[n.layout] || [];
-  const paras = n.body.split(/\n\s*\n/);
-  const intro = paras[0];
-  const outro = paras[paras.length - 1];
-  const tips = paras.slice(1, -1);
-  const tipRows = tips.map((t, i) => buildTipRow(icons[i % icons.length], formatTipText(t))).join('');
+  const paras = n.body.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+
+  let body = '';
+  let tipRows = '';
+  let tipIdx = 0;
+  const flushTips = () => {
+    if (!tipRows) return;
+    body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 16px;">${tipRows}
+                </table>`;
+    tipRows = '';
+  };
+  paras.forEach(p => {
+    if (p.startsWith('• ')) {
+      tipRows += buildTipRow(icons[tipIdx % icons.length], formatTipText(p.slice(2).trim()));
+      tipIdx++;
+    } else {
+      flushTips();
+      body += `<p class="email-text-1" style="margin:0 0 16px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(p)}</p>`;
+    }
+  });
+  flushTips();
 
   const statBlock = n.layout === 'cold-checklist' ? `
             <tr>
@@ -239,13 +258,18 @@ function renderChecklistContent(n) {
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-icon-chip" style="background:rgba(255,255,255,0.7);border:1px solid rgba(17,58,88,0.08);border-radius:16px;">
                   <tr>
                     <td align="center" style="padding:16px 20px;">
-                      <div class="email-text-3" style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#7a9aad;margin-bottom:6px;">Average vs. real feel</div>
+                      <!-- Fixed (not theme-flipping) colors on purpose: this box's
+                           .email-icon-chip background is forced bright/white in dark
+                           mode too, so its text must stay dark regardless of theme —
+                           using .email-text-* here would turn the text light and make
+                           it vanish against the still-light box. -->
+                      <div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#7a9aad;margin-bottom:6px;">Average vs. real feel</div>
                       <div style="font-size:26px;font-weight:800;">
-                        <span class="email-text-1" style="color:#0a1f2e;">40°F</span>
-                        <span class="email-text-3" style="color:#7a9aad;font-size:15px;">&nbsp;&rarr;&nbsp;</span>
+                        <span style="color:#0a1f2e;">40°F</span>
+                        <span style="color:#7a9aad;font-size:15px;">&nbsp;&rarr;&nbsp;</span>
                         <span style="color:#0c7a7a;">20°F</span>
                       </div>
-                      <div class="email-text-2" style="font-size:12px;color:#3d5a70;margin-top:4px;">that's the number your jacket actually needs to handle</div>
+                      <div style="font-size:12px;color:#3d5a70;margin-top:4px;">that's the number your jacket actually needs to handle</div>
                     </td>
                   </tr>
                 </table>
@@ -255,34 +279,42 @@ function renderChecklistContent(n) {
   return `${statBlock}
             <tr>
               <td style="padding:${n.layout === 'cold-checklist' ? '16px' : '24px'} 32px 8px;">
-                <p class="email-text-1" style="margin:0 0 18px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(intro)}</p>
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${tipRows}
-                </table>
-                <p class="email-text-2" style="margin:16px 0 0;color:#3d5a70;font-size:14px;line-height:1.6;">${escapeHtml(outro)}</p>
+                ${body}
               </td>
             </tr>`;
 }
 
 /* layout: 'badges' — shows the real 6-tier level progression instead of
-   a generic icon set, since the icons ARE the feature being promoted. */
+   a generic icon set, since the icons ARE the feature being promoted.
+   Rendered as a 3-column x 2-row grid (not one row of 6 + connecting
+   arrows) — a single row of 6 fixed-width icons plus arrow columns
+   doesn't fit a phone-width card without overflowing; a grid does. */
 function renderBadgesContent(n) {
-  const paras = n.body.split(/\n\s*\n/);
+  const paras = n.body.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
   const intro = paras[0];
-  const outro = paras[paras.length - 1];
-  const strip = BADGE_STRIP.map((b, i) => `
-                    <td align="center" style="padding:0 3px;">
-                      <img src="${b.src}" width="30" height="30" alt="${escapeAttr(b.label)}" style="display:block;margin:0 auto 4px;" />
-                      <div class="email-text-3" style="font-size:8px;font-weight:600;color:#7a9aad;white-space:nowrap;">${escapeHtml(b.label)}</div>
-                    </td>${i < BADGE_STRIP.length - 1 ? '<td valign="top" style="padding-top:10px;"><span class="email-text-3" style="color:#b8cede;font-size:11px;">&rarr;</span></td>' : ''}`).join('');
+  const outroParas = paras.slice(1);
+
+  const cells = BADGE_STRIP.map(b => `
+                    <td align="center" width="33%" style="padding:0 4px 16px;">
+                      <img src="${b.src}" width="40" height="40" alt="${escapeAttr(b.label)}" style="display:block;margin:0 auto 5px;" />
+                      <div class="email-text-3" style="font-size:10px;font-weight:600;color:#7a9aad;">${escapeHtml(b.label)}</div>
+                    </td>`);
+  const strip = `
+                  <tr>${cells.slice(0, 3).join('')}</tr>
+                  <tr>${cells.slice(3, 6).join('')}</tr>`;
+
+  const outroHtml = outroParas
+    .map(p => `<p class="email-text-2" style="margin:0 0 12px;color:#3d5a70;font-size:14px;line-height:1.6;">${escapeHtml(p)}</p>`)
+    .join('');
 
   return `
             <tr>
               <td style="padding:24px 32px 8px;">
                 <p class="email-text-1" style="margin:0 0 18px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(intro)}</p>
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-                  <tr>${strip}</tr>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;">
+                  ${strip}
                 </table>
-                <p class="email-text-2" style="margin:0;color:#3d5a70;font-size:14px;line-height:1.6;">${escapeHtml(outro)}</p>
+                ${outroHtml}
               </td>
             </tr>`;
 }
