@@ -143,13 +143,45 @@ async function markSent(SB_URL, adminHeaders, id) {
    like" flourish, independent of that week's queued content. Mixed
    local (img/) and Vercel Blob URLs are both fine here: real, permanent
    https URLs, which is what email clients need (unlike data URIs, many
-   clients strip or refuse to render those). */
+   clients strip or refuse to render those). Used by the default layout
+   only — the alternate layouts below (checklist/badges) bring their own
+   themed icon sets instead. */
 const ICON_SHOWCASE = [
   { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-YxxWewuwXdRncaZSbQNORwOieVOP39.png', label: 'Passport' },
   { src: 'https://packmatesai.com/img/camera.png', label: 'Camera' },
   { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-0CfnFe8TfwtwCzUStRx2sclgeZgqGI.png', label: 'Sunglasses' },
   { src: 'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-53doFZDyMbmChPPHfnbbPjt0Zvlzq7.png', label: 'Backpack' },
   { src: 'https://packmatesai.com/img/portable_speaker.png', label: 'Speaker' },
+];
+
+/* Themed icon sets for newsletters.layout = 'city-checklist' / 'cold-checklist'.
+   Matched positionally to the "tip" paragraphs in the row's `body` (i.e.
+   every paragraph except the first and last, which are treated as
+   intro/outro prose) — see renderChecklistContent(). */
+const LAYOUT_ICON_SETS = {
+  'city-checklist': [
+    'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-KuYCB2ggXWqJ9fLErN8ArVlWCqFtTU.png', // charger
+    'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-53doFZDyMbmChPPHfnbbPjt0Zvlzq7.png', // backpack
+    'https://packmatesai.com/img/walking_shoes.png',
+  ],
+  'cold-checklist': [
+    'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-elw4GyvNsROSSzsDAUmaiKotqamYXy.png', // jacket
+    'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-f6aak6Yv0iNA0ticTbBK4UWIFFmhbc.png', // gloves
+    'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SK0Aaj1m2uTI5PZjoFR0OG5vvC2LnS.png', // beanie
+    'https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-dRTPgE3MmCK504LAdEjKyEec0G0Iiy.png', // lip balm
+  ],
+};
+
+/* newsletters.layout = 'badges' shows the real 6-tier badge progression
+   (same art as profile.html's level system) instead of a generic icon
+   set — the icons ARE the feature being described. */
+const BADGE_STRIP = [
+  { src: 'https://packmatesai.com/img/badge_beginner.png', label: 'Beginner' },
+  { src: 'https://packmatesai.com/img/badge_adventurer.png', label: 'Adventurer' },
+  { src: 'https://packmatesai.com/img/badge_wanderer.png', label: 'Wanderer' },
+  { src: 'https://packmatesai.com/img/badge_explorer.png', label: 'Explorer' },
+  { src: 'https://packmatesai.com/img/badge_globetrotter.png', label: 'Globetrotter' },
+  { src: 'https://packmatesai.com/img/badge_world_citizen.png', label: 'World Citizen' },
 ];
 
 /* Same dark-mode approach as api/send-welcome-email.js — see the comment
@@ -165,12 +197,127 @@ const DARK_MODE_CSS = `
         table.email-icon-chip { background: rgba(255,255,255,0.92) !important; border-color: rgba(17,58,88,0.08) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.35); }
       }`;
 
-function buildNewsletterHtml(n, userId, token) {
-  const unsubUrl = `https://packmatesai.com/api/unsubscribe-newsletter?u=${encodeURIComponent(userId)}&t=${encodeURIComponent(token)}`;
+/* One icon+text row for the checklist layouts — the icon sits in the same
+   .email-icon-chip square used elsewhere so dark-mode handling is free. */
+function buildTipRow(iconSrc, text) {
+  return `
+                  <tr>
+                    <td width="50" valign="top" style="padding:0 12px 14px 0;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" class="email-icon-chip" style="width:40px;height:40px;background:rgba(255,255,255,0.7);border:1px solid rgba(17,58,88,0.08);border-radius:12px;">
+                        <tr><td align="center" valign="middle" style="width:40px;height:40px;"><img src="${iconSrc}" width="22" height="22" alt="" style="display:block;" /></td></tr>
+                      </table>
+                    </td>
+                    <td valign="middle" class="email-text-1" style="padding:0 0 14px;color:#0a1f2e;font-size:14.5px;line-height:1.5;">${text}</td>
+                  </tr>`;
+}
+
+/* Tip copy is written as "Short label — detail." in the body field —
+   bold the label, keep the detail as regular text. Falls back to plain
+   text if a tip doesn't follow that shape. */
+function formatTipText(raw) {
+  const idx = raw.indexOf(' — ');
+  if (idx === -1) return escapeHtml(raw);
+  return `<strong>${escapeHtml(raw.slice(0, idx))}</strong> — ${escapeHtml(raw.slice(idx + 3))}`;
+}
+
+/* layout: 'city-checklist' | 'cold-checklist' — first body paragraph is
+   intro prose, last is outro prose, everything between becomes one
+   icon+text tip row (matched positionally to that layout's icon set).
+   'cold-checklist' additionally gets a stat callout box up top, since
+   "average temp vs. real feel" is the whole point of that send. */
+function renderChecklistContent(n) {
+  const icons = LAYOUT_ICON_SETS[n.layout] || [];
+  const paras = n.body.split(/\n\s*\n/);
+  const intro = paras[0];
+  const outro = paras[paras.length - 1];
+  const tips = paras.slice(1, -1);
+  const tipRows = tips.map((t, i) => buildTipRow(icons[i % icons.length], formatTipText(t))).join('');
+
+  const statBlock = n.layout === 'cold-checklist' ? `
+            <tr>
+              <td style="padding:20px 32px 0;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-icon-chip" style="background:rgba(255,255,255,0.7);border:1px solid rgba(17,58,88,0.08);border-radius:16px;">
+                  <tr>
+                    <td align="center" style="padding:16px 20px;">
+                      <div class="email-text-3" style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#7a9aad;margin-bottom:6px;">Average vs. real feel</div>
+                      <div style="font-size:26px;font-weight:800;">
+                        <span class="email-text-1" style="color:#0a1f2e;">40°F</span>
+                        <span class="email-text-3" style="color:#7a9aad;font-size:15px;">&nbsp;&rarr;&nbsp;</span>
+                        <span style="color:#0c7a7a;">20°F</span>
+                      </div>
+                      <div class="email-text-2" style="font-size:12px;color:#3d5a70;margin-top:4px;">that's the number your jacket actually needs to handle</div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>` : '';
+
+  return `${statBlock}
+            <tr>
+              <td style="padding:${n.layout === 'cold-checklist' ? '16px' : '24px'} 32px 8px;">
+                <p class="email-text-1" style="margin:0 0 18px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(intro)}</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${tipRows}
+                </table>
+                <p class="email-text-2" style="margin:16px 0 0;color:#3d5a70;font-size:14px;line-height:1.6;">${escapeHtml(outro)}</p>
+              </td>
+            </tr>`;
+}
+
+/* layout: 'badges' — shows the real 6-tier level progression instead of
+   a generic icon set, since the icons ARE the feature being promoted. */
+function renderBadgesContent(n) {
+  const paras = n.body.split(/\n\s*\n/);
+  const intro = paras[0];
+  const outro = paras[paras.length - 1];
+  const strip = BADGE_STRIP.map((b, i) => `
+                    <td align="center" style="padding:0 3px;">
+                      <img src="${b.src}" width="30" height="30" alt="${escapeAttr(b.label)}" style="display:block;margin:0 auto 4px;" />
+                      <div class="email-text-3" style="font-size:8px;font-weight:600;color:#7a9aad;white-space:nowrap;">${escapeHtml(b.label)}</div>
+                    </td>${i < BADGE_STRIP.length - 1 ? '<td valign="top" style="padding-top:10px;"><span class="email-text-3" style="color:#b8cede;font-size:11px;">&rarr;</span></td>' : ''}`).join('');
+
+  return `
+            <tr>
+              <td style="padding:24px 32px 8px;">
+                <p class="email-text-1" style="margin:0 0 18px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(intro)}</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+                  <tr>${strip}</tr>
+                </table>
+                <p class="email-text-2" style="margin:0;color:#3d5a70;font-size:14px;line-height:1.6;">${escapeHtml(outro)}</p>
+              </td>
+            </tr>`;
+}
+
+/* Default layout (no newsletters.layout set) — the original design: a
+   fixed icon-showcase strip, then plain prose paragraphs. */
+function renderDefaultContent(n) {
   const paragraphs = n.body
     .split(/\n\s*\n/)
     .map(p => `<p class="email-text-1" style="margin:0 0 16px;color:#0a1f2e;font-size:15.5px;line-height:1.65;">${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
     .join('');
+  return `
+            <tr>
+              <td style="padding:20px 32px 4px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>${ICON_SHOWCASE.map(icon => `
+                    <td align="center" style="padding:0 4px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" class="email-icon-chip" style="width:44px;height:44px;background:rgba(255,255,255,0.7);border:1px solid rgba(17,58,88,0.08);border-radius:13px;margin:0 auto;">
+                        <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="${icon.src}" width="24" height="24" alt="" style="display:block;" /></td></tr>
+                      </table>
+                      <div class="email-text-3" style="margin-top:6px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:#7a9aad;">${icon.label}</div>
+                    </td>`).join('')}
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 32px 8px;">
+                ${paragraphs}
+              </td>
+            </tr>`;
+}
+
+function buildNewsletterHtml(n, userId, token) {
+  const unsubUrl = `https://packmatesai.com/api/unsubscribe-newsletter?u=${encodeURIComponent(userId)}&t=${encodeURIComponent(token)}`;
   const cta = (n.cta_text && n.cta_url) ? `
                 <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px auto 0;">
                   <tr>
@@ -181,6 +328,16 @@ function buildNewsletterHtml(n, userId, token) {
                     </td>
                   </tr>
                 </table>` : '';
+
+  /* Per-week layout (newsletters.layout, set by hand in Table Editor):
+     'city-checklist' / 'cold-checklist' → icon+text tip rows (cold also
+     gets a stat callout); 'badges' → the real level-progression strip;
+     anything else (including unset) → the original icon-showcase design. */
+  const content = n.layout === 'city-checklist' || n.layout === 'cold-checklist'
+    ? renderChecklistContent(n)
+    : n.layout === 'badges'
+      ? renderBadgesContent(n)
+      : renderDefaultContent(n);
 
   /* Optional per-week custom header image (newsletters.header_image_url,
      set by hand in Table Editor). Fluid width (no fixed height) is what
@@ -214,23 +371,9 @@ function buildNewsletterHtml(n, userId, token) {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(13,51,71,0.12);">
             <tr>${header}
             </tr>
+            ${content}
             <tr>
-              <td style="padding:20px 32px 4px;">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                  <tr>${ICON_SHOWCASE.map(icon => `
-                    <td align="center" style="padding:0 4px;">
-                      <table role="presentation" cellpadding="0" cellspacing="0" class="email-icon-chip" style="width:44px;height:44px;background:rgba(255,255,255,0.7);border:1px solid rgba(17,58,88,0.08);border-radius:13px;margin:0 auto;">
-                        <tr><td align="center" valign="middle" style="width:44px;height:44px;"><img src="${icon.src}" width="24" height="24" alt="" style="display:block;" /></td></tr>
-                      </table>
-                      <div class="email-text-3" style="margin-top:6px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:#7a9aad;">${icon.label}</div>
-                    </td>`).join('')}
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:16px 32px 28px;">
-                ${paragraphs}
+              <td style="padding:8px 32px 28px;text-align:center;">
                 ${cta}
               </td>
             </tr>

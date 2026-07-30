@@ -1,0 +1,14 @@
+-- Optional per-week visual layout for the newsletter body, set by hand in
+-- Table Editor alongside subject/headline/body. api/send-newsletter.js
+-- branches on this value:
+--   'city-checklist' / 'cold-checklist' — icon+text tip rows, themed icon
+--     set per layout (cold also gets a stat callout box up top). The
+--     `body` field's first and last paragraphs are treated as intro/outro
+--     prose; every paragraph in between becomes one tip row, written as
+--     "Short label — detail." (blank line between each, same as today).
+--   'badges' — shows the real 6-tier level-progression icons instead of a
+--     generic icon set. `body`'s first paragraph is intro prose, last is
+--     outro prose.
+--   anything else (including left blank) — the original design: a fixed
+--     icon-showcase strip, then plain prose paragraphs.
+ALTER TABLE newsletters ADD COLUMN IF NOT EXISTS layout TEXT;
