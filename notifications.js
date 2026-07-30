@@ -204,8 +204,41 @@
     weather:     { cls: 'pm-ti-blue',   img: 'img/notif_weather.png',     label: 'Weather Update' },
   };
 
+  // Toasts queue instead of interrupting each other - if two notifications
+  // fire close together (e.g. a packing milestone and a weather change on
+  // the same page load), the second waits for the first to finish
+  // showing plus a short gap, rather than replacing it mid-read.
+  const TOAST_VISIBLE_MS = 5500;
+  const TOAST_GAP_MS = 700;
+  const TOAST_QUEUE_MAX = 5; // defensive cap, not expected to matter in practice
+  let _toastQueue = [];
+  let _toastActive = false;
+
   function showToast(text, type, tripName) {
     if (location.pathname.endsWith('notifications.html')) return;
+    if (_toastQueue.length >= TOAST_QUEUE_MAX) return;
+    _toastQueue.push({ text, type, tripName });
+    _advanceToastQueue();
+  }
+
+  function _advanceToastQueue() {
+    if (_toastActive || !_toastQueue.length) return;
+    _toastActive = true;
+    const { text, type, tripName } = _toastQueue.shift();
+    _renderToast(text, type, tripName);
+  }
+
+  function _dismissToast() {
+    clearTimeout(_toastTimer);
+    const toast = document.getElementById('pm-toast');
+    if (toast) toast.classList.remove('pm-toast--visible');
+    setTimeout(() => {
+      _toastActive = false;
+      _advanceToastQueue();
+    }, TOAST_GAP_MS);
+  }
+
+  function _renderToast(text, type, tripName) {
     _injectStyles();
 
     let toast = document.getElementById('pm-toast');
@@ -230,8 +263,7 @@
         </div>
         <div class="pm-toast-text" title="${full}">${full}</div>
       </div>
-      <button class="pm-toast-close" aria-label="Dismiss"
-        onclick="document.getElementById('pm-toast').classList.remove('pm-toast--visible')">
+      <button class="pm-toast-close" aria-label="Dismiss" onclick="window.Notify._dismissToast()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2.5" stroke-linecap="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -244,7 +276,7 @@
     void toast.offsetWidth;
     requestAnimationFrame(() => {
       toast.classList.add('pm-toast--visible');
-      _toastTimer = setTimeout(() => toast.classList.remove('pm-toast--visible'), 5500);
+      _toastTimer = setTimeout(_dismissToast, TOAST_VISIBLE_MS);
     });
   }
 
@@ -649,5 +681,5 @@
   }
 
   // ── Public API ───────────────────────────────────────────────────
-  window.Notify = { push, showToast, unreadCount, updateBell, checkTrip, checkWeatherChange };
+  window.Notify = { push, showToast, unreadCount, updateBell, checkTrip, checkWeatherChange, _dismissToast };
 })();

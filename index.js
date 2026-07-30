@@ -512,8 +512,22 @@
         </div>
       </div>
 
-      <!-- ACTIONS (web only — see _isNativeApp above) -->
-      ${_isNativeApp ? '' : `
+      <!-- ACTIONS: intentionally never rendered here even when _isNativeApp
+           reads false - see the delayed injection below, which only ever
+           adds this card after confirming (twice, with a delay) that this
+           truly is the public website. Rendering it immediately and
+           removing it later (the old approach) meant any native/web
+           mis-detection at initial render always flashed the web-only
+           card first; defaulting to "not shown" instead means the worst
+           case for a real web visitor is a brief delay, while native
+           users can never see it at all, under any race condition. -->
+    `;
+
+    if (!_isNativeApp) {
+      setTimeout(() => {
+        const stillNotNative = !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+        if (!stillNotNative) return; // bridge attached late - this is native after all, stay hidden
+        const actionsHTML = `
       <div class="bc bc-actions" id="quickActionsCard">
         <div class="bc-actions-title">Quick Actions</div>
         <button class="bc-action-btn" onclick="location.href='newTrip.html'">
@@ -536,22 +550,8 @@
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
           <span class="bca-label">Join Trip</span><span class="bca-arrow">›</span>
         </button>
-      </div>`}
-    `;
-
-    // Self-heal _isNativeApp: right after sign-in, this page can be the
-    // very first top-level navigation of the whole app session (welcome ->
-    // login -> here), landing before Capacitor's WKWebView bridge script
-    // has necessarily finished attaching window.Capacitor to *this*
-    // document - unlike a cold app launch, where the bridge is guaranteed
-    // ready before any page loads. When that race is lost, _isNativeApp
-    // reads false and Quick Actions renders even though this is the native
-    // app. Re-check shortly after and remove it retroactively if so -
-    // cheap, and only ever does something on that rare mis-detected load.
-    if (!_isNativeApp) {
-      setTimeout(() => {
-        const nowNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-        if (nowNative) document.getElementById('quickActionsCard')?.remove();
+      </div>`;
+        bento.insertAdjacentHTML('beforeend', actionsHTML);
       }, 400);
     }
 

@@ -619,26 +619,8 @@
             position: absolute;
             inset: 0;
             flex-direction: column;
-            justify-content: space-between;
-            z-index: 2;
-        }
-        .banner-top-bar {
-            display: flex;
-            align-items: center;
             justify-content: flex-end;
-            padding: calc(16px + env(safe-area-inset-top)) 16px 0;
-        }
-        .banner-share-pill {
-            background: rgba(255,255,255,0.92);
-            color: #1a2a35;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            font-family: inherit;
-            letter-spacing: 0.01em;
+            z-index: 2;
         }
         .banner-title-area {
             padding: 0 20px 56px;
@@ -948,7 +930,7 @@
             }
             .tripPreviewMain {
                 overflow-y: visible;
-                padding: 26px 20px 100px;
+                padding: 26px 20px 105px;
                 background: #fff;
                 border-radius: 26px 26px 0 0;
                 margin-top: -26px;
@@ -985,7 +967,7 @@
             }
             .tripPreviewBanner { height: 260px; }
             .tripPreviewMain {
-                padding: 26px 20px 100px;
+                padding: 26px 20px 105px;
                 min-width: 0;
                 width: 100%;
                 box-sizing: border-box;
@@ -1010,9 +992,6 @@
         <div class="tripPreviewLeft">
             <div style="background-image: url(img/tripPreviewBanner.jpg)" class="tripPreviewBanner">
                 <div class="banner-mobile-overlay">
-                    <div class="banner-top-bar">
-                        <button class="banner-share-pill" onclick="shareInvite()">Share</button>
-                    </div>
                     <div class="banner-title-area">
                         <div class="banner-city-row">
                             <span class="banner-city-text" id="bannerCityName"></span>
