@@ -132,6 +132,7 @@ ski_boots:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image hr
 flip_flops:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-jVQKf4o5VsajzoHbIU37DMrJwowKUm.png" x="0" y="0" width="20" height="20"/></svg>`,
 usb_drive:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-t28cyW0ZqUKV1htNhbo0SzC8il3KPY.png" x="0" y="0" width="20" height="20"/></svg>`,
 tripod:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/tripod.png" x="0" y="0" width="20" height="20"/></svg>`,
+uv_shirt:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/uv_shirt.png" x="0" y="0" width="20" height="20"/></svg>`,
 selfie_stick:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/selfie_stick.png" x="0" y="0" width="20" height="20"/></svg>`,
 beach_towel:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ttKfYZ4l4M0s8G8tY5sxxdsai6ROmm.png" x="0" y="0" width="20" height="20"/></svg>`,
 gym_towel:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-UiLLbLcRMRZ5D6QgrgEYHvx2ut3ZGR.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -279,6 +280,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('adapter') || n.includes('adaptor'))    return PACKING_ICONS.travel_adapter;
   if (n.includes('usb'))                                 return PACKING_ICONS.usb_drive;
   if (n.includes('tripod'))                              return PACKING_ICONS.tripod;
+  if (n.includes('uv protection') || n.includes('uv shirt') || n.includes('rash guard')) return PACKING_ICONS.uv_shirt;
   if (n.includes('selfie stick'))                        return PACKING_ICONS.selfie_stick;
   // Toiletries — each item unique
   if (n.includes('toothbrush'))                          return PACKING_ICONS.toothbrush;
