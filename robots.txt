@@ -6,6 +6,7 @@ Allow: /signup.html
 Allow: /packing-guide.html
 Allow: /*-packing-list.html$
 Allow: /BingSiteAuth.xml
+Allow: /sitemap.xml
 Allow: /img/
 Allow: /*.css$
 Allow: /*.js$
