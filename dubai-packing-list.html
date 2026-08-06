@@ -68,6 +68,9 @@
     .pg-checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; }
     .pg-item { display: flex; align-items: center; gap: 9px; font-size: 0.86rem; color: var(--ink); padding: 3px 0; }
     .pg-item::before { content: ''; width: 15px; height: 15px; flex-shrink: 0; border-radius: 5px; border: 1.5px solid #c7d2d9; background: #fafbfc; }
+    .pg-item--icon::before { content: none; }
+    .pg-item-icon { width: 26px; height: 26px; border-radius: 8px; background: var(--paper); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pg-item-icon img { width: 18px; height: 18px; display: block; object-fit: contain; }
     .pg-universal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
     .pg-universal-chip { font-size: 0.78rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: #475763; }
     .pg-universal-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7a8a96; margin-bottom: 12px; margin-top: 44px; }
@@ -101,58 +104,58 @@
     <section class="pg-section">
       <h2 class="pg-h2">🏖️ Beach</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Sunglasses</span>
-        <span class="pg-item">Sun Hat</span>
-        <span class="pg-item">Aloe Vera Gel</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-0CfnFe8TfwtwCzUStRx2sclgeZgqGI.png" alt="" loading="lazy"></span>Sunglasses</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tMMTRyfcwkP5GmHmEsBD2lZdN12BRz.png" alt="" loading="lazy"></span>Sun Hat</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_aloe_vera.png" alt="" loading="lazy"></span>Aloe Vera Gel</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">☀️ Hot &amp; Sunny Weather</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Visor</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-buxqomwSVEJaZQ4HmLwMDGa9qiXUGo.png" alt="" loading="lazy"></span>Visor</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">🌃 Night Out</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Mini Dress</span>
-        <span class="pg-item">Maxi Dress</span>
-        <span class="pg-item">Cocktail Dress</span>
-        <span class="pg-item">Dress Shoes</span>
-        <span class="pg-item">Blazer</span>
-        <span class="pg-item">Clutch Purse</span>
-        <span class="pg-item">Makeup Kit</span>
-        <span class="pg-item">Hair Styling Products</span>
-        <span class="pg-item">Watch</span>
-        <span class="pg-item">Jewelry</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-IFAUCtCOj3POQwKUdSUl9TX29nMtEj.png" alt="" loading="lazy"></span>Mini Dress</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-YQn5FpNL17Scjgl6MSCTuXJU5IZX3V.png" alt="" loading="lazy"></span>Maxi Dress</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tviL78KeLIxPWj8IfzBgmUoRVt8bOt.png" alt="" loading="lazy"></span>Cocktail Dress</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-Q8LmT9GbMpWUZdjn0alFYIi2QU47Yl.png" alt="" loading="lazy"></span>Dress Shoes</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-kMTBDO8YMouYhgo7LcVhz6KO8yiWWM.png" alt="" loading="lazy"></span>Blazer</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SssavTgpvON3oMwRMAlyQWUbD9H3xB.png" alt="" loading="lazy"></span>Clutch Purse</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-n8G31Cqh3JyKkxXgC4UC1NDwW6tD3A.png" alt="" loading="lazy"></span>Makeup Kit</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-RCs6a5lnmDpabnkGxGlPRFAZV2yCV3.png" alt="" loading="lazy"></span>Hair Styling Products</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-GMDUYJRKP7kEcXKVWjUVqk64HOpE0U.png" alt="" loading="lazy"></span>Watch</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-93uU08ntOedKehh82hj8kDnFYCfYuC.png" alt="" loading="lazy"></span>Jewelry</span>
         <span class="pg-item">Fashion Tape</span>
-        <span class="pg-item">Jumpsuit</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_jumpsuit.png" alt="" loading="lazy"></span>Jumpsuit</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">🎪 Festival</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Ear Plugs</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_ear_plugs.png" alt="" loading="lazy"></span>Ear Plugs</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">🏙️ City Sightseeing</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Backpack</span>
-        <span class="pg-item">Travel Guidebook</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-53doFZDyMbmChPPHfnbbPjt0Zvlzq7.png" alt="" loading="lazy"></span>Backpack</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/travel_guidebook.png" alt="" loading="lazy"></span>Travel Guidebook</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">🍽️ Dining</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Button-Down Shirts</span>
-        <span class="pg-item">Dress Pants</span>
-        <span class="pg-item">Tie</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_button_down.png" alt="" loading="lazy"></span>Button-Down Shirts</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-DULdzV3uEdmGmIzORCmUox0QGw8W1z.png" alt="" loading="lazy"></span>Dress Pants</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ANhLFkrdwMpU4LhXbqhD0DfgddYVvj.png" alt="" loading="lazy"></span>Tie</span>
       </div>
     </section>
 

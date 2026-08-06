@@ -64,6 +64,9 @@
     .pg-checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; }
     .pg-item { display: flex; align-items: center; gap: 9px; font-size: 0.86rem; color: var(--ink); padding: 3px 0; }
     .pg-item::before { content: ''; width: 15px; height: 15px; flex-shrink: 0; border-radius: 5px; border: 1.5px solid #c7d2d9; background: #fafbfc; }
+    .pg-item--icon::before { content: none; }
+    .pg-item-icon { width: 26px; height: 26px; border-radius: 8px; background: var(--paper); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pg-item-icon img { width: 18px; height: 18px; display: block; object-fit: contain; }
     .pg-universal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
     .pg-universal-chip { font-size: 0.78rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: #475763; }
     .pg-universal-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7a8a96; margin-bottom: 12px; margin-top: 44px; }
@@ -97,11 +100,11 @@
     <section class="pg-section">
       <h2 class="pg-h2">🌃 Night Out</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Dress</span>
-        <span class="pg-item">Dress Shirt</span>
-        <span class="pg-item">Dress Shoes</span>
-        <span class="pg-item">Light Jacket</span>
-        <span class="pg-item">Clutch</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-sjnsZFCzT6VnSOqmWOg9YE53KR68pi.png" alt="" loading="lazy"></span>Dress</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_dress_shirt.png" alt="" loading="lazy"></span>Dress Shirt</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-Q8LmT9GbMpWUZdjn0alFYIi2QU47Yl.png" alt="" loading="lazy"></span>Dress Shoes</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-elw4GyvNsROSSzsDAUmaiKotqamYXy.png" alt="" loading="lazy"></span>Light Jacket</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SssavTgpvON3oMwRMAlyQWUbD9H3xB.png" alt="" loading="lazy"></span>Clutch</span>
       </div>
     </section>
 
@@ -109,8 +112,8 @@
       <h2 class="pg-h2">🏊 Pool Day</h2>
       <div class="pg-checklist">
         <span class="pg-item">Swimwear</span>
-        <span class="pg-item">Sunscreen</span>
-        <span class="pg-item">Sunglasses</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ixp9yadIpp3NmeQqoOdHkQHpqiwkwR.png" alt="" loading="lazy"></span>Sunscreen</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-0CfnFe8TfwtwCzUStRx2sclgeZgqGI.png" alt="" loading="lazy"></span>Sunglasses</span>
         <span class="pg-item">Cover-Up</span>
       </div>
     </section>
@@ -118,8 +121,8 @@
     <section class="pg-section">
       <h2 class="pg-h2">☀️ Hot &amp; Sunny Weather</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Sun Hat</span>
-        <span class="pg-item">Reusable Water Bottle</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tMMTRyfcwkP5GmHmEsBD2lZdN12BRz.png" alt="" loading="lazy"></span>Sun Hat</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_reusable_water_bottle.png" alt="" loading="lazy"></span>Reusable Water Bottle</span>
       </div>
     </section>
 
@@ -127,8 +130,8 @@
       <h2 class="pg-h2">🏙️ City Sightseeing</h2>
       <div class="pg-checklist">
         <span class="pg-item">Comfortable Shoes</span>
-        <span class="pg-item">Portable Charger</span>
-        <span class="pg-item">Crossbody Bag</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-KuYCB2ggXWqJ9fLErN8ArVlWCqFtTU.png" alt="" loading="lazy"></span>Portable Charger</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-pDLFY2aJ6Wy7iz4f6hQ9Gz8XKDf4HP.png" alt="" loading="lazy"></span>Crossbody Bag</span>
       </div>
     </section>
 

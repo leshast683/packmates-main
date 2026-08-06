@@ -64,6 +64,9 @@
     .pg-checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; }
     .pg-item { display: flex; align-items: center; gap: 9px; font-size: 0.86rem; color: var(--ink); padding: 3px 0; }
     .pg-item::before { content: ''; width: 15px; height: 15px; flex-shrink: 0; border-radius: 5px; border: 1.5px solid #c7d2d9; background: #fafbfc; }
+    .pg-item--icon::before { content: none; }
+    .pg-item-icon { width: 26px; height: 26px; border-radius: 8px; background: var(--paper); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pg-item-icon img { width: 18px; height: 18px; display: block; object-fit: contain; }
     .pg-universal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
     .pg-universal-chip { font-size: 0.78rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: #475763; }
     .pg-universal-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7a8a96; margin-bottom: 12px; margin-top: 44px; }
@@ -98,28 +101,28 @@
       <h2 class="pg-h2">🏖️ Beach</h2>
       <div class="pg-checklist">
         <span class="pg-item">Swimwear</span>
-        <span class="pg-item">Reef-Safe Sunscreen</span>
-        <span class="pg-item">Beach Towel</span>
-        <span class="pg-item">Rash Guard</span>
-        <span class="pg-item">Aloe Vera Gel</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ixp9yadIpp3NmeQqoOdHkQHpqiwkwR.png" alt="" loading="lazy"></span>Reef-Safe Sunscreen</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ttKfYZ4l4M0s8G8tY5sxxdsai6ROmm.png" alt="" loading="lazy"></span>Beach Towel</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/uv_shirt.png" alt="" loading="lazy"></span>Rash Guard</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_aloe_vera.png" alt="" loading="lazy"></span>Aloe Vera Gel</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">🐠 Snorkeling</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Snorkel Set</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_snorkel_set.png" alt="" loading="lazy"></span>Snorkel Set</span>
         <span class="pg-item">Water Shoes</span>
-        <span class="pg-item">Waterproof Phone Case</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_waterproof_phone_case.png" alt="" loading="lazy"></span>Waterproof Phone Case</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">🥾 Hiking</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Hiking Shoes</span>
-        <span class="pg-item">Light Jacket</span>
-        <span class="pg-item">Reusable Water Bottle</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-IggFBTZj6FLZJOSOZIjFlIU8ntmuyv.png" alt="" loading="lazy"></span>Hiking Shoes</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-elw4GyvNsROSSzsDAUmaiKotqamYXy.png" alt="" loading="lazy"></span>Light Jacket</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_reusable_water_bottle.png" alt="" loading="lazy"></span>Reusable Water Bottle</span>
         <span class="pg-item">Headlamp</span>
       </div>
     </section>
@@ -127,8 +130,8 @@
     <section class="pg-section">
       <h2 class="pg-h2">🍽️ Dining</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Sundress</span>
-        <span class="pg-item">Sandals</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-sjnsZFCzT6VnSOqmWOg9YE53KR68pi.png" alt="" loading="lazy"></span>Sundress</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-DWMYeBZmNCGvylKhjqjHV3CRGeQvDR.png" alt="" loading="lazy"></span>Sandals</span>
       </div>
     </section>
 

@@ -68,6 +68,9 @@
     .pg-checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; }
     .pg-item { display: flex; align-items: center; gap: 9px; font-size: 0.86rem; color: var(--ink); padding: 3px 0; }
     .pg-item::before { content: ''; width: 15px; height: 15px; flex-shrink: 0; border-radius: 5px; border: 1.5px solid #c7d2d9; background: #fafbfc; }
+    .pg-item--icon::before { content: none; }
+    .pg-item-icon { width: 26px; height: 26px; border-radius: 8px; background: var(--paper); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pg-item-icon img { width: 18px; height: 18px; display: block; object-fit: contain; }
     .pg-universal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
     .pg-universal-chip { font-size: 0.78rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: #475763; }
     .pg-universal-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7a8a96; margin-bottom: 12px; margin-top: 44px; }
@@ -101,44 +104,44 @@
     <section class="pg-section">
       <h2 class="pg-h2">🌧️ Rainy Weather</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Umbrella</span>
-        <span class="pg-item">Waterproof Backpack Cover</span>
-        <span class="pg-item">Poncho</span>
-        <span class="pg-item">Trench Coat</span>
-        <span class="pg-item">Rain Boots</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-UoaYOG517tIhHK4E1CCxU83D6Add6c.png" alt="" loading="lazy"></span>Umbrella</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-AbvH02C2XqrfmyICpipznmKPdgtcc1.png" alt="" loading="lazy"></span>Waterproof Backpack Cover</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_poncho.png" alt="" loading="lazy"></span>Poncho</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-DDKn2PTWGR8G1qAhmPXK04tkF0FAfc.png" alt="" loading="lazy"></span>Trench Coat</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-GD1SIJA3DzHDREMulql6zjPWFazsgS.png" alt="" loading="lazy"></span>Rain Boots</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">💨 Windy Weather</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Windbreaker Jacket</span>
-        <span class="pg-item">Hair Ties</span>
-        <span class="pg-item">Beanie / Ear Muffs</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-97KKWtM9HV87QqJDQH21dYGk2ZZRgL.png" alt="" loading="lazy"></span>Windbreaker Jacket</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-rq5WXNd7FvStgmMw5LSv8HDsZfIisf.png" alt="" loading="lazy"></span>Hair Ties</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SK0Aaj1m2uTI5PZjoFR0OG5vvC2LnS.png" alt="" loading="lazy"></span>Beanie / Ear Muffs</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">🏙️ City Sightseeing</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Sunglasses</span>
-        <span class="pg-item">Water Bottle</span>
-        <span class="pg-item">Backpack</span>
-        <span class="pg-item">Raincoat</span>
-        <span class="pg-item">Travel Guidebook</span>
-        <span class="pg-item">Portable Umbrella</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-0CfnFe8TfwtwCzUStRx2sclgeZgqGI.png" alt="" loading="lazy"></span>Sunglasses</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-bmzLfyohXRZfMKDJgxQZocCGuZP9sC.png" alt="" loading="lazy"></span>Water Bottle</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-53doFZDyMbmChPPHfnbbPjt0Zvlzq7.png" alt="" loading="lazy"></span>Backpack</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-DUVLvs4tjPQsFuRiqVeKL31PJOsEI1.png" alt="" loading="lazy"></span>Raincoat</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/travel_guidebook.png" alt="" loading="lazy"></span>Travel Guidebook</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_portable_umbrella.png" alt="" loading="lazy"></span>Portable Umbrella</span>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">🍽️ Dining</h2>
       <div class="pg-checklist">
-        <span class="pg-item">Dress</span>
-        <span class="pg-item">Dress Shoes</span>
-        <span class="pg-item">Blazer</span>
-        <span class="pg-item">Button-Down Shirts</span>
-        <span class="pg-item">Dress Pants</span>
-        <span class="pg-item">Tie</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-sjnsZFCzT6VnSOqmWOg9YE53KR68pi.png" alt="" loading="lazy"></span>Dress</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-Q8LmT9GbMpWUZdjn0alFYIi2QU47Yl.png" alt="" loading="lazy"></span>Dress Shoes</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-kMTBDO8YMouYhgo7LcVhz6KO8yiWWM.png" alt="" loading="lazy"></span>Blazer</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="img/item_button_down.png" alt="" loading="lazy"></span>Button-Down Shirts</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-DULdzV3uEdmGmIzORCmUox0QGw8W1z.png" alt="" loading="lazy"></span>Dress Pants</span>
+        <span class="pg-item pg-item--icon"><span class="pg-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-ANhLFkrdwMpU4LhXbqhD0DfgddYVvj.png" alt="" loading="lazy"></span>Tie</span>
       </div>
     </section>
 
