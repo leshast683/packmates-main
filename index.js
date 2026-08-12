@@ -538,7 +538,7 @@
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
           <span class="bca-label">Packing List</span><span class="bca-arrow">›</span>
         </button>
-        <button class="bc-action-btn" onclick="location.href='${hasTrip ? 'tripPreview.html' : 'newTrip.html'}'">
+        <button class="bc-action-btn" onclick="window.top.location.href='${hasTrip ? 'tripPreview.html' : 'newTrip.html'}'">
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           <span class="bca-label">${hasTrip ? 'Trip Details' : 'Plan a Trip'}</span><span class="bca-arrow">›</span>
         </button>
@@ -569,7 +569,7 @@
     /* ── Hero interactions (only when trip exists) ── */
     if (hasTrip) {
       document.getElementById('heroCard').addEventListener('click', e => {
-        if (!e.target.closest('#shareBtn')) location.href = 'tripPreview.html';
+        if (!e.target.closest('#shareBtn')) window.top.location.href = 'tripPreview.html';
       });
       document.getElementById('shareBtn').addEventListener('click', e => {
         e.stopPropagation();
@@ -640,7 +640,7 @@
         const deleteLabel = isOwnedByMe ? 'Delete trip' : 'Leave trip';
         return `
           <div class="trip-card${isActive ? ' trip-card--active' : ''}${isPast ? ' trip-card--past' : ''}" id="tc-${t.id}">
-            <div class="trip-card-img" onclick="${isActive ? `location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}" style="position:relative">
+            <div class="trip-card-img" onclick="${isActive ? `window.top.location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}" style="position:relative">
               <img src="${t.imageUrl || 'img/placeholderTrip.png'}" alt="${t.destination}" loading="lazy">
               ${isPast
                 ? '<div class="trip-card-badge trip-card-badge--past">Past Trip</div>'
@@ -648,7 +648,7 @@
                 ? '<div class="trip-card-badge">Active</div>'
                 : '<div class="trip-card-badge trip-card-badge--switch">Switch</div>'}
             </div>
-            <div class="trip-card-body" onclick="${isActive ? `location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}">
+            <div class="trip-card-body" onclick="${isActive ? `window.top.location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}">
               <div class="trip-card-title">${t.name || t.destination}</div>
               <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : 'Dates not set'}${daysLabel ? ` · <span style="color:${isPast ? '#e67e22' : 'var(--green-dark,#4d8225)'};font-weight:600">${daysLabel}</span>` : ''}</div>
               <div class="trip-card-footer">

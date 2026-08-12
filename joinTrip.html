@@ -322,7 +322,7 @@
       }
 
       pushNotification('join', `You joined the trip to ${result.trip.destination}!`, result.trip.destination);
-      setTimeout(() => { location.href = 'tripPreview.html'; }, 400);
+      setTimeout(() => { window.top.location.href = 'tripPreview.html'; }, 400);
     }
 
     const style = document.createElement('style');

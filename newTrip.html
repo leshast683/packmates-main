@@ -1625,7 +1625,7 @@
       DB.savePackState(tripId, { itemState: {}, dismissed: [], customItems: {} });
 
       pushNotification('trip', `Your trip to ${destination} has been created!`, destination);
-      location.href = 'tripPreview.html';
+      window.top.location.href = 'tripPreview.html';
     });
 
     /* spinner keyframe */

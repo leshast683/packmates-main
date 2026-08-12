@@ -199,7 +199,7 @@ function updateCounts() {
         } else {
             if (titleEl) titleEl.textContent = "You're all packed!";
             if (subEl)   subEl.textContent   = 'Every item on your list is checked off';
-            if (btnEl) { btnEl.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg> Back to Trip'; btnEl.onclick = () => location.href = 'tripPreview.html'; }
+            if (btnEl) { btnEl.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg> Back to Trip'; btnEl.onclick = () => window.top.location.href = 'tripPreview.html'; }
         }
     }
 
