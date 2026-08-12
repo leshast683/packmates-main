@@ -103,7 +103,7 @@
     }
     body { font-family: 'Montserrat', sans-serif; background: var(--paper); color: var(--ink); }
 
-    .pg-header { background: radial-gradient(120% 140% at 15% 0%, #164163 0%, var(--teal-2) 45%, var(--teal-1) 100%); color: #fff; padding: 28px 24px 0; overflow: hidden; }
+    .pg-header { background: radial-gradient(120% 140% at 15% 0%, #164163 0%, var(--teal-2) 45%, var(--teal-1) 100%); color: #fff; padding: 28px 24px 56px; overflow: hidden; }
     .pg-header-inner { max-width: 900px; margin: 0 auto; }
     .pg-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
     .pg-logo-row img { width: 30px; height: 30px; border-radius: 8px; }
@@ -115,40 +115,29 @@
     .pg-trust-pill { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.88); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); padding: 7px 13px 7px 10px; border-radius: 20px; }
     .pg-trust-pill svg { flex-shrink: 0; color: var(--green2); }
 
-    /* --- hero product screenshot --- */
-    .hero-shot-shell { display: flex; justify-content: center; padding-bottom: 0; position: relative; }
-    .hero-shot-shell::before { content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 520px; height: 520px; background: radial-gradient(circle, rgba(124,198,62,0.25) 0%, rgba(124,198,62,0) 70%); pointer-events: none; }
-    .hero-shot { position: relative; width: 100%; max-width: 300px; border-radius: 28px 28px 0 0; overflow: hidden; box-shadow: 0 30px 80px rgba(3,15,25,0.55); }
-    .hero-shot img { width: 100%; display: block; }
-
-    /* --- alternating image/text showcase --- */
-    .showcase-row { display: flex; align-items: center; gap: 40px; margin-bottom: 60px; }
-    .showcase-row.reverse { flex-direction: row-reverse; }
-    .showcase-img { flex: 0 0 38%; }
-    .showcase-img img { width: 100%; display: block; border-radius: 22px; box-shadow: 0 24px 60px rgba(13,51,71,0.16); }
-    .showcase-text { flex: 1; }
-    .showcase-text .why-num { margin-bottom: 16px; }
-    .showcase-text h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--teal-2); margin-bottom: 10px; letter-spacing: -0.01em; }
-    .showcase-text p { font-size: 0.87rem; line-height: 1.7; color: #5c6d78; }
-
     .pg-body { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
     .pg-section { margin-bottom: 48px; }
     .pg-section:first-of-type { margin-top: 56px; }
     .pg-h2 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--teal-2); margin-bottom: 8px; letter-spacing: -0.01em; text-align: center; }
     .pg-h2-sub { font-size: 0.85rem; color: #6b7c88; line-height: 1.6; margin-bottom: 26px; text-align: center; max-width: 480px; margin-left: auto; margin-right: auto; }
 
-    /* --- why choose us: numbered cards --- */
-    .why-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-    .why-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px; position: relative; }
     .why-num { font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.72rem; color: var(--amber); background: var(--amber-bg); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
-    .why-card h4 { font-family: 'Blauer Nue', sans-serif; font-size: 0.98rem; font-weight: 700; color: var(--teal-2); margin-bottom: 7px; }
-    .why-card p { font-size: 0.83rem; line-height: 1.62; color: #5c6d78; }
 
-    /* --- how it works: horizontal steps --- */
-    .steps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .step-card { text-align: center; }
-    .step-num { font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 1.6rem; color: var(--teal-2); opacity: 0.14; margin-bottom: 4px; }
-    .step-card h4 { font-family: 'Blauer Nue', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--teal-2); margin-bottom: 6px; }
+    /* --- why choose us: alternating image + card rows --- */
+    .showcase-row { display: flex; align-items: center; gap: 36px; margin-bottom: 40px; }
+    .showcase-row.reverse { flex-direction: row-reverse; }
+    .showcase-img { flex: 0 0 36%; }
+    .showcase-img img { width: 100%; display: block; border-radius: 20px; box-shadow: 0 22px 50px rgba(13,51,71,0.16); }
+    .showcase-card { flex: 1; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+    .showcase-card h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.08rem; font-weight: 700; color: var(--teal-2); margin-bottom: 9px; letter-spacing: -0.01em; }
+    .showcase-card p { font-size: 0.85rem; line-height: 1.68; color: #5c6d78; }
+
+    /* --- how it works: connected timeline --- */
+    .steps-row { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 6px; }
+    .steps-row::before { content: ''; position: absolute; top: 27px; left: 16.6%; right: 16.6%; height: 2px; background-image: repeating-linear-gradient(90deg, #ced9e0 0 8px, transparent 8px 18px); }
+    .step-card { position: relative; z-index: 1; text-align: center; }
+    .step-icon { width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 16px; background: linear-gradient(135deg, var(--green2), var(--teal-2)); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 1.15rem; box-shadow: 0 10px 22px rgba(13,51,71,0.28); }
+    .step-card h4 { font-family: 'Blauer Nue', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--teal-2); margin-bottom: 6px; }
     .step-card p { font-size: 0.8rem; line-height: 1.6; color: #5c6d78; }
 
     /* --- comparison --- */
@@ -178,13 +167,13 @@
     .pg-footer a { color: #8a99a4; margin: 0 8px; }
 
     @media (max-width: 640px) {
-      .why-grid { grid-template-columns: 1fr; }
       .steps-row { grid-template-columns: 1fr; gap: 24px; }
+      .steps-row::before { display: none; }
       .pg-compare-row, .pg-compare-head { grid-template-columns: 1fr; }
       .pg-compare-row div:first-child { border-right: none; border-bottom: 1px solid var(--line); }
       .pg-compare-head div:first-child { display: none; }
-      .showcase-row, .showcase-row.reverse { flex-direction: column; gap: 20px; }
-      .showcase-img { flex: 0 0 auto; width: 68%; max-width: 220px; }
+      .showcase-row, .showcase-row.reverse { flex-direction: column; gap: 18px; }
+      .showcase-img { flex: 0 0 auto; width: 66%; max-width: 220px; }
     }
   </style>
 </head>
@@ -205,11 +194,6 @@
         <span class="pg-trust-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Synced live with your group</span>
       </div>
     </div>
-    <div class="hero-shot-shell">
-      <div class="hero-shot">
-        <img src="img/adaptive-weather-activities.jpg" alt="Packmates AI packing list adapting to weather and activities for a ski and mountain trip" loading="eager">
-      </div>
-    </div>
   </header>
 
   <main class="pg-body">
@@ -217,68 +201,57 @@
     <section class="pg-section">
       <h2 class="pg-h2">Why travelers pick Packmates AI</h2>
       <p class="pg-h2-sub">Not a chatbot improvising a list — a system built specifically to get packing right.</p>
-      <div class="why-grid">
-        <div class="why-card">
+
+      <div class="showcase-row">
+        <div class="showcase-img">
+          <img src="img/adaptive-weather-activities.jpg" alt="Packmates AI new trip screen building a checklist around real weather and activities" loading="lazy">
+        </div>
+        <div class="showcase-card">
           <div class="why-num">01</div>
-          <h4>Built from your real trip, not a guess</h4>
-          <p>Every list is generated from your actual destination, travel dates, and activities — not a one-size-fits-all template.</p>
-        </div>
-        <div class="why-card">
-          <div class="why-num">02</div>
-          <h4>A real database, not AI hallucination</h4>
-          <p>Items come from a curated database of 250+ packing essentials matched to real conditions, not invented fresh — and inconsistently — every time you ask.</p>
-        </div>
-        <div class="why-card">
-          <div class="why-num">03</div>
-          <h4>One list, synced live with your group</h4>
-          <p>Every packmate sees the same checklist update in real time — no more "did someone already pack the charger?" texts.</p>
-        </div>
-        <div class="why-card">
-          <div class="why-num">04</div>
-          <h4>Adjusts when your plans do</h4>
-          <p>Change your dates, add a hike, swap destinations — the list updates with you instead of staying frozen the day you made it.</p>
+          <h3>Built from your real trip, not a guess</h3>
+          <p>Every list is generated from your actual destination, travel dates, and activities — not a one-size-fits-all template or a chatbot improvising an answer.</p>
         </div>
       </div>
-    </section>
 
-    <section class="pg-section">
-      <div class="showcase-row">
+      <div class="showcase-row reverse">
         <div class="showcase-img">
           <img src="img/adaptive-250-items.jpg" alt="Packmates AI showing a beach packing checklist pulled from its 250+ item database" loading="lazy">
         </div>
-        <div class="showcase-text">
+        <div class="showcase-card">
           <div class="why-num">02</div>
-          <h3>A real database, not an AI guess</h3>
-          <p>Every item on your list is pulled from a curated database of 250+ real packing essentials, matched to your trip's category — not improvised fresh, and inconsistently, every time you ask a chatbot.</p>
+          <h3>A real database, not AI hallucination</h3>
+          <p>Items come from a curated database of 250+ packing essentials matched to real conditions, not invented fresh — and inconsistently — every time you ask.</p>
         </div>
       </div>
-      <div class="showcase-row reverse">
+
+      <div class="showcase-row">
         <div class="showcase-img">
           <img src="img/adaptive-share-friends.jpg" alt="Packmates AI profile screen showing trips and packing lists shared with friends" loading="lazy">
         </div>
-        <div class="showcase-text">
+        <div class="showcase-card">
           <div class="why-num">03</div>
-          <h3>One list, shared with everyone packing</h3>
-          <p>Invite your packmates and everyone sees the same checklist update live — no separate spreadsheets, no group text asking who already packed the charger.</p>
+          <h3>One list, synced live with your group</h3>
+          <p>Every packmate sees the same checklist update in real time — no more "did someone already pack the charger?" texts.</p>
         </div>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">How it works</h2>
+      <p class="pg-h2-sub">From blank trip to shared checklist in three steps.</p>
       <div class="steps-row">
         <div class="step-card">
-          <div class="step-num">01</div>
+          <div class="step-icon">1</div>
           <h4>Add your trip</h4>
           <p>Destination, dates, who's coming, and what you'll be doing.</p>
         </div>
         <div class="step-card">
-          <div class="step-num">02</div>
+          <div class="step-icon">2</div>
           <h4>Get your list</h4>
           <p>Packmates AI builds a checklist from real weather, location, and activity data.</p>
         </div>
         <div class="step-card">
-          <div class="step-num">03</div>
+          <div class="step-icon">3</div>
           <h4>Pack together</h4>
           <p>Everyone checks off and adds items live, synced across the whole group.</p>
         </div>
