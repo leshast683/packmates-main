@@ -1,5 +1,7 @@
 User-agent: *
 Disallow: /
+Allow: /$
+Allow: /index.html
 Allow: /welcome.html
 Allow: /login.html
 Allow: /signup.html
