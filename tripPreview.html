@@ -1317,15 +1317,24 @@
             document.getElementById('membersCard').style.display = '';
             if (_isTripOwner) document.getElementById('addPackmateBtn').style.display = '';
             document.getElementById('membersList').innerHTML = members.map((m, i) => {
-                const initial = (m.name || '?').trim().charAt(0).toUpperCase();
+                // get_trip_member_profiles() reads name straight from the
+                // profiles table, which can be empty for accounts created
+                // before the signup flow reliably captured it. For the
+                // current user's own row specifically, we already have a
+                // known-good name locally (the active session) - prefer
+                // that over showing "?" for yourself. Other members with a
+                // genuinely empty profiles.name still fall back to "A
+                // packmate", same as before.
+                const displayName = (m.user_id === myId && !m.name) ? (Auth.getSession()?.name || m.name) : m.name;
+                const initial = (displayName || '?').trim().charAt(0).toUpperCase();
                 const avatarInner = m.avatar ? `<img src="${m.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : initial;
                 const canRemove = _isTripOwner && m.user_id !== myId;
                 return `
                 <div class="member-row">
                   <div class="member-row-avatar" style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}">${avatarInner}</div>
-                  <div class="member-row-name">${m.name || 'A packmate'}</div>
+                  <div class="member-row-name">${displayName || 'A packmate'}</div>
                   <div class="member-row-role">${m.role === 'owner' ? 'Owner' : ''}</div>
-                  ${canRemove ? `<button class="member-row-remove" title="Remove from trip" aria-label="Remove ${(m.name || 'this packmate').replace(/"/g, '&quot;')} from trip" onclick="removeMemberFromTrip('${m.user_id}','${(m.name || 'this packmate').replace(/'/g, "\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
+                  ${canRemove ? `<button class="member-row-remove" title="Remove from trip" aria-label="Remove ${(displayName || 'this packmate').replace(/"/g, '&quot;')} from trip" onclick="removeMemberFromTrip('${m.user_id}','${(displayName || 'this packmate').replace(/'/g, "\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
                 </div>`;
             }).join('');
         }
