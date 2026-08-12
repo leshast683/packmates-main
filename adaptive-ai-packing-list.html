@@ -140,23 +140,31 @@
     .step-card h4 { font-family: 'Blauer Nue', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--teal-2); margin-bottom: 6px; }
     .step-card p { font-size: 0.8rem; line-height: 1.6; color: #5c6d78; }
 
-    /* --- comparison --- */
-    .pg-compare { background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-    .pg-compare-row { display: grid; grid-template-columns: 1fr 1fr; }
-    .pg-compare-row + .pg-compare-row { border-top: 1px solid var(--line); }
-    .pg-compare-head { display: grid; grid-template-columns: 1fr 1fr; background: var(--paper); }
-    .pg-compare-head div { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 14px 18px; }
-    .pg-compare-head div:first-child { color: #8a99a4; }
-    .pg-compare-head div:last-child { color: var(--green); }
-    .pg-compare-row div { padding: 14px 18px; font-size: 0.82rem; line-height: 1.5; display: flex; align-items: flex-start; gap: 8px; }
-    .pg-compare-row div:first-child { color: #93a1ab; border-right: 1px solid var(--line); }
-    .pg-compare-row div:last-child { color: var(--ink); font-weight: 500; }
-    .pg-compare-row div:first-child::before { content: '✕'; color: #c7d2d9; font-weight: 700; font-size: 0.7rem; margin-top: 2px; }
-    .pg-compare-row div:last-child::before { content: '✓'; color: var(--green); font-weight: 700; font-size: 0.7rem; margin-top: 2px; }
+    /* --- comparison: battle cards --- */
+    .battle-wrap { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .battle-vs { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; width: 44px; height: 44px; border-radius: 50%; background: var(--paper); border: 2px solid #fff; box-shadow: 0 6px 16px rgba(13,51,71,0.18); display: flex; align-items: center; justify-content: center; font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.68rem; color: #8a99a4; letter-spacing: 0.02em; }
+    .battle-card { border-radius: 18px; padding: 26px 20px; }
+    .battle-card--them { background: #fff; border: 1px solid var(--line); }
+    .battle-card--us { background: linear-gradient(160deg, var(--teal-2), var(--teal-1)); box-shadow: 0 20px 46px rgba(13,51,71,0.28); }
+    .battle-label { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 18px; }
+    .battle-card--them .battle-label { color: #a7b3bb; }
+    .battle-card--us .battle-label { color: var(--green2); }
+    .battle-card ul { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .battle-card li { display: flex; align-items: flex-start; gap: 9px; font-size: 0.82rem; line-height: 1.5; }
+    .battle-card--them li { color: #7c8a94; }
+    .battle-card--us li { color: rgba(255,255,255,0.92); font-weight: 500; }
+    .battle-card--them li::before { content: '✕'; color: #c7d2d9; font-weight: 700; font-size: 0.68rem; margin-top: 2px; flex-shrink: 0; }
+    .battle-card--us li::before { content: '✓'; color: var(--green2); font-weight: 700; font-size: 0.68rem; margin-top: 2px; flex-shrink: 0; }
 
-    .pg-faq-item { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; margin-bottom: 10px; }
-    .pg-faq-item h4 { font-family: 'Blauer Nue', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--teal-2); margin-bottom: 8px; }
-    .pg-faq-item p { font-size: 0.84rem; line-height: 1.6; color: #5c6d78; }
+    /* --- FAQ accordion --- */
+    .pg-faq-item { background: #fff; border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
+    .pg-faq-item summary { cursor: pointer; padding: 18px 22px; font-family: 'Blauer Nue', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--teal-2); display: flex; align-items: center; justify-content: space-between; gap: 16px; list-style: none; }
+    .pg-faq-item summary::-webkit-details-marker { display: none; }
+    .faq-chevron { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--paper); display: flex; align-items: center; justify-content: center; transition: transform 0.25s ease; }
+    .faq-chevron::after { content: ''; width: 7px; height: 7px; border-right: 1.6px solid #8a99a4; border-bottom: 1.6px solid #8a99a4; transform: rotate(45deg) translate(-1px, -1px); }
+    .pg-faq-item[open] .faq-chevron { transform: rotate(180deg); background: var(--amber-bg); }
+    .pg-faq-item[open] .faq-chevron::after { border-color: var(--amber); }
+    .pg-faq-item p { padding: 0 22px 20px; font-size: 0.84rem; line-height: 1.6; color: #5c6d78; }
 
     .pg-cta { background: linear-gradient(135deg, var(--teal-2), var(--teal-1)); border-radius: 20px; padding: 40px 32px; text-align: center; color: #fff; margin: 8px 0 40px; }
     .pg-cta h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
@@ -165,13 +173,15 @@
     .pg-cta-btn:hover { background: var(--green2); transform: translateY(-1px); }
     .pg-footer { text-align: center; font-size: 0.76rem; color: #8a99a4; }
     .pg-footer a { color: #8a99a4; margin: 0 8px; }
+    .pg-footer-social { display: flex; justify-content: center; margin-bottom: 14px; }
+    .pg-footer-social a { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: #fff; border: 1px solid var(--line); color: #7c8a94; transition: color 0.2s, border-color 0.2s; }
+    .pg-footer-social a:hover { color: var(--teal-2); border-color: #c7d2d9; }
 
     @media (max-width: 640px) {
       .steps-row { grid-template-columns: 1fr; gap: 24px; }
       .steps-row::before { display: none; }
-      .pg-compare-row, .pg-compare-head { grid-template-columns: 1fr; }
-      .pg-compare-row div:first-child { border-right: none; border-bottom: 1px solid var(--line); }
-      .pg-compare-head div:first-child { display: none; }
+      .battle-wrap { grid-template-columns: 1fr; gap: 34px; }
+      .battle-vs { top: auto; bottom: -30px; left: 50%; transform: translateX(-50%); }
       .showcase-row, .showcase-row.reverse { flex-direction: column; gap: 18px; }
       .showcase-img { flex: 0 0 auto; width: 66%; max-width: 220px; }
     }
@@ -187,7 +197,7 @@
       </div>
       <div class="pg-eyebrow">Why Packmates AI</div>
       <h1 class="pg-h1">A packing list that actually knows your trip</h1>
-      <p class="pg-intro">Ask a chatbot to pack for you and you get a guess. Packmates AI builds your checklist from your real destination, weather, and activities — then keeps it synced with everyone you're traveling with.</p>
+      <p class="pg-intro">No two trips pack the same way. Packmates AI builds your checklist from your actual destination, dates, weather, and activities — then keeps everyone you're traveling with on the same list, updated live.</p>
       <div class="pg-trust-row">
         <span class="pg-trust-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>250+ item packing database</span>
         <span class="pg-trust-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Real weather, not a guess</span>
@@ -260,52 +270,52 @@
 
     <section class="pg-section">
       <h2 class="pg-h2">Adaptive vs. everything else</h2>
-      <div class="pg-compare">
-        <div class="pg-compare-head">
-          <div>Static app or chatbot</div>
-          <div>Packmates AI</div>
+      <p class="pg-h2-sub">Same trip questions, two very different answers.</p>
+      <div class="battle-wrap">
+        <div class="battle-vs">VS</div>
+        <div class="battle-card battle-card--them">
+          <div class="battle-label">Static app or chatbot</div>
+          <ul>
+            <li>Same generic list every time</li>
+            <li>Doesn't account for weather</li>
+            <li>You manually edit it when plans change</li>
+            <li>Each traveler keeps a separate list</li>
+          </ul>
         </div>
-        <div class="pg-compare-row">
-          <div>Same generic list every time</div>
-          <div>Built from your real destination, dates, and activities</div>
-        </div>
-        <div class="pg-compare-row">
-          <div>Doesn't account for weather</div>
-          <div>Adjusts for hot, cold, rain, or humidity automatically</div>
-        </div>
-        <div class="pg-compare-row">
-          <div>You manually edit it when plans change</div>
-          <div>Updates itself when you change dates or activities</div>
-        </div>
-        <div class="pg-compare-row">
-          <div>Each traveler keeps a separate list</div>
-          <div>One shared list, synced live across your whole group</div>
+        <div class="battle-card battle-card--us">
+          <div class="battle-label">Packmates AI</div>
+          <ul>
+            <li>Built from your real destination, dates, and activities</li>
+            <li>Adjusts for hot, cold, rain, or humidity automatically</li>
+            <li>Updates itself when you change dates or activities</li>
+            <li>One shared list, synced live across your whole group</li>
+          </ul>
         </div>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">Common questions</h2>
-      <div class="pg-faq-item">
-        <h4>What makes a packing list "adaptive"?</h4>
+      <details class="pg-faq-item" open>
+        <summary>What makes a packing list "adaptive"?<span class="faq-chevron"></span></summary>
         <p>It's generated from your actual trip details instead of a fixed template, and it keeps adjusting as those details change — rather than being a one-time list you have to maintain yourself.</p>
-      </div>
-      <div class="pg-faq-item">
-        <h4>How is this different from just asking a chatbot for a packing list?</h4>
+      </details>
+      <details class="pg-faq-item">
+        <summary>How is this different from just asking a chatbot for a packing list?<span class="faq-chevron"></span></summary>
         <p>A general AI chatbot improvises a new list from scratch every time and has no way to sync it with the people you're traveling with. Packmates AI pulls from a curated database of 250+ real packing items, factors in actual weather and activities, and keeps one shared list live across your whole group.</p>
-      </div>
-      <div class="pg-faq-item">
-        <h4>Does it use real weather data?</h4>
+      </details>
+      <details class="pg-faq-item">
+        <summary>Does it use real weather data?<span class="faq-chevron"></span></summary>
         <p>Yes. Expected conditions for your destination and travel dates shape what shows up on your list, so weather-specific items only appear when they're actually relevant to your trip.</p>
-      </div>
-      <div class="pg-faq-item">
-        <h4>Can I still edit the list myself?</h4>
+      </details>
+      <details class="pg-faq-item">
+        <summary>Can I still edit the list myself?<span class="faq-chevron"></span></summary>
         <p>Always. The generated list is a starting point — check items off, add your own, remove what you don't need, or assign items to specific packmates.</p>
-      </div>
-      <div class="pg-faq-item">
-        <h4>What happens if I change my trip dates or add an activity?</h4>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What happens if I change my trip dates or add an activity?<span class="faq-chevron"></span></summary>
         <p>Update your trip in Packmates AI and the list adjusts with it, so you're not stuck rebuilding it or trying to remember what you already added.</p>
-      </div>
+      </details>
     </section>
 
     <div class="pg-cta">
@@ -317,6 +327,11 @@
       </a>
     </div>
 
+    <div class="pg-footer-social">
+      <a href="https://www.instagram.com/packmatesai/" target="_blank" rel="noopener" aria-label="Packmates AI on Instagram">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+    </div>
     <div class="pg-footer">
       <a href="welcome.html">← Packmates AI</a>
       <a href="packing-guide.html">Packing Guide</a>
