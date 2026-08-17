@@ -9,6 +9,7 @@ Allow: /packing-guide.html
 Allow: /*-packing-list.html$
 Allow: /BingSiteAuth.xml
 Allow: /yandex_fba39327d1722aee.html
+Allow: /03a7590d11a3887269913eb5a663c72e.txt
 Allow: /sitemap.xml
 Allow: /img/
 Allow: /*.css$
