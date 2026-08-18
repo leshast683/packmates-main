@@ -866,7 +866,7 @@
             <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
         </div>`;
-      c.addEventListener('click', () => { localStorage.setItem('exploreDestination', d.name); location.href = 'newTrip.html'; });
+      c.addEventListener('click', () => { localStorage.setItem('exploreDestination', d.name); window.top.location.href = 'newTrip.html'; });
       destStrip.appendChild(c);
     });
 

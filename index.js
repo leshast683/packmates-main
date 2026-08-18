@@ -133,7 +133,7 @@
 
     function homePickDest(name) {
       localStorage.setItem('exploreDestination', name);
-      location.href = 'newTrip.html';
+      window.top.location.href = 'newTrip.html';
     }
     window.homePickDest = homePickDest;
 
@@ -368,7 +368,7 @@
             <div style="font-family:'Blauer Nue',sans-serif;font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:6px;">Plan your next adventure</div>
             <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);max-width:280px;line-height:1.6;">Create a trip and get a smart packing list tailored to your destination and activities.</div>
           </div>
-          <button onclick="location.href='newTrip.html'" style="padding:12px 28px;background:var(--green);color:#fff;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background 0.2s,transform 0.2s;" onmouseover="this.style.background='#4d8225';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#5f9d30';this.style.transform=''">
+          <button onclick="window.top.location.href='newTrip.html'" style="padding:12px 28px;background:var(--green);color:#fff;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background 0.2s,transform 0.2s;" onmouseover="this.style.background='#4d8225';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#5f9d30';this.style.transform=''">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Create First Trip
           </button>
@@ -503,7 +503,7 @@
       </div>
 
       <!-- TRAVEL VIDEO CARD -->
-      <div class="bc bc-tip bc-video-card" onclick="location.href='${nudgeLink}'" style="cursor:pointer;padding:0;background:#071e2a;">
+      <div class="bc bc-tip bc-video-card" onclick="window.top.location.href='${nudgeLink}'" style="cursor:pointer;padding:0;background:#071e2a;">
         <video id="tipVideo" autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity 0.8s ease;border-radius:inherit;"></video>
         <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(160deg,rgba(7,30,42,0.0) 0%,rgba(7,30,42,0.08) 100%);border-radius:inherit;pointer-events:none;"></div>
         <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:20px 22px;">
@@ -530,11 +530,11 @@
         const actionsHTML = `
       <div class="bc bc-actions" id="quickActionsCard">
         <div class="bc-actions-title">Quick Actions</div>
-        <button class="bc-action-btn" onclick="location.href='newTrip.html'">
+        <button class="bc-action-btn" onclick="window.top.location.href='newTrip.html'">
           <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
           <span class="bca-label">New Trip</span><span class="bca-arrow">›</span>
         </button>
-        <button class="bc-action-btn" onclick="location.href='packing-list.html'">
+        <button class="bc-action-btn" onclick="window.top.location.href='packing-list.html'">
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
           <span class="bca-label">Packing List</span><span class="bca-arrow">›</span>
         </button>
@@ -542,11 +542,11 @@
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           <span class="bca-label">${hasTrip ? 'Trip Details' : 'Plan a Trip'}</span><span class="bca-arrow">›</span>
         </button>
-        <button class="bc-action-btn" onclick="location.href='discover.html'">
+        <button class="bc-action-btn" onclick="window.top.location.href='discover.html'">
           <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
           <span class="bca-label">Discover</span><span class="bca-arrow">›</span>
         </button>
-        <button class="bc-action-btn" onclick="location.href='joinTrip.html'">
+        <button class="bc-action-btn" onclick="window.top.location.href='joinTrip.html'">
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
           <span class="bca-label">Join Trip</span><span class="bca-arrow">›</span>
         </button>
@@ -842,7 +842,7 @@
 
       c.addEventListener('click', () => {
         localStorage.setItem('exploreDestination', d.name);
-        location.href = 'newTrip.html';
+        window.top.location.href = 'newTrip.html';
       });
       strip.appendChild(c);
     });

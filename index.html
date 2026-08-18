@@ -80,7 +80,7 @@
           <input type="text" id="homeSearchInput" placeholder="Search destinations…" autocomplete="off">
           <div class="home-search-dd" id="homeSearchDd" style="display:none"></div>
         </div>
-        <button class="btn-new-trip" onclick="location.href='newTrip.html'">
+        <button class="btn-new-trip" onclick="window.top.location.href='newTrip.html'">
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Trip
         </button>
@@ -122,7 +122,7 @@
       <div class="bento-section-header">
         <h2>Explore Destinations</h2>
         <div class="bento-section-line"></div>
-        <a href="discover.html" style="font-size:0.68rem;font-weight:700;color:var(--green);text-decoration:none;white-space:nowrap;letter-spacing:0.04em;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">See all →</a>
+        <a href="discover.html" target="_top" style="font-size:0.68rem;font-weight:700;color:var(--green);text-decoration:none;white-space:nowrap;letter-spacing:0.04em;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">See all →</a>
       </div>
       <div class="explore-strip" id="exploreStrip"></div>
     </div>

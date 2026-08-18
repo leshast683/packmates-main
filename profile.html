@@ -686,9 +686,9 @@
         <div class="profile-card">
           <div class="card-head">
             <h3>Recent Packing Lists</h3>
-            <a class="view-all-link" href="packing-list.html">View all</a>
+            <a class="view-all-link" href="packing-list.html" target="_top">View all</a>
           </div>
-          <div id="recentPackingLists"><div class="list-empty">No trips yet. <a href="newTrip.html" style="color:#7cc63e;text-decoration:none;font-weight:600">Create one →</a></div></div>
+          <div id="recentPackingLists"><div class="list-empty">No trips yet. <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">Create one →</a></div></div>
         </div>
 
       </div>
@@ -836,14 +836,14 @@
           <h3>Travel Timeline</h3>
           <a class="view-all-link" href="tripPreview.html" target="_top">View trip →</a>
         </div>
-        <div id="travelTimeline"><div class="list-empty">No trips yet. <a href="newTrip.html" style="color:#7cc63e;text-decoration:none;font-weight:600">Plan your first one →</a></div></div>
+        <div id="travelTimeline"><div class="list-empty">No trips yet. <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">Plan your first one →</a></div></div>
       </div>
 
       <!-- AI Packing Insights -->
       <div class="profile-card ai-insights-card">
         <div class="card-head">
           <div><h3>AI Packing Insights</h3><div class="card-head-sub">Smart insights from your packing history</div></div>
-          <a class="view-all-link" href="packing-list.html">View all</a>
+          <a class="view-all-link" href="packing-list.html" target="_top">View all</a>
         </div>
         <div class="ai-insights-body">
           <div class="ai-insights-list" id="aiInsightsList">
@@ -1149,7 +1149,7 @@
       const trips = getAllTrips().sort((a,b) => new Date(b.fromDate||0) - new Date(a.fromDate||0)).slice(0,4);
       const c = document.getElementById('recentPackingLists');
       if (!c) return;
-      if (!trips.length) { c.innerHTML = '<div class="list-empty">No trips yet. <a href="newTrip.html" style="color:#7cc63e;text-decoration:none;font-weight:600">Create one →</a></div>'; return; }
+      if (!trips.length) { c.innerHTML = '<div class="list-empty">No trips yet. <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">Create one →</a></div>'; return; }
       c.innerHTML = trips.map(t => {
         const pd      = JSON.parse(localStorage.getItem(`pm_pack_${t.id}`) || '{}');
         const total   = pd.totalSuggested ?? pd.suggestedTotal ?? Object.keys(pd.itemState || {}).length;
@@ -1158,7 +1158,7 @@
         const dates   = t.fromDate && t.toDate ? `${fmtDate(t.fromDate)} – ${fmtDate(t.toDate)}` : 'Dates TBD';
         const img     = t.imageUrl ? `<img src="${t.imageUrl}" alt="${t.destination}" loading="lazy" onerror="this.style.display='none'">` : '';
         const tripStr = encodeURIComponent(JSON.stringify(t));
-        return `<div class="recent-list-item" onclick="localStorage.setItem('currentTrip',decodeURIComponent('${tripStr}'));location.href='packing-list.html'">
+        return `<div class="recent-list-item" onclick="localStorage.setItem('currentTrip',decodeURIComponent('${tripStr}'));window.top.location.href='packing-list.html'">
           <div class="recent-list-thumb">${img}</div>
           <div class="recent-list-info">
             <strong>${t.destination||'Trip'}</strong>
@@ -1176,7 +1176,7 @@
       const trips = getAllTrips().sort((a,b) => new Date(b.fromDate||0) - new Date(a.fromDate||0));
       const c = document.getElementById('travelTimeline');
       if (!c) return;
-      if (!trips.length) { c.innerHTML = '<div class="list-empty">No trips yet. <a href="newTrip.html" style="color:#7cc63e;text-decoration:none;font-weight:600">Plan your first one →</a></div>'; return; }
+      if (!trips.length) { c.innerHTML = '<div class="list-empty">No trips yet. <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">Plan your first one →</a></div>'; return; }
       const COLORS = ['#7cc63e','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c'];
       const ACT_IMG = { 'Beach':'activity_beach','Hiking':'activity_hiking','Camping':'activity_camping','Gym':'activity_gym','Swimming':'activity_swimming','Snow Sports':'activity_snowsports','Business Trip':'activity_business','Night Out':'activity_nightout','Baby':'activity_baby','Theme Park':'activity_themepark','Festival':'activity_festival','Road Trip':'activity_roadtrip','City Sightseeing':'activity_sightseeing','Dining':'activity_dining' };
       const byYear = {};
@@ -1795,7 +1795,7 @@
       document.getElementById('pmTpBackdrop').classList.remove('open');
     }
 
-    function confirmLogout() { closeLogoutModal(); showToast('Signing out…'); setTimeout(() => { Auth.logout(); location.href='welcome.html'; }, 800); }
+    function confirmLogout() { closeLogoutModal(); showToast('Signing out…'); setTimeout(() => { Auth.logout(); window.top.location.href='welcome.html'; }, 800); }
 
     window.addEventListener('DOMContentLoaded', () => {
       loadProfile();
