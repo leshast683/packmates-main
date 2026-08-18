@@ -712,9 +712,10 @@
       function playVideo(url) {
         videoEl.src = url;
         videoEl.load();
-        videoEl.play().catch(() => {});
-        videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; };
-        videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; };
+        const tryPlay = () => videoEl.play().catch(() => {});
+        tryPlay();
+        videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; tryPlay(); };
+        videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; tryPlay(); };
       }
 
       const idx = (parseInt(localStorage.getItem('pm_tip_idx') || '-1', 10) + 1) % VIDEO_QUEUE.length;
