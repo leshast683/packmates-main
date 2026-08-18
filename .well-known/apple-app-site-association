@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "YT69ZF4RX3.com.packmatesai.app",
+        "paths": [
+          "/welcome.html*",
+          "/reset.html*",
+          "/joinTrip.html*",
+          "/login.html*",
+          "/signup.html*"
+        ]
+      }
+    ]
+  }
+}
