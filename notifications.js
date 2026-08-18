@@ -297,81 +297,21 @@
       const start = new Date(trip.fromDate).getTime();
       const days  = Math.round((start - now) / 86400000);
 
-      // Pack progress
-      const packRaw = JSON.parse(localStorage.getItem(`pm_pack_${id}`) || '{}');
-      const items   = Object.values(packRaw.itemState || {});
-      const packed  = items.filter(v => v?.packed).length;
-      /* itemState only ever contains items someone has actually clicked,
-         not every suggested item — using its own length as the total
-         means checking even 1 of 40 suggested items reads as "100%
-         packed". packing-list.js/tripPreview.html persist the real
-         suggested count as totalSuggested for exactly this reason. */
-      const total   = packRaw.totalSuggested || items.length;
-      const pct     = total > 0 ? Math.round(packed / total * 100) : -1;
-
-      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-
       let newNotif = null;
 
-      // ── Countdown milestones ──
-      if (days === 14) {
-        if (push('reminder', `Two weeks until your trip to ${dest}! Time to build your packing list.`, dest, `${id}_14d`))
-          newNotif = { type: 'reminder', text: `Two weeks until ${dest}! Time to build your packing list.` };
-      } else if (days === 7) {
+      // ── Packing reminders — exactly three: 7 days, 3 days, 1 day before.
+      // Previously this also fired at 14/2/0 days, a sub-40%-packed nudge,
+      // 50%/100% milestones, and a catch-all re-firing every 36 hours -
+      // far more volume than a "reminder" should be. ──
+      if (days === 7) {
         if (push('reminder', `One week until ${dest}! Don't forget to start packing.`, dest, `${id}_7d`))
           newNotif = { type: 'reminder', text: `One week until ${dest}! Don't forget to start packing.` };
       } else if (days === 3) {
         if (push('alert', `Only 3 days until ${dest} — start packing now!`, dest, `${id}_3d`))
           newNotif = { type: 'alert', text: `Only 3 days until ${dest} — start packing now!` };
-      } else if (days === 2) {
-        if (push('alert', `2 days to go! Make sure your bags are ready for ${dest}.`, dest, `${id}_2d`))
-          newNotif = { type: 'alert', text: `2 days to go! Make sure your bags are ready for ${dest}.` };
       } else if (days === 1) {
         if (push('alert', `Tomorrow is the big day! Final packing check for ${dest}.`, dest, `${id}_1d`))
           newNotif = { type: 'alert', text: `Tomorrow is the big day! Final check for ${dest}.` };
-      } else if (days === 0) {
-        if (push('trip', `Your trip to ${dest} starts today! Safe travels ✈️`, dest, `${id}_d0`))
-          newNotif = { type: 'trip', text: `Your trip to ${dest} starts today! Safe travels ✈️` };
-      }
-
-      // ── Packing progress nudge — within 7 days, below 40% packed ──
-      if (!newNotif && days > 0 && days <= 7 && pct >= 0 && pct < 40) {
-        const dedupKey = `${id}_nudge_${today}`;
-        const msg = pct === 0
-          ? `Start packing for ${dest}! Only ${days} day${days !== 1 ? 's' : ''} left.`
-          : `You've packed ${pct}% for ${dest}. Only ${days} day${days !== 1 ? 's' : ''} to go!`;
-        if (push('packing', msg, dest, dedupKey))
-          newNotif = { type: 'packing', text: msg };
-      }
-
-      // ── Milestones (50% and 100%) ── once per milestone
-      if (!newNotif && pct === 100 && days > 0) {
-        if (push('packing', `You're all packed for ${dest}! Ready to go 🎒`, dest, `${id}_100pct`))
-          newNotif = { type: 'packing', text: `You're all packed for ${dest}! Ready to go 🎒` };
-      } else if (!newNotif && pct >= 50 && pct < 100 && days > 0) {
-        if (push('packing', `Halfway there! You've packed 50% for ${dest}. Keep it up!`, dest, `${id}_50pct`))
-          newNotif = { type: 'packing', text: `Halfway there! You've packed 50% for ${dest}.` };
-      }
-
-      // ── General "still not packed" reminder — fires roughly every 1-2
-      // days regardless of how far out the trip is (the countdown/nudge
-      // checks above are more specific and take priority; this is the
-      // catch-all for everything in between). Gated by a real elapsed-
-      // time check rather than a per-day dedup key, since "once a day"
-      // and "every day or two" aren't the same cadence. ──
-      if (!newNotif && days > 0 && pct >= 0 && pct < 100) {
-        const lastKey = `pm_packreminder_${id}`;
-        const lastShown = parseInt(localStorage.getItem(lastKey) || '0', 10);
-        const hoursSince = (now - lastShown) / 3600000;
-        if (hoursSince >= 36) {
-          const msg = pct === 0
-            ? `You haven't started packing for ${dest} yet — ${days} day${days !== 1 ? 's' : ''} to go.`
-            : `Still ${100 - pct}% left to pack for ${dest}. Pick up where you left off!`;
-          if (push('reminder', msg, dest, `${id}_stillpacking_${now}`)) {
-            newNotif = { type: 'reminder', text: msg };
-            localStorage.setItem(lastKey, String(now));
-          }
-        }
       }
 
       if (newNotif) showToast(newNotif.text, newNotif.type, '');
@@ -507,20 +447,33 @@
     (n,d) => `<strong>${n}</strong> shared a packing tip from ${d}!`,
   ];
 
+  // Capped to 2 per rolling 7 days (was up to 1/day = 7/week) and spaced
+  // at least 2 days apart so they don't cluster together.
   function checkBotNotifs() {
     try {
       if (!_key()) return;
-      const today = new Date().toISOString().slice(0, 10);
-      const dedupKey = 'bot_daily_' + today;
-      if (_load().some(n => n.dedupId === dedupKey)) return;
+      const now = Date.now();
+      const WEEK_MS = 7 * 24 * 3600000;
+      const MIN_GAP_MS = 2 * 24 * 3600000;
+      const historyKey = 'pm_bot_notif_history';
+      let history = [];
+      try { history = JSON.parse(localStorage.getItem(historyKey) || '[]'); } catch {}
+      history = history.filter(t => now - t < WEEK_MS);
+      if (history.length >= 2) return;
+      const lastSent = history[history.length - 1] || 0;
+      if (now - lastSent < MIN_GAP_MS) return;
+
       const rng = (n) => Math.floor(Math.random() * n);
       const bot  = _BOT_TRAVELERS[rng(_BOT_TRAVELERS.length)];
       const dest = bot.dests[rng(bot.dests.length)];
       const tpl  = _BOT_TEMPLATES[rng(_BOT_TEMPLATES.length)];
       const html = tpl(bot.name, dest);
       const plain = html.replace(/<[^>]+>/g, '');
-      push('social', html, '', dedupKey);
+      push('social', html, '', 'bot_' + now);
       setTimeout(() => showToast(plain, 'social', ''), 3000);
+
+      history.push(now);
+      localStorage.setItem(historyKey, JSON.stringify(history));
     } catch(e) {}
   }
 
