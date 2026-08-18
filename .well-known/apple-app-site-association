@@ -9,7 +9,8 @@
           "/reset.html*",
           "/joinTrip.html*",
           "/login.html*",
-          "/signup.html*"
+          "/signup.html*",
+          "/newTrip.html*"
         ]
       }
     ]
