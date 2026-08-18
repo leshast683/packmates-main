@@ -524,6 +524,14 @@
     `;
 
     if (!_isNativeApp) {
+      // 400ms was assumed enough for Capacitor's bridge to attach on a
+      // real device, but TestFlight testing showed it isn't always -
+      // the card would flash briefly on native before the bridge
+      // reported true and this callback's own guard caught it (on top
+      // of capacitor-nav.js's MutationObserver removing it after the
+      // fact). Bumped to 1.5s: a real web visitor waits slightly
+      // longer for this card, but native users get zero flash instead
+      // of an occasional one.
       setTimeout(() => {
         const stillNotNative = !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
         if (!stillNotNative) return; // bridge attached late - this is native after all, stay hidden
@@ -552,7 +560,7 @@
         </button>
       </div>`;
         bento.insertAdjacentHTML('beforeend', actionsHTML);
-      }, 400);
+      }, 1500);
     }
 
     /* ── Animate progress rings on every load ── */
