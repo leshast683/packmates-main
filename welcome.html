@@ -13,6 +13,23 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <script>
+    /* Runs synchronously before the marketing page paints. Landing here
+       via an email-confirmation or invite link (?code= or #access_token=)
+       means we're about to redirect straight to the dashboard - showing
+       the full marketing landing page first, even briefly, reads as a
+       stuck/broken loading state rather than an intentional transition.
+       Hide it immediately and show a minimal branded spinner instead. */
+    if (location.search.includes('code=') || location.hash.includes('access_token=')) {
+      document.write('<style>body>*:not(.pm-auth-loading){display:none!important}.pm-auth-loading{display:flex!important}</style>');
+    }
+  </script>
+  <style>
+    .pm-auth-loading { display: none; position: fixed; inset: 0; z-index: 99999; background: linear-gradient(160deg,#0d3347,#082233); align-items: center; justify-content: center; }
+    .pm-auth-loading img { width: 44px; height: 44px; border-radius: 12px; animation: pmAuthPulse 1.1s ease-in-out infinite; }
+    @keyframes pmAuthPulse { 0%,100% { opacity: 0.55; transform: scale(0.96); } 50% { opacity: 1; transform: scale(1.04); } }
+    @media (prefers-reduced-motion: reduce) { .pm-auth-loading img { animation: none; } }
+  </style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW"></script>
   <script>
@@ -601,6 +618,7 @@
   </style>
 </head>
 <body>
+  <div class="pm-auth-loading"><img src="img/appIcon.png" alt=""></div>
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
   <div class="orb orb-3"></div>
@@ -741,8 +759,15 @@
       if (hasCode || hasToken) {
         const sb = await window._pm_sbLoaded;
         if (sb) {
-          await new Promise(r => setTimeout(r, 800));
-          const { data } = await sb.auth.getSession();
+          /* Supabase's client resolves the code/token from the URL as
+             part of getSession() itself (detectSessionInUrl) - no need
+             to sit on an arbitrary flat delay first. Only fall back to
+             one short retry if the session genuinely isn't there yet. */
+          let { data } = await sb.auth.getSession();
+          if (!data?.session) {
+            await new Promise(r => setTimeout(r, 300));
+            ({ data } = await sb.auth.getSession());
+          }
           if (data?.session) {
             /* This redirect only happens via emailRedirectTo, i.e. right
                after the user clicked a confirmation link — fire the
