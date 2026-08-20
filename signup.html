@@ -407,13 +407,26 @@
       const sb = await window._pm_sbLoaded;
       if (!sb || !_signedUpEmail || !_signedUpPw) return;
       const email = _signedUpEmail, pw = _signedUpPw;
-      _pollTimer = setInterval(async () => {
+      async function checkNow() {
+        if (!_signedUpPw) return; // already confirmed/stopped
         const { data } = await sb.auth.signInWithPassword({ email, password: pw });
         if (data?.session) {
-          clearInterval(_pollTimer); _pollTimer = null; _signedUpPw = '';
+          if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+          _signedUpPw = '';
           _goHome();
         }
-      }, 5000);
+      }
+      _pollTimer = setInterval(checkNow, 5000);
+      /* App-only: if the app was backgrounded on this screen (user
+         switched to Mail, confirmed on another device, etc.) and then
+         resumed, setInterval's paused timer means the next check could
+         be up to 5s away - long enough for this "check your email"
+         screen to visibly linger even though confirmation already
+         happened. Check immediately on resume instead of waiting for
+         the timer. */
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) checkNow();
+      });
       /* Stop polling after 20 minutes and wipe password from memory */
       setTimeout(() => {
         if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
