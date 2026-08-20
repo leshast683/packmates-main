@@ -21,7 +21,7 @@
        stuck/broken loading state rather than an intentional transition.
        Hide it immediately and show a minimal branded spinner instead. */
     if (location.search.includes('code=') || location.hash.includes('access_token=')) {
-      document.write('<style>body>*:not(.pm-auth-loading){display:none!important}.pm-auth-loading{display:flex!important}</style>');
+      document.write('<style id="pmAuthHideStyle">body>*:not(.pm-auth-loading){display:none!important}.pm-auth-loading{display:flex!important}</style>');
     }
   </script>
   <style>
@@ -761,12 +761,17 @@
         if (sb) {
           /* Supabase's client resolves the code/token from the URL as
              part of getSession() itself (detectSessionInUrl) - no need
-             to sit on an arbitrary flat delay first. Only fall back to
-             one short retry if the session genuinely isn't there yet. */
-          let { data } = await sb.auth.getSession();
-          if (!data?.session) {
-            await new Promise(r => setTimeout(r, 300));
+             to sit on an arbitrary flat delay first. Retry a few times
+             (short pause each) before giving up - a single 300ms retry
+             wasn't enough to survive a real cold-launch race against
+             this same page's own default-redirect logic re-navigating
+             here a second time with the code, which can legitimately
+             take longer than that. */
+          let data;
+          for (let attempt = 0; attempt < 4; attempt++) {
             ({ data } = await sb.auth.getSession());
+            if (data?.session) break;
+            await new Promise(r => setTimeout(r, 600));
           }
           if (data?.session) {
             /* This redirect only happens via emailRedirectTo, i.e. right
@@ -784,7 +789,19 @@
           }
         }
       }
-      if (Auth.isLoggedIn()) location.replace('index.html');
+      if (Auth.isLoggedIn()) { location.replace('index.html'); return; }
+      /* Fell through without redirecting - the code may have already
+         been consumed by an earlier attempt, expired, or genuinely
+         failed. The instant-hide <style id="pmAuthHideStyle"> injected
+         in <head> (triggered by this same code/token being in the URL)
+         is still covering the whole page behind the loading spinner
+         with nothing left to ever remove it - reveal the normal page
+         instead of leaving the user stuck looking at a spinner forever.
+         They can sign in manually from here. */
+      const hideStyle = document.getElementById('pmAuthHideStyle');
+      if (hideStyle) hideStyle.remove();
+      const loadingEl = document.querySelector('.pm-auth-loading');
+      if (loadingEl) loadingEl.style.display = 'none';
     })();
 
     (function() {
