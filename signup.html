@@ -13,6 +13,21 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <style>
+    /* App-only: covers the moment this page resumes from background
+       (e.g. tapping the emailed confirmation link while the app was
+       still running on this "Check your email" screen) - there's a
+       real gap between the app becoming visible again and deep-link.js's
+       appUrlOpen listener actually firing and navigating away, during
+       which this screen's stale "check your email" content would
+       otherwise be visible. Toggled by the visibilitychange handler
+       further down, not shown by default. */
+    .pm-auth-loading { display: none; position: fixed; inset: 0; z-index: 99999; background: linear-gradient(160deg,#0d3347,#082233); align-items: center; justify-content: center; }
+    .pm-auth-loading.pm-show { display: flex; }
+    .pm-auth-loading img { width: 44px; height: 44px; border-radius: 12px; animation: pmAuthPulse 1.1s ease-in-out infinite; }
+    @keyframes pmAuthPulse { 0%,100% { opacity: 0.55; transform: scale(0.96); } 50% { opacity: 1; transform: scale(1.04); } }
+    @media (prefers-reduced-motion: reduce) { .pm-auth-loading img { animation: none; } }
+  </style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW"></script>
   <script>
@@ -220,6 +235,7 @@
   </style>
 </head>
 <body>
+  <div class="pm-auth-loading" id="pmAuthLoading"><img src="img/appIcon.png" alt=""></div>
   <div class="card">
     <div class="logo">
       <img src="img/appIcon.png" alt="Packmates AI">
@@ -418,14 +434,30 @@
       }
       _pollTimer = setInterval(checkNow, 5000);
       /* App-only: if the app was backgrounded on this screen (user
-         switched to Mail, confirmed on another device, etc.) and then
-         resumed, setInterval's paused timer means the next check could
-         be up to 5s away - long enough for this "check your email"
-         screen to visibly linger even though confirmation already
-         happened. Check immediately on resume instead of waiting for
-         the timer. */
+         switched to Mail, confirmed on another device, or tapped the
+         confirmation link itself) and then resumed, two things can make
+         this "check your email" screen visibly linger even though
+         confirmation already happened:
+         1. setInterval's paused timer picks up wherever it left off -
+            the next check could be up to 5s away.
+         2. If the resume was caused by tapping the link, deep-link.js's
+            appUrlOpen listener is what actually navigates away (to
+            welcome.html?code=...) - not this poll at all - but there's
+            a real gap between the app becoming visible again and that
+            listener firing, during which this screen's stale content
+            would otherwise be visible.
+         Cover that gap with the loading overlay immediately on resume,
+         check right away instead of waiting for the timer, and reveal
+         this screen again if nothing resolved it within a couple
+         seconds (a plain resume with no pending confirmation). */
+      const loadingEl = document.getElementById('pmAuthLoading');
       document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) checkNow();
+        if (document.hidden) return;
+        if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && loadingEl) {
+          loadingEl.classList.add('pm-show');
+          setTimeout(() => loadingEl.classList.remove('pm-show'), 2500);
+        }
+        checkNow();
       });
       /* Stop polling after 20 minutes and wipe password from memory */
       setTimeout(() => {
