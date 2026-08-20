@@ -387,7 +387,7 @@
     .hero-meta-item[onclick]:hover { background:rgba(255,255,255,.18); }
 
     /* ── Packmate Traveler Profile Modal ── */
-    .tp-backdrop { position:fixed; inset:0; z-index:400; background:rgba(10,18,30,.65); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .tp-backdrop { position:fixed; inset:0; z-index:1000; background:rgba(10,18,30,.55); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .25s; }
     /* Real packmates (real shared-trip history) only have a few genuine
        facts to show (name, avatar, shared trips) — everything else in
        this modal (bio, follower/country counts, travel style, favorite
@@ -894,11 +894,16 @@
         </button>
       </div>
       <div class="tp-avatar-row">
-        <div class="tp-avatar"></div>
+        <div class="tp-avatar-ring">
+          <div class="tp-avatar"></div>
+          <div class="tp-avatar-status"></div>
+        </div>
         <button class="tp-follow-btn">Packmate</button>
       </div>
       <div class="tp-body">
-        <div class="tp-name"></div>
+        <div class="tp-name-row">
+          <div class="tp-name"></div>
+        </div>
         <div class="tp-location">
           <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
           <span></span>
@@ -910,17 +915,26 @@
         </div>
         <div class="tp-bio"></div>
         <div class="tp-stats-row">
-          <div class="tp-stat"><span class="tp-stat-num" id="pmTpStatTrips">—</span><span class="tp-stat-lbl">Trips</span></div>
-          <div class="tp-stat"><span class="tp-stat-num" id="pmTpStatCountries">—</span><span class="tp-stat-lbl">Countries</span></div>
-          <div class="tp-stat"><span class="tp-stat-num" id="pmTpStatFollowers">—</span><span class="tp-stat-lbl">Followers</span></div>
+          <div class="tp-stat">
+            <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20z"/></svg></div>
+            <span class="tp-stat-num" id="pmTpStatTrips">—</span><span class="tp-stat-lbl">Trips</span>
+          </div>
+          <div class="tp-stat">
+            <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+            <span class="tp-stat-num" id="pmTpStatCountries">—</span><span class="tp-stat-lbl">Countries</span>
+          </div>
+          <div class="tp-stat">
+            <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+            <span class="tp-stat-num" id="pmTpStatFollowers">—</span><span class="tp-stat-lbl">Followers</span>
+          </div>
         </div>
-        <div class="tp-section-title">Travel Style</div>
+        <div class="tp-section-title">🧭 Travel Style</div>
         <div class="tp-chips tp-styles-chips"></div>
-        <div class="tp-section-title">Favorite Destinations</div>
+        <div class="tp-section-title">📍 Favorite Destinations</div>
         <div class="tp-chips tp-places-chips"></div>
-        <div class="tp-section-title">Favorite Activities</div>
+        <div class="tp-section-title">📈 Favorite Activities</div>
         <div class="tp-chips tp-activities-chips"></div>
-        <div class="tp-section-title">Recent Packing Lists</div>
+        <div class="tp-section-title">🧳 Recent Packing Lists</div>
         <div class="tp-trips-list tp-packing-list"></div>
       </div>
     </div>
@@ -1617,6 +1631,28 @@
     function pmSetDestCache(n, url) { try { localStorage.setItem('pm_dest_'+n, JSON.stringify({url,ts:Date.now()})); } catch {} }
     async function pmFetchDestPhoto(query) { try { const res = await fetch(`/api/pexels?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5`, { headers: { Authorization: `Bearer ${await Auth.getTokenAsync()}` } }); const data = await res.json(); const p=(data.photos||[])[Math.floor(Math.random()*Math.min(5,(data.photos||[]).length))]; return p?.src?.medium||null; } catch { return null; } }
 
+    /* ── Chip icon helpers (same mapping as discover.html) ── */
+    const PM_STYLE_ICONS = {
+      cultural:'🏛️', foodie:'🍴', 'city break':'🏙️', solo:'🧍', adventure:'⚡', photography:'📷',
+      backpacker:'🎒', wellness:'🧘', minimalist:'🎒', 'slow travel':'🐢', luxury:'💎', beach:'🏖️',
+      eco:'🌱', dive:'🤿', heritage:'🏺', budget:'💰', hiking:'🥾', 'national parks':'🏞️',
+      'zero-waste':'♻️', sports:'⚽', 'off-the-grid':'🏕️',
+    };
+    function pmStyleIcon(s) { return PM_STYLE_ICONS[s.toLowerCase()] || '✨'; }
+
+    const PM_ACTIVITY_ICON_RULES = [
+      [/walk|tour/i,'🚶'], [/food|market|culinary|cook|dining|dinner/i,'🍜'], [/museum|art|galler/i,'🏛️'],
+      [/hik|trek|mountain|trail|park/i,'🥾'], [/wine/i,'🍷'], [/photo/i,'📷'], [/train/i,'🚆'],
+      [/coast/i,'🌊'], [/wildlife|safari/i,'🦁'], [/dive|scuba|snorkel/i,'🤿'], [/surf/i,'🏄'],
+      [/beach|camp/i,'🏕️'], [/yoga|wellness|spa|hot spring|retreat/i,'🧘'], [/temple|heritage|spirit/i,'🛕'],
+      [/jazz|dance|salsa/i,'💃'], [/garden/i,'🌿'], [/ski/i,'⛷️'], [/bik|cycl/i,'🚴'], [/whale/i,'🐋'],
+      [/desert|jeep|off-road/i,'🚙'], [/shop/i,'🛍️'], [/café|coffee/i,'☕'], [/kayak/i,'🛶'], [/solo/i,'🧍'],
+    ];
+    function pmActivityIcon(a) {
+      const hit = PM_ACTIVITY_ICON_RULES.find(([re]) => re.test(a));
+      return hit ? hit[1] : '📌';
+    }
+
     /* ── Community Traveler Data ── */
     const PM_TRAVELERS = [
       { name:'Sofia Martinez', city:'New York, USA', trips:14, countries:9, followers:1240, avatar:'SM', gender:'Female',
@@ -1722,20 +1758,36 @@
       document.getElementById('pmTpStatTrips').textContent = t.trips;
       document.getElementById('pmTpStatCountries').textContent = t.countries;
       document.getElementById('pmTpStatFollowers').textContent = t.followers >= 1000 ? (t.followers/1000).toFixed(1)+'k' : t.followers;
-      m.querySelector('.tp-styles-chips').innerHTML = t.travelStyles.map(s => `<span class="tp-chip">${s}</span>`).join('');
-      const pinSvg = `<svg viewBox="0 0 24 24" style="width:11px;height:11px;margin-right:3px;vertical-align:middle;flex-shrink:0" fill="#113a58"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
-      m.querySelector('.tp-places-chips').innerHTML = t.places.map(p => `<span class="tp-chip place">${pinSvg}${p}</span>`).join('');
-      m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${a}</span>`).join('');
-      const packSvg = `<svg viewBox="0 0 24 24" style="width:9px;height:9px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>`;
-      m.querySelector('.tp-packing-list').innerHTML = t.packingLists.map(r => `
-        <div class="tp-trip">
-          <div class="tp-trip-dot" style="${r.status==='Upcoming'?'background:#4facfe':r.status==='Active'?'background:#f7971e':''}"></div>
+      m.querySelector('.tp-styles-chips').innerHTML = t.travelStyles.map(s => `<span class="tp-chip">${pmStyleIcon(s)} ${s}</span>`).join('');
+      m.querySelector('.tp-places-chips').innerHTML = t.places.map(p =>
+        `<span class="tp-chip place"><img class="tp-place-thumb" id="pmTpPlace-${p.replace(/\W+/g,'_')}" alt="">${p}</span>`).join('');
+      t.places.forEach(p => {
+        const img = m.querySelector(`#pmTpPlace-${p.replace(/\W+/g,'_')}`);
+        if (!img) return;
+        img.onerror = () => { img.removeAttribute('src'); };
+        const cacheKey = 'tp_place_' + p;
+        const cached = pmGetDestCache(cacheKey);
+        if (cached) { img.src = cached; return; }
+        pmFetchDestPhoto(p).then(url => { if (url) { pmSetDestCache(cacheKey, url); img.src = url; } });
+      });
+      m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${pmActivityIcon(a)} ${a}</span>`).join('');
+      m.querySelector('.tp-packing-list').innerHTML = t.packingLists.map((r, i) => `
+        <div class="tp-trip" id="pmTpPack-${i}">
+          <div class="tp-trip-scrim"></div>
+          <span class="tp-trip-badge">${r.items} items</span>
           <div class="tp-trip-info">
             <div class="tp-trip-name">${r.name}</div>
-            <div class="tp-trip-date">${r.items} items</div>
+            <div class="tp-trip-date">${r.status}</div>
           </div>
-          <span class="tp-trip-badge" style="${r.status==='Upcoming'?'background:rgba(79,172,254,.12);color:#2a7eca':r.status==='Active'?'background:rgba(247,151,30,.12);color:#c47a00':''}">${r.status}</span>
         </div>`).join('');
+      t.packingLists.forEach((r, i) => {
+        const card = m.querySelector(`#pmTpPack-${i}`);
+        if (!card) return;
+        const cacheKey = 'tp_pack_' + r.name;
+        const cached = pmGetDestCache(cacheKey);
+        if (cached) { card.style.backgroundImage = `url('${cached}')`; return; }
+        pmFetchDestPhoto(r.name).then(url => { if (url) { pmSetDestCache(cacheKey, url); card.style.backgroundImage = `url('${url}')`; } });
+      });
 
       /* "Packmates" now means real shared-trip history (see
          DB.getMyPackmates()) — you can't manually add someone you've
