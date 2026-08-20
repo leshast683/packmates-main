@@ -339,6 +339,25 @@
     // less reliable than it is for the shell's own tab iframes.
     const _isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
 
+    // Permanent, self-contained guard against the Quick Actions card ever
+    // staying visible in the app - independent of both the timing race
+    // below (how long Capacitor's bridge takes to attach) and of
+    // capacitor-nav.js's own cleanup (which only runs when this page is
+    // the app-shell's host document, not when it's loaded as one of the
+    // shell's background tab iframes, and reported still missing some
+    // real-world cases even on the host). Re-checks native status at the
+    // moment of insertion rather than at setup time, and keeps watching
+    // for as long as the page is alive, so no fixed delay can ever be
+    // "too short" again.
+    if (bento) {
+      new MutationObserver(() => {
+        if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+          const qa = document.getElementById('quickActionsCard');
+          if (qa) qa.remove();
+        }
+      }).observe(bento, { childList: true });
+    }
+
     const allKeys        = Object.keys(packState);
     const packedKeys     = allKeys.filter(k => packState[k]);
     // Use full suggested count (including dismissed) so packing 4/68 shows ~6%, not 100%
