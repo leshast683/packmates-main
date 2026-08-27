@@ -62,7 +62,11 @@
     .pg-h1 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: clamp(2rem, 4vw, 2.7rem); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 16px; text-wrap: balance; }
     .pg-intro { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 600px; }
     .pg-body { max-width: 760px; margin: -32px auto 0; padding: 0 24px 80px; }
-    .pg-note { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; margin-bottom: 40px; font-size: 0.85rem; line-height: 1.6; color: #475763; box-shadow: 0 12px 32px rgba(13,51,71,0.08); }
+    .pg-note { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; margin-bottom: 40px; font-size: 0.85rem; line-height: 1.6; color: #475763; box-shadow: 0 12px 32px rgba(13,51,71,0.08); display: flex; align-items: center; gap: 22px; }
+    .pg-note-text { flex: 1; }
+    .pg-note-img { flex: 0 0 200px; }
+    .pg-note-img img { width: 100%; display: block; border-radius: 12px; box-shadow: 0 10px 26px rgba(13,51,71,0.16); }
+    .pg-note-img-cap { font-size: 0.68rem; font-weight: 700; color: #8a99a4; text-align: center; margin-top: 8px; letter-spacing: 0.02em; }
     .pg-section { margin-bottom: 44px; }
     .pg-h2 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--teal-2); margin-bottom: 14px; letter-spacing: -0.01em; }
     .pg-checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; }
@@ -81,7 +85,29 @@
     .pg-cta-btn:hover { background: var(--green2); transform: translateY(-1px); }
     .pg-footer { text-align: center; font-size: 0.76rem; color: #8a99a4; }
     .pg-footer a { color: #8a99a4; margin: 0 8px; }
-    @media (max-width: 560px) { .pg-checklist { grid-template-columns: 1fr; } .pg-body { margin-top: -20px; } }
+
+    /* ---- postcard-style showcase (Pinterest-flavored callout) ---- */
+    .pin-showcase { --terra: #b9542e; --gold: #c4943d; background: #f6f0e2; border-radius: 22px; padding: 40px 34px; margin: 56px 0; box-shadow: 0 20px 50px rgba(43,33,24,0.1); display: flex; align-items: center; gap: 36px; }
+    .pin-showcase-img { flex: 0 0 220px; }
+    .pin-polaroid { background: #fff; padding: 9px 9px 26px; box-shadow: 0 18px 38px rgba(43,33,24,0.2); transform: rotate(-3deg); }
+    .pin-polaroid img { width: 100%; display: block; }
+    .pin-showcase-text { flex: 1; min-width: 0; }
+    .pin-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra); background: #fff; border: 1px solid #e3d7ba; padding: 6px 13px 6px 10px; border-radius: 20px; margin-bottom: 14px; }
+    .pin-showcase-text h3 { font-family: Georgia, 'Iowan Old Style', serif; font-size: 1.34rem; font-weight: 700; color: var(--teal-2); margin-bottom: 6px; line-height: 1.25; }
+    .pin-showcase-text .pin-sub { font-family: Georgia, serif; font-style: italic; color: var(--terra); font-size: 0.98rem; margin-bottom: 14px; }
+    .pin-showcase-text p { font-size: 0.87rem; line-height: 1.7; color: #4a4030; margin-bottom: 12px; }
+    .pin-tick-list { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-top: 16px; }
+    .pin-tick-list li { display: flex; align-items: flex-start; gap: 9px; font-size: 0.85rem; font-weight: 600; color: var(--teal-2); }
+    .pin-tick-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--terra); }
+
+    @media (max-width: 560px) {
+      .pg-checklist { grid-template-columns: 1fr; }
+      .pg-body { margin-top: -20px; }
+      .pg-note { flex-direction: column; }
+      .pg-note-img { flex: 0 0 auto; width: 68%; max-width: 220px; }
+      .pin-showcase { flex-direction: column; padding: 30px 22px; }
+      .pin-showcase-img { flex: 0 0 auto; width: 62%; max-width: 220px; }
+    }
   </style>
 </head>
 <body>
@@ -99,7 +125,13 @@
   </header>
 
   <main class="pg-body">
-    <div class="pg-note">Iceland's weather can shift dramatically within the same day, even in summer. A proper waterproof (not just water-resistant) outer layer matters more than sheer warmth — most of the discomfort on a Ring Road trip comes from wind and rain, not cold alone.</div>
+    <div class="pg-note">
+      <div class="pg-note-text">Iceland's weather can shift dramatically within the same day, even in summer. A proper waterproof (not just water-resistant) outer layer matters more than sheer warmth — most of the discomfort on a Ring Road trip comes from wind and rain, not cold alone. Reykjavik itself often sits in the 40s°F with high humidity and steady wind, which is exactly the kind of forecast that shapes what Packmates AI actually suggests you pack.</div>
+      <div class="pg-note-img">
+        <img src="img/story-iceland-weather.jpg" alt="Packmates AI weather widget showing Reykjavik at 47°F, feels like 41°F, 80% humidity, with a week of clouds and scattered rain" loading="lazy">
+        <div class="pg-note-img-cap">Real Reykjavik forecast, not a guess</div>
+      </div>
+    </div>
 
     <section class="pg-section">
       <h2 class="pg-h2">🥾 Hiking</h2>
@@ -161,6 +193,26 @@
       <span class="pg-universal-chip">Toothbrush &amp; toothpaste</span>
       <span class="pg-universal-chip">Medications</span>
       <span class="pg-universal-chip">Underwear &amp; socks</span>
+    </div>
+
+    <div class="pin-showcase">
+      <div class="pin-showcase-img">
+        <div class="pin-polaroid">
+          <img src="img/story-iceland-adapted.jpg" alt="Packmates AI packing list for a 39-day Reykjavik trip, adapted for cold, snowy, rainy, windy, ski, sightseeing, and dining conditions" loading="lazy">
+        </div>
+      </div>
+      <div class="pin-showcase-text">
+        <div class="pin-eyebrow">✈ See it in action</div>
+        <h3>A 39-day Reykjavik trip gets a completely different list</h3>
+        <div class="pin-sub">no two trips pack the same</div>
+        <p>Cold, snowy, rainy, windy, ski, sightseeing, dining — five travelers, over a month on the ground. That's a very different list than a quick weekend Ring Road trip, because it's built from the actual dates and activities instead of one generic "Iceland" template.</p>
+        <p>And it doesn't stop once the list is made. If the itinerary shifts — a glacier hike gets added, a storm rolls in and plans change — the list moves with it instead of leaving five people to figure it out separately.</p>
+        <ul class="pin-tick-list">
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Built from your real dates, not a generic cold-weather template</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Updates itself the moment your plans change</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Shared live with everyone else on the trip</li>
+        </ul>
+      </div>
     </div>
 
     <div class="pg-cta">
