@@ -381,12 +381,26 @@
     // for as long as the page is alive, so no fixed delay can ever be
     // "too short" again.
     if (bento) {
-      new MutationObserver(() => {
-        if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
-          const qa = document.getElementById('quickActionsCard');
-          if (qa) qa.remove();
-        }
-      }).observe(bento, { childList: true });
+      const _qaCheckNative = () => (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
+      const _qaRemoveIfNative = () => {
+        if (!_qaCheckNative()) return;
+        const qa = document.getElementById('quickActionsCard');
+        if (qa) qa.remove();
+      };
+      // MutationObserver alone isn't enough: it only re-checks native
+      // status at the exact moment something else mutates the grid. If
+      // Capacitor's bridge attaches later with no further mutations
+      // happening (observed on a real device right after a fresh
+      // signup, likely under heavier startup load than usual), nothing
+      // ever triggers the check again and the card is stuck forever
+      // despite the bridge eventually being ready. A bounded interval
+      // check covers that gap regardless of bridge timing.
+      new MutationObserver(_qaRemoveIfNative).observe(bento, { childList: true });
+      let _qaTicks = 0;
+      const _qaInterval = setInterval(() => {
+        _qaRemoveIfNative();
+        if (++_qaTicks >= 30) clearInterval(_qaInterval); // ~15s at 500ms
+      }, 500);
     }
 
     const allKeys        = Object.keys(packState);
@@ -574,17 +588,23 @@
     `;
 
     if (!_isNativeApp) {
-      // 400ms was assumed enough for Capacitor's bridge to attach on a
-      // real device, but TestFlight testing showed it isn't always -
-      // the card would flash briefly on native before the bridge
-      // reported true and this callback's own guard caught it (on top
-      // of capacitor-nav.js's MutationObserver removing it after the
-      // fact). Bumped to 1.5s: a real web visitor waits slightly
-      // longer for this card, but native users get zero flash instead
-      // of an occasional one.
-      setTimeout(() => {
-        const stillNotNative = !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-        if (!stillNotNative) return; // bridge attached late - this is native after all, stay hidden
+      // A single delayed check (400ms, then 1.5s) still wasn't reliable
+      // on a real device - Capacitor's bridge can apparently take
+      // longer than that to attach, especially right after heavier
+      // startup activity (e.g. landing here straight from a fresh
+      // signup). Since there is no legitimate "web visitor" case inside
+      // the compiled app at all, requiring several consecutive "not
+      // native" readings spread across a few seconds - rather than one
+      // single reading - makes a false positive (inserting this inside
+      // the real app) vanishingly unlikely: the moment ANY check sees
+      // native, insertion is permanently aborted for this page load.
+      let _qaNotNativeStreak = 0;
+      const QA_CONFIRMATIONS_NEEDED = 5; // 5 checks, 700ms apart = ~3.5s
+      const _qaConfirmTimer = setInterval(() => {
+        const isNativeNow = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
+        if (isNativeNow) { clearInterval(_qaConfirmTimer); return; } // confirmed native - never insert
+        if (++_qaNotNativeStreak < QA_CONFIRMATIONS_NEEDED) return; // keep waiting for more confirmations
+        clearInterval(_qaConfirmTimer);
         const actionsHTML = `
       <div class="bc bc-actions" id="quickActionsCard">
         <div class="bc-actions-title">Quick Actions</div>
@@ -610,7 +630,7 @@
         </button>
       </div>`;
         bento.insertAdjacentHTML('beforeend', actionsHTML);
-      }, 1500);
+      }, 700);
     }
 
     /* ── Animate progress rings on every load ── */
