@@ -81,7 +81,19 @@
     .pg-cta-btn:hover { background: var(--green2); transform: translateY(-1px); }
     .pg-footer { text-align: center; font-size: 0.76rem; color: #8a99a4; }
     .pg-footer a { color: #8a99a4; margin: 0 8px; }
-    @media (max-width: 560px) { .pg-checklist { grid-template-columns: 1fr; } .pg-body { margin-top: -20px; } }
+
+    .pg-showcase { display: flex; align-items: center; gap: 32px; margin: 56px 0; }
+    .pg-showcase-img { flex: 0 0 42%; }
+    .pg-showcase-img img { width: 100%; display: block; border-radius: 18px; box-shadow: 0 22px 48px rgba(13,51,71,0.18); }
+    .pg-showcase-text { flex: 1; }
+    .pg-showcase-eyebrow { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
+    .pg-showcase-text h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--teal-2); margin-bottom: 10px; letter-spacing: -0.01em; }
+    .pg-showcase-text p { font-size: 0.88rem; line-height: 1.7; color: #475763; margin-bottom: 14px; }
+    .pg-showcase-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+    .pg-showcase-list li { display: flex; align-items: flex-start; gap: 9px; font-size: 0.85rem; line-height: 1.55; color: var(--teal-2); font-weight: 600; }
+    .pg-showcase-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--green); }
+
+    @media (max-width: 560px) { .pg-checklist { grid-template-columns: 1fr; } .pg-body { margin-top: -20px; } .pg-showcase { flex-direction: column; } .pg-showcase-img { flex: 0 0 auto; width: 70%; max-width: 240px; } }
   </style>
 </head>
 <body>
@@ -162,6 +174,23 @@
       <span class="pg-universal-chip">Toothbrush &amp; toothpaste</span>
       <span class="pg-universal-chip">Medications</span>
       <span class="pg-universal-chip">Underwear &amp; socks</span>
+    </div>
+
+    <div class="pg-showcase">
+      <div class="pg-showcase-img">
+        <img src="img/story-bali-adapted.jpg" alt="Packmates AI packing list for a 14-day Bali trip, adapted for warm, rainy, windy, hiking, and camping conditions" loading="lazy">
+      </div>
+      <div class="pg-showcase-text">
+        <div class="pg-showcase-eyebrow">Useful past the airport, too</div>
+        <h3>It keeps adapting after you land</h3>
+        <p>This 14-day Bali trip pulled in hiking and camping gear automatically, right alongside the beach items above — a different mix than a quick weekend trip would get, because it's built from the actual dates and activities, not a generic "Bali" template.</p>
+        <p>And it doesn't stop being useful once the list is made. Bali trips change shape constantly — a sunrise volcano hike gets added, a day trip to the Gili Islands turns into an overnight, the forecast flips from sun to a downpour — and the list is built to move with all of it instead of going stale the moment you land.</p>
+        <ul class="pg-showcase-list">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Add a last-minute activity and the list updates with it, no manual rebuilding</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Everyone traveling with you sees the same live list, so nothing gets double-packed or missed</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Check items off as you actually pack, right from your phone, no separate notes app</li>
+        </ul>
+      </div>
     </div>
 
     <div class="pg-cta">
