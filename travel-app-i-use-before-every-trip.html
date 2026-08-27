@@ -28,7 +28,7 @@
   <link rel="canonical" href="https://packmatesai.com/travel-app-i-use-before-every-trip.html">
   <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0d3347">
+  <meta name="theme-color" content="#f3ecdc">
   <link rel="apple-touch-icon" href="/img/icon-192.png">
   <script type="application/ld+json">
   {
@@ -44,79 +44,123 @@
   <link rel="stylesheet" href="standalone.css">
   <style>
     :root {
-      --teal-1: #082233; --teal-2: #0d3347; --teal-3: #113a58;
+      --teal-2: #0d3347; --teal-1: #082233;
       --green: #5f9d30; --green2: #7cc63e;
-      --amber: #d99a2b; --amber-bg: #fdf3e2;
-      --ink: #16222c; --paper: #f6f8f9; --line: #e2e8ec;
+      --terra: #b9542e; --terra-dark: #954226;
+      --gold: #c4943d;
+      --ink: #2b2118; --paper: #f6f0e2; --paper-deep: #ede2c8; --line: #e3d7ba;
     }
+    * { box-sizing: border-box; }
     body { font-family: 'Montserrat', sans-serif; background: var(--paper); color: var(--ink); }
+    .serif { font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif; }
 
-    .pg-header { background: radial-gradient(120% 140% at 15% 0%, #164163 0%, var(--teal-2) 45%, var(--teal-1) 100%); color: #fff; padding: 28px 24px 50px; overflow: hidden; }
-    .pg-header-inner { max-width: 720px; margin: 0 auto; }
-    .pg-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+    /* ---- airmail stripe ---- */
+    .airmail-strip { height: 10px; background: repeating-linear-gradient(-45deg, var(--terra) 0 18px, #fff 18px 26px, var(--teal-2) 26px 44px, #fff 44px 52px); }
+
+    /* ---- header ---- */
+    .pg-header { background: var(--paper); padding: 44px 24px 20px; }
+    .pg-header-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; gap: 40px; }
+    .pg-header-text { flex: 1.2; min-width: 0; }
+    .pg-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
     .pg-logo-row img { width: 30px; height: 30px; border-radius: 8px; }
-    .pg-logo-row span { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; }
-    .pg-eyebrow { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green2); margin-bottom: 14px; }
-    .pg-h1 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: clamp(2rem, 4.6vw, 2.7rem); line-height: 1.12; letter-spacing: -0.02em; margin-bottom: 14px; text-wrap: balance; max-width: 560px; }
-    .pg-intro { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 480px; }
+    .pg-logo-row span { font-weight: 700; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal-2); }
+    .pg-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--terra); background: #fff; border: 1px solid var(--line); padding: 7px 14px 7px 11px; border-radius: 20px; margin-bottom: 18px; }
+    .pg-h1 { font-weight: 700; font-size: clamp(2rem, 4.6vw, 2.9rem); line-height: 1.14; letter-spacing: -0.01em; margin-bottom: 16px; color: var(--teal-2); text-wrap: balance; }
+    .pg-intro { font-size: 1rem; line-height: 1.7; color: #5c5142; max-width: 460px; font-style: italic; }
 
-    .story-body { max-width: 620px; margin: 0 auto; padding: 56px 24px 0; }
-    .story-p { font-size: 1rem; line-height: 1.85; color: #384953; margin-bottom: 22px; }
-    .story-p:first-of-type { font-size: 1.12rem; color: var(--ink); }
-    .story-p em { font-style: italic; color: var(--teal-2); }
-    .story-p strong { color: var(--teal-2); }
+    .pg-header-art { flex: 0 0 240px; }
+    .postcard-frame { background: #fff; border-radius: 6px; padding: 10px 10px 22px; box-shadow: 0 26px 50px rgba(43,33,24,0.18); transform: rotate(4deg); }
+    .postcard-frame img { width: 100%; display: block; border-radius: 2px; }
 
-    .story-highlight { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 26px 28px; margin: 32px 0; }
-    .story-highlight p { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #8a99a4; margin-bottom: 14px; }
-    .story-highlight ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
-    .story-highlight li { font-size: 0.98rem; font-weight: 600; color: var(--teal-2); display: flex; align-items: center; gap: 10px; }
-    .story-highlight li::before { content: '?'; flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--amber-bg); color: var(--amber); font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.72rem; display: flex; align-items: center; justify-content: center; }
-    .story-highlight .story-answer { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line); font-size: 0.86rem; color: #5c6d78; font-weight: 500; }
+    /* ---- article body ---- */
+    .story-body { max-width: 620px; margin: 0 auto; padding: 40px 24px 0; }
+    .story-p { font-size: 1.03rem; line-height: 1.85; color: #3d3325; margin-bottom: 22px; }
+    .story-p:first-of-type { font-size: 1.15rem; color: var(--ink); }
+    .story-p strong { color: var(--terra-dark); }
 
-    .story-shot { margin: 36px auto; max-width: 240px; }
-    .story-shot img { width: 100%; display: block; border-radius: 22px; border: 6px solid #fff; box-shadow: 0 22px 48px rgba(13,51,71,0.2); }
-    .story-shot-cap { text-align: center; font-size: 0.72rem; font-weight: 700; color: #8a99a4; margin-top: 12px; letter-spacing: 0.01em; }
+    .story-highlight { position: relative; background: #fff; border-radius: 4px; padding: 28px 30px; margin: 34px 0; box-shadow: 0 14px 34px rgba(43,33,24,0.1); }
+    .story-highlight::before, .story-highlight::after { content: ''; position: absolute; top: 50%; width: 22px; height: 22px; background: var(--paper); border-radius: 50%; transform: translateY(-50%); }
+    .story-highlight::before { left: -11px; }
+    .story-highlight::after { right: -11px; }
+    .story-highlight-eyebrow { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    .story-highlight ul { list-style: none; display: flex; flex-direction: column; gap: 13px; }
+    .story-highlight li { font-size: 1.02rem; font-weight: 600; color: var(--teal-2); display: flex; align-items: center; gap: 12px; }
+    .story-highlight li svg { flex-shrink: 0; color: var(--terra); }
 
-    .story-quote { font-family: 'Blauer Nue', sans-serif; font-size: 1.28rem; font-weight: 700; line-height: 1.45; color: var(--teal-2); text-align: center; max-width: 480px; margin: 44px auto; letter-spacing: -0.01em; }
-    .story-quote span { color: var(--green); }
+    .story-shot { margin: 40px auto; max-width: 250px; }
+    .story-shot-inner { background: #fff; padding: 10px 10px 34px; box-shadow: 0 20px 44px rgba(43,33,24,0.16); }
+    .story-shot:nth-of-type(odd) .story-shot-inner { transform: rotate(-2.2deg); }
+    .story-shot:nth-of-type(even) .story-shot-inner { transform: rotate(2deg); }
+    .story-shot img { width: 100%; display: block; }
+    .story-shot-cap { text-align: center; font-size: 0.82rem; font-style: italic; color: #6b5f4d; margin-top: -20px; position: relative; }
 
-    .story-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 36px 0 40px; }
-    .story-step { text-align: center; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 10px; }
-    .story-step-num { width: 26px; height: 26px; border-radius: 50%; margin: 0 auto 10px; background: linear-gradient(135deg, var(--green2), var(--teal-2)); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.78rem; }
+    /* ---- why it works ---- */
+    .why-section { margin: 52px 0 44px; }
+    .why-eyebrow { text-align: center; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--terra); margin-bottom: 10px; }
+    .why-h2 { font-family: Georgia, serif; text-align: center; font-size: 1.5rem; font-weight: 700; color: var(--teal-2); margin-bottom: 30px; }
+    .why-list { display: flex; flex-direction: column; gap: 16px; }
+    .why-item { display: flex; gap: 16px; align-items: flex-start; background: #fff; border-radius: 14px; padding: 18px 20px; box-shadow: 0 10px 26px rgba(43,33,24,0.08); }
+    .why-icon { flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--terra), var(--terra-dark)); display: flex; align-items: center; justify-content: center; color: #fff; }
+    .why-item h4 { font-size: 0.96rem; font-weight: 700; color: var(--teal-2); margin-bottom: 4px; }
+    .why-item p { font-size: 0.87rem; line-height: 1.6; color: #5c5142; }
+
+    /* ---- flight-path itinerary steps ---- */
+    .story-steps { position: relative; margin: 40px 0 44px; padding-top: 10px; }
+    .steps-track { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .steps-track::before { content: ''; position: absolute; top: 21px; left: 12%; right: 12%; height: 0; border-top: 2px dashed var(--gold); }
+    .story-step { position: relative; z-index: 1; text-align: center; }
+    .story-step-num { width: 42px; height: 42px; border-radius: 50%; margin: 0 auto 12px; background: #fff; border: 2px solid var(--gold); color: var(--terra); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; }
     .story-step p { font-size: 0.78rem; font-weight: 700; color: var(--teal-2); line-height: 1.4; }
 
-    .pg-cta { background: linear-gradient(135deg, var(--teal-2), var(--teal-1)); border-radius: 20px; padding: 40px 32px; text-align: center; color: #fff; margin: 8px 0 40px; }
-    .pg-cta h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
-    .pg-cta p { font-size: 0.86rem; color: rgba(255,255,255,0.65); margin-bottom: 22px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; }
-    .pg-cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 30px; background: var(--green); color: #fff; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 0.84rem; transition: background 0.2s, transform 0.2s; }
-    .pg-cta-btn:hover { background: var(--green2); transform: translateY(-1px); }
+    .story-quote { font-family: Georgia, serif; font-style: italic; font-size: 1.35rem; font-weight: 700; line-height: 1.5; color: var(--teal-2); text-align: center; max-width: 480px; margin: 48px auto; }
+    .story-quote span { color: var(--terra); }
 
-    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 0 0 40px; }
-    .tag-row span { font-size: 0.72rem; font-weight: 600; color: var(--teal-2); background: var(--amber-bg); padding: 6px 12px; border-radius: 20px; }
+    .pg-cta { background: linear-gradient(135deg, var(--terra), var(--terra-dark)); border-radius: 20px; padding: 44px 32px; text-align: center; color: #fff; margin: 12px 0 44px; }
+    .pg-cta h3 { font-family: Georgia, serif; font-size: 1.4rem; margin-bottom: 10px; }
+    .pg-cta p { font-size: 0.87rem; color: rgba(255,255,255,0.8); margin-bottom: 24px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+    .pg-cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: #fff; color: var(--terra-dark); border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 0.86rem; letter-spacing: 0.01em; transition: transform 0.2s; }
+    .pg-cta-btn:hover { transform: translateY(-1px); }
 
-    .pg-footer { text-align: center; font-size: 0.76rem; color: #8a99a4; max-width: 620px; margin: 0 auto; padding: 0 24px 80px; }
-    .pg-footer a { color: #8a99a4; margin: 0 8px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 0 0 44px; }
+    .tag-row span { font-size: 0.72rem; font-weight: 700; color: var(--teal-2); background: var(--paper-deep); border: 1px solid var(--line); padding: 7px 13px; border-radius: 20px; }
+
+    .pg-footer { text-align: center; font-size: 0.76rem; color: #8a7c62; max-width: 620px; margin: 0 auto; padding: 0 24px 80px; }
+    .pg-footer a { color: #8a7c62; margin: 0 8px; }
     .pg-footer-social { display: flex; justify-content: center; margin-bottom: 14px; }
     .pg-footer-social a { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: #fff; border: 1px solid var(--line); color: var(--green); transition: color 0.2s, border-color 0.2s; }
-    .pg-footer-social a:hover { color: var(--green2); border-color: #c7d2d9; }
+    .pg-footer-social a:hover { color: var(--green2); border-color: var(--gold); }
 
-    @media (max-width: 560px) {
-      .story-steps { grid-template-columns: repeat(2, 1fr); }
-      .story-quote { font-size: 1.1rem; }
+    @media (max-width: 640px) {
+      .pg-header-inner { flex-direction: column; text-align: center; gap: 22px; }
+      .pg-logo-row { justify-content: center; }
+      .pg-intro { max-width: none; }
+      .pg-header-art { flex: 0 0 auto; width: 55%; max-width: 200px; }
+      .why-item { flex-direction: column; text-align: center; align-items: center; }
+      .steps-track { grid-template-columns: repeat(2, 1fr); row-gap: 24px; }
+      .steps-track::before { display: none; }
     }
   </style>
 </head>
 <body>
 
+  <div class="airmail-strip"></div>
+
   <header class="pg-header">
     <div class="pg-header-inner">
-      <div class="pg-logo-row">
-        <img src="img/appIcon.png" alt="Packmates AI">
-        <span>Packmates AI</span>
+      <div class="pg-header-text">
+        <div class="pg-logo-row">
+          <img src="img/appIcon.png" alt="Packmates AI">
+          <span>Packmates AI</span>
+        </div>
+        <div class="pg-eyebrow">✈ From the road</div>
+        <h1 class="pg-h1 serif">The travel app I use before every trip ✈️🧳</h1>
+        <p class="pg-intro">A confession about how I used to pack — and the small habit that finally fixed it.</p>
       </div>
-      <div class="pg-eyebrow">From the road</div>
-      <h1 class="pg-h1">The travel app I use before every trip ✈️🧳</h1>
-      <p class="pg-intro">A confession about how I used to pack — and the small habit that finally fixed it.</p>
+      <div class="pg-header-art">
+        <div class="postcard-frame">
+          <img src="img/ai-packing-suitcase.png" alt="Illustration of a packed suitcase with a Packmates AI sticker, hat, and camera">
+        </div>
+      </div>
     </div>
   </header>
 
@@ -131,43 +175,70 @@
       <p class="story-p">The worst part was that every trip was completely different, but I was basically packing the same way every time.</p>
 
       <div class="story-highlight">
-        <p>They obviously shouldn't pack the same</p>
+        <div class="story-highlight-eyebrow">They obviously shouldn't pack the same</div>
         <ul>
-          <li>A beach weekend in Florida?</li>
-          <li>A cold-weather trip?</li>
-          <li>A city where I'm walking 20,000 steps a day?</li>
-          <li>A trip with dinners, activities, swimming, hiking?</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M2 12h20M12 2c2.5 3 4 7 4 10s-1.5 7-4 10c-2.5-3-4-7-4-10s1.5-7 4-10z"/></svg> A beach weekend in Florida?</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 17.58A5 5 0 0018 8h-1.26A8 8 0 104 16.25M8 21l4-4M12 21l4-4M8 17l4-4M12 17l4-4"/></svg> A cold-weather trip?</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l3 3-3 3M17 7H9M11 20l-3-3 3-3M7 17h8"/></svg> A city where I'm walking 20,000 steps a day?</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a6 6 0 0112 0v2"/></svg> A trip with dinners, activities, swimming, hiking?</li>
         </ul>
       </div>
 
       <p class="story-p">That's why I started using <strong>Packmates AI</strong> when I travel.</p>
 
       <div class="story-shot">
-        <img src="img/story-home-dashboard.jpg" alt="Packmates AI home screen showing an active Miami trip with real-time weather" loading="lazy">
+        <div class="story-shot-inner">
+          <img src="img/story-home-dashboard.jpg" alt="Packmates AI home screen showing an active Miami trip with real-time weather" loading="lazy">
+        </div>
         <p class="story-shot-cap">My actual trip, weather and all</p>
       </div>
 
       <p class="story-p">Instead of starting with an empty list and trying to remember everything myself, I can build my packing list around the actual trip — where I'm going, what the weather will be like, and what I'm planning to do there.</p>
 
       <div class="story-shot">
-        <img src="img/story-adapted-trip.jpg" alt="Packmates AI packing list adapted for warm, rainy, windy, beach, swimming, and sightseeing conditions" loading="lazy">
+        <div class="story-shot-inner">
+          <img src="img/story-adapted-trip.jpg" alt="Packmates AI packing list adapted for warm, rainy, windy, beach, swimming, and sightseeing conditions" loading="lazy">
+        </div>
         <p class="story-shot-cap">Adapted for what I'm actually doing there</p>
       </div>
 
       <p class="story-p">And I still change things, remove things I don't need, and add my own stuff. It just gives me a much better starting point.</p>
 
       <div class="story-shot">
-        <img src="img/story-checklist.jpg" alt="Packmates AI checklist with essentials checked off and toiletries still to pack" loading="lazy">
+        <div class="story-shot-inner">
+          <img src="img/story-checklist.jpg" alt="Packmates AI checklist with essentials checked off and toiletries still to pack" loading="lazy">
+        </div>
         <p class="story-shot-cap">Still mine to check off, edit, and add to</p>
       </div>
+
+      <section class="why-section">
+        <div class="why-eyebrow">Not just another packing app</div>
+        <h2 class="why-h2 serif">Why it actually works</h2>
+        <div class="why-list">
+          <div class="why-item">
+            <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></div>
+            <div><h4>It actually checks the weather</h4><p>Rain gear only shows up if it's actually going to rain. Sunscreen only if I'll need it. No more guessing.</p></div>
+          </div>
+          <div class="why-item">
+            <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <div><h4>It knows what I'm actually doing there</h4><p>Hiking boots for a hiking trip, not a beach one. The list changes based on the actual activities, not a generic template.</p></div>
+          </div>
+          <div class="why-item">
+            <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+            <div><h4>Everyone sees the same list</h4><p>My whole group sees it update live. No more "wait, did you already pack the charger?" texts the morning we leave.</p></div>
+          </div>
+        </div>
+      </section>
 
       <p class="story-p">It's become one of those little things I do before traveling now without really thinking about it.</p>
 
       <div class="story-steps">
-        <div class="story-step"><div class="story-step-num">1</div><p>Book the trip</p></div>
-        <div class="story-step"><div class="story-step-num">2</div><p>Check the weather</p></div>
-        <div class="story-step"><div class="story-step-num">3</div><p>Make my Packmates list</p></div>
-        <div class="story-step"><div class="story-step-num">4</div><p>Start packing ✈️</p></div>
+        <div class="steps-track">
+          <div class="story-step"><div class="story-step-num">1</div><p>Book the trip</p></div>
+          <div class="story-step"><div class="story-step-num">2</div><p>Check the weather</p></div>
+          <div class="story-step"><div class="story-step-num">3</div><p>Make my Packmates list</p></div>
+          <div class="story-step"><div class="story-step-num">4</div><p>Start packing ✈️</p></div>
+        </div>
       </div>
 
       <p class="story-quote">It sounds like such a small thing, but not having that <span>"I know I'm forgetting something…"</span> feeling before leaving is so nice.</p>
