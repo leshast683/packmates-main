@@ -968,7 +968,7 @@
       const v = document.getElementById('heroBgVideo');
       if (!v) return;
       const src = document.createElement('source');
-      src.src = 'img/hero-forest-compressed.mp4';
+      src.src = 'img/hero-forest-compressed.mp4?v=2'; // cache-bust: see index.js VIDEO_QUEUE comment
       src.type = 'video/mp4';
       v.appendChild(src);
       v.load();

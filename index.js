@@ -772,18 +772,24 @@
          page load, no network fetch, so nothing can silently swap it out
          mid-view. Add more filenames to VIDEO_QUEUE as they're supplied -
          everything else here already supports more than one. */
+      // ?v=2 cache-busts these specific filenames: they were previously
+      // served with an immutable, 1-year Cache-Control header while
+      // encoded with an H.264 profile that silently broke inline
+      // autoplay - any device that already fetched the old file under
+      // this exact URL would never re-fetch the corrected one otherwise,
+      // no matter how many times the file itself changed on the server.
       const VIDEO_QUEUE = [
-        'img/hero-ready-to-start.mp4',
-        'img/hero-sunrise-clouds.mp4',
-        'img/hero-safari-zebras.mp4',
-        'img/hero-rome-colosseum.mp4',
-        'img/hero-turquoise-reef.mp4',
-        'img/hero-nyc-bridge.mp4',
-        'img/hero-alpine-lake.mp4',
-        'img/hero-istanbul-bosphorus.mp4',
-        'img/hero-jungle-waterfall.mp4',
+        'img/hero-ready-to-start.mp4?v=2',
+        'img/hero-sunrise-clouds.mp4?v=2',
+        'img/hero-safari-zebras.mp4?v=2',
+        'img/hero-rome-colosseum.mp4?v=2',
+        'img/hero-turquoise-reef.mp4?v=2',
+        'img/hero-nyc-bridge.mp4?v=2',
+        'img/hero-alpine-lake.mp4?v=2',
+        'img/hero-istanbul-bosphorus.mp4?v=2',
+        'img/hero-jungle-waterfall.mp4?v=2',
       ];
-      const FALLBACK_VIDEO = 'img/hero-forest-compressed.mp4';
+      const FALLBACK_VIDEO = 'img/hero-forest-compressed.mp4?v=2';
 
       ['pm_tip_video', 'pm_tip_videos'].forEach(k => localStorage.removeItem(k)); // old Pexels-pool keys
 
