@@ -975,6 +975,19 @@
       const tryPlay = () => v.play().catch(() => {});
       v.addEventListener('canplay', tryPlay);
       v.play().catch(() => {});
+
+      /* Same fix as index.js's hero video: WKWebView on a real device
+         genuinely rejects play() with NotAllowedError here regardless
+         of native config, confirmed via on-screen diagnostic logging.
+         Satisfy the real requirement directly - retry once on the
+         first touch/click anywhere in the app. */
+      const _kickstartPlay = () => {
+        document.removeEventListener('touchstart', _kickstartPlay, true);
+        document.removeEventListener('mousedown', _kickstartPlay, true);
+        if (v.paused) v.play().catch(() => {});
+      };
+      document.addEventListener('touchstart', _kickstartPlay, true);
+      document.addEventListener('mousedown', _kickstartPlay, true);
     })();
 
     function showToast(msg, d=2500, pos='bottom') {
