@@ -574,6 +574,9 @@
           <div style="font-size:1rem;font-weight:700;color:#fff;line-height:1.25;text-shadow:0 1px 8px rgba(0,0,0,0.4);" id="nudgeTitle">Ready to start?</div>
           ${hasTrip ? `<div style="font-size:0.8rem;font-weight:600;color:rgba(255,255,255,0.8);margin-top:4px;text-shadow:0 1px 8px rgba(0,0,0,0.4);">${trip.destination}</div>` : ''}
         </div>
+        <!-- TEMP DIAGNOSTIC: visible on-screen log for the video autoplay
+             investigation - remove once resolved. -->
+        <div id="tipVideoDebug" style="position:absolute;top:4px;left:4px;right:4px;z-index:3;font-size:0.55rem;font-family:monospace;color:#0f0;background:rgba(0,0,0,0.75);padding:4px 6px;border-radius:6px;pointer-events:none;line-height:1.4;max-height:110px;overflow:hidden;"></div>
       </div>
 
       <!-- ACTIONS: intentionally never rendered here even when _isNativeApp
@@ -793,19 +796,33 @@
 
       ['pm_tip_video', 'pm_tip_videos'].forEach(k => localStorage.removeItem(k)); // old Pexels-pool keys
 
+      /* TEMP DIAGNOSTIC: remove once the autoplay investigation is
+         resolved - writes a visible on-screen log instead of console,
+         since there's no Web Inspector access to the real device. */
+      const _dbgEl = document.getElementById('tipVideoDebug');
+      function dbg(msg) {
+        if (!_dbgEl) return;
+        _dbgEl.textContent += msg + ' | ';
+      }
+      dbg('native=' + !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()));
+      dbg('iframe=' + (window.self !== window.top));
+
       function playVideo(url) {
         videoEl.src = url;
         videoEl.load();
-        const tryPlay = () => videoEl.play().catch(() => {});
+        const tryPlay = () => videoEl.play().then(() => dbg('play=OK')).catch(e => dbg('play=FAIL:' + e.name));
         tryPlay();
-        videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; tryPlay(); };
-        videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; tryPlay(); };
+        videoEl.onloadeddata = () => { videoEl.style.opacity = '1'; dbg('loadeddata'); tryPlay(); };
+        videoEl.oncanplay   = () => { videoEl.style.opacity = '1'; dbg('canplay'); tryPlay(); };
+        videoEl.onstalled = () => dbg('stalled');
+        videoEl.onsuspend = () => dbg('suspend');
+        setTimeout(() => dbg('t3s:paused=' + videoEl.paused + ',rs=' + videoEl.readyState + ',ns=' + videoEl.networkState + ',ct=' + videoEl.currentTime.toFixed(1)), 3000);
       }
 
       const idx = (parseInt(localStorage.getItem('pm_tip_idx') || '-1', 10) + 1) % VIDEO_QUEUE.length;
       localStorage.setItem('pm_tip_idx', idx);
       playVideo(VIDEO_QUEUE[idx]);
-      videoEl.onerror = () => playVideo(FALLBACK_VIDEO);
+      videoEl.onerror = () => { dbg('ERROR:' + JSON.stringify(videoEl.error)); playVideo(FALLBACK_VIDEO); };
     })();
 
     /* ── Micro-stats ── */
