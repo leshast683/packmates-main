@@ -546,7 +546,21 @@
       const result = await apiPromise;
       card.style.minHeight = '';
 
-      if (result.success) {
+      if (result.success && result.session) {
+        /* Non-blocking mode (Supabase's "Confirm email" requirement is
+           off for this project): a real session came back immediately,
+           so there's nothing to wait on - go straight into the app
+           instead of a blocking "check your email" screen. Confirming
+           later is still possible and still useful (see
+           Auth.isEmailConfirmed()'s reminder banner), just never
+           required to actually use the app. */
+        fetch('/api/send-welcome-email', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${result.session.access_token}` },
+        }).catch(() => {});
+        _signedUpPw = '';
+        _goHome();
+      } else if (result.success) {
         _signedUpEmail = email;
         document.getElementById('loadingScreen').style.display = 'none';
         document.getElementById('mainTitle').textContent = 'Check your email';

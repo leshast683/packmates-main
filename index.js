@@ -13,6 +13,37 @@
       window.Capacitor.Plugins.SplashScreen.hide();
     }
 
+    /* ── Non-blocking "verify your email" reminder ──
+       Signup no longer requires confirming email before using the app
+       (see Auth.requireAuth()) - this is purely an unobtrusive nudge,
+       dismissible, never shown again once dismissed, and never blocks
+       anything regardless of whether the user ever acts on it. */
+    (function () {
+      if (!_pmAuthed || Auth.isEmailConfirmed() !== false) return;
+      const dismissKey = 'pm_verify_banner_dismissed';
+      if (localStorage.getItem(dismissKey) === '1') return;
+      const el = document.getElementById('verifyEmailBanner');
+      if (!el) return;
+      const session = Auth.getSession();
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;background:#fdf3e2;border:1px solid #f0d9a6;border-radius:14px;padding:12px 14px;margin-bottom:16px;font-size:0.78rem;color:#7a5411;">
+          <span style="flex:1;">Verify your email${session?.email ? ` (<strong>${session.email}</strong>)` : ''} to keep your account secure.</span>
+          <a href="#" id="verifyResendLink" style="color:#7a5411;font-weight:700;text-decoration:underline;white-space:nowrap;flex-shrink:0;">Resend</a>
+          <button id="verifyDismissBtn" aria-label="Dismiss" style="background:none;border:none;color:#7a5411;font-size:1rem;cursor:pointer;line-height:1;padding:0 2px;flex-shrink:0;">&times;</button>
+        </div>`;
+      document.getElementById('verifyDismissBtn').onclick = () => {
+        localStorage.setItem(dismissKey, '1');
+        el.innerHTML = '';
+      };
+      document.getElementById('verifyResendLink').onclick = async (e) => {
+        e.preventDefault();
+        const link = e.currentTarget;
+        link.textContent = 'Sending…';
+        const result = await Auth.resendConfirmation(session?.email || '');
+        link.textContent = result.success ? 'Sent ✓' : 'Try again';
+      };
+    })();
+
     /* Header avatar/notification-bell aren't .bottom-nav buttons, so the
        app-shell's own click interception never sees them — without this
        they'd fall through to a real location.href and tear the whole

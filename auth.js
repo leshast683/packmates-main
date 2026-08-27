@@ -220,8 +220,14 @@ const Auth = (() => {
       }
       if (!data?.user)
         return { success: false, error: 'An account with this email already exists. Try logging in instead.' };
-      /* Profile row is auto-created by the DB trigger */
-      return { success: true };
+      /* Profile row is auto-created by the DB trigger.
+         data.session is only populated here if Supabase's "Confirm
+         email" requirement is OFF for this project - in that case the
+         account is immediately usable and the caller should skip
+         straight to the app instead of showing a blocking "check your
+         email" screen. If confirmation is still required, session is
+         null and the caller falls back to that screen as before. */
+      return { success: true, session: data?.session || null };
     },
 
     async _localRegister(name, norm, pw, gender) {
@@ -406,6 +412,16 @@ const Auth = (() => {
       } catch { return null; }
     },
 
+    /* True/false/null (Supabase not in use / local-only account, where
+       confirmation doesn't apply). For the non-blocking "please verify
+       your email" reminder - never used to gate access, see
+       requireAuth(). */
+    isEmailConfirmed() {
+      const sbUser = _sbCachedUser();
+      if (!sbUser) return null;
+      return !!sbUser.email_confirmed_at;
+    },
+
     isLoggedIn()  { return !!this.getSession(); },
     /* Returns the Supabase access token for authenticated API calls */
     getToken() {
@@ -433,13 +449,11 @@ const Auth = (() => {
     },
     requireAuth(redirect = 'welcome.html') {
       if (!this.isLoggedIn()) { location.replace(redirect); return false; }
-      /* Block Supabase users whose email is not yet confirmed */
-      const sbUser = _sbCachedUser();
-      if (sbUser && !sbUser.email_confirmed_at) {
-        this.logout();
-        location.replace(redirect);
-        return false;
-      }
+      /* Email confirmation is non-blocking by design - an unconfirmed
+         user still gets a real session at signup and should be able to
+         use the app immediately. See isEmailConfirmed() for the
+         non-blocking "please verify" reminder instead of gating access
+         here. */
       return true;
     },
     getSavedEmail() { return localStorage.getItem(_SAVED_KEY) || ''; },
