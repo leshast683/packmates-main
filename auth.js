@@ -412,8 +412,10 @@ const Auth = (() => {
         box.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#000;color:#0f0;font:11px/1.5 monospace;padding:10px;max-height:50vh;overflow:auto;white-space:pre-wrap;';
         document.body.appendChild(box);
       }
-      const log = (msg) => { box.textContent += msg + '\n'; console.log('[oauth-diag]', msg); };
+      const _t0 = performance.now();
+      const log = (msg) => { const ms = Math.round(performance.now() - _t0); box.textContent += `+${ms}ms  ${msg}\n`; console.log('[oauth-diag]', ms, msg); };
       log(`tap registered: ${provider}`);
+      log(`typeof window.Capacitor=${typeof window.Capacitor} keys=${window.Capacitor ? Object.keys(window.Capacitor).join(',') : 'n/a'} getPlatform=${window.Capacitor && window.Capacitor.getPlatform ? window.Capacitor.getPlatform() : 'n/a'} href=${location.href}`);
 
       const client = await _getSb();
       log(`got supabase client: ${!!client}`);
