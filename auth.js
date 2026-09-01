@@ -370,28 +370,47 @@ const Auth = (() => {
       return { success: true };
     },
 
-    /* ── Google OAuth ── */
-    async loginWithGoogle() {
+    /* ── Shared OAuth helper ──
+       Web: let supabase-js do its normal full-page redirect.
+       Native: the app's WKWebView only allows navigation within
+       packmatesai.com (capacitor.config.json's allowNavigation), so a
+       plain redirect to Supabase's auth domain (then Google/Apple) is
+       silently blocked - the button just does nothing. Google also
+       outright refuses sign-in from an embedded WebView on policy
+       grounds. Fix: run the OAuth flow in the system browser via
+       @capacitor/browser instead (skipBrowserRedirect so supabase-js
+       hands back the URL rather than navigating itself), then rely on
+       the existing Universal Links handoff (lib/deep-link.js +
+       apple-app-site-association's /welcome.html* entry) to bring the
+       user back into the app once Google/Apple redirect to welcome.html. */
+    async _oauthLogin(provider) {
       const client = await _getSb();
-      if (!client) return { success: false, error: 'Google sign-in unavailable.' };
-      const { error } = await client.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: 'https://packmatesai.com/welcome.html' },
+      if (!client) return { success: false, error: `${provider} sign-in unavailable.` };
+      const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+      const Browser = isNative && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
+
+      const { data, error } = await client.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: 'https://packmatesai.com/welcome.html',
+          skipBrowserRedirect: !!Browser,
+        },
       });
       if (error) return { success: false, error: error.message };
+      if (Browser && data?.url) {
+        await Browser.open({ url: data.url });
+      }
       return { success: true };
+    },
+
+    /* ── Google OAuth ── */
+    async loginWithGoogle() {
+      return this._oauthLogin('google');
     },
 
     /* ── Apple OAuth ── */
     async loginWithApple() {
-      const client = await _getSb();
-      if (!client) return { success: false, error: 'Apple sign-in unavailable.' };
-      const { error } = await client.auth.signInWithOAuth({
-        provider: 'apple',
-        options: { redirectTo: 'https://packmatesai.com/welcome.html' },
-      });
-      if (error) return { success: false, error: error.message };
-      return { success: true };
+      return this._oauthLogin('apple');
     },
 
     /* ── Logout ── */
