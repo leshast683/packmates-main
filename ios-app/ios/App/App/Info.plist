@@ -26,6 +26,17 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.packmatesai.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>packmatesai</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Packmates AI uses your camera so you can take a profile photo.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

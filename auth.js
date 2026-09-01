@@ -425,10 +425,19 @@ const Auth = (() => {
       let data, error;
       try {
         log('calling signInWithOAuth...');
+        /* The ?nativeOAuth=1 marker tells welcome.html (running inside the
+           in-app browser this opens into, not the app itself) to relay the
+           finished sign-in back into the app via a custom URL scheme
+           instead of just sitting there - see welcome.html's own comment
+           for why SFSafariViewController needs this explicit hand-off.
+           Web (no Browser plugin) doesn't need it - the browser tab IS
+           the destination there. */
         ({ data, error } = await client.auth.signInWithOAuth({
           provider,
           options: {
-            redirectTo: 'https://packmatesai.com/welcome.html',
+            redirectTo: Browser
+              ? 'https://packmatesai.com/welcome.html?nativeOAuth=1'
+              : 'https://packmatesai.com/welcome.html',
             skipBrowserRedirect: !!Browser,
           },
         }));

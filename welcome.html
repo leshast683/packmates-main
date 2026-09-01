@@ -24,6 +24,44 @@
       document.write('<style id="pmAuthHideStyle">body>*:not(.pm-auth-loading){display:none!important}.pm-auth-loading{display:flex!important}</style>');
     }
   </script>
+  <script>
+    /* Native Google/Apple sign-in (auth.js's _oauthLogin) opens Google/Apple
+       in an SFSafariViewController via @capacitor/browser, not the app's
+       own WebView - and unlike Safari itself, SFSafariViewController
+       deliberately does NOT auto-hand-off to the app via Universal Links,
+       so without this, a signed-in user is just left stranded looking at
+       the website inside that in-app browser sheet instead of landing back
+       in the app. ?nativeOAuth=1 (set only by that flow) marks this as
+       exactly that case; !window.Capacitor confirms we're really in the
+       throwaway browser tab and not somehow already back in the app.
+       Forwards straight to a custom URL scheme the app is registered for
+       (Info.plist's CFBundleURLTypes), picked up by lib/deep-link.js's
+       existing appUrlOpen listener - same mechanism already used for
+       email-confirmation links.
+       Runs before auth.js loads below on purpose: Supabase's
+       detectSessionInUrl consumes the one-time auth code as soon as the
+       client initializes, and PKCE codes are single-use - if this
+       throwaway tab consumed it, the app's own attempt to finish the
+       session afterward would fail. */
+    if (location.search.indexOf('nativeOAuth=1') !== -1 &&
+        !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())) {
+      var _pmRelayUrl = 'packmatesai://auth-callback' + location.search + location.hash;
+      location.replace(_pmRelayUrl);
+      /* Fallback in case the automatic redirect gets silently ignored
+         (custom-scheme navigations can require a fresh user gesture in
+         some browser contexts) - never leave the user stuck with no way
+         forward. */
+      window.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+          var btn = document.createElement('a');
+          btn.href = _pmRelayUrl;
+          btn.textContent = 'Tap to return to Packmates AI';
+          btn.style.cssText = 'position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:linear-gradient(160deg,#0d3347,#082233);color:#fff;font:700 16px/1.5 -apple-system,sans-serif;text-decoration:none;';
+          document.body.appendChild(btn);
+        }, 900);
+      });
+    }
+  </script>
   <style>
     .pm-auth-loading { display: none; position: fixed; inset: 0; z-index: 99999; background: linear-gradient(160deg,#0d3347,#082233); align-items: center; justify-content: center; }
     .pm-auth-loading img { width: 44px; height: 44px; border-radius: 12px; animation: pmAuthPulse 1.1s ease-in-out infinite; }
