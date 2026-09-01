@@ -385,20 +385,34 @@ const Auth = (() => {
        user back into the app once Google/Apple redirect to welcome.html. */
     async _oauthLogin(provider) {
       const client = await _getSb();
-      if (!client) return { success: false, error: `${provider} sign-in unavailable.` };
+      if (!client) return { success: false, error: `${provider} sign-in unavailable. [diag: no supabase client]` };
       const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
       const Browser = isNative && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
 
-      const { data, error } = await client.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: 'https://packmatesai.com/welcome.html',
-          skipBrowserRedirect: !!Browser,
-        },
-      });
-      if (error) return { success: false, error: error.message };
-      if (Browser && data?.url) {
-        await Browser.open({ url: data.url });
+      /* TEMP diagnostics: surfaces exactly where this fails on-device,
+         since there's no way to attach a debugger to a TestFlight build. */
+      const diag = `[diag: native=${isNative} browserPlugin=${!!Browser} plugins=${isNative ? Object.keys((window.Capacitor && window.Capacitor.Plugins) || {}).join(',') : 'n/a'}]`;
+
+      let data, error;
+      try {
+        ({ data, error } = await client.auth.signInWithOAuth({
+          provider,
+          options: {
+            redirectTo: 'https://packmatesai.com/welcome.html',
+            skipBrowserRedirect: !!Browser,
+          },
+        }));
+      } catch (e) {
+        return { success: false, error: `signInWithOAuth threw: ${e.message} ${diag}` };
+      }
+      if (error) return { success: false, error: `${error.message} ${diag}` };
+      if (Browser) {
+        if (!data?.url) return { success: false, error: `no url returned from supabase ${diag}` };
+        try {
+          await Browser.open({ url: data.url });
+        } catch (e) {
+          return { success: false, error: `Browser.open threw: ${e.message} ${diag}` };
+        }
       }
       return { success: true };
     },
