@@ -72,21 +72,17 @@ async function _getSb() {
   return await window._pm_sbLoaded;
 }
 
-/* Capacitor's bridge can take a moment to attach right after a fresh page
-   load (same race already solved for index.js's Quick Actions guard this
-   session) - a single isNativePlatform() check made too early can read
-   false even inside the real native app. Poll briefly rather than trusting
-   one synchronous read, since a user tapping a button right after the
-   page appears can easily land inside that window. */
-async function _waitForNative(maxMs = 1500, stepMs = 100) {
-  const check = () => !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-  if (check()) return true;
-  const start = Date.now();
-  while (Date.now() - start < maxMs) {
-    await new Promise(r => setTimeout(r, stepMs));
-    if (check()) return true;
-  }
-  return false;
+/* login.html/signup.html are frequently shown inside a hidden iframe
+   preloaded by lib/auth-flow.js (see its #pmAuthFlow marker) rather than
+   as the top-level document - Capacitor's native bridge only injects
+   window.Capacitor into the actual top-level frame, never into iframes,
+   so it's genuinely absent here (confirmed on-device: typeof
+   window.Capacitor === 'undefined' inside this iframe, even after
+   waiting). window.top is the same-origin real document that has it. */
+function _getCapacitor() {
+  if (window.Capacitor) return window.Capacitor;
+  try { if (window.top !== window.self && window.top.Capacitor) return window.top.Capacitor; } catch (e) {}
+  return null;
 }
 
 /* ── Legacy localStorage helpers ─────────────────────────────────────── */
@@ -415,14 +411,16 @@ const Auth = (() => {
       const _t0 = performance.now();
       const log = (msg) => { const ms = Math.round(performance.now() - _t0); box.textContent += `+${ms}ms  ${msg}\n`; console.log('[oauth-diag]', ms, msg); };
       log(`tap registered: ${provider}`);
-      log(`typeof window.Capacitor=${typeof window.Capacitor} keys=${window.Capacitor ? Object.keys(window.Capacitor).join(',') : 'n/a'} getPlatform=${window.Capacitor && window.Capacitor.getPlatform ? window.Capacitor.getPlatform() : 'n/a'} href=${location.href}`);
+      log(`window.Capacitor=${typeof window.Capacitor} isIframe=${window.top !== window.self} href=${location.href}`);
 
       const client = await _getSb();
       log(`got supabase client: ${!!client}`);
       if (!client) return { success: false, error: `${provider} sign-in unavailable.` };
-      const isNative = await _waitForNative();
-      const Browser = isNative && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
-      log(`native=${isNative} browserPlugin=${!!Browser} plugins=${isNative ? Object.keys((window.Capacitor && window.Capacitor.Plugins) || {}).join(',') : 'n/a'}`);
+      const cap = _getCapacitor();
+      log(`resolved Capacitor from: ${window.Capacitor ? 'window' : (cap ? 'window.top' : 'nowhere')}`);
+      const isNative = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+      const Browser = isNative && cap.Plugins && cap.Plugins.Browser;
+      log(`native=${isNative} browserPlugin=${!!Browser} plugins=${cap ? Object.keys(cap.Plugins || {}).join(',') : 'n/a'}`);
 
       let data, error;
       try {
