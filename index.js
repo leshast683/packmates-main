@@ -381,12 +381,16 @@
     // for as long as the page is alive, so no fixed delay can ever be
     // "too short" again.
     if (bento) {
-      const _qaCheckNative = () => (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
+      // Mobile web (<=640px) shows the same persistent bottom nav as the
+      // app (see style.css's @media max-width:640px), so Quick Actions is
+      // just as redundant there as it is natively - same reasoning, wider net.
+      const _qaCheckNative = () => (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow' || window.innerWidth <= 640;
       const _qaRemoveIfNative = () => {
         if (!_qaCheckNative()) return;
         const qa = document.getElementById('quickActionsCard');
         if (qa) qa.remove();
       };
+      window.addEventListener('resize', _qaRemoveIfNative);
       // MutationObserver alone isn't enough: it only re-checks native
       // status at the exact moment something else mutates the grid. If
       // Capacitor's bridge attaches later with no further mutations
@@ -601,8 +605,8 @@
       let _qaNotNativeStreak = 0;
       const QA_CONFIRMATIONS_NEEDED = 5; // 5 checks, 700ms apart = ~3.5s
       const _qaConfirmTimer = setInterval(() => {
-        const isNativeNow = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
-        if (isNativeNow) { clearInterval(_qaConfirmTimer); return; } // confirmed native - never insert
+        const isNativeNow = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow' || window.innerWidth <= 640;
+        if (isNativeNow) { clearInterval(_qaConfirmTimer); return; } // confirmed native or mobile-width - never insert
         if (++_qaNotNativeStreak < QA_CONFIRMATIONS_NEEDED) return; // keep waiting for more confirmations
         clearInterval(_qaConfirmTimer);
         const actionsHTML = `
