@@ -384,17 +384,30 @@ const Auth = (() => {
        apple-app-site-association's /welcome.html* entry) to bring the
        user back into the app once Google/Apple redirect to welcome.html. */
     async _oauthLogin(provider) {
+      /* TEMP: live step-by-step overlay, since a plain try/catch shows
+         nothing if a step hangs rather than throws/rejects - this way
+         whatever line is on screen when it stalls tells us exactly
+         where. Remove once root-caused. */
+      let box = document.getElementById('pmOauthDiag');
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 'pmOauthDiag';
+        box.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#000;color:#0f0;font:11px/1.5 monospace;padding:10px;max-height:50vh;overflow:auto;white-space:pre-wrap;';
+        document.body.appendChild(box);
+      }
+      const log = (msg) => { box.textContent += msg + '\n'; console.log('[oauth-diag]', msg); };
+      log(`tap registered: ${provider}`);
+
       const client = await _getSb();
-      if (!client) return { success: false, error: `${provider} sign-in unavailable. [diag: no supabase client]` };
+      log(`got supabase client: ${!!client}`);
+      if (!client) return { success: false, error: `${provider} sign-in unavailable.` };
       const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
       const Browser = isNative && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
-
-      /* TEMP diagnostics: surfaces exactly where this fails on-device,
-         since there's no way to attach a debugger to a TestFlight build. */
-      const diag = `[diag: native=${isNative} browserPlugin=${!!Browser} plugins=${isNative ? Object.keys((window.Capacitor && window.Capacitor.Plugins) || {}).join(',') : 'n/a'}]`;
+      log(`native=${isNative} browserPlugin=${!!Browser} plugins=${isNative ? Object.keys((window.Capacitor && window.Capacitor.Plugins) || {}).join(',') : 'n/a'}`);
 
       let data, error;
       try {
+        log('calling signInWithOAuth...');
         ({ data, error } = await client.auth.signInWithOAuth({
           provider,
           options: {
@@ -402,17 +415,24 @@ const Auth = (() => {
             skipBrowserRedirect: !!Browser,
           },
         }));
+        log(`signInWithOAuth returned: error=${error ? error.message : 'none'} url=${data?.url || 'none'}`);
       } catch (e) {
-        return { success: false, error: `signInWithOAuth threw: ${e.message} ${diag}` };
+        log(`signInWithOAuth THREW: ${e.message}`);
+        return { success: false, error: `signInWithOAuth threw: ${e.message}` };
       }
-      if (error) return { success: false, error: `${error.message} ${diag}` };
+      if (error) return { success: false, error: error.message };
       if (Browser) {
-        if (!data?.url) return { success: false, error: `no url returned from supabase ${diag}` };
+        if (!data?.url) { log('no url returned - stopping'); return { success: false, error: 'no url returned from supabase' }; }
         try {
+          log('calling Browser.open...');
           await Browser.open({ url: data.url });
+          log('Browser.open returned OK');
         } catch (e) {
-          return { success: false, error: `Browser.open threw: ${e.message} ${diag}` };
+          log(`Browser.open THREW: ${e.message}`);
+          return { success: false, error: `Browser.open threw: ${e.message}` };
         }
+      } else {
+        log('no Browser plugin - relying on default web redirect');
       }
       return { success: true };
     },
