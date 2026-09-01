@@ -382,6 +382,18 @@ const Auth = (() => {
       return { success: true };
     },
 
+    /* ── Apple OAuth ── */
+    async loginWithApple() {
+      const client = await _getSb();
+      if (!client) return { success: false, error: 'Apple sign-in unavailable.' };
+      const { error } = await client.auth.signInWithOAuth({
+        provider: 'apple',
+        options: { redirectTo: 'https://packmatesai.com/welcome.html' },
+      });
+      if (error) return { success: false, error: error.message };
+      return { success: true };
+    },
+
     /* ── Logout ── */
     logout() {
       window._pm_intentional_signout = true;
