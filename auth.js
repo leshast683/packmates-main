@@ -72,6 +72,23 @@ async function _getSb() {
   return await window._pm_sbLoaded;
 }
 
+/* Capacitor's bridge can take a moment to attach right after a fresh page
+   load (same race already solved for index.js's Quick Actions guard this
+   session) - a single isNativePlatform() check made too early can read
+   false even inside the real native app. Poll briefly rather than trusting
+   one synchronous read, since a user tapping a button right after the
+   page appears can easily land inside that window. */
+async function _waitForNative(maxMs = 1500, stepMs = 100) {
+  const check = () => !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  if (check()) return true;
+  const start = Date.now();
+  while (Date.now() - start < maxMs) {
+    await new Promise(r => setTimeout(r, stepMs));
+    if (check()) return true;
+  }
+  return false;
+}
+
 /* ── Legacy localStorage helpers ─────────────────────────────────────── */
 const _USERS_KEY  = 'pm_users';
 const _SESS_KEY   = 'pm_session';
@@ -401,7 +418,7 @@ const Auth = (() => {
       const client = await _getSb();
       log(`got supabase client: ${!!client}`);
       if (!client) return { success: false, error: `${provider} sign-in unavailable.` };
-      const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+      const isNative = await _waitForNative();
       const Browser = isNative && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
       log(`native=${isNative} browserPlugin=${!!Browser} plugins=${isNative ? Object.keys((window.Capacitor && window.Capacitor.Plugins) || {}).join(',') : 'n/a'}`);
 
