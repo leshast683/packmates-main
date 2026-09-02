@@ -796,6 +796,7 @@
         'img/hero-lake-dusk.mp4',
         'img/hero-palm-grove.mp4',
         'img/hero-colosseum-night.mp4',
+        'img/hero-san-francisco.mp4',
       ];
       const FALLBACK_VIDEO = 'img/hero-forest-compressed.mp4?v=2';
 
