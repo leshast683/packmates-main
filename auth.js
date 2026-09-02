@@ -417,6 +417,16 @@ const Auth = (() => {
             ? 'https://packmatesai.com/welcome.html?nativeOAuth=1'
             : 'https://packmatesai.com/welcome.html',
           skipBrowserRedirect: !!Browser,
+          /* Without this, Google silently re-authenticates with whatever
+             Google account is already signed in inside the in-app browser
+             sheet (normal SSO behavior) - meaning a user who deletes their
+             Packmates account and immediately signs in again via Google
+             never sees an account picker or any visible "something
+             changed" moment, even though a genuinely new Packmates account
+             is created behind the scenes (delete-account.js does remove
+             the old Supabase auth user for real). Forcing Google's own
+             account chooser here makes that visible instead of silent. */
+          queryParams: provider === 'google' ? { prompt: 'select_account' } : undefined,
         },
       });
       if (error) return { success: false, error: error.message };
