@@ -793,6 +793,7 @@
         'img/hero-istanbul-bosphorus.mp4?v=2',
         'img/hero-jungle-waterfall.mp4?v=2',
         'img/hero-alpine-village.mp4',
+        'img/hero-lake-dusk.mp4',
       ];
       const FALLBACK_VIDEO = 'img/hero-forest-compressed.mp4?v=2';
 
