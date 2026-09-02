@@ -792,11 +792,42 @@
         return;
       }
 
+      /* TEMP diagnostic: Apple sign-in works through the native-OAuth relay
+         but Google doesn't, despite sharing the exact same relay path - the
+         failure is somewhere in this code-exchange step, not the redirect
+         itself. getSession()'s automatic detectSessionInUrl swallows the
+         real error silently (falls through to session:null either way),
+         so call exchangeCodeForSession directly to surface whatever it
+         actually says. Remove once root-caused. */
+      const _diagParams = new URLSearchParams(location.search);
+      if (_diagParams.get('nativeOAuth') === '1' || location.search.includes('code=')) {
+        const box = document.createElement('div');
+        box.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#000;color:#0f0;font:11px/1.5 monospace;padding:10px;max-height:60vh;overflow:auto;white-space:pre-wrap;';
+        document.body.appendChild(box);
+        box.textContent += `href: ${location.href}\n`;
+      }
+      const _diagLog = (msg) => {
+        const box = document.querySelector('div[style*="z-index:999999"]');
+        if (box) box.textContent += msg + '\n';
+        console.log('[welcome-diag]', msg);
+      };
+
       const hasCode  = location.search.includes('code=');
       const hasToken = location.hash.includes('access_token=');
       if (hasCode || hasToken) {
         const sb = await window._pm_sbLoaded;
+        _diagLog(`sb client: ${!!sb}`);
         if (sb) {
+          /* Log every auth event that fires during this page's lifetime -
+             detectSessionInUrl's automatic code exchange runs internally
+             during client init (before we ever call getSession()
+             ourselves) and any error from THAT attempt doesn't surface
+             through getSession()'s own return value, only through this
+             event stream (or nothing at all if it fails silently). */
+          sb.auth.onAuthStateChange((event, session) => {
+            _diagLog(`onAuthStateChange: event=${event} session=${!!session}`);
+          });
+
           /* Supabase's client resolves the code/token from the URL as
              part of getSession() itself (detectSessionInUrl) - no need
              to sit on an arbitrary flat delay first. Retry a few times
@@ -805,9 +836,10 @@
              this same page's own default-redirect logic re-navigating
              here a second time with the code, which can legitimately
              take longer than that. */
-          let data;
+          let data, sessErr;
           for (let attempt = 0; attempt < 4; attempt++) {
-            ({ data } = await sb.auth.getSession());
+            ({ data, error: sessErr } = await sb.auth.getSession());
+            _diagLog(`getSession attempt ${attempt}: session=${!!data?.session} error=${sessErr ? sessErr.message : 'none'}`);
             if (data?.session) break;
             await new Promise(r => setTimeout(r, 600));
           }
