@@ -397,68 +397,32 @@ const Auth = (() => {
        apple-app-site-association's /welcome.html* entry) to bring the
        user back into the app once Google/Apple redirect to welcome.html. */
     async _oauthLogin(provider) {
-      /* TEMP: live step-by-step overlay, since a plain try/catch shows
-         nothing if a step hangs rather than throws/rejects - this way
-         whatever line is on screen when it stalls tells us exactly
-         where. Remove once root-caused. */
-      let box = document.getElementById('pmOauthDiag');
-      if (!box) {
-        box = document.createElement('div');
-        box.id = 'pmOauthDiag';
-        box.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#000;color:#0f0;font:11px/1.5 monospace;padding:10px;max-height:50vh;overflow:auto;white-space:pre-wrap;';
-        document.body.appendChild(box);
-      }
-      const _t0 = performance.now();
-      const log = (msg) => { const ms = Math.round(performance.now() - _t0); box.textContent += `+${ms}ms  ${msg}\n`; console.log('[oauth-diag]', ms, msg); };
-      log(`tap registered: ${provider}`);
-      log(`window.Capacitor=${typeof window.Capacitor} isIframe=${window.top !== window.self} href=${location.href}`);
-
       const client = await _getSb();
-      log(`got supabase client: ${!!client}`);
       if (!client) return { success: false, error: `${provider} sign-in unavailable.` };
       const cap = _getCapacitor();
-      log(`resolved Capacitor from: ${window.Capacitor ? 'window' : (cap ? 'window.top' : 'nowhere')}`);
       const isNative = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
       const Browser = isNative && cap.Plugins && cap.Plugins.Browser;
-      log(`native=${isNative} browserPlugin=${!!Browser} plugins=${cap ? Object.keys(cap.Plugins || {}).join(',') : 'n/a'}`);
 
-      let data, error;
-      try {
-        log('calling signInWithOAuth...');
-        /* The ?nativeOAuth=1 marker tells welcome.html (running inside the
-           in-app browser this opens into, not the app itself) to relay the
-           finished sign-in back into the app via a custom URL scheme
-           instead of just sitting there - see welcome.html's own comment
-           for why SFSafariViewController needs this explicit hand-off.
-           Web (no Browser plugin) doesn't need it - the browser tab IS
-           the destination there. */
-        ({ data, error } = await client.auth.signInWithOAuth({
-          provider,
-          options: {
-            redirectTo: Browser
-              ? 'https://packmatesai.com/welcome.html?nativeOAuth=1'
-              : 'https://packmatesai.com/welcome.html',
-            skipBrowserRedirect: !!Browser,
-          },
-        }));
-        log(`signInWithOAuth returned: error=${error ? error.message : 'none'} url=${data?.url || 'none'}`);
-      } catch (e) {
-        log(`signInWithOAuth THREW: ${e.message}`);
-        return { success: false, error: `signInWithOAuth threw: ${e.message}` };
-      }
+      /* The ?nativeOAuth=1 marker tells welcome.html (running inside the
+         in-app browser this opens into, not the app itself) to relay the
+         finished sign-in back into the app via a custom URL scheme
+         instead of just sitting there - see welcome.html's own comment
+         for why SFSafariViewController needs this explicit hand-off.
+         Web (no Browser plugin) doesn't need it - the browser tab IS
+         the destination there. */
+      const { data, error } = await client.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: Browser
+            ? 'https://packmatesai.com/welcome.html?nativeOAuth=1'
+            : 'https://packmatesai.com/welcome.html',
+          skipBrowserRedirect: !!Browser,
+        },
+      });
       if (error) return { success: false, error: error.message };
       if (Browser) {
-        if (!data?.url) { log('no url returned - stopping'); return { success: false, error: 'no url returned from supabase' }; }
-        try {
-          log('calling Browser.open...');
-          await Browser.open({ url: data.url });
-          log('Browser.open returned OK');
-        } catch (e) {
-          log(`Browser.open THREW: ${e.message}`);
-          return { success: false, error: `Browser.open threw: ${e.message}` };
-        }
-      } else {
-        log('no Browser plugin - relying on default web redirect');
+        if (!data?.url) return { success: false, error: 'no url returned from supabase' };
+        await Browser.open({ url: data.url });
       }
       return { success: true };
     },
