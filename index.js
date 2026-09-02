@@ -784,13 +784,7 @@
       // no matter how many times the file itself changed on the server.
       const VIDEO_QUEUE = [
         'img/hero-ready-to-start.mp4?v=2',
-        'img/hero-sunrise-clouds.mp4?v=2',
-        'img/hero-safari-zebras.mp4?v=2',
-        'img/hero-rome-colosseum.mp4?v=2',
         'img/hero-turquoise-reef.mp4?v=2',
-        'img/hero-nyc-bridge.mp4?v=2',
-        'img/hero-alpine-lake.mp4?v=2',
-        'img/hero-istanbul-bosphorus.mp4?v=2',
         'img/hero-jungle-waterfall.mp4?v=2',
         'img/hero-alpine-village.mp4',
         'img/hero-lake-dusk.mp4',
