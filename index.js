@@ -785,7 +785,6 @@
       const VIDEO_QUEUE = [
         'img/hero-ready-to-start.mp4?v=2',
         'img/hero-desert-dunes.mp4',
-        'img/hero-turquoise-reef.mp4?v=2',
         'img/hero-alpine-village.mp4',
         'img/hero-lake-dusk.mp4',
         'img/hero-palm-grove.mp4',
@@ -794,6 +793,7 @@
         'img/hero-emerald-lake.mp4',
         'img/hero-budapest.mp4',
         'img/hero-cherry-blossom.mp4',
+        'img/hero-speedboat-turquoise.mp4',
       ];
       const FALLBACK_VIDEO = 'img/hero-forest-compressed.mp4?v=2';
 
