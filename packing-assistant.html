@@ -117,16 +117,17 @@
     }
     body { font-family: 'Montserrat', sans-serif; background: var(--paper); color: var(--ink); }
 
-    .pg-header { background: radial-gradient(120% 140% at 15% 0%, #164163 0%, var(--teal-2) 45%, var(--teal-1) 100%); color: #fff; padding: 28px 24px 56px; overflow: hidden; }
-    .pg-header-inner { max-width: 900px; margin: 0 auto; }
+    .pg-header { position: relative; background: linear-gradient(160deg, rgba(9,36,54,0.58) 0%, rgba(8,34,51,0.88) 78%, rgba(8,34,51,0.97) 100%), url('img/hero-packing-assistant.jpg') 22% 58%/cover no-repeat; color: #fff; padding: 28px 24px 64px; overflow: hidden; }
+    .pg-header::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, rgba(95,157,48,0.22), transparent 40%); pointer-events: none; }
+    .pg-header-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
     .pg-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
     .pg-logo-row img { width: 30px; height: 30px; border-radius: 8px; }
     .pg-logo-row span { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; }
-    .pg-eyebrow { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green2); margin-bottom: 14px; }
-    .pg-h1 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: clamp(2rem, 4.4vw, 2.8rem); line-height: 1.08; letter-spacing: -0.02em; margin-bottom: 16px; text-wrap: balance; max-width: 560px; }
-    .pg-intro { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 480px; margin-bottom: 22px; }
+    .pg-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #fff; background: linear-gradient(120deg, var(--green), var(--green2)); padding: 6px 14px; border-radius: 20px; margin-bottom: 18px; box-shadow: 0 8px 20px rgba(95,157,48,0.35); }
+    .pg-h1 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: clamp(2rem, 4.4vw, 2.8rem); line-height: 1.08; letter-spacing: -0.02em; margin-bottom: 16px; text-wrap: balance; max-width: 560px; text-shadow: 0 2px 18px rgba(0,0,0,0.35); }
+    .pg-intro { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.85); max-width: 480px; margin-bottom: 22px; text-shadow: 0 1px 10px rgba(0,0,0,0.3); }
     .pg-trust-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
-    .pg-trust-pill { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.88); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); padding: 7px 13px 7px 10px; border-radius: 20px; }
+    .pg-trust-pill { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.92); background: rgba(8,34,51,0.55); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.22); padding: 7px 13px 7px 10px; border-radius: 20px; }
     .pg-trust-pill svg { flex-shrink: 0; color: var(--green2); }
 
     .store-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
@@ -141,17 +142,43 @@
     .pg-body { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
     .pg-section { margin-bottom: 48px; }
     .pg-section:first-of-type { margin-top: 56px; }
+    .pg-tint { background: linear-gradient(180deg, #eef6e2, #f3f8ee); border-radius: 26px; padding: 40px 26px 6px; margin-left: -18px; margin-right: -18px; }
+    .pg-tint .showcase-card { background: #fff; }
+
+    .pg-gallery-section { margin: 28px 0 52px; }
+    .shot-gallery-wrap { margin: 0 -24px; overflow: hidden; }
+    .shot-gallery { display: flex; gap: 16px; overflow-x: auto; padding: 18px 24px 14px; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .shot-gallery::-webkit-scrollbar { display: none; }
+    .shot-card { flex: 0 0 auto; width: 172px; scroll-snap-align: start; text-align: center; }
+    .shot-card img { width: 100%; display: block; border-radius: 20px; border: 1px solid var(--line); box-shadow: 0 16px 34px rgba(13,51,71,0.14); margin-bottom: 10px; }
+    .shot-card span { font-size: 0.76rem; font-weight: 700; color: var(--teal-2); }
+
+    .intro-row { display: flex; align-items: center; gap: 40px; }
+    .intro-row-img { flex: 0 0 40%; }
+    .intro-row-img img { width: 100%; display: block; border-radius: 20px; box-shadow: 0 22px 50px rgba(13,51,71,0.18); }
+    .intro-row-text { flex: 1; min-width: 0; }
+    .intro-row-text .pg-h2 { margin-bottom: 14px; }
+
+    @media (max-width: 640px) {
+      .intro-row { flex-direction: column; gap: 22px; text-align: center; }
+      .intro-row-text .pg-h2, .intro-row-text .pg-lede { text-align: center !important; }
+    }
     .pg-h2 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--teal-2); margin-bottom: 8px; letter-spacing: -0.01em; text-align: center; }
     .pg-h2-sub { font-size: 0.85rem; color: #6b7c88; line-height: 1.6; margin-bottom: 26px; text-align: center; max-width: 480px; margin-left: auto; margin-right: auto; }
     .pg-lede { font-size: 0.92rem; line-height: 1.75; color: #45565f; text-align: center; max-width: 600px; margin: 0 auto; }
     .pg-lede strong { color: var(--teal-2); }
 
     .why-num { font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.72rem; color: var(--amber); background: var(--amber-bg); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+    .why-num.c-green { color: var(--green); background: #eef7e2; }
+    .why-num.c-teal { color: var(--teal-3); background: #e7eef4; }
 
-    .showcase-row { display: flex; align-items: center; gap: 36px; margin-bottom: 40px; }
+    .showcase-row { position: relative; display: flex; align-items: center; gap: 36px; margin-bottom: 40px; }
     .showcase-row.reverse { flex-direction: row-reverse; }
-    .showcase-img { flex: 0 0 36%; }
-    .showcase-img img { width: 100%; display: block; border-radius: 20px; box-shadow: 0 22px 50px rgba(13,51,71,0.16); }
+    .showcase-img { position: relative; flex: 0 0 36%; }
+    .showcase-img::before { content: ''; position: absolute; inset: -18%; z-index: 0; background: radial-gradient(circle, var(--glow, rgba(95,157,48,0.28)) 0%, transparent 68%); filter: blur(6px); }
+    .showcase-img img { position: relative; z-index: 1; width: 100%; display: block; border-radius: 20px; box-shadow: 0 22px 50px rgba(13,51,71,0.2); }
+    .showcase-img.glow-amber { --glow: rgba(217,154,43,0.28); }
+    .showcase-img.glow-teal { --glow: rgba(17,58,88,0.26); }
     .showcase-card { flex: 1; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
     .showcase-card h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.08rem; font-weight: 700; color: var(--teal-2); margin-bottom: 9px; letter-spacing: -0.01em; }
     .showcase-card p { font-size: 0.85rem; line-height: 1.68; color: #5c6d78; }
@@ -238,9 +265,26 @@
 
   <main class="pg-body">
 
-    <section class="pg-section">
-      <h2 class="pg-h2">What is a packing assistant?</h2>
-      <p class="pg-lede">A <strong>packing assistant</strong> builds your packing list for you instead of leaving you staring at a blank page the night before a trip. Rather than a static template or a chatbot improvising an answer, Packmates AI works from your actual destination, travel dates, real weather, and planned activities — then keeps everyone traveling with you on the same live list.</p>
+    <section class="pg-gallery-section">
+      <div class="shot-gallery-wrap">
+        <div class="shot-gallery">
+          <div class="shot-card"><img src="img/04_new_trip.png" alt="Add your trip screen" loading="lazy"><span>Add your trip</span></div>
+          <div class="shot-card"><img src="img/01_home.png" alt="Real weather screen" loading="lazy"><span>See real weather</span></div>
+          <div class="shot-card"><img src="img/02_trip_itinerary_.png" alt="Invite packmates screen" loading="lazy"><span>Invite packmates</span></div>
+          <div class="shot-card"><img src="img/03_discover.png" alt="Discover destinations screen" loading="lazy"><span>Discover destinations</span></div>
+          <div class="shot-card"><img src="img/08_profile.png" alt="Packing streak screen" loading="lazy"><span>Track your streak</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pg-section intro-row">
+      <div class="intro-row-img">
+        <img src="img/packing-assistant-suitcase.jpg" alt="Open suitcase packed with rolled clothes, camera, and travel gear, with icons for clothing, shoes, toiletries, camera, passport, and weather connected around it" loading="lazy">
+      </div>
+      <div class="intro-row-text">
+        <h2 class="pg-h2" style="text-align:left">What is a packing assistant?</h2>
+        <p class="pg-lede" style="text-align:left;margin:0">A <strong>packing assistant</strong> builds your packing list for you instead of leaving you staring at a blank page the night before a trip. Rather than a static template or a chatbot improvising an answer, Packmates AI works from your actual destination, travel dates, real weather, and planned activities — then keeps everyone traveling with you on the same live list.</p>
+      </div>
     </section>
 
     <section class="pg-section">
@@ -259,29 +303,29 @@
       </div>
 
       <div class="showcase-row reverse">
-        <div class="showcase-img">
+        <div class="showcase-img glow-amber">
           <img src="img/01_home.png" alt="Packmates AI home screen showing a Cape Coral trip with real-time weather, feels-like temperature, and a 7-day forecast" loading="lazy">
         </div>
         <div class="showcase-card">
-          <div class="why-num">02</div>
+          <div class="why-num c-teal">02</div>
           <h3>It actually checks the weather</h3>
           <p>Real conditions for your destination and dates decide what shows up on your list — rain gear only appears if it's actually going to rain.</p>
         </div>
       </div>
 
       <div class="showcase-row">
-        <div class="showcase-img">
+        <div class="showcase-img glow-teal">
           <img src="img/02_trip_itinerary_.png" alt="Packmates AI trip screen with an Invite Packmates link and trip members list" loading="lazy">
         </div>
         <div class="showcase-card">
-          <div class="why-num">03</div>
+          <div class="why-num c-green">03</div>
           <h3>One list, synced live with your group</h3>
           <p>Invite your packmates with a link and everyone sees the same checklist update in real time — no more "did someone already pack the charger?" texts.</p>
         </div>
       </div>
     </section>
 
-    <section class="pg-section">
+    <section class="pg-section pg-tint">
       <h2 class="pg-h2">More than just a checklist</h2>
       <p class="pg-h2-sub">Your packing assistant also helps you find the next trip — and keeps score while you're at it.</p>
       <div class="showcase-row">
@@ -289,17 +333,17 @@
           <img src="img/03_discover.png" alt="Packmates AI Discover tab showing trending destinations and community travelers" loading="lazy">
         </div>
         <div class="showcase-card">
-          <div class="why-num">04</div>
+          <div class="why-num c-teal">04</div>
           <h3>Discover your next destination</h3>
           <p>Browse trending destinations and see what other travelers are packing before you even book the trip.</p>
         </div>
       </div>
       <div class="showcase-row reverse">
-        <div class="showcase-img">
+        <div class="showcase-img glow-amber">
           <img src="img/08_profile.png" alt="Packmates AI profile screen showing a 14-day packing streak, Beginner Level progress, and trip stats" loading="lazy">
         </div>
         <div class="showcase-card">
-          <div class="why-num">05</div>
+          <div class="why-num c-green">05</div>
           <h3>Build a packing streak</h3>
           <p>Track trips, destinations, and items packed, and level up from Beginner to Adventurer the more you travel.</p>
         </div>
