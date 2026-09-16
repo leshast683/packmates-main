@@ -6,6 +6,7 @@ Allow: /welcome.html
 Allow: /login.html
 Allow: /signup.html
 Allow: /packing-guide.html
+Allow: /packing-assistant.html
 Allow: /*-packing-list.html$
 Allow: /travel-app-i-use-before-every-trip.html
 Allow: /BingSiteAuth.xml
