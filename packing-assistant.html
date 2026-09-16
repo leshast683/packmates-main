@@ -143,7 +143,6 @@
     .pg-section { margin-bottom: 48px; }
     .pg-section:first-of-type { margin-top: 56px; }
     .pg-tint { background: linear-gradient(180deg, #eef6e2, #f3f8ee); border-radius: 26px; padding: 40px 26px 6px; margin-left: -18px; margin-right: -18px; }
-    .pg-tint .showcase-card { background: #fff; }
 
     .pg-gallery-section { margin: 28px 0 52px; }
     .shot-gallery-wrap { margin: 0 -24px; overflow: hidden; }
@@ -168,20 +167,14 @@
     .pg-lede { font-size: 0.92rem; line-height: 1.75; color: #45565f; text-align: center; max-width: 600px; margin: 0 auto; }
     .pg-lede strong { color: var(--teal-2); }
 
-    .why-num { font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.72rem; color: var(--amber); background: var(--amber-bg); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+    .why-num { flex-shrink: 0; font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.78rem; color: var(--amber); background: var(--amber-bg); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     .why-num.c-green { color: var(--green); background: #eef7e2; }
     .why-num.c-teal { color: var(--teal-3); background: #e7eef4; }
 
-    .showcase-row { position: relative; display: flex; align-items: center; gap: 36px; margin-bottom: 40px; }
-    .showcase-row.reverse { flex-direction: row-reverse; }
-    .showcase-img { position: relative; flex: 0 0 36%; }
-    .showcase-img::before { content: ''; position: absolute; inset: -18%; z-index: 0; background: radial-gradient(circle, var(--glow, rgba(95,157,48,0.28)) 0%, transparent 68%); filter: blur(6px); }
-    .showcase-img img { position: relative; z-index: 1; width: 100%; display: block; border-radius: 20px; box-shadow: 0 22px 50px rgba(13,51,71,0.2); }
-    .showcase-img.glow-amber { --glow: rgba(217,154,43,0.28); }
-    .showcase-img.glow-teal { --glow: rgba(17,58,88,0.26); }
-    .showcase-card { flex: 1; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
-    .showcase-card h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.08rem; font-weight: 700; color: var(--teal-2); margin-bottom: 9px; letter-spacing: -0.01em; }
-    .showcase-card p { font-size: 0.85rem; line-height: 1.68; color: #5c6d78; }
+    .feat-card { display: flex; align-items: flex-start; gap: 18px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; margin-bottom: 14px; }
+    .feat-card-text h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.08rem; font-weight: 700; color: var(--teal-2); margin-bottom: 6px; letter-spacing: -0.01em; }
+    .feat-card-text p { font-size: 0.85rem; line-height: 1.68; color: #5c6d78; }
+    .pg-tint .feat-card { background: #fff; }
 
     .steps-row { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 6px; }
     .steps-row::before { content: ''; position: absolute; top: 27px; left: 16.6%; right: 16.6%; height: 2px; background-image: repeating-linear-gradient(90deg, #ced9e0 0 8px, transparent 8px 18px); }
@@ -231,8 +224,6 @@
       .steps-row::before { display: none; }
       .battle-wrap { grid-template-columns: 1fr; gap: 34px; }
       .battle-vs { top: auto; bottom: -30px; left: 50%; transform: translateX(-50%); }
-      .showcase-row, .showcase-row.reverse { flex-direction: column; gap: 18px; }
-      .showcase-img { flex: 0 0 auto; width: 66%; max-width: 220px; }
       .store-row { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -291,34 +282,25 @@
       <h2 class="pg-h2">Why it works as a packing assistant</h2>
       <p class="pg-h2-sub">Not a chatbot improvising a list — a system built specifically to get packing right.</p>
 
-      <div class="showcase-row">
-        <div class="showcase-img">
-          <img src="img/04_new_trip.png" alt="Packmates AI new trip screen with destination, dates, travelers, and trip type & activities fields" loading="lazy">
-        </div>
-        <div class="showcase-card">
-          <div class="why-num">01</div>
+      <div class="feat-card">
+        <div class="why-num">01</div>
+        <div class="feat-card-text">
           <h3>Built from your real trip, not a guess</h3>
           <p>Your packing assistant generates a list from your actual destination, travel dates, and activities — not a one-size-fits-all template.</p>
         </div>
       </div>
 
-      <div class="showcase-row reverse">
-        <div class="showcase-img glow-amber">
-          <img src="img/01_home.png" alt="Packmates AI home screen showing a Cape Coral trip with real-time weather, feels-like temperature, and a 7-day forecast" loading="lazy">
-        </div>
-        <div class="showcase-card">
-          <div class="why-num c-teal">02</div>
+      <div class="feat-card">
+        <div class="why-num c-teal">02</div>
+        <div class="feat-card-text">
           <h3>It actually checks the weather</h3>
           <p>Real conditions for your destination and dates decide what shows up on your list — rain gear only appears if it's actually going to rain.</p>
         </div>
       </div>
 
-      <div class="showcase-row">
-        <div class="showcase-img glow-teal">
-          <img src="img/02_trip_itinerary_.png" alt="Packmates AI trip screen with an Invite Packmates link and trip members list" loading="lazy">
-        </div>
-        <div class="showcase-card">
-          <div class="why-num c-green">03</div>
+      <div class="feat-card">
+        <div class="why-num c-green">03</div>
+        <div class="feat-card-text">
           <h3>One list, synced live with your group</h3>
           <p>Invite your packmates with a link and everyone sees the same checklist update in real time — no more "did someone already pack the charger?" texts.</p>
         </div>
@@ -328,22 +310,16 @@
     <section class="pg-section pg-tint">
       <h2 class="pg-h2">More than just a checklist</h2>
       <p class="pg-h2-sub">Your packing assistant also helps you find the next trip — and keeps score while you're at it.</p>
-      <div class="showcase-row">
-        <div class="showcase-img">
-          <img src="img/03_discover.png" alt="Packmates AI Discover tab showing trending destinations and community travelers" loading="lazy">
-        </div>
-        <div class="showcase-card">
-          <div class="why-num c-teal">04</div>
+      <div class="feat-card">
+        <div class="why-num c-teal">04</div>
+        <div class="feat-card-text">
           <h3>Discover your next destination</h3>
           <p>Browse trending destinations and see what other travelers are packing before you even book the trip.</p>
         </div>
       </div>
-      <div class="showcase-row reverse">
-        <div class="showcase-img glow-amber">
-          <img src="img/08_profile.png" alt="Packmates AI profile screen showing a 14-day packing streak, Beginner Level progress, and trip stats" loading="lazy">
-        </div>
-        <div class="showcase-card">
-          <div class="why-num c-green">05</div>
+      <div class="feat-card">
+        <div class="why-num c-green">05</div>
+        <div class="feat-card-text">
           <h3>Build a packing streak</h3>
           <p>Track trips, destinations, and items packed, and level up from Beginner to Adventurer the more you travel.</p>
         </div>
