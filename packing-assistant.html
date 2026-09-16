@@ -13,24 +13,33 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW"></script>
+  <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag("js", new Date());
-    gtag("config", "G-5QYXT3Q3HW");
+    (function () {
+      var on = true;
+      try { on = (JSON.parse(localStorage.getItem('pm_profile') || '{}').privacy || {}).analytics ?? true; } catch (e) {}
+      if (!on) return;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments); };
+      gtag("js", new Date());
+      gtag("config", "G-5QYXT3Q3HW");
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW';
+      document.head.appendChild(s);
+    })();
   </script>
-  <title>Adaptive AI Packing List — Why Packmates AI Gets It Right | Packmates AI</title>
-  <meta name="description" content="Generic AI can guess at a packing list. Packmates AI builds one from your real destination, weather, and activities, keeps it synced live with your group, and updates it as your trip changes.">
+  <title>Packing Assistant — Packmates AI | Now on the App Store</title>
+  <meta name="description" content="Packmates AI is a packing assistant that builds your checklist from real weather, dates, and activities, then syncs it live with your group. Now on the App Store.">
+  <meta name="keywords" content="packing assistant, packing assistant app, packing assistant tool, AI packing assistant, packing list app">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Adaptive AI Packing List — Why Packmates AI Gets It Right | Packmates AI">
-  <meta property="og:description" content="Generic AI can guess at a packing list. Packmates AI builds one from your real destination, weather, and activities, keeps it synced live with your group, and updates it as your trip changes.">
+  <meta property="og:title" content="Packing Assistant — Packmates AI | Now on the App Store">
+  <meta property="og:description" content="Packmates AI is a packing assistant that builds your checklist from real weather, dates, and activities, then syncs it live with your group. Now on the App Store.">
   <meta property="og:image" content="https://packmatesai.com/img/og-share.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://packmatesai.com/adaptive-ai-packing-list.html">
-  <link rel="canonical" href="https://packmatesai.com/adaptive-ai-packing-list.html">
+  <meta property="og:url" content="https://packmatesai.com/packing-assistant.html">
+  <link rel="canonical" href="https://packmatesai.com/packing-assistant.html">
   <link rel="icon" type="image/png" href="img/appIcon.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0d3347">
@@ -39,10 +48,22 @@
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "Adaptive AI Packing List: Why Packmates AI Gets It Right",
-    "description": "How Packmates AI builds a packing list that adapts to your destination, travel dates, weather, and activities, and why that beats a static checklist or a generic AI guess.",
+    "headline": "Packing Assistant: Meet Packmates AI",
+    "description": "Packmates AI is a packing assistant that builds a checklist from your real destination, dates, weather, and activities, then keeps it synced live with your group. Available now on the App Store.",
     "author": { "@type": "Organization", "name": "Packmates AI" },
     "publisher": { "@type": "Organization", "name": "Packmates AI" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Packmates AI",
+    "applicationCategory": "TravelApplication",
+    "operatingSystem": "iOS",
+    "url": "https://packmatesai.com/packing-assistant.html",
+    "downloadUrl": "https://apps.apple.com/us/app/packmates-ai/id6796205889",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
   }
   </script>
   <script type="application/ld+json">
@@ -52,42 +73,34 @@
     "mainEntity": [
       {
         "@type": "Question",
-        "name": "What makes a packing list \"adaptive\"?",
+        "name": "What is a packing assistant?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "An adaptive packing list is generated from your actual trip details — destination, dates, and activities — instead of a fixed template. Packmates AI builds it automatically and updates it whenever those details change."
+          "text": "A packing assistant is a tool that builds your packing list for you instead of you starting from a blank page. Packmates AI works from your actual destination, travel dates, weather, and planned activities, then keeps that list synced live with everyone traveling with you."
         }
       },
       {
         "@type": "Question",
-        "name": "How is this different from just asking a chatbot for a packing list?",
+        "name": "Is Packmates AI's packing assistant available on iPhone?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "A general AI chatbot improvises a new list from scratch every time and has no way to sync it with the people you're traveling with. Packmates AI pulls from a curated database of 250+ real packing items, factors in actual weather and activities, and keeps one shared list live across your whole group."
+          "text": "Yes. Packmates AI is available now on the App Store for iPhone, and also works in any web browser at packmatesai.com."
         }
       },
       {
         "@type": "Question",
-        "name": "Does Packmates AI use real weather data?",
+        "name": "Is the packing assistant free?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes. Your checklist factors in expected conditions for your destination and travel dates, so items like rain gear, layers, or extra sun protection only show up when they're actually relevant."
+          "text": "Yes, you can try Packmates AI for free on the web or download it from the App Store."
         }
       },
       {
         "@type": "Question",
-        "name": "Can I still edit the list myself?",
+        "name": "How is a packing assistant different from a checklist app?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes. The generated list is a starting point — you can check off, add, remove, or reassign any item, and everyone on the trip sees those changes in real time."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What happens if I change my trip dates or add an activity?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Update your trip details in Packmates AI and the packing list adjusts with them — no need to manually rebuild the list or remember what you added last time."
+          "text": "A plain checklist app gives you a blank list or one generic template. A packing assistant like Packmates AI generates the list for you from your real trip details and a database of 250+ packing items, and keeps it updated as your plans change."
         }
       }
     ]
@@ -112,19 +125,29 @@
     .pg-eyebrow { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green2); margin-bottom: 14px; }
     .pg-h1 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: clamp(2rem, 4.4vw, 2.8rem); line-height: 1.08; letter-spacing: -0.02em; margin-bottom: 16px; text-wrap: balance; max-width: 560px; }
     .pg-intro { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 480px; margin-bottom: 22px; }
-    .pg-trust-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+    .pg-trust-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
     .pg-trust-pill { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.88); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); padding: 7px 13px 7px 10px; border-radius: 20px; }
     .pg-trust-pill svg { flex-shrink: 0; color: var(--green2); }
+
+    .store-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+    .appstore-btn { display: inline-flex; align-items: center; gap: 10px; padding: 11px 20px; background: #000; color: #fff; border-radius: 12px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); transition: transform 0.2s, background 0.2s; }
+    .appstore-btn:hover { transform: translateY(-1px); background: #1a1a1a; }
+    .appstore-btn svg { flex-shrink: 0; }
+    .appstore-btn-text { line-height: 1.15; }
+    .appstore-btn-text small { display: block; font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.75); letter-spacing: 0.02em; }
+    .appstore-btn-text span { display: block; font-size: 1rem; font-weight: 700; font-family: -apple-system, 'Helvetica Neue', sans-serif; }
+    .web-link { font-size: 0.82rem; font-weight: 700; color: #fff; text-decoration: underline; text-underline-offset: 3px; }
 
     .pg-body { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
     .pg-section { margin-bottom: 48px; }
     .pg-section:first-of-type { margin-top: 56px; }
     .pg-h2 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--teal-2); margin-bottom: 8px; letter-spacing: -0.01em; text-align: center; }
     .pg-h2-sub { font-size: 0.85rem; color: #6b7c88; line-height: 1.6; margin-bottom: 26px; text-align: center; max-width: 480px; margin-left: auto; margin-right: auto; }
+    .pg-lede { font-size: 0.92rem; line-height: 1.75; color: #45565f; text-align: center; max-width: 600px; margin: 0 auto; }
+    .pg-lede strong { color: var(--teal-2); }
 
     .why-num { font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.72rem; color: var(--amber); background: var(--amber-bg); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
 
-    /* --- why choose us: alternating image + card rows --- */
     .showcase-row { display: flex; align-items: center; gap: 36px; margin-bottom: 40px; }
     .showcase-row.reverse { flex-direction: row-reverse; }
     .showcase-img { flex: 0 0 36%; }
@@ -133,7 +156,6 @@
     .showcase-card h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.08rem; font-weight: 700; color: var(--teal-2); margin-bottom: 9px; letter-spacing: -0.01em; }
     .showcase-card p { font-size: 0.85rem; line-height: 1.68; color: #5c6d78; }
 
-    /* --- how it works: connected timeline --- */
     .steps-row { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 6px; }
     .steps-row::before { content: ''; position: absolute; top: 27px; left: 16.6%; right: 16.6%; height: 2px; background-image: repeating-linear-gradient(90deg, #ced9e0 0 8px, transparent 8px 18px); }
     .step-card { position: relative; z-index: 1; text-align: center; }
@@ -141,7 +163,6 @@
     .step-card h4 { font-family: 'Blauer Nue', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--teal-2); margin-bottom: 6px; }
     .step-card p { font-size: 0.8rem; line-height: 1.6; color: #5c6d78; }
 
-    /* --- comparison: battle cards --- */
     .battle-wrap { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     .battle-vs { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; width: 44px; height: 44px; border-radius: 50%; background: var(--paper); border: 2px solid #fff; box-shadow: 0 6px 16px rgba(13,51,71,0.18); display: flex; align-items: center; justify-content: center; font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.68rem; color: #8a99a4; letter-spacing: 0.02em; }
     .battle-card { border-radius: 18px; padding: 26px 20px; }
@@ -157,7 +178,6 @@
     .battle-card--them li::before { content: '✕'; color: #c7d2d9; font-weight: 700; font-size: 0.68rem; margin-top: 2px; flex-shrink: 0; }
     .battle-card--us li::before { content: '✓'; color: var(--green2); font-weight: 700; font-size: 0.68rem; margin-top: 2px; flex-shrink: 0; }
 
-    /* --- FAQ accordion --- */
     .pg-faq-item { background: #fff; border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
     .pg-faq-item summary { cursor: pointer; padding: 18px 22px; font-family: 'Blauer Nue', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--teal-2); display: flex; align-items: center; justify-content: space-between; gap: 16px; list-style: none; }
     .pg-faq-item summary::-webkit-details-marker { display: none; }
@@ -170,6 +190,7 @@
     .pg-cta { background: linear-gradient(135deg, var(--teal-2), var(--teal-1)); border-radius: 20px; padding: 40px 32px; text-align: center; color: #fff; margin: 8px 0 40px; }
     .pg-cta h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
     .pg-cta p { font-size: 0.86rem; color: rgba(255,255,255,0.65); margin-bottom: 22px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+    .pg-cta-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; }
     .pg-cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 30px; background: var(--green); color: #fff; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 0.84rem; transition: background 0.2s, transform 0.2s; }
     .pg-cta-btn:hover { background: var(--green2); transform: translateY(-1px); }
     .pg-footer { text-align: center; font-size: 0.76rem; color: #8a99a4; }
@@ -185,6 +206,7 @@
       .battle-vs { top: auto; bottom: -30px; left: 50%; transform: translateX(-50%); }
       .showcase-row, .showcase-row.reverse { flex-direction: column; gap: 18px; }
       .showcase-img { flex: 0 0 auto; width: 66%; max-width: 220px; }
+      .store-row { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -196,13 +218,20 @@
         <img src="img/appIcon.png" alt="Packmates AI">
         <span>Packmates AI</span>
       </div>
-      <div class="pg-eyebrow">Why Packmates AI</div>
-      <h1 class="pg-h1">A packing list that actually knows your trip</h1>
-      <p class="pg-intro">No two trips pack the same way. Packmates AI builds your checklist from your actual destination, dates, weather, and activities — then keeps everyone you're traveling with on the same list, updated live.</p>
+      <div class="pg-eyebrow">Packing Assistant</div>
+      <h1 class="pg-h1">Meet your personal packing assistant</h1>
+      <p class="pg-intro">Packmates AI is a packing assistant that builds your checklist from your real destination, travel dates, weather, and activities — then keeps it synced live with everyone on the trip. Now available on the App Store.</p>
       <div class="pg-trust-row">
+        <span class="pg-trust-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Now on the App Store</span>
         <span class="pg-trust-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>250+ item packing database</span>
-        <span class="pg-trust-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Real weather, not a guess</span>
         <span class="pg-trust-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Synced live with your group</span>
+      </div>
+      <div class="store-row">
+        <a class="appstore-btn" href="https://apps.apple.com/us/app/packmates-ai/id6796205889" target="_blank" rel="noopener">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.536c-.03-3.06 2.5-4.53 2.61-4.6-1.43-2.09-3.65-2.38-4.44-2.41-1.89-.19-3.69 1.11-4.65 1.11-.96 0-2.44-1.08-4.01-1.05-2.06.03-3.97 1.2-5.03 3.04-2.15 3.73-.55 9.25 1.55 12.28 1.02 1.48 2.24 3.14 3.84 3.08 1.55-.06 2.13-.99 4-.99 1.87 0 2.39.99 4.02.96 1.66-.03 2.71-1.51 3.72-2.99 1.18-1.71 1.66-3.37 1.68-3.45-.04-.02-3.22-1.24-3.25-4.98zM14.04 3.5c.85-1.03 1.42-2.46 1.26-3.89-1.22.05-2.7.81-3.58 1.84-.79.91-1.48 2.37-1.29 3.76 1.36.11 2.75-.69 3.61-1.71z"/></svg>
+          <span class="appstore-btn-text"><small>Download on the</small><span>App Store</span></span>
+        </a>
+        <a class="web-link" href="signup.html">or try it free on the web →</a>
       </div>
     </div>
   </header>
@@ -210,45 +239,75 @@
   <main class="pg-body">
 
     <section class="pg-section">
-      <h2 class="pg-h2">Why travelers pick Packmates AI</h2>
+      <h2 class="pg-h2">What is a packing assistant?</h2>
+      <p class="pg-lede">A <strong>packing assistant</strong> builds your packing list for you instead of leaving you staring at a blank page the night before a trip. Rather than a static template or a chatbot improvising an answer, Packmates AI works from your actual destination, travel dates, real weather, and planned activities — then keeps everyone traveling with you on the same live list.</p>
+    </section>
+
+    <section class="pg-section">
+      <h2 class="pg-h2">Why it works as a packing assistant</h2>
       <p class="pg-h2-sub">Not a chatbot improvising a list — a system built specifically to get packing right.</p>
 
       <div class="showcase-row">
         <div class="showcase-img">
-          <img src="img/adaptive-weather-activities.jpg" alt="Packmates AI new trip screen building a checklist around real weather and activities" loading="lazy">
+          <img src="img/04_new_trip.png" alt="Packmates AI new trip screen with destination, dates, travelers, and trip type & activities fields" loading="lazy">
         </div>
         <div class="showcase-card">
           <div class="why-num">01</div>
           <h3>Built from your real trip, not a guess</h3>
-          <p>Every list is generated from your actual destination, travel dates, and activities — not a one-size-fits-all template or a chatbot improvising an answer.</p>
+          <p>Your packing assistant generates a list from your actual destination, travel dates, and activities — not a one-size-fits-all template.</p>
         </div>
       </div>
 
       <div class="showcase-row reverse">
         <div class="showcase-img">
-          <img src="img/adaptive-250-items.jpg" alt="Packmates AI showing a beach packing checklist pulled from its 250+ item database" loading="lazy">
+          <img src="img/01_home.png" alt="Packmates AI home screen showing a Cape Coral trip with real-time weather, feels-like temperature, and a 7-day forecast" loading="lazy">
         </div>
         <div class="showcase-card">
           <div class="why-num">02</div>
-          <h3>A real database, not AI hallucination</h3>
-          <p>Items come from a curated database of 250+ packing essentials matched to real conditions, not invented fresh — and inconsistently — every time you ask.</p>
+          <h3>It actually checks the weather</h3>
+          <p>Real conditions for your destination and dates decide what shows up on your list — rain gear only appears if it's actually going to rain.</p>
         </div>
       </div>
 
       <div class="showcase-row">
         <div class="showcase-img">
-          <img src="img/adaptive-share-friends.jpg" alt="Packmates AI profile screen showing trips and packing lists shared with friends" loading="lazy">
+          <img src="img/02_trip_itinerary_.png" alt="Packmates AI trip screen with an Invite Packmates link and trip members list" loading="lazy">
         </div>
         <div class="showcase-card">
           <div class="why-num">03</div>
           <h3>One list, synced live with your group</h3>
-          <p>Every packmate sees the same checklist update in real time — no more "did someone already pack the charger?" texts.</p>
+          <p>Invite your packmates with a link and everyone sees the same checklist update in real time — no more "did someone already pack the charger?" texts.</p>
         </div>
       </div>
     </section>
 
     <section class="pg-section">
-      <h2 class="pg-h2">How it works</h2>
+      <h2 class="pg-h2">More than just a checklist</h2>
+      <p class="pg-h2-sub">Your packing assistant also helps you find the next trip — and keeps score while you're at it.</p>
+      <div class="showcase-row">
+        <div class="showcase-img">
+          <img src="img/03_discover.png" alt="Packmates AI Discover tab showing trending destinations and community travelers" loading="lazy">
+        </div>
+        <div class="showcase-card">
+          <div class="why-num">04</div>
+          <h3>Discover your next destination</h3>
+          <p>Browse trending destinations and see what other travelers are packing before you even book the trip.</p>
+        </div>
+      </div>
+      <div class="showcase-row reverse">
+        <div class="showcase-img">
+          <img src="img/08_profile.png" alt="Packmates AI profile screen showing a 14-day packing streak, Beginner Level progress, and trip stats" loading="lazy">
+        </div>
+        <div class="showcase-card">
+          <div class="why-num">05</div>
+          <h3>Build a packing streak</h3>
+          <p>Track trips, destinations, and items packed, and level up from Beginner to Adventurer the more you travel.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pg-section">
+      <h2 class="pg-h2">How your packing assistant works</h2>
       <p class="pg-h2-sub">From blank trip to shared checklist in three steps.</p>
       <div class="steps-row">
         <div class="step-card">
@@ -259,7 +318,7 @@
         <div class="step-card">
           <div class="step-icon">2</div>
           <h4>Get your list</h4>
-          <p>Packmates AI builds a checklist from real weather, location, and activity data.</p>
+          <p>Your packing assistant builds a checklist from real weather, location, and activity data.</p>
         </div>
         <div class="step-card">
           <div class="step-icon">3</div>
@@ -270,12 +329,12 @@
     </section>
 
     <section class="pg-section">
-      <h2 class="pg-h2">Adaptive vs. everything else</h2>
+      <h2 class="pg-h2">Packing assistant vs. a plain checklist app</h2>
       <p class="pg-h2-sub">Same trip questions, two very different answers.</p>
       <div class="battle-wrap">
         <div class="battle-vs">VS</div>
         <div class="battle-card battle-card--them">
-          <div class="battle-label">Static app or chatbot</div>
+          <div class="battle-label">Plain checklist app</div>
           <ul>
             <li>Same generic list every time</li>
             <li>Doesn't account for weather</li>
@@ -298,34 +357,36 @@
     <section class="pg-section">
       <h2 class="pg-h2">Common questions</h2>
       <details class="pg-faq-item" open>
-        <summary>What makes a packing list "adaptive"?<span class="faq-chevron"></span></summary>
-        <p>It's generated from your actual trip details instead of a fixed template, and it keeps adjusting as those details change — rather than being a one-time list you have to maintain yourself.</p>
+        <summary>What is a packing assistant?<span class="faq-chevron"></span></summary>
+        <p>A packing assistant is a tool that builds your packing list for you instead of you starting from a blank page. Packmates AI works from your actual destination, travel dates, weather, and planned activities, then keeps that list synced live with everyone traveling with you.</p>
       </details>
       <details class="pg-faq-item">
-        <summary>How is this different from just asking a chatbot for a packing list?<span class="faq-chevron"></span></summary>
-        <p>A general AI chatbot improvises a new list from scratch every time and has no way to sync it with the people you're traveling with. Packmates AI pulls from a curated database of 250+ real packing items, factors in actual weather and activities, and keeps one shared list live across your whole group.</p>
+        <summary>Is Packmates AI's packing assistant available on iPhone?<span class="faq-chevron"></span></summary>
+        <p>Yes. Packmates AI is available now on the App Store for iPhone, and also works in any web browser at packmatesai.com.</p>
       </details>
       <details class="pg-faq-item">
-        <summary>Does it use real weather data?<span class="faq-chevron"></span></summary>
-        <p>Yes. Expected conditions for your destination and travel dates shape what shows up on your list, so weather-specific items only appear when they're actually relevant to your trip.</p>
+        <summary>Is the packing assistant free?<span class="faq-chevron"></span></summary>
+        <p>Yes, you can try Packmates AI for free on the web or download it from the App Store.</p>
       </details>
       <details class="pg-faq-item">
-        <summary>Can I still edit the list myself?<span class="faq-chevron"></span></summary>
-        <p>Always. The generated list is a starting point — check items off, add your own, remove what you don't need, or assign items to specific packmates.</p>
-      </details>
-      <details class="pg-faq-item">
-        <summary>What happens if I change my trip dates or add an activity?<span class="faq-chevron"></span></summary>
-        <p>Update your trip in Packmates AI and the list adjusts with it, so you're not stuck rebuilding it or trying to remember what you already added.</p>
+        <summary>How is a packing assistant different from a checklist app?<span class="faq-chevron"></span></summary>
+        <p>A plain checklist app gives you a blank list or one generic template. A packing assistant like Packmates AI generates the list for you from your real trip details and a database of 250+ packing items, and keeps it updated as your plans change.</p>
       </details>
     </section>
 
     <div class="pg-cta">
-      <h3>See your own adaptive list in seconds</h3>
-      <p>Tell Packmates AI where you're going, when, and what you'll be doing — it builds a checklist from a database of 250+ packing items and keeps it synced with everyone on the trip.</p>
-      <a class="pg-cta-btn" href="signup.html">
-        Try it free
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
+      <h3>Get your own packing assistant</h3>
+      <p>Download Packmates AI from the App Store, or try it free on the web — tell it where you're going and when, and it builds a checklist from real weather and 250+ packing items.</p>
+      <div class="pg-cta-actions">
+        <a class="appstore-btn" href="https://apps.apple.com/us/app/packmates-ai/id6796205889" target="_blank" rel="noopener">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.536c-.03-3.06 2.5-4.53 2.61-4.6-1.43-2.09-3.65-2.38-4.44-2.41-1.89-.19-3.69 1.11-4.65 1.11-.96 0-2.44-1.08-4.01-1.05-2.06.03-3.97 1.2-5.03 3.04-2.15 3.73-.55 9.25 1.55 12.28 1.02 1.48 2.24 3.14 3.84 3.08 1.55-.06 2.13-.99 4-.99 1.87 0 2.39.99 4.02.96 1.66-.03 2.71-1.51 3.72-2.99 1.18-1.71 1.66-3.37 1.68-3.45-.04-.02-3.22-1.24-3.25-4.98zM14.04 3.5c.85-1.03 1.42-2.46 1.26-3.89-1.22.05-2.7.81-3.58 1.84-.79.91-1.48 2.37-1.29 3.76 1.36.11 2.75-.69 3.61-1.71z"/></svg>
+          <span class="appstore-btn-text"><small>Download on the</small><span>App Store</span></span>
+        </a>
+        <a class="pg-cta-btn" href="signup.html">
+          Try it free on the web
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
     </div>
 
     <div class="pg-footer-social">
@@ -335,7 +396,7 @@
     </div>
     <div class="pg-footer">
       <a href="welcome.html">← Packmates AI</a>
-      <a href="packing-assistant.html">Packing Assistant</a>
+      <a href="adaptive-ai-packing-list.html">Adaptive Packing List</a>
       <a href="packing-guide.html">Packing Guide</a>
     </div>
   </main>
