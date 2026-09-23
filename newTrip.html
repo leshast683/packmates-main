@@ -1300,7 +1300,7 @@
       const q  = query.toLowerCase();
       const matches = PACKMATES_AIRLINES.filter(a =>
         a.name.toLowerCase().includes(q) || a.iata.toLowerCase().includes(q)
-      ).slice(0, 8);
+      ).slice(0, 15);
 
       if (!matches.length) { dd.style.display = 'none'; return; }
 
