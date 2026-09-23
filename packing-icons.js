@@ -425,7 +425,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('backpack'))                            return PACKING_ICONS.backpack;
   if (n.includes('fanny pack'))                          return PACKING_ICONS.fanny_pack;
   if (n.includes('diaper bag'))                          return PACKING_ICONS.diaper_bag;
-  if (n.includes('beach bag') || n.includes('beach tote')) return PACKING_ICONS.beach_bag;
+  if (n.includes('beach bag') || n.includes('beach tote') || n.includes('tote bag')) return PACKING_ICONS.beach_bag;
   if (n.includes('clutch'))                              return PACKING_ICONS.clutch_purse;
   if (n.includes('jewelry') || n.includes('jewellery') || n.includes('necklace') || n.includes('bracelet') || n.includes('ring')) return PACKING_ICONS.jewelry;
   if (n.includes('smart watch') || n.includes('smartwatch')) return PACKING_ICONS.smart_watch;
