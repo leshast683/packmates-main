@@ -427,6 +427,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('fanny pack'))                          return PACKING_ICONS.fanny_pack;
   if (n.includes('diaper bag'))                          return PACKING_ICONS.diaper_bag;
   if (n.includes('beach bag') || n.includes('beach tote') || n.includes('tote bag')) return PACKING_ICONS.beach_bag;
+  if (n.includes('gym bag'))                             return PACKING_ICONS.gym_bag;
   if (n.includes('clutch'))                              return PACKING_ICONS.clutch_purse;
   if (n.includes('jewelry') || n.includes('jewellery') || n.includes('necklace') || n.includes('bracelet') || n.includes('ring')) return PACKING_ICONS.jewelry;
   if (n.includes('smart watch') || n.includes('smartwatch')) return PACKING_ICONS.smart_watch;
@@ -463,7 +464,6 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('portable fan'))                        return PACKING_ICONS.portable_fan;
   if (n.includes('folding hand fan') || n.includes('hand fan')) return PACKING_ICONS.hand_fan;
   if (n.includes('electrolyte'))                         return PACKING_ICONS.electrolyte_packets;
-  if (n.includes('gym bag'))                             return PACKING_ICONS.gym_bag;
   if (n.includes('sarong'))                              return PACKING_ICONS.sarong;
   if (n.includes('portable speaker') || n.includes('bluetooth speaker')) return PACKING_ICONS.portable_speaker;
   // Camping / Outdoors
