@@ -35,6 +35,7 @@ electrolyte_packets:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
 gym_bag:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_gym_bag.png" x="0" y="0" width="20" height="20"/></svg>`,
 eye_patches:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_eye_patches.png" x="0" y="0" width="20" height="20"/></svg>`,
 sarong:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_sarong.png" x="0" y="0" width="20" height="20"/></svg>`,
+ankle_socks:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_ankle_socks.png" x="0" y="0" width="20" height="20"/></svg>`,
 allergy_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/allergy_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
 prescription_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/prescription_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
 spray_bottle:`<svg viewBox="0 0 20 20" fill="none"><rect x="6.5" y="7.5" width="7" height="11" rx="2.5" fill="#14532d" opacity="0.35"/><rect x="7" y="7" width="7" height="11" rx="2.5" fill="#166534"/><rect x="6" y="6.5" width="7" height="11" rx="2.5" fill="#16a34a"/><rect x="6" y="6.5" width="7" height="4.5" rx="2.5" fill="#22c55e"/><path d="M13 8 L16 8 L16 5" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 5 L18.5 5" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round"/><rect x="8.5" y="3.5" width="3" height="3.5" rx="1.5" fill="#14532d"/><rect x="8" y="2.5" width="4" height="1.5" rx="0.5" fill="#4ade80"/><ellipse cx="8" cy="7.5" rx="1.5" ry="0.7" fill="rgba(255,255,255,0.3)"/></svg>`,
@@ -399,6 +400,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('onesie'))                              return PACKING_ICONS.onesie;
   if (n.includes('wool sock'))                            return PACKING_ICONS.wool_socks;
   if (n.includes('hiking sock'))                          return PACKING_ICONS.hiking_socks;
+  if (n.includes('ankle sock'))                          return PACKING_ICONS.ankle_socks;
   if (n.includes('socks') || n.includes('sock'))         return PACKING_ICONS.socks;
   // Shoes — most specific first
   if (n.includes('ski boot'))                            return PACKING_ICONS.ski_boots;
