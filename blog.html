@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://analytics.ahrefs.com/analytics.js" data-key="ZwbceU4znFxojIMuQlrb0Q" async></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script>
+    /* App-only: pinch/double-tap zoom reads as a bug in a native app
+       (nothing here is meant to be zoomable), but disabling it on the
+       public website would hurt pinch-zoom accessibility for browser
+       visitors - so this only overrides the viewport inside Capacitor. */
+    if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+      document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    }
+  </script>
+  <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
+  <script>
+    (function () {
+      var on = true;
+      try { on = (JSON.parse(localStorage.getItem('pm_profile') || '{}').privacy || {}).analytics ?? true; } catch (e) {}
+      if (!on) return;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments); };
+      gtag("js", new Date());
+      gtag("config", "G-5QYXT3Q3HW");
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW';
+      document.head.appendChild(s);
+    })();
+  </script>
+  <title>Blog — Packmates AI</title>
+  <meta name="description" content="Travel tips, packing advice, and updates from the Packmates AI team.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Blog — Packmates AI">
+  <meta property="og:description" content="Travel tips, packing advice, and updates from the Packmates AI team.">
+  <meta property="og:image" content="https://packmatesai.com/img/og-share.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://packmatesai.com/blog.html">
+  <link rel="canonical" href="https://packmatesai.com/blog.html">
+  <link rel="icon" type="image/png" href="img/appIcon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0d3347">
+  <link rel="apple-touch-icon" href="/img/icon-192.png">
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="standalone.css">
+  <style>
+    :root {
+      --teal-1: #082233; --teal-2: #0d3347; --teal-3: #113a58;
+      --green: #5f9d30; --green2: #7cc63e;
+      --ink: #16222c; --paper: #f6f8f9; --line: #e2e8ec;
+    }
+    body { font-family: 'Montserrat', sans-serif; background: var(--paper); color: var(--ink); }
+
+    .pg-header { background: linear-gradient(160deg, var(--teal-2) 0%, var(--teal-1) 100%); color: #fff; padding: 28px 24px 56px; }
+    .pg-header-inner { max-width: 760px; margin: 0 auto; }
+    .pg-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+    .pg-logo-row img { width: 30px; height: 30px; border-radius: 8px; }
+    .pg-logo-row span { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .pg-eyebrow { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green2); margin-bottom: 14px; }
+    .pg-h1 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: clamp(2rem, 4vw, 2.7rem); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 16px; text-wrap: balance; }
+    .pg-intro { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 600px; }
+
+    .pg-body { max-width: 800px; margin: -32px auto 0; padding: 0 24px 80px; }
+    #soro-blog-wrap { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 8px; box-shadow: 0 12px 32px rgba(13,51,71,0.08); min-height: 240px; }
+
+    .pg-footer { text-align: center; font-size: 0.76rem; color: #8a99a4; margin-top: 40px; }
+    .pg-footer a { color: #8a99a4; margin: 0 8px; }
+  </style>
+</head>
+<body>
+
+  <header class="pg-header">
+    <div class="pg-header-inner">
+      <div class="pg-logo-row">
+        <img src="img/appIcon.png" alt="Packmates AI">
+        <span>Packmates AI</span>
+      </div>
+      <div class="pg-eyebrow">Blog</div>
+      <h1 class="pg-h1">Travel tips &amp; packing advice</h1>
+      <p class="pg-intro">Guides, destination tips, and updates from the team building Packmates AI.</p>
+    </div>
+  </header>
+
+  <main class="pg-body">
+    <div id="soro-blog-wrap">
+      <div id="soro-blog"></div>
+    </div>
+
+    <div class="pg-footer">
+      <a href="welcome.html">← Packmates AI</a>
+      <a href="packing-guide.html">Packing Guide</a>
+      <a href="packing-assistant.html">Packing Assistant</a>
+    </div>
+  </main>
+
+  <script src="https://app.trysoro.com/api/embed/9143e79c-3785-4225-8c02-03126ad95f18" defer></script>
+</body>
+</html>
