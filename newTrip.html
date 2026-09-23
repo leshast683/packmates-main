@@ -609,6 +609,18 @@
     }
     @keyframes weatherPulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
 
+    /* ── Not flying toggle ── */
+    .nt-flying-toggle {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px; background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 12px; cursor: pointer;
+    }
+    .nt-flying-toggle input[type="checkbox"] {
+      width: 18px; height: 18px; flex-shrink: 0;
+      accent-color: var(--teal-a, #0c7a7a); cursor: pointer;
+    }
+    .nt-flying-toggle span { font-size: 0.86rem; font-weight: 600; color: var(--text-1); }
+
     /* ── Airline picker ── */
     .nt-airline-wrap { position: relative; }
 
@@ -1000,8 +1012,16 @@
             </div>
           </div>
 
-          <!-- Airline -->
+          <!-- Not flying toggle -->
           <div class="nt-section">
+            <label class="nt-flying-toggle" for="notFlyingCheck">
+              <input type="checkbox" id="notFlyingCheck">
+              <span>Traveling by car or train (no flight)</span>
+            </label>
+          </div>
+
+          <!-- Airline -->
+          <div class="nt-section" id="airlineSection">
             <label class="nt-label" for="airlineInput">Airline</label>
             <div class="nt-airline-wrap">
               <div class="nt-input-wrap">
@@ -1367,6 +1387,19 @@
       selectedAirline = null;
       document.getElementById('airlineInput').value = '';
       document.getElementById('airlineSelected').classList.remove('visible');
+    });
+
+    document.getElementById('notFlyingCheck').addEventListener('change', (e) => {
+      const airlineSection = document.getElementById('airlineSection');
+      if (e.target.checked) {
+        selectedAirline = null;
+        document.getElementById('airlineInput').value = '';
+        document.getElementById('airlineSelected').classList.remove('visible');
+        document.getElementById('airlineDd').style.display = 'none';
+        airlineSection.style.display = 'none';
+      } else {
+        airlineSection.style.display = '';
+      }
     });
 
     async function geocodeLookup(city) {
