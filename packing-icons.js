@@ -444,6 +444,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('first aid'))                           return PACKING_ICONS.first_aid_kit;
   if (n.includes('hand sanitizer'))                      return PACKING_ICONS.hand_sanitizer;
   if (n.includes('face mask'))                           return PACKING_ICONS.face_mask;
+  if (n.includes('eye patch'))                           return PACKING_ICONS.face_mask;
   if (n.includes('allergy'))                             return PACKING_ICONS.allergy_medication;
   if (n.includes('prescription'))                        return PACKING_ICONS.prescription_medication;
   if (n.includes('firestarter') || n.includes('fire starter') || n.includes('lighter') || n.includes('matches')) return PACKING_ICONS.firestarter;
