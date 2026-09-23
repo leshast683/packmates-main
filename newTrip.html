@@ -616,8 +616,19 @@
       border-radius: 12px; cursor: pointer;
     }
     .nt-flying-toggle input[type="checkbox"] {
+      appearance: none; -webkit-appearance: none;
       width: 18px; height: 18px; flex-shrink: 0;
-      accent-color: var(--text-1); cursor: pointer;
+      border: 1.5px solid var(--text-1); border-radius: 4px;
+      background: transparent; cursor: pointer; position: relative; margin: 0;
+    }
+    .nt-flying-toggle input[type="checkbox"]:checked {
+      background: var(--text-1); border-color: var(--text-1);
+    }
+    .nt-flying-toggle input[type="checkbox"]:checked::after {
+      content: ''; position: absolute; left: 5px; top: 1px;
+      width: 5px; height: 10px;
+      border: solid var(--surface, #fff); border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
     }
     .nt-flying-toggle span { font-size: 0.86rem; font-weight: 600; color: var(--text-1); }
 
