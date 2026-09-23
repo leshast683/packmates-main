@@ -24,16 +24,16 @@ const PACKMATES_AIRLINES = [
     carry:   { dims: '56×36×23 cm', weight: 'No limit' },
     checked: { weight: '23 kg / 50 lbs', fee: '$30' } },
 
-  { name: 'Spirit Airlines',    iata: 'NK', region: 'US',
-    carry:   { dims: '56×46×25 cm', weight: 'No limit' },
-    checked: { weight: '18 kg / 40 lbs', fee: '$45+' } },
-
   { name: 'Frontier Airlines',  iata: 'F9', region: 'US',
     carry:   { dims: '61×41×25 cm', weight: 'No limit' },
     checked: { weight: '23 kg / 50 lbs', fee: '$45+' } },
 
   { name: 'Air Canada',         iata: 'AC', region: 'CA',
     carry:   { dims: '55×40×23 cm', weight: 'No limit' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'CA$30' } },
+
+  { name: 'WestJet',            iata: 'WS', region: 'CA',
+    carry:   { dims: '53×38×23 cm', weight: 'No limit' },
     checked: { weight: '23 kg / 50 lbs', fee: 'CA$30' } },
 
   { name: 'British Airways',    iata: 'BA', region: 'EU',
@@ -68,12 +68,44 @@ const PACKMATES_AIRLINES = [
     carry:   { dims: '55×40×23 cm', weight: '8 kg' },
     checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
 
+  { name: 'Iberia',             iata: 'IB', region: 'EU',
+    carry:   { dims: '56×40×24 cm', weight: '10 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Swiss International Air Lines', iata: 'LX', region: 'EU',
+    carry:   { dims: '55×40×23 cm', weight: '8 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Finnair',            iata: 'AY', region: 'EU',
+    carry:   { dims: '55×40×20 cm', weight: '8 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Virgin Atlantic',    iata: 'VS', region: 'EU',
+    carry:   { dims: '56×36×23 cm', weight: '10 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Aer Lingus',         iata: 'EI', region: 'EU',
+    carry:   { dims: '55×40×24 cm', weight: '10 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Norwegian Air Shuttle', iata: 'DY', region: 'EU',
+    carry:   { dims: '55×40×20 cm', weight: '10 kg' },
+    checked: { weight: '20 kg / 44 lbs', fee: '€35+' } },
+
   { name: 'Emirates',           iata: 'EK', region: 'ME',
     carry:   { dims: '55×38×20 cm', weight: '7 kg' },
     checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
 
   { name: 'Qatar Airways',      iata: 'QR', region: 'ME',
     carry:   { dims: '50×37×25 cm', weight: '7 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Etihad Airways',     iata: 'EY', region: 'ME',
+    carry:   { dims: '56×36×23 cm', weight: '7 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Saudia',             iata: 'SV', region: 'ME',
+    carry:   { dims: '55×40×20 cm', weight: '7 kg' },
     checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
 
   { name: 'Singapore Airlines', iata: 'SQ', region: 'AS',
@@ -88,9 +120,53 @@ const PACKMATES_AIRLINES = [
     carry:   { dims: '55×40×25 cm', weight: '10 kg' },
     checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
 
+  { name: 'Japan Airlines',     iata: 'JL', region: 'AS',
+    carry:   { dims: '55×40×25 cm', weight: '10 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Korean Air',         iata: 'KE', region: 'AS',
+    carry:   { dims: '55×40×20 cm', weight: '12 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'China Southern Airlines', iata: 'CZ', region: 'AS',
+    carry:   { dims: '55×40×20 cm', weight: '5 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'China Eastern Airlines', iata: 'MU', region: 'AS',
+    carry:   { dims: '55×40×20 cm', weight: '5 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Air India',          iata: 'AI', region: 'AS',
+    carry:   { dims: '55×35×25 cm', weight: '8 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'IndiGo',             iata: '6E', region: 'AS',
+    carry:   { dims: '55×35×25 cm', weight: '7 kg' },
+    checked: { weight: '15 kg / 33 lbs', fee: 'From ₹600' } },
+
+  { name: 'AirAsia',            iata: 'AK', region: 'AS',
+    carry:   { dims: '56×36×23 cm', weight: '7 kg' },
+    checked: { weight: '20 kg / 44 lbs', fee: 'From $25' } },
+
+  { name: 'Qantas',             iata: 'QF', region: 'OC',
+    carry:   { dims: '56×36×23 cm', weight: '7 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
   { name: 'LATAM Airlines',     iata: 'LA', region: 'SA',
     carry:   { dims: '55×35×25 cm', weight: '8 kg' },
     checked: { weight: '23 kg / 50 lbs', fee: '$30' } },
+
+  { name: 'Copa Airlines',      iata: 'CM', region: 'SA',
+    carry:   { dims: '56×36×23 cm', weight: '10 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Avianca',            iata: 'AV', region: 'SA',
+    carry:   { dims: '55×35×25 cm', weight: '10 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
+
+  { name: 'Ethiopian Airlines', iata: 'ET', region: 'AF',
+    carry:   { dims: '55×40×20 cm', weight: '7 kg' },
+    checked: { weight: '23 kg / 50 lbs', fee: 'Included' } },
 
   { name: 'Aeromexico',         iata: 'AM', region: 'MX',
     carry:   { dims: '55×40×25 cm', weight: '10 kg' },
