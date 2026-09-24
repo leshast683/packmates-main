@@ -871,14 +871,24 @@
       _preloadWrap.style.cssText = 'position:fixed;top:-9999px;left:-9999px;visibility:hidden;pointer-events:none;';
       document.body.appendChild(_preloadWrap);
 
+      /* Eagerly building+inserting all 28 icons (below) fetches every one
+         of their images immediately, several from a slow third-party
+         host - fine for the App, which hides the wait behind its splash
+         screen (see hideSplash() below), but pure cost for a web visitor
+         with no splash to hide behind. Web skips straight to an empty
+         cache; makeIcon()'s fallback creates+fetches each icon lazily,
+         only as it actually scrolls into the visible row. */
+      const isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
       const _iconCache = {};
-      ITEMS.forEach(name => {
-        const el = document.createElement('div');
-        el.className = 'pa-icon';
-        el.innerHTML = getItemIcon(name);
-        _iconCache[name] = el;
-        _preloadWrap.appendChild(el);
-      });
+      if (isNativeApp) {
+        ITEMS.forEach(name => {
+          const el = document.createElement('div');
+          el.className = 'pa-icon';
+          el.innerHTML = getItemIcon(name);
+          _iconCache[name] = el;
+          _preloadWrap.appendChild(el);
+        });
+      }
 
       function makeIcon(name) {
         const src = _iconCache[name] || (() => {
@@ -985,7 +995,10 @@
         requestAnimationFrame(() => requestAnimationFrame(hideSplash));
       }
 
-      /* Track completion with new Image() so we start only after cache is warm */
+      /* Track completion with new Image() so we start only after cache is
+         warm. For web, _preloadUrls is already empty (see isNativeApp
+         gate above), so this resolves immediately via the urls.length
+         === 0 branch below. */
       const urls = [..._preloadUrls];
       if (urls.length === 0) {
         startAnim();
