@@ -580,11 +580,6 @@
         </div>
       </div>
 
-      <!-- ABOUT CARD -->
-      <div class="bc" style="background:var(--navy-deep);padding:20px 22px;display:flex;align-items:center;">
-        <p style="font-size:0.8rem;line-height:1.6;color:rgba(255,255,255,0.75);margin:0;">Packmates AI builds your packing checklist from your real destination, travel dates, weather, and planned activities — not a generic template. Add a trip, and get a weather-aware packing list that updates as your plans change, synced live with everyone traveling with you. Browse trending destinations, track your packing streak, and keep every trip organized in one place.</p>
-      </div>
-
       <!-- ACTIONS: intentionally never rendered here even when _isNativeApp
            reads false - see the delayed injection below, which only ever
            adds this card after confirming (twice, with a delay) that this
