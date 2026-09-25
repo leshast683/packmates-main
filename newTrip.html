@@ -50,6 +50,18 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <script>
+    /* Sets <html lang> before lib/i18n.js loads, so there's no flash of
+       the wrong lang attribute. lib/i18n.js's own getLang() does the
+       same lookup once loaded - this is just the pre-load version. */
+    document.documentElement.lang = (function () {
+      try {
+        var l = JSON.parse(localStorage.getItem('pm_profile') || '{}').language;
+        if (l) return l;
+      } catch (e) {}
+      return (navigator.language || 'en').slice(0, 2).toLowerCase();
+    })();
+  </script>
   <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
   <script>
     (function () {
@@ -983,12 +995,12 @@
 
         <div class="nt-header">
           <div>
-            <h1>Plan a New Trip</h1>
-            <div style="font-size:0.75rem;color:var(--text-3);margin-top:3px;font-weight:500;">Fill in the details and get a smart packing list</div>
+            <h1 data-i18n="newTrip.title">Plan a New Trip</h1>
+            <div style="font-size:0.75rem;color:var(--text-3);margin-top:3px;font-weight:500;" data-i18n="newTrip.subtitle">Fill in the details and get a smart packing list</div>
           </div>
           <a href="/" class="nt-back-btn" target="_top">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-            Back
+            <span data-i18n="newTrip.back">Back</span>
           </a>
         </div>
 
@@ -996,19 +1008,19 @@
 
           <!-- Trip Name (optional) -->
           <div class="nt-section">
-            <label class="nt-label" for="tripName">Trip Name <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3);">(optional)</span></label>
+            <label class="nt-label" for="tripName"><span data-i18n="newTrip.tripName">Trip Name</span> <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3);" data-i18n="newTrip.optional">(optional)</span></label>
             <div class="nt-input-wrap">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-              <input class="nt-input" id="tripName" type="text" placeholder="e.g. Sarah's Bachelorette Trip" autocomplete="off">
+              <input class="nt-input" id="tripName" type="text" placeholder="e.g. Sarah's Bachelorette Trip" autocomplete="off" data-i18n-attr="placeholder:newTrip.tripNamePlaceholder">
             </div>
           </div>
 
           <!-- Destination -->
           <div class="nt-section">
-            <label class="nt-label" for="tripDestination">Destination</label>
+            <label class="nt-label" for="tripDestination" data-i18n="newTrip.destination">Destination</label>
             <div class="nt-input-wrap" style="position:relative">
               <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <input class="nt-input" id="tripDestination" type="text" placeholder="Where are you going?" autocomplete="off">
+              <input class="nt-input" id="tripDestination" type="text" placeholder="Where are you going?" autocomplete="off" data-i18n-attr="placeholder:newTrip.destinationPlaceholder">
               <div class="nt-autocomplete" id="destDropdown" style="display:none"></div>
             </div>
           </div>
@@ -1017,17 +1029,17 @@
           <div class="nt-section">
             <label class="nt-flying-toggle" for="notFlyingCheck">
               <input type="checkbox" id="notFlyingCheck">
-              <span>Traveling by car or train</span>
+              <span data-i18n="newTrip.notFlying">Traveling by car or train</span>
             </label>
           </div>
 
           <!-- Airline -->
           <div class="nt-section" id="airlineSection">
-            <label class="nt-label" for="airlineInput">Airline</label>
+            <label class="nt-label" for="airlineInput" data-i18n="newTrip.airline">Airline</label>
             <div class="nt-airline-wrap">
               <div class="nt-input-wrap">
                 <svg viewBox="0 0 24 24"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 2 16.5 3.5L13 7 4.8 5.2l-2.3 2.3 6.1 3.5-1.9 1.9-2.1-.4-1.4 1.4 2.5 1.5 1.5 2.5 1.4-1.4-.4-2.1 1.9-1.9z"/></svg>
-                <input class="nt-input" id="airlineInput" type="text" placeholder="Search airline…" autocomplete="off">
+                <input class="nt-input" id="airlineInput" type="text" placeholder="Search airline…" autocomplete="off" data-i18n-attr="placeholder:newTrip.airlineSearchPlaceholder">
                 <div class="nt-airline-dd" id="airlineDd" style="display:none"></div>
               </div>
               <div class="nt-airline-selected" id="airlineSelected">
@@ -1038,7 +1050,7 @@
                   <div class="nt-airline-selected-name" id="airlineSelName">—</div>
                   <div class="nt-airline-selected-rules" id="airlineSelRules">—</div>
                 </div>
-                <button class="nt-airline-clear" id="airlineClearBtn" type="button" title="Clear">✕</button>
+                <button class="nt-airline-clear" id="airlineClearBtn" type="button" title="Clear" data-i18n-attr="title:newTrip.clear">✕</button>
               </div>
             </div>
           </div>
@@ -1047,11 +1059,11 @@
           <div class="nt-section">
             <div class="nt-dates">
               <div class="nt-date-field">
-                <span class="nt-date-label">Departure</span>
+                <span class="nt-date-label" data-i18n="newTrip.departure">Departure</span>
                 <input class="nt-date-input" id="tripFromDate" type="date">
               </div>
               <div class="nt-date-field">
-                <span class="nt-date-label">Return</span>
+                <span class="nt-date-label" data-i18n="newTrip.return">Return</span>
                 <input class="nt-date-input" id="tripToDate" type="date">
               </div>
             </div>
@@ -1059,7 +1071,7 @@
 
           <!-- Travelers -->
           <div class="nt-section">
-            <label class="nt-label">Travelers</label>
+            <label class="nt-label" data-i18n="newTrip.travelers">Travelers</label>
             <div class="nt-counter">
               <button type="button" class="nt-counter-btn" id="decTravelers">−</button>
               <span class="nt-counter-val" id="travelersDisplay">1</span>
@@ -1070,83 +1082,83 @@
 
           <!-- Activities -->
           <div class="nt-section">
-            <label class="nt-label">Trip Type & Activities</label>
+            <label class="nt-label" data-i18n="newTrip.tripTypeActivities">Trip Type & Activities</label>
             <div class="nt-chips" id="activityChips">
               <button type="button" class="activity-chip" data-category="Beach">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_beach.png" x="0" y="0" width="40" height="40"/></svg>
-                Beach
+                <span data-i18n="newTrip.activity.beach">Beach</span>
               </button>
               <button type="button" class="activity-chip" data-category="Hiking">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_hiking.png" x="0" y="0" width="40" height="40"/></svg>
-                Hiking
+                <span data-i18n="newTrip.activity.hiking">Hiking</span>
               </button>
               <button type="button" class="activity-chip" data-category="Camping">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_camping.png" x="0" y="0" width="40" height="40"/></svg>
-                Camping
+                <span data-i18n="newTrip.activity.camping">Camping</span>
               </button>
               <button type="button" class="activity-chip" data-category="Swimming">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_swimming.png" x="0" y="0" width="40" height="40"/></svg>
-                Swimming
+                <span data-i18n="newTrip.activity.swimming">Swimming</span>
               </button>
               <button type="button" class="activity-chip" data-category="Snow Sports">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_snowsports.png" x="0" y="0" width="40" height="40"/></svg>
-                Snow Sports
+                <span data-i18n="newTrip.activity.snowSports">Snow Sports</span>
               </button>
               <button type="button" class="activity-chip" data-category="Gym">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_gym.png" x="0" y="0" width="40" height="40"/></svg>
-                Gym
+                <span data-i18n="newTrip.activity.gym">Gym</span>
               </button>
               <button type="button" class="activity-chip" data-category="Business Trip">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_business.png" x="0" y="0" width="40" height="40"/></svg>
-                Business
+                <span data-i18n="newTrip.activity.business">Business</span>
               </button>
               <button type="button" class="activity-chip" data-category="Night Out">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_nightout.png" x="0" y="0" width="40" height="40"/></svg>
-                Night Out
+                <span data-i18n="newTrip.activity.nightOut">Night Out</span>
               </button>
               <button type="button" class="activity-chip" data-category="Baby">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_baby.png" x="0" y="0" width="40" height="40"/></svg>
-                Baby
+                <span data-i18n="newTrip.activity.baby">Baby</span>
               </button>
               <button type="button" class="activity-chip" data-category="Theme Park">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_themepark.png" x="0" y="0" width="40" height="40"/></svg>
-                Theme Park
+                <span data-i18n="newTrip.activity.themePark">Theme Park</span>
               </button>
               <button type="button" class="activity-chip" data-category="Festival">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_festival.png" x="0" y="0" width="40" height="40"/></svg>
-                Festival
+                <span data-i18n="newTrip.activity.festival">Festival</span>
               </button>
               <button type="button" class="activity-chip" data-category="Road Trip">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_roadtrip.png" x="0" y="0" width="40" height="40"/></svg>
-                Road Trip
+                <span data-i18n="newTrip.activity.roadTrip">Road Trip</span>
               </button>
               <button type="button" class="activity-chip" data-category="City Sightseeing">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_sightseeing.png" x="0" y="0" width="40" height="40"/></svg>
-                Sightseeing
+                <span data-i18n="newTrip.activity.sightseeing">Sightseeing</span>
               </button>
               <button type="button" class="activity-chip" data-category="Dining">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_dining.png" x="0" y="0" width="40" height="40"/></svg>
-                Dining
+                <span data-i18n="newTrip.activity.dining">Dining</span>
               </button>
               <button type="button" class="activity-chip" data-category="Cruise">
                 <svg class="chip-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><image href="img/activity_cruise.png" x="0" y="0" width="40" height="40"/></svg>
-                Cruise
+                <span data-i18n="newTrip.activity.cruise">Cruise</span>
               </button>
             </div>
           </div>
 
           <!-- Notes -->
           <div class="nt-section">
-            <label class="nt-label" for="tripNotes">Notes</label>
-            <textarea class="nt-textarea" id="tripNotes" placeholder="Anything else to remember…"></textarea>
+            <label class="nt-label" for="tripNotes" data-i18n="newTrip.notes">Notes</label>
+            <textarea class="nt-textarea" id="tripNotes" placeholder="Anything else to remember…" data-i18n-attr="placeholder:newTrip.notesPlaceholder"></textarea>
           </div>
 
           <!-- Actions -->
           <div class="nt-actions">
-            <button type="button" class="nt-cancel-btn" onclick="window.top.location.href='index.html'">Cancel</button>
+            <button type="button" class="nt-cancel-btn" onclick="window.top.location.href='index.html'" data-i18n="newTrip.cancel">Cancel</button>
             <button type="button" class="nt-save-btn" id="saveTripBtn">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Create Trip
+              <span data-i18n="newTrip.createTrip">Create Trip</span>
             </button>
           </div>
 
@@ -1171,12 +1183,14 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script src="lib/i18n.js"></script>
   <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
   <script src="notifications.js"></script>
   <script src="airlines.js"></script>
   <script>
-    Auth.requireAuth('welcome.html');
+    const _pmAuthed = Auth.requireAuth('welcome.html');
+    if (_pmAuthed) applyTranslations();
 
     /* ── Leaflet map ── */
     const ntMap = L.map('ntMap', {
@@ -1313,7 +1327,7 @@
     let selectedAirline = null;
 
     function airlineRulesText(a) {
-      return `Carry-on: ${a.carry.dims}${a.carry.weight !== 'No limit' ? ' · ' + a.carry.weight : ''} · Checked: ${a.checked.weight} · ${a.checked.fee}`;
+      return `${tr('newTrip.carryOn')}: ${a.carry.dims}${a.carry.weight !== 'No limit' ? ' · ' + a.carry.weight : ''} · ${tr('newTrip.checked')}: ${a.checked.weight} · ${a.checked.fee}`;
     }
 
     function renderAirlineDd(query) {
@@ -1337,8 +1351,8 @@
           <div>
             <div class="nt-airline-name">${a.name}</div>
             <div class="nt-airline-rules">
-              <span class="nt-airline-pill">Carry-on ${a.carry.dims}</span>
-              <span class="nt-airline-pill">Checked ${a.checked.weight}</span>
+              <span class="nt-airline-pill">${tr('newTrip.carryOn')} ${a.carry.dims}</span>
+              <span class="nt-airline-pill">${tr('newTrip.checked')} ${a.checked.weight}</span>
               <span class="nt-airline-pill">${a.checked.fee}</span>
             </div>
           </div>
@@ -1529,7 +1543,7 @@
       document.getElementById('travelersDisplay').textContent = travelers;
       document.getElementById('previewTravelers').innerHTML = `
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        ${travelers} traveler${travelers !== 1 ? 's' : ''}`;
+        ${tr(travelers === 1 ? 'newTrip.travelerCountSingular' : 'newTrip.travelerCountPlural', { count: travelers })}`;
     }
     document.getElementById('incTravelers').addEventListener('click', () => setTravelers(travelers + 1));
     document.getElementById('decTravelers').addEventListener('click', () => setTravelers(travelers - 1));
@@ -1555,7 +1569,7 @@
         destEl.textContent = dest;
         destEl.classList.remove('placeholder');
       } else {
-        destEl.textContent = 'Your destination';
+        destEl.textContent = tr('newTrip.yourDestinationPlaceholder');
         destEl.classList.add('placeholder');
       }
 
@@ -1563,7 +1577,7 @@
         const fmt = d => { if (!d) return '—'; const [y,m,day] = d.split('-'); return `${+m}/${+day}/${y}`; };
         document.getElementById('previewDates').textContent = `${fmt(fromDate)} — ${fmt(toDate)}`;
       } else {
-        document.getElementById('previewDates').textContent = 'Set your travel dates';
+        document.getElementById('previewDates').textContent = tr('newTrip.setTravelDatesPlaceholder');
       }
 
       const selected = Array.from(document.querySelectorAll('.activity-chip.selected'));
@@ -1626,7 +1640,7 @@
       }
 
       this.disabled  = true;
-      this.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0"/></svg> Saving…`;
+      this.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0"/></svg> ${tr('newTrip.saving')}`;
 
       const activityCategories = Array.from(document.querySelectorAll('.activity-chip.selected'))
         .map(el => el.dataset.category);
@@ -1653,14 +1667,14 @@
       /* save to trips registry + Supabase */
       const result = await DB.saveTrip(tripData);
       if (!result.success) {
-        alert('Your trip could not be saved. Please check your connection and try again.');
+        alert(tr('newTrip.saveError'));
         this.disabled  = false;
-        this.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Create Trip';
+        this.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> ${tr('newTrip.createTrip')}`;
         return;
       }
       DB.savePackState(tripId, { itemState: {}, dismissed: [], customItems: {} });
 
-      pushNotification('trip', `Your trip to ${destination} has been created!`, destination);
+      pushNotification('trip', tr('newTrip.tripCreatedNotification', { destination }), destination);
       window.top.location.href = 'tripPreview.html';
     });
 
