@@ -50,6 +50,18 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <script>
+    /* Sets <html lang> before lib/i18n.js loads, so there's no flash of
+       the wrong lang attribute. lib/i18n.js's own getLang() does the
+       same lookup once loaded - this is just the pre-load version. */
+    document.documentElement.lang = (function () {
+      try {
+        var l = JSON.parse(localStorage.getItem('pm_profile') || '{}').language;
+        if (l) return l;
+      } catch (e) {}
+      return (navigator.language || 'en').slice(0, 2).toLowerCase();
+    })();
+  </script>
   <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
   <script>
     (function () {
@@ -604,7 +616,7 @@
               <path d="M12 11c-1 2-2.5 3-2.5 5a2.5 2.5 0 005 0c0-2-1.5-3-2.5-5z"/>
             </svg>
           </div>
-          <h2>Trending Destinations</h2>
+          <h2 data-i18n="discover.trendingDestinations">Trending Destinations</h2>
         </div>
         <div class="dest-strip" id="destStrip"></div>
       </section>
@@ -622,7 +634,7 @@
               <path d="M22 21v-1.5a6.5 6.5 0 00-4.5-6.2"/>
             </svg>
           </div>
-          <h2>Community Travelers</h2>
+          <h2 data-i18n="discover.communityTravelers">Community Travelers</h2>
         </div>
         <div class="travelers-strip" id="travelersStrip"></div>
       </section>
@@ -640,7 +652,7 @@
               <path d="M5.5 14.5c0 0 .3 1.6.95 2.3.65.7 2.05 1.0 2.05 1.0s-1.4.3-2.05 1.0C5.8 19.5 5.5 21 5.5 21s-.3-1.5-.95-2.2C3.9 18.1 2.5 17.8 2.5 17.8s1.4-.3 2.05-1.0C5.2 16.1 5.5 14.5 5.5 14.5z"/>
             </svg>
           </div>
-          <h2>Inspiration for you</h2>
+          <h2 data-i18n="discover.inspirationForYou">Inspiration for you</h2>
         </div>
         <div class="inspiration-grid" id="sharedGrid"></div>
       </section>
@@ -654,7 +666,7 @@
       <div class="tp-header">
         <div class="tp-header-bg" id="tpHeaderBg"></div>
         <div class="tp-header-overlay"></div>
-        <button class="tp-close" onclick="closeTravelerModal()" aria-label="Close traveler profile">
+        <button class="tp-close" onclick="closeTravelerModal()" aria-label="Close traveler profile" data-i18n-attr="aria-label:discover.closeTravelerProfile">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
@@ -663,7 +675,7 @@
           <div class="tp-avatar"></div>
           <div class="tp-avatar-status"></div>
         </div>
-        <button class="tp-follow-btn">Packmate</button>
+        <button class="tp-follow-btn" data-i18n="discover.packmate">Packmate</button>
       </div>
       <div class="tp-body">
         <div class="tp-name-row">
@@ -682,24 +694,24 @@
         <div class="tp-stats-row">
           <div class="tp-stat">
             <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20z"/></svg></div>
-            <span class="tp-stat-num" id="tp-stat-trips">—</span><span class="tp-stat-lbl">Trips</span>
+            <span class="tp-stat-num" id="tp-stat-trips">—</span><span class="tp-stat-lbl" data-i18n="discover.stats.trips">Trips</span>
           </div>
           <div class="tp-stat">
             <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
-            <span class="tp-stat-num" id="tp-stat-countries">—</span><span class="tp-stat-lbl">Countries</span>
+            <span class="tp-stat-num" id="tp-stat-countries">—</span><span class="tp-stat-lbl" data-i18n="discover.stats.countries">Countries</span>
           </div>
           <div class="tp-stat">
             <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><polyline points="9 12 11 14 15 10"/></svg></div>
-            <span class="tp-stat-num" id="tp-stat-packed">—</span><span class="tp-stat-lbl">Items Packed</span>
+            <span class="tp-stat-num" id="tp-stat-packed">—</span><span class="tp-stat-lbl" data-i18n="discover.stats.itemsPacked">Items Packed</span>
           </div>
         </div>
-        <div class="tp-section-title">🧭 Travel Style</div>
+        <div class="tp-section-title" data-i18n="discover.travelStyle">🧭 Travel Style</div>
         <div class="tp-chips tp-styles-chips"></div>
-        <div class="tp-section-title">📍 Favorite Destinations</div>
+        <div class="tp-section-title" data-i18n="discover.favoriteDestinations">📍 Favorite Destinations</div>
         <div class="tp-chips tp-places-chips"></div>
-        <div class="tp-section-title">📈 Favorite Activities</div>
+        <div class="tp-section-title" data-i18n="discover.favoriteActivities">📈 Favorite Activities</div>
         <div class="tp-chips tp-activities-chips"></div>
-        <div class="tp-section-title">🧳 Recent Packing Lists</div>
+        <div class="tp-section-title" data-i18n="discover.recentPackingLists">🧳 Recent Packing Lists</div>
         <div class="tp-trips-list tp-packing-list"></div>
       </div>
     </div>
@@ -711,7 +723,7 @@
       <div class="ti-header" id="tiHeader">
         <div class="ti-header-bg" id="tiHeaderBg"></div>
         <div class="ti-header-overlay"></div>
-        <button class="ti-close-btn" onclick="closeTripModal()" aria-label="Close trip details">
+        <button class="ti-close-btn" onclick="closeTripModal()" aria-label="Close trip details" data-i18n-attr="aria-label:discover.closeTripDetails">
           <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
         <div class="ti-header-info">
@@ -722,13 +734,13 @@
       </div>
       <div class="ti-body" id="tiBody">
         <div class="ti-stats-bar">
-          <div class="ti-stat"><span class="ti-stat-num" id="tiStatDays"></span><span class="ti-stat-lbl">Days</span></div>
-          <div class="ti-stat"><span class="ti-stat-num" id="tiStatTravelers"></span><span class="ti-stat-lbl">Travelers</span></div>
-          <div class="ti-stat"><span class="ti-stat-num" id="tiStatItems"></span><span class="ti-stat-lbl">Items</span></div>
+          <div class="ti-stat"><span class="ti-stat-num" id="tiStatDays"></span><span class="ti-stat-lbl" data-i18n="discover.stats.days">Days</span></div>
+          <div class="ti-stat"><span class="ti-stat-num" id="tiStatTravelers"></span><span class="ti-stat-lbl" data-i18n="discover.stats.travelers">Travelers</span></div>
+          <div class="ti-stat"><span class="ti-stat-num" id="tiStatItems"></span><span class="ti-stat-lbl" data-i18n="discover.stats.items">Items</span></div>
         </div>
         <div class="ti-tabs">
-          <button class="ti-tab active" onclick="switchTiTab('itinerary',this)">Itinerary</button>
-          <button class="ti-tab" onclick="switchTiTab('packing',this)">Packing List</button>
+          <button class="ti-tab active" onclick="switchTiTab('itinerary',this)" data-i18n="discover.itineraryTab">Itinerary</button>
+          <button class="ti-tab" onclick="switchTiTab('packing',this)" data-i18n="discover.packingListTab">Packing List</button>
         </div>
         <div class="ti-panel active" id="tiPanelItinerary"></div>
         <div class="ti-panel" id="tiPanelPacking"></div>
@@ -737,11 +749,13 @@
   </div>
 
   <script src="packing-icons.js"></script>
+  <script src="lib/i18n.js"></script>
   <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
   <script src="notifications.js"></script>
   <script>
-    Auth.requireAuth('welcome.html');
+    const _pmAuthed = Auth.requireAuth('welcome.html');
+    if (_pmAuthed) applyTranslations();
     localStorage.removeItem('pm_dest___hero__');
     // Clear stale cover photo caches for updated destinations
     ['SM','JR','CV','EL'].forEach(id => localStorage.removeItem('pm_dest_tp_cover_' + id));
@@ -768,10 +782,10 @@
     }
     function renderBrief(brief, weatherPackingContainer) {
       const tiles = [
-        { cls:'visa',     icon:'🛂', label:'Visa',     text: brief.visa },
-        { cls:'currency', icon:'💳', label:'Currency', text: brief.currency },
-        { cls:'weather',  icon:'🌤️', label:'Weather',  text: brief.weather },
-        { cls:'safety',   icon:'🛡️', label:'Safety',   text: brief.safety },
+        { cls:'visa',     icon:'🛂', label:tr('discover.brief.visa'),     text: brief.visa },
+        { cls:'currency', icon:'💳', label:tr('discover.brief.currency'), text: brief.currency },
+        { cls:'weather',  icon:'🌤️', label:tr('discover.brief.weather'),  text: brief.weather },
+        { cls:'safety',   icon:'🛡️', label:tr('discover.brief.safety'),   text: brief.safety },
       ];
       document.getElementById('tiBriefBody').innerHTML =
         `<div class="ti-brief-grid">${tiles.map(t =>
@@ -786,7 +800,7 @@
       if (brief.packingTips?.length && weatherPackingContainer) {
         weatherPackingContainer.innerHTML = `
           <div class="ti-weather-section">
-            <div class="ti-weather-label">🌤️ Weather Picks</div>
+            <div class="ti-weather-label">${tr('discover.brief.weatherPicks')}</div>
             <div class="ti-pack-chips">${brief.packingTips.map(tip =>
               `<span class="ti-pack-chip">${getItemIcon(tip)}${tip}</span>`
             ).join('')}</div>
@@ -854,7 +868,7 @@
       c.innerHTML = `
         <div class="dest-card-bg" id="dcbg-${d.name.replace(/\s+/g,'_')}" style="${bgStyle}"></div>
         <div class="dest-card-gradient"></div>
-        <div class="dest-card-trips">${d.trips} trips</div>
+        <div class="dest-card-trips">${tr('discover.tripsCount', { count: d.trips })}</div>
         <div class="dest-card-heart" onclick="event.stopPropagation();this.classList.toggle('liked');this.querySelector('svg').style.fill=this.classList.contains('liked')?'#ff6060':'none'">
           <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         </div>
@@ -965,7 +979,7 @@
       return adding;
     }
     function applyFollowBtn(btn, active) {
-      btn.textContent = active ? 'Packmate ✓' : '+ Packmate';
+      btn.textContent = active ? tr('discover.packmateFollowing') : tr('discover.packmateFollow');
       btn.style.background = active ? 'var(--green)' : '';
       btn.style.color = active ? '#fff' : '';
     }
@@ -976,15 +990,15 @@
       c.className = 'traveler-card';
       const isFollowing = getFollowingIds().has(t.avatar);
       c.innerHTML = `
-        ${t.isReal ? '<div class="traveler-real-badge" title="Real Packmates member">Member</div>' : ''}
+        ${t.isReal ? `<div class="traveler-real-badge" title="${tr('discover.realMemberTitle')}">${tr('discover.realMemberBadge')}</div>` : ''}
         <div class="traveler-avatar" style="background:${t.color}">${t.avatarImg ? `<img src="${t.avatarImg}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : t.avatar}</div>
         <div class="traveler-name">${t.name.split(' ')[0]} ${(t.name.split(' ')[1]||'').charAt(0)}.</div>
         <div class="traveler-city">${t.city}</div>
         <div class="traveler-stats">
-          <div class="traveler-stat"><span>${t.trips}</span><span>Trips</span></div>
-          <div class="traveler-stat"><span>${t.countries}</span><span>Countries</span></div>
+          <div class="traveler-stat"><span>${t.trips}</span><span>${tr('discover.stats.trips')}</span></div>
+          <div class="traveler-stat"><span>${t.countries}</span><span>${tr('discover.stats.countries')}</span></div>
         </div>
-        <button class="follow-btn">${isFollowing ? 'Packmate ✓' : '+ Packmate'}</button>`;
+        <button class="follow-btn">${isFollowing ? tr('discover.packmateFollowing') : tr('discover.packmateFollow')}</button>`;
       const cardBtn = c.querySelector('.follow-btn');
       if (isFollowing) { cardBtn.style.background = 'var(--green)'; cardBtn.style.color = '#fff'; }
       cardBtn.addEventListener('click', e => {
@@ -1022,8 +1036,8 @@
         real.forEach(r => {
           const idx = TRAVELERS.length;
           TRAVELERS.push({
-            name: r.name || 'Packmates AI member',
-            city: r.location || (r.handle ? '@' + r.handle : 'Packmates AI community'),
+            name: r.name || tr('discover.defaultMemberName'),
+            city: r.location || (r.handle ? '@' + r.handle : tr('discover.defaultCommunityCity')),
             trips: r.trip_count || 0, countries: 0, followers: 0,
             avatar: (r.name || '?').trim().charAt(0).toUpperCase(),
             avatarImg: r.avatar || null, gender: '', color: _colorForUser(r.user_id),
@@ -1064,10 +1078,10 @@
       m.querySelector('.tp-avatar').textContent = t.avatar;
       m.querySelector('.tp-name').textContent = t.name;
       m.querySelector('.tp-location span').textContent = t.city;
-      m.querySelector('.tp-member').textContent = t.memberSince ? '📅 Joined ' + t.memberSince : '';
-      m.querySelector('.tp-gender').textContent = t.gender ? '👤 ' + t.gender : '';
-      m.querySelector('.tp-level').textContent = t.isReal ? '✓ Real Packmates member' : t.level;
-      m.querySelector('.tp-bio').textContent = t.bio || (t.isReal ? "This traveler hasn't added a bio yet." : '');
+      m.querySelector('.tp-member').textContent = t.memberSince ? tr('discover.joinedOn', { date: t.memberSince }) : '';
+      m.querySelector('.tp-gender').textContent = t.gender ? tr('discover.genderPrefix', { gender: t.gender }) : '';
+      m.querySelector('.tp-level').textContent = t.isReal ? tr('discover.verifiedRealMember') : t.level;
+      m.querySelector('.tp-bio').textContent = t.bio || (t.isReal ? tr('discover.noBioYet') : '');
       m.querySelector('#tp-stat-trips').textContent = t.trips;
       m.querySelector('#tp-stat-countries').textContent = t.countries;
       const itemsPacked = (t.packingLists || []).reduce((sum, r) => sum + (parseInt(r.items) || 0), 0);
@@ -1091,7 +1105,7 @@
       m.querySelector('.tp-packing-list').innerHTML = t.packingLists.map((r, i) => `
         <div class="tp-trip" id="tp-pack-${i}">
           <div class="tp-trip-scrim"></div>
-          <span class="tp-trip-badge">${r.items} items</span>
+          <span class="tp-trip-badge">${tr('discover.itemsBadge', { count: r.items })}</span>
           <div class="tp-trip-info">
             <div class="tp-trip-name">${r.name}</div>
             <div class="tp-trip-date">${r.status}</div>
@@ -1110,11 +1124,11 @@
 
       const btn = m.querySelector('.tp-follow-btn');
       const isAlreadyFollowing = getFollowingIds().has(t.avatar);
-      btn.textContent = isAlreadyFollowing ? 'Packmate ✓' : '+ Packmate';
+      btn.textContent = isAlreadyFollowing ? tr('discover.packmateFollowing') : tr('discover.packmateFollow');
       btn.classList.toggle('following', isAlreadyFollowing);
       btn.onclick = () => {
         const adding = toggleFollow(t.avatar);
-        btn.textContent = adding ? 'Packmate ✓' : '+ Packmate';
+        btn.textContent = adding ? tr('discover.packmateFollowing') : tr('discover.packmateFollow');
         btn.classList.toggle('following', adding);
         // Sync the card button in the strip
         const cards = document.querySelectorAll('.traveler-card');
@@ -1249,7 +1263,7 @@
         <div class="inspo-card-img">
           <div class="inspo-card-img-bg" id="iscbg-${idx}" style="${bgStyle}"></div>
           <div class="inspo-card-overlay"></div>
-          <div class="inspo-public-badge">Public</div>
+          <div class="inspo-public-badge">${tr('discover.public')}</div>
           <div class="inspo-bookmark-btn" onclick="event.stopPropagation()">
             <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
           </div>
