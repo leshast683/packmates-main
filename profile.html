@@ -761,7 +761,7 @@
             <div class="settings-panel-inner">
               <div class="plan-card"><div><strong data-i18n="profile.settings.subscription.freeTierTitle">Free Tier</strong><small data-i18n="profile.settings.subscription.freeTierDesc">Up to 3 packing lists · Basic features</small></div><span class="settings-row-badge badge--navy" data-i18n="profile.settings.subscription.activeBadge">Active</span></div>
               <p style="font-size:.8rem;color:var(--text-3);line-height:1.65;" data-i18n="profile.settings.subscription.upgradeDesc">Upgrade to Pro for unlimited lists, smart weather packing, and real-time collaboration.</p>
-              <button class="btn-upgrade" onclick="showToast(t('profile.toast.proComingSoon'), 5000, 'top')" data-i18n="profile.settings.subscription.upgradeBtn">Upgrade to Pro →</button>
+              <button class="btn-upgrade" onclick="showToast(tr('profile.toast.proComingSoon'), 5000, 'top')" data-i18n="profile.settings.subscription.upgradeBtn">Upgrade to Pro →</button>
             </div>
           </div>
 
@@ -793,7 +793,7 @@
               <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.privacy.share">Share Usage Data</strong><small data-i18n="profile.settings.privacy.shareSub">Anonymous statistics</small></div><label class="toggle"><input type="checkbox" id="priv-share" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
               <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.privacy.discoverable">Show me in Community Travelers</strong><small data-i18n="profile.settings.privacy.discoverableSub">Your name and photo become visible to other Packmates AI users on the Discover page</small></div><label class="toggle"><input type="checkbox" id="priv-discoverable" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
               <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
-                <button class="btn-save" style="flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="Auth.exportData();showToast(t('profile.toast.dataDownloading'))">
+                <button class="btn-save" style="flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="Auth.exportData();showToast(tr('profile.toast.dataDownloading'))">
                   <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                   <span data-i18n="profile.settings.privacy.exportBtn">Export My Data</span>
                 </button>
@@ -1051,9 +1051,9 @@
     function loadProfile() {
       const session = Auth.getSession();
       const p = _pmProfile();
-      const dName   = p.name   || session?.name  || t('profile.hero.travelerFallback');
+      const dName   = p.name   || session?.name  || tr('profile.hero.travelerFallback');
       const firstName = dName.split(' ')[0];
-      document.getElementById('hero-greeting').textContent  = t('profile.hero.greetingWithName', { name: firstName });
+      document.getElementById('hero-greeting').textContent  = tr('profile.hero.greetingWithName', { name: firstName });
       document.getElementById('avatar-initials').textContent = dName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
       if (session?.email && !p.pdEmail) _savePmProfile({ pdEmail: session.email });
       if (session?.name  && !p.pdName)  _savePmProfile({ pdName:  session.name });
@@ -1070,7 +1070,7 @@
       // Location meta
       const trips = getAllTrips();
       const recentDest = trips.sort((a,b)=>new Date(b.fromDate||0)-new Date(a.fromDate||0))[0]?.destination;
-      const locationText = p.location || recentDest || t('profile.hero.locationDefault');
+      const locationText = p.location || recentDest || tr('profile.hero.locationDefault');
       document.getElementById('meta-location').textContent = locationText;
 
       // Bio display
@@ -1081,7 +1081,7 @@
       if (!p.joinedDate) _savePmProfile({ joinedDate: new Date().toISOString().slice(0,7) });
       const [jy, jm] = (p.joinedDate || new Date().toISOString().slice(0,7)).split('-');
       const joinedStr = new Date(Number(jy), Number(jm)-1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
-      document.getElementById('meta-joined').textContent = t('profile.hero.joinedWithDate', { date: joinedStr });
+      document.getElementById('meta-joined').textContent = tr('profile.hero.joinedWithDate', { date: joinedStr });
 
       // Packmates = real people you've shared a trip with (see refreshPackmatesCount)
       refreshPackmatesCount();
@@ -1372,7 +1372,7 @@
             if (sb) sb.auth.updateUser({ data: { name } }).catch(() => {});
           });
         } catch(e) {}
-        document.getElementById('hero-greeting').textContent   = t('profile.hero.greetingWithName', { name: name.split(' ')[0] });
+        document.getElementById('hero-greeting').textContent   = tr('profile.hero.greetingWithName', { name: name.split(' ')[0] });
         document.getElementById('meta-location').textContent   = location || document.getElementById('meta-location').textContent;
         document.getElementById('avatar-initials').textContent = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
         const bioEl = document.getElementById('display-bio');
@@ -1380,7 +1380,7 @@
         disp.style.display=''; edit.style.display='none';
         document.getElementById('profileStreakCard').style.display = '';
         document.getElementById('explorerLevelBar').style.display  = '';
-        showToast(t('profile.toast.profileUpdated'));
+        showToast(tr('profile.toast.profileUpdated'));
       }
     }
     function cancelProfileEdit() {
@@ -1499,7 +1499,7 @@
       } catch(e) {}
       loadProfile();
       showMsg('pd-msg','Saved! Packing suggestions updated.','success');
-      showToast(t('profile.toast.genderSaved'));
+      showToast(tr('profile.toast.genderSaved'));
     }
 
     async function savePassword() {
@@ -1513,7 +1513,7 @@
       if (!result.success) { showMsg('sec-msg', result.error, 'error'); return; }
       ['sec-current','sec-new','sec-confirm'].forEach(id => document.getElementById(id).value = '');
       showMsg('sec-msg','Password updated successfully!','success');
-      showToast(t('profile.toast.passwordUpdated'));
+      showToast(tr('profile.toast.passwordUpdated'));
     }
 
     function loadNotifications() {
@@ -1527,7 +1527,7 @@
     }
     function saveNotifications() {
       try { _savePmProfile({ notif:{ email:document.getElementById('notif-email').checked, push:document.getElementById('notif-push').checked, reminders:document.getElementById('notif-reminders').checked, updates:document.getElementById('notif-updates').checked } }); } catch(e) {}
-      showToast(t('profile.toast.notifSaved'));
+      showToast(tr('profile.toast.notifSaved'));
     }
 
     function loadPrivacy() {
@@ -1547,7 +1547,7 @@
           discoverable: document.getElementById('priv-discoverable').checked,
         });
       } catch(e) {}
-      showToast(t('profile.toast.privacySaved'));
+      showToast(tr('profile.toast.privacySaved'));
     }
 
     function confirmDeleteAccount() {
@@ -1601,7 +1601,7 @@
       const list = await _loadPackmates();
       const count = list.length;
       document.getElementById('stat-packmates').textContent = count;
-      document.getElementById('meta-packmates').textContent = t(count === 1 ? 'profile.hero.packmatesCountSingular' : 'profile.hero.packmatesCountPlural', { count });
+      document.getElementById('meta-packmates').textContent = tr(count === 1 ? 'profile.hero.packmatesCountSingular' : 'profile.hero.packmatesCountPlural', { count });
       return count;
     }
     // Reacts live to a follow/unfollow made from a different, concurrently
@@ -1881,7 +1881,7 @@
       document.getElementById('pmTpBackdrop').classList.remove('open');
     }
 
-    function confirmLogout() { closeLogoutModal(); showToast(t('profile.toast.signingOut')); setTimeout(() => { Auth.logout(); window.top.location.href='welcome.html'; }, 800); }
+    function confirmLogout() { closeLogoutModal(); showToast(tr('profile.toast.signingOut')); setTimeout(() => { Auth.logout(); window.top.location.href='welcome.html'; }, 800); }
 
     function populateLanguageSelect() {
       const select = document.getElementById('languageSelect');
@@ -1920,7 +1920,7 @@
       document.getElementById('avatar-input').addEventListener('change', function() {
         const file = this.files[0]; if (!file) return;
         const reader = new FileReader();
-        reader.onload = e => { try { _savePmProfile({ avatar: e.target.result }); } catch(e) {} applyAvatar(e.target.result); showToast(t('profile.toast.avatarUpdated')); };
+        reader.onload = e => { try { _savePmProfile({ avatar: e.target.result }); } catch(e) {} applyAvatar(e.target.result); showToast(tr('profile.toast.avatarUpdated')); };
         reader.readAsDataURL(file);
       });
       document.getElementById('pmTpBackdrop').addEventListener('click', e => {
