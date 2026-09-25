@@ -50,6 +50,18 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <script>
+    /* Sets <html lang> before lib/i18n.js loads, so there's no flash of
+       the wrong lang attribute. lib/i18n.js's own getLang() does the
+       same lookup once loaded - this is just the pre-load version. */
+    document.documentElement.lang = (function () {
+      try {
+        var l = JSON.parse(localStorage.getItem('pm_profile') || '{}').language;
+        if (l) return l;
+      } catch (e) {}
+      return (navigator.language || 'en').slice(0, 2).toLowerCase();
+    })();
+  </script>
   <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
   <script>
     (function () {
@@ -592,16 +604,16 @@
             <!-- Display info -->
             <div class="hero-info" id="profile-display">
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px;">
-                <h1 class="hero-greeting" id="hero-greeting">Hey, Traveler! 👋</h1>
+                <h1 class="hero-greeting" id="hero-greeting" data-i18n="profile.hero.greeting">Hey, Traveler! 👋</h1>
                 <span class="profile-gender-chip" id="display-gender-chip" style="display:none"></span>
-                <button class="btn-edit-profile btn-edit-profile--icon" id="btn-edit-profile" onclick="toggleProfileEdit()" aria-label="Edit Profile" title="Edit Profile">
+                <button class="btn-edit-profile btn-edit-profile--icon" id="btn-edit-profile" onclick="toggleProfileEdit()" aria-label="Edit Profile" title="Edit Profile" data-i18n-attr="aria-label:profile.hero.editLabel;title:profile.hero.editLabel">
                   <svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </button>
               </div>
               <div class="hero-meta">
-                <span class="hero-meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="meta-location">Explorer</span></span>
+                <span class="hero-meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="meta-location" data-i18n="profile.hero.locationDefault">Explorer</span></span>
                 <span class="hero-meta-sep">|</span>
-                <span class="hero-meta-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="meta-joined">Joined recently</span></span>
+                <span class="hero-meta-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="meta-joined" data-i18n="profile.hero.joinedDefault">Joined recently</span></span>
                 <span class="hero-meta-sep">|</span>
                 <span class="hero-meta-item" onclick="openPackmatesModal()" style="cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span id="meta-packmates">0 Packmates</span></span>
               </div>
@@ -610,18 +622,18 @@
 
             <!-- Edit inputs (hidden by default) -->
             <div class="profile-edit-inputs" id="profile-edit">
-              <input type="text" id="edit-name" placeholder="Display name">
+              <input type="text" id="edit-name" placeholder="Display name" data-i18n-attr="placeholder:profile.hero.namePlaceholder">
               <div class="loc-wrap">
-                <input type="text" id="edit-location" placeholder="Your city (e.g. San Francisco, CA)" autocomplete="off">
+                <input type="text" id="edit-location" placeholder="Your city (e.g. San Francisco, CA)" autocomplete="off" data-i18n-attr="placeholder:profile.hero.locationPlaceholder">
                 <div class="loc-dropdown" id="loc-dropdown"></div>
               </div>
               <div class="bio-field-wrap">
-                <input type="text" id="edit-bio" placeholder="Short bio (max 30 chars)" maxlength="30" autocomplete="off">
+                <input type="text" id="edit-bio" placeholder="Short bio (max 30 chars)" maxlength="30" autocomplete="off" data-i18n-attr="placeholder:profile.hero.bioPlaceholder">
                 <span class="bio-char-count" id="bio-char-count">30</span>
               </div>
               <div class="profile-edit-btns">
-                <button class="btn-edit-profile" onclick="toggleProfileEdit()">Save</button>
-                <button class="btn-edit-profile" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)" onclick="cancelProfileEdit()">Cancel</button>
+                <button class="btn-edit-profile" onclick="toggleProfileEdit()" data-i18n="profile.hero.save">Save</button>
+                <button class="btn-edit-profile" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)" onclick="cancelProfileEdit()" data-i18n="profile.hero.cancel">Cancel</button>
               </div>
             </div>
 
@@ -646,26 +658,26 @@
       <div class="stat-card">
         <div class="stat-icon stat-icon--green"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
         <div class="stat-num" id="stat-trips">0</div>
-        <div class="stat-lbl">Trips</div>
-        <div class="stat-sub"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>All time</div>
+        <div class="stat-lbl" data-i18n="profile.stats.trips">Trips</div>
+        <div class="stat-sub"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span data-i18n="profile.stats.allTime">All time</span></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon stat-icon--orange"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
         <div class="stat-num" id="stat-items">0</div>
-        <div class="stat-lbl">Items Packed</div>
-        <div class="stat-sub">Current trip</div>
+        <div class="stat-lbl" data-i18n="profile.stats.itemsPacked">Items Packed</div>
+        <div class="stat-sub" data-i18n="profile.stats.currentTrip">Current trip</div>
       </div>
       <div class="stat-card">
         <div class="stat-icon stat-icon--purple"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></div>
         <div class="stat-num" id="stat-dest">0</div>
-        <div class="stat-lbl">Destinations</div>
-        <div class="stat-sub"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>Explored</div>
+        <div class="stat-lbl" data-i18n="profile.stats.destinations">Destinations</div>
+        <div class="stat-sub"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span data-i18n="profile.stats.explored">Explored</span></div>
       </div>
       <div class="stat-card" onclick="openPackmatesModal()" style="cursor:pointer;">
         <div class="stat-icon stat-icon--teal"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
         <div class="stat-num" id="stat-packmates">0</div>
-        <div class="stat-lbl">Packmates</div>
-        <div class="stat-sub" style="color:#0c7a7a">View all →</div>
+        <div class="stat-lbl" data-i18n="profile.stats.packmates">Packmates</div>
+        <div class="stat-sub" style="color:#0c7a7a" data-i18n="profile.stats.viewAll">View all →</div>
       </div>
     </div>
 
@@ -678,7 +690,7 @@
         <!-- Travel Style -->
         <div class="profile-card">
           <div class="card-head">
-            <div><h3>Your Travel Style</h3><div class="card-head-sub">Based on your trips and packing habits</div></div>
+            <div><h3 data-i18n="profile.travelStyle.title">Your Travel Style</h3><div class="card-head-sub" data-i18n="profile.travelStyle.subtitle">Based on your trips and packing habits</div></div>
           </div>
           <div class="travel-style-body"><div class="style-chips" id="travelStyleChips"></div></div>
         </div>
@@ -686,7 +698,7 @@
         <!-- Recent Packing Lists -->
         <div class="profile-card">
           <div class="card-head">
-            <h3>Recent Packing Lists</h3>
+            <h3 data-i18n="profile.recentLists.title">Recent Packing Lists</h3>
             <a class="view-all-link" href="packing-list.html" target="_top">View all</a>
           </div>
           <div id="recentPackingLists"><div class="list-empty">No trips yet. <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">Create one →</a></div></div>
@@ -696,101 +708,108 @@
 
       <!-- Right column: Settings -->
       <div class="profile-card">
-        <div class="card-head"><h3>Settings</h3></div>
+        <div class="card-head"><h3 data-i18n="profile.settings.title">Settings</h3></div>
         <div class="settings-list-body">
 
           <!-- Personal Data -->
           <div class="settings-row" id="row-personal" onclick="toggleCard('personal')">
             <div class="settings-row-icon" style="background:linear-gradient(145deg,#60a5fa,#2563eb)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-            <div class="settings-row-text"><strong>Personal Data</strong><span>Name, email, phone &amp; gender</span></div>
+            <div class="settings-row-text"><strong data-i18n="profile.settings.personal.title">Personal Data</strong><span data-i18n="profile.settings.personal.subtitle">Name, email, phone &amp; gender</span></div>
             <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
           </div>
           <div class="settings-panel" id="panel-personal">
             <div class="settings-panel-inner">
-              <div class="s-field"><label>Full Name</label><input type="text" id="pd-name" placeholder="Your full name"></div>
-              <div class="s-field"><label>Email</label><input type="email" id="pd-email" placeholder="you@example.com"></div>
-              <div class="s-field"><label>Phone</label><input type="tel" id="pd-phone" placeholder="+1 (555) 000-0000"></div>
-              <div class="s-field"><label>Gender</label>
+              <div class="s-field"><label data-i18n="profile.settings.personal.fullName">Full Name</label><input type="text" id="pd-name" placeholder="Your full name" data-i18n-attr="placeholder:profile.settings.personal.fullNamePlaceholder"></div>
+              <div class="s-field"><label data-i18n="profile.settings.personal.email">Email</label><input type="email" id="pd-email" placeholder="you@example.com" data-i18n-attr="placeholder:profile.settings.personal.emailPlaceholder"></div>
+              <div class="s-field"><label data-i18n="profile.settings.personal.phone">Phone</label><input type="tel" id="pd-phone" placeholder="+1 (555) 000-0000" data-i18n-attr="placeholder:profile.settings.personal.phonePlaceholder"></div>
+              <div class="s-field"><label data-i18n="profile.settings.personal.gender">Gender</label>
                 <div class="pg-gender-group" id="pg-genderGroup">
-                  <button type="button" class="pg-gender-btn" data-gender="male" onclick="selectProfileGender(this)"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><line x1="14.2" y1="5.8" x2="20" y2="0"/><polyline points="16 0 20 0 20 4"/></svg>Male</button>
-                  <button type="button" class="pg-gender-btn" data-gender="female" onclick="selectProfileGender(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><line x1="12" y1="14" x2="12" y2="22"/><line x1="8" y1="19" x2="16" y2="19"/></svg>Female</button>
-                  <button type="button" class="pg-gender-btn" data-gender="nonbinary" onclick="selectProfileGender(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="6"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="8.5" y1="19" x2="15.5" y2="19"/><line x1="15.8" y1="5.2" x2="20" y2="1"/><polyline points="17 1 20 1 20 4"/></svg>Non-binary</button>
+                  <button type="button" class="pg-gender-btn" data-gender="male" onclick="selectProfileGender(this)"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><line x1="14.2" y1="5.8" x2="20" y2="0"/><polyline points="16 0 20 0 20 4"/></svg><span data-i18n="profile.settings.personal.genderMale">Male</span></button>
+                  <button type="button" class="pg-gender-btn" data-gender="female" onclick="selectProfileGender(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><line x1="12" y1="14" x2="12" y2="22"/><line x1="8" y1="19" x2="16" y2="19"/></svg><span data-i18n="profile.settings.personal.genderFemale">Female</span></button>
+                  <button type="button" class="pg-gender-btn" data-gender="nonbinary" onclick="selectProfileGender(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="6"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="8.5" y1="19" x2="15.5" y2="19"/><line x1="15.8" y1="5.2" x2="20" y2="1"/><polyline points="17 1 20 1 20 4"/></svg><span data-i18n="profile.settings.personal.genderNonbinary">Non-binary</span></button>
                 </div>
               </div>
               <div class="field-msg" id="pd-msg"></div>
-              <button class="btn-save" onclick="savePersonalData()">Save Changes</button>
+              <button class="btn-save" onclick="savePersonalData()" data-i18n="profile.settings.personal.saveBtn">Save Changes</button>
             </div>
           </div>
 
           <!-- Security -->
           <div class="settings-row" id="row-security" onclick="toggleCard('security')">
             <div class="settings-row-icon" style="background:linear-gradient(145deg,#fcd34d,#d97706)"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
-            <div class="settings-row-text"><strong>Security</strong><span>Password &amp; login security</span></div>
+            <div class="settings-row-text"><strong data-i18n="profile.settings.security.title">Security</strong><span data-i18n="profile.settings.security.subtitle">Password &amp; login security</span></div>
             <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
           </div>
           <div class="settings-panel" id="panel-security">
             <div class="settings-panel-inner">
-              <div class="s-field"><label>Current Password</label><input type="password" id="sec-current" placeholder="••••••••"></div>
-              <div class="s-field"><label>New Password</label><input type="password" id="sec-new" placeholder="Min. 8 characters"></div>
-              <div class="s-field"><label>Confirm New Password</label><input type="password" id="sec-confirm" placeholder="••••••••"></div>
+              <div class="s-field"><label data-i18n="profile.settings.security.current">Current Password</label><input type="password" id="sec-current" placeholder="••••••••"></div>
+              <div class="s-field"><label data-i18n="profile.settings.security.new">New Password</label><input type="password" id="sec-new" placeholder="Min. 8 characters" data-i18n-attr="placeholder:profile.settings.security.newHint"></div>
+              <div class="s-field"><label data-i18n="profile.settings.security.confirm">Confirm New Password</label><input type="password" id="sec-confirm" placeholder="••••••••"></div>
               <div class="field-msg" id="sec-msg"></div>
-              <button class="btn-save" onclick="savePassword()">Update Password</button>
+              <button class="btn-save" onclick="savePassword()" data-i18n="profile.settings.security.saveBtn">Update Password</button>
             </div>
           </div>
 
           <!-- Subscription -->
           <div class="settings-row" id="row-subscription" onclick="toggleCard('subscription')">
             <div class="settings-row-icon" style="background:linear-gradient(145deg,#a78bfa,#7c3aed)"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
-            <div class="settings-row-text"><strong>Subscription</strong><span>Manage your plan</span></div>
-            <span class="settings-row-badge badge--green">Free Plan</span>
+            <div class="settings-row-text"><strong data-i18n="profile.settings.subscription.title">Subscription</strong><span data-i18n="profile.settings.subscription.subtitle">Manage your plan</span></div>
+            <span class="settings-row-badge badge--green" data-i18n="profile.settings.subscription.freeBadge">Free Plan</span>
             <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
           </div>
           <div class="settings-panel" id="panel-subscription">
             <div class="settings-panel-inner">
-              <div class="plan-card"><div><strong>Free Tier</strong><small>Up to 3 packing lists · Basic features</small></div><span class="settings-row-badge badge--navy">Active</span></div>
-              <p style="font-size:.8rem;color:var(--text-3);line-height:1.65;">Upgrade to Pro for unlimited lists, smart weather packing, and real-time collaboration.</p>
-              <button class="btn-upgrade" onclick="showToast('Pro plan is coming in the future!', 5000, 'top')">Upgrade to Pro →</button>
+              <div class="plan-card"><div><strong data-i18n="profile.settings.subscription.freeTierTitle">Free Tier</strong><small data-i18n="profile.settings.subscription.freeTierDesc">Up to 3 packing lists · Basic features</small></div><span class="settings-row-badge badge--navy" data-i18n="profile.settings.subscription.activeBadge">Active</span></div>
+              <p style="font-size:.8rem;color:var(--text-3);line-height:1.65;" data-i18n="profile.settings.subscription.upgradeDesc">Upgrade to Pro for unlimited lists, smart weather packing, and real-time collaboration.</p>
+              <button class="btn-upgrade" onclick="showToast(t('profile.toast.proComingSoon'), 5000, 'top')" data-i18n="profile.settings.subscription.upgradeBtn">Upgrade to Pro →</button>
             </div>
           </div>
 
           <!-- Notifications -->
           <div class="settings-row" id="row-notifications" onclick="toggleCard('notifications')">
             <div class="settings-row-icon" style="background:linear-gradient(145deg,#fb923c,#ea580c)"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-            <div class="settings-row-text"><strong>Notifications</strong><span>Alerts and emails</span></div>
+            <div class="settings-row-text"><strong data-i18n="profile.settings.notifications.title">Notifications</strong><span data-i18n="profile.settings.notifications.subtitle">Alerts and emails</span></div>
             <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
           </div>
           <div class="settings-panel" id="panel-notifications">
             <div class="settings-panel-inner">
-              <div class="toggle-row"><div class="toggle-label"><strong>Email Alerts</strong><small>Trip reminders and updates</small></div><label class="toggle"><input type="checkbox" id="notif-email" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-label"><strong>Push Notifications</strong><small>In-app alerts</small></div><label class="toggle"><input type="checkbox" id="notif-push" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-label"><strong>Packing Reminders</strong><small>24h before departure</small></div><label class="toggle"><input type="checkbox" id="notif-reminders" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-label"><strong>Weekly Newsletter</strong><small>Tips, feature updates, and news — once a week</small></div><label class="toggle"><input type="checkbox" id="notif-updates" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.notifications.email">Email Alerts</strong><small data-i18n="profile.settings.notifications.emailSub">Trip reminders and updates</small></div><label class="toggle"><input type="checkbox" id="notif-email" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.notifications.push">Push Notifications</strong><small data-i18n="profile.settings.notifications.pushSub">In-app alerts</small></div><label class="toggle"><input type="checkbox" id="notif-push" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.notifications.reminders">Packing Reminders</strong><small data-i18n="profile.settings.notifications.remindersSub">24h before departure</small></div><label class="toggle"><input type="checkbox" id="notif-reminders" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.notifications.newsletter">Weekly Newsletter</strong><small data-i18n="profile.settings.notifications.newsletterSub">Tips, feature updates, and news — once a week</small></div><label class="toggle"><input type="checkbox" id="notif-updates" onchange="saveNotifications()"><span class="toggle-slider"></span></label></div>
             </div>
           </div>
 
           <!-- Privacy -->
           <div class="settings-row" id="row-privacy" onclick="toggleCard('privacy')">
             <div class="settings-row-icon" style="background:linear-gradient(145deg,#34d399,#059669)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-            <div class="settings-row-text"><strong>Privacy</strong><span>Data controls &amp; visibility</span></div>
+            <div class="settings-row-text"><strong data-i18n="profile.settings.privacy.title">Privacy</strong><span data-i18n="profile.settings.privacy.subtitle">Data controls &amp; visibility</span></div>
             <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
           </div>
           <div class="settings-panel" id="panel-privacy">
             <div class="settings-panel-inner">
-              <div class="toggle-row"><div class="toggle-label"><strong>Analytics</strong><small>Help improve Packmates AI</small></div><label class="toggle"><input type="checkbox" id="priv-analytics" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-label"><strong>Personalisation</strong><small>Tailored suggestions</small></div><label class="toggle"><input type="checkbox" id="priv-personalise" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-label"><strong>Share Usage Data</strong><small>Anonymous statistics</small></div><label class="toggle"><input type="checkbox" id="priv-share" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-label"><strong>Show me in Community Travelers</strong><small>Your name and photo become visible to other Packmates AI users on the Discover page</small></div><label class="toggle"><input type="checkbox" id="priv-discoverable" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.privacy.analytics">Analytics</strong><small data-i18n="profile.settings.privacy.analyticsSub">Help improve Packmates AI</small></div><label class="toggle"><input type="checkbox" id="priv-analytics" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.privacy.personalise">Personalisation</strong><small data-i18n="profile.settings.privacy.personaliseSub">Tailored suggestions</small></div><label class="toggle"><input type="checkbox" id="priv-personalise" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.privacy.share">Share Usage Data</strong><small data-i18n="profile.settings.privacy.shareSub">Anonymous statistics</small></div><label class="toggle"><input type="checkbox" id="priv-share" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-label"><strong data-i18n="profile.settings.privacy.discoverable">Show me in Community Travelers</strong><small data-i18n="profile.settings.privacy.discoverableSub">Your name and photo become visible to other Packmates AI users on the Discover page</small></div><label class="toggle"><input type="checkbox" id="priv-discoverable" onchange="savePrivacy()"><span class="toggle-slider"></span></label></div>
               <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
-                <button class="btn-save" style="flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="Auth.exportData();showToast('Your data is downloading…')">
+                <button class="btn-save" style="flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="Auth.exportData();showToast(t('profile.toast.dataDownloading'))">
                   <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  Export My Data
+                  <span data-i18n="profile.settings.privacy.exportBtn">Export My Data</span>
                 </button>
                 <button class="btn-save" style="flex:1;min-width:120px;background:#c0392b;display:flex;align-items:center;justify-content:center;gap:6px" onclick="confirmDeleteAccount()">
                   <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-                  Delete Account
+                  <span data-i18n="profile.settings.privacy.deleteBtn">Delete Account</span>
                 </button>
               </div>
             </div>
+          </div>
+
+          <!-- Language -->
+          <div class="settings-row no-panel" id="row-language">
+            <div class="settings-row-icon" style="background:linear-gradient(145deg,#38bdf8,#0284c7)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></div>
+            <div class="settings-row-text"><strong data-i18n="profile.settings.language.title">Language</strong><span data-i18n="profile.settings.language.subtitle">Choose your app language</span></div>
+            <select id="languageSelect" onchange="setLang(this.value)" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 10px;font-family:'Montserrat',sans-serif;font-size:.8rem;font-weight:600;color:var(--text-1);background:var(--surface)"></select>
           </div>
 
           <!-- Delete account confirmation modal -->
@@ -799,11 +818,11 @@
               <div style="width:48px;height:48px;border-radius:14px;background:#fdecea;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
                 <svg style="width:24px;height:24px;stroke:#c0392b;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               </div>
-              <h3 style="font-family:'Blauer Nue',sans-serif;font-size:1.05rem;font-weight:700;margin:0 0 8px;color:var(--text-1)">Delete account?</h3>
-              <p style="font-size:.82rem;color:var(--text-3);line-height:1.6;margin:0 0 20px">This will permanently erase all your trips, packing lists, and account data. This action cannot be undone.</p>
+              <h3 style="font-family:'Blauer Nue',sans-serif;font-size:1.05rem;font-weight:700;margin:0 0 8px;color:var(--text-1)" data-i18n="profile.deleteModal.title">Delete account?</h3>
+              <p style="font-size:.82rem;color:var(--text-3);line-height:1.6;margin:0 0 20px" data-i18n="profile.deleteModal.body">This will permanently erase all your trips, packing lists, and account data. This action cannot be undone.</p>
               <div style="display:flex;gap:8px">
-                <button onclick="document.getElementById('deleteModal').style.display='none'" style="flex:1;padding:11px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-2);font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer">Cancel</button>
-                <button onclick="Auth.deleteAccount()" style="flex:1;padding:11px;border:none;border-radius:10px;background:#c0392b;color:#fff;font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer">Yes, delete everything</button>
+                <button onclick="document.getElementById('deleteModal').style.display='none'" style="flex:1;padding:11px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-2);font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer" data-i18n="profile.deleteModal.cancel">Cancel</button>
+                <button onclick="Auth.deleteAccount()" style="flex:1;padding:11px;border:none;border-radius:10px;background:#c0392b;color:#fff;font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer" data-i18n="profile.deleteModal.confirm">Yes, delete everything</button>
               </div>
             </div>
           </div>
@@ -811,15 +830,15 @@
           <!-- Help Center -->
           <div class="settings-row no-panel" id="row-help" onclick="toggleCard('help')">
             <div class="settings-row-icon" style="background:linear-gradient(145deg,#fb7185,#e11d48)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-            <div class="settings-row-text"><strong>Help Center</strong><span>Support and FAQs</span></div>
+            <div class="settings-row-text"><strong data-i18n="profile.settings.help.title">Help Center</strong><span data-i18n="profile.settings.help.subtitle">Support and FAQs</span></div>
             <div class="settings-row-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
           </div>
           <div class="settings-panel" id="panel-help" style="border-bottom:none">
             <div class="settings-panel-inner">
-              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How do I create a packing list?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Head to the Dashboard and tap "New Trip". Give it a destination, set your travel dates and activities, then your smart packing list is generated automatically.</div></div>
-              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I share lists with others?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Yes! Open any trip, tap the share icon, and send an invite link. Collaborators can view and check off items in real time.</div></div>
-              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">I forgot my password. What do I do?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">On the login screen tap "Forgot password?" and enter your email. We'll send a reset link. Check your spam folder if it doesn't arrive.</div></div>
-              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How do I contact support?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Email us at support@packmates.app. We typically respond within 24 hours on business days.</div></div>
+              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span data-i18n="profile.faq.q1">How do I create a packing list?</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a" data-i18n="profile.faq.a1">Head to the Dashboard and tap "New Trip". Give it a destination, set your travel dates and activities, then your smart packing list is generated automatically.</div></div>
+              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span data-i18n="profile.faq.q2">Can I share lists with others?</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a" data-i18n="profile.faq.a2">Yes! Open any trip, tap the share icon, and send an invite link. Collaborators can view and check off items in real time.</div></div>
+              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span data-i18n="profile.faq.q3">I forgot my password. What do I do?</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a" data-i18n="profile.faq.a3">On the login screen tap "Forgot password?" and enter your email. We'll send a reset link. Check your spam folder if it doesn't arrive.</div></div>
+              <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span data-i18n="profile.faq.q4">How do I contact support?</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a" data-i18n="profile.faq.a4">Email us at support@packmates.app. We typically respond within 24 hours on business days.</div></div>
             </div>
           </div>
 
@@ -834,17 +853,17 @@
       <!-- Travel Timeline -->
       <div class="profile-card timeline-card" style="animation:fadeUp .4s .1s ease both">
         <div class="card-head">
-          <h3>Travel Timeline</h3>
-          <a class="view-all-link" href="tripPreview.html" target="_top">View trip →</a>
+          <h3 data-i18n="profile.timeline.title">Travel Timeline</h3>
+          <a class="view-all-link" href="tripPreview.html" target="_top" data-i18n="profile.timeline.viewTrip">View trip →</a>
         </div>
-        <div id="travelTimeline"><div class="list-empty">No trips yet. <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">Plan your first one →</a></div></div>
+        <div id="travelTimeline"><div class="list-empty"><span data-i18n="profile.timeline.empty">No trips yet.</span> <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600" data-i18n="profile.timeline.planFirst">Plan your first one →</a></div></div>
       </div>
 
       <!-- AI Packing Insights -->
       <div class="profile-card ai-insights-card">
         <div class="card-head">
-          <div><h3>AI Packing Insights</h3><div class="card-head-sub">Smart insights from your packing history</div></div>
-          <a class="view-all-link" href="packing-list.html" target="_top">View all</a>
+          <div><h3 data-i18n="profile.aiInsights.title">AI Packing Insights</h3><div class="card-head-sub" data-i18n="profile.aiInsights.subtitle">Smart insights from your packing history</div></div>
+          <a class="view-all-link" href="packing-list.html" target="_top" data-i18n="profile.aiInsights.viewAll">View all</a>
         </div>
         <div class="ai-insights-body">
           <div class="ai-insights-list" id="aiInsightsList">
@@ -945,17 +964,18 @@
   <div class="modal-overlay" id="logout-modal">
     <div class="modal">
       <div class="modal-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
-      <h2>Sign out?</h2>
-      <p>You'll need to sign back in to access your packing lists and settings.</p>
+      <h2 data-i18n="profile.logoutModal.title">Sign out?</h2>
+      <p data-i18n="profile.logoutModal.body">You'll need to sign back in to access your packing lists and settings.</p>
       <div class="modal-actions">
-        <button class="btn-cancel" onclick="closeLogoutModal()">Stay</button>
-        <button class="btn-confirm-logout" onclick="confirmLogout()">Sign Out</button>
+        <button class="btn-cancel" onclick="closeLogoutModal()" data-i18n="profile.logoutModal.stay">Stay</button>
+        <button class="btn-confirm-logout" onclick="confirmLogout()" data-i18n="profile.logoutModal.confirm">Sign Out</button>
       </div>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
+  <script src="lib/i18n.js"></script>
   <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
   <script src="notifications.js"></script>
@@ -1031,9 +1051,9 @@
     function loadProfile() {
       const session = Auth.getSession();
       const p = _pmProfile();
-      const dName   = p.name   || session?.name  || 'Traveler';
+      const dName   = p.name   || session?.name  || t('profile.hero.travelerFallback');
       const firstName = dName.split(' ')[0];
-      document.getElementById('hero-greeting').textContent  = `Hey, ${firstName}! 👋`;
+      document.getElementById('hero-greeting').textContent  = t('profile.hero.greetingWithName', { name: firstName });
       document.getElementById('avatar-initials').textContent = dName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
       if (session?.email && !p.pdEmail) _savePmProfile({ pdEmail: session.email });
       if (session?.name  && !p.pdName)  _savePmProfile({ pdName:  session.name });
@@ -1050,7 +1070,7 @@
       // Location meta
       const trips = getAllTrips();
       const recentDest = trips.sort((a,b)=>new Date(b.fromDate||0)-new Date(a.fromDate||0))[0]?.destination;
-      const locationText = p.location || recentDest || 'Explorer';
+      const locationText = p.location || recentDest || t('profile.hero.locationDefault');
       document.getElementById('meta-location').textContent = locationText;
 
       // Bio display
@@ -1061,7 +1081,7 @@
       if (!p.joinedDate) _savePmProfile({ joinedDate: new Date().toISOString().slice(0,7) });
       const [jy, jm] = (p.joinedDate || new Date().toISOString().slice(0,7)).split('-');
       const joinedStr = new Date(Number(jy), Number(jm)-1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
-      document.getElementById('meta-joined').textContent = 'Joined ' + joinedStr;
+      document.getElementById('meta-joined').textContent = t('profile.hero.joinedWithDate', { date: joinedStr });
 
       // Packmates = real people you've shared a trip with (see refreshPackmatesCount)
       refreshPackmatesCount();
@@ -1352,7 +1372,7 @@
             if (sb) sb.auth.updateUser({ data: { name } }).catch(() => {});
           });
         } catch(e) {}
-        document.getElementById('hero-greeting').textContent   = `Hey, ${name.split(' ')[0]}! 👋`;
+        document.getElementById('hero-greeting').textContent   = t('profile.hero.greetingWithName', { name: name.split(' ')[0] });
         document.getElementById('meta-location').textContent   = location || document.getElementById('meta-location').textContent;
         document.getElementById('avatar-initials').textContent = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
         const bioEl = document.getElementById('display-bio');
@@ -1360,7 +1380,7 @@
         disp.style.display=''; edit.style.display='none';
         document.getElementById('profileStreakCard').style.display = '';
         document.getElementById('explorerLevelBar').style.display  = '';
-        showToast('Profile updated!');
+        showToast(t('profile.toast.profileUpdated'));
       }
     }
     function cancelProfileEdit() {
@@ -1479,7 +1499,7 @@
       } catch(e) {}
       loadProfile();
       showMsg('pd-msg','Saved! Packing suggestions updated.','success');
-      showToast('Gender saved — packing suggestions updated!');
+      showToast(t('profile.toast.genderSaved'));
     }
 
     async function savePassword() {
@@ -1493,7 +1513,7 @@
       if (!result.success) { showMsg('sec-msg', result.error, 'error'); return; }
       ['sec-current','sec-new','sec-confirm'].forEach(id => document.getElementById(id).value = '');
       showMsg('sec-msg','Password updated successfully!','success');
-      showToast('Password updated!');
+      showToast(t('profile.toast.passwordUpdated'));
     }
 
     function loadNotifications() {
@@ -1507,7 +1527,7 @@
     }
     function saveNotifications() {
       try { _savePmProfile({ notif:{ email:document.getElementById('notif-email').checked, push:document.getElementById('notif-push').checked, reminders:document.getElementById('notif-reminders').checked, updates:document.getElementById('notif-updates').checked } }); } catch(e) {}
-      showToast('Notification preferences saved!');
+      showToast(t('profile.toast.notifSaved'));
     }
 
     function loadPrivacy() {
@@ -1527,7 +1547,7 @@
           discoverable: document.getElementById('priv-discoverable').checked,
         });
       } catch(e) {}
-      showToast('Privacy settings saved!');
+      showToast(t('profile.toast.privacySaved'));
     }
 
     function confirmDeleteAccount() {
@@ -1581,7 +1601,7 @@
       const list = await _loadPackmates();
       const count = list.length;
       document.getElementById('stat-packmates').textContent = count;
-      document.getElementById('meta-packmates').textContent = count + ' Packmate' + (count !== 1 ? 's' : '');
+      document.getElementById('meta-packmates').textContent = t(count === 1 ? 'profile.hero.packmatesCountSingular' : 'profile.hero.packmatesCountPlural', { count });
       return count;
     }
     // Reacts live to a follow/unfollow made from a different, concurrently
@@ -1861,9 +1881,20 @@
       document.getElementById('pmTpBackdrop').classList.remove('open');
     }
 
-    function confirmLogout() { closeLogoutModal(); showToast('Signing out…'); setTimeout(() => { Auth.logout(); window.top.location.href='welcome.html'; }, 800); }
+    function confirmLogout() { closeLogoutModal(); showToast(t('profile.toast.signingOut')); setTimeout(() => { Auth.logout(); window.top.location.href='welcome.html'; }, 800); }
+
+    function populateLanguageSelect() {
+      const select = document.getElementById('languageSelect');
+      if (!select) return;
+      const current = getLang();
+      select.innerHTML = Object.keys(LANGUAGE_NAMES).map(code =>
+        `<option value="${code}"${code === current ? ' selected' : ''}>${LANGUAGE_NAMES[code]}</option>`
+      ).join('');
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
+      applyTranslations();
+      populateLanguageSelect();
       loadProfile();
       loadPersonalData();
       loadNotifications();
@@ -1889,7 +1920,7 @@
       document.getElementById('avatar-input').addEventListener('change', function() {
         const file = this.files[0]; if (!file) return;
         const reader = new FileReader();
-        reader.onload = e => { try { _savePmProfile({ avatar: e.target.result }); } catch(e) {} applyAvatar(e.target.result); showToast('Profile photo updated!'); };
+        reader.onload = e => { try { _savePmProfile({ avatar: e.target.result }); } catch(e) {} applyAvatar(e.target.result); showToast(t('profile.toast.avatarUpdated')); };
         reader.readAsDataURL(file);
       });
       document.getElementById('pmTpBackdrop').addEventListener('click', e => {

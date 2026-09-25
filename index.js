@@ -1,6 +1,11 @@
     /* ── Auth guard ── */
     const _pmAuthed = Auth.requireAuth('welcome.html');
 
+    /* Translate the static shell now; JS-rendered sections below (bento
+       grid, weather card, etc.) already call t() directly in their own
+       template strings, so they don't need a second pass here. */
+    if (_pmAuthed) applyTranslations();
+
     /* App-only: capacitor.config.json sets SplashScreen.launchAutoHide to
        false so it stays up until explicitly hidden - welcome.html hides it
        once its own assets are ready, but an already-logged-in user landing
@@ -104,11 +109,11 @@
 
     /* ── Greeting ── */
     const session = Auth.getSession();
-    const rawName = session?.name?.split(' ')[0] || 'Traveler';
+    const rawName = session?.name?.split(' ')[0] || t('profile.hero.travelerFallback');
     const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
     const h = new Date().getHours();
     const timeOfDay = h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening';
-    const greetWord = { morning: 'Good morning,', afternoon: 'Good afternoon,', evening: 'Good evening,' }[timeOfDay];
+    const greetWord = t('dash.greeting.' + timeOfDay);
     document.getElementById('greetingText').textContent = greetWord;
     document.getElementById('greetingName').textContent = firstName;
     const greetingIcon = document.getElementById('greetingIcon');
@@ -232,25 +237,25 @@
          and get the richer "N other packmates will lose access" message
          back. */
       let warning = isOwner
-        ? `Delete trip to ${target.destination}? This cannot be undone.`
-        : `Leave trip to ${target.destination}? You'll no longer see it or your packing progress — the trip itself stays intact for everyone else.`;
+        ? t('dash.confirm.deleteWarning', { destination: target.destination })
+        : t('dash.confirm.leaveWarning', { destination: target.destination });
       if (isOwner) {
         const members = await DB.getTripMembers(tripId);
         const othersCount = members.filter(m => m.user_id !== myId).length;
         if (othersCount > 0) {
-          warning = `Delete trip to ${target.destination}? ${othersCount} other packmate${othersCount !== 1 ? 's' : ''} will lose access to it too. This cannot be undone.`;
+          warning = t(othersCount !== 1 ? 'dash.confirm.deleteWarningSharedPlural' : 'dash.confirm.deleteWarningSharedSingular', { destination: target.destination, count: othersCount });
         }
       }
       const confirmed = await showConfirmModal({
-        title: isOwner ? 'Delete trip?' : 'Leave trip?',
+        title: isOwner ? t('dash.confirm.deleteTitle') : t('dash.confirm.leaveTitle'),
         message: warning,
-        okLabel: isOwner ? 'Delete' : 'Leave',
+        okLabel: isOwner ? t('dash.confirm.deleteOk') : t('dash.confirm.leaveOk'),
       });
       if (!confirmed) return;
 
       const result = await DB.deleteTrip(tripId);
       if (!result.success) {
-        alert('Could not delete this trip. Please check your connection and try again.');
+        alert(t('dash.error.deleteFailed'));
         return;
       }
       location.reload();
@@ -546,26 +551,26 @@
           <div class="bc-weather-divider"></div>
           <div class="bc-weather-stats">
             <div class="bc-weather-stat">
-              <span class="bc-weather-stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2 2 0 00-4 0v11.26a4 4 0 104 0z"/></svg>Feels like</span>
+              <span class="bc-weather-stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2 2 0 00-4 0v11.26a4 4 0 104 0z"/></svg>${t('dash.weather.feelsLike')}</span>
               <span class="bc-weather-stat-val" id="statFeels">—</span>
             </div>
             <div class="bc-weather-stat">
-              <span class="bc-weather-stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s6 7.2 6 11.5a6 6 0 11-12 0C6 9.2 12 2 12 2z"/></svg>Humidity</span>
+              <span class="bc-weather-stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s6 7.2 6 11.5a6 6 0 11-12 0C6 9.2 12 2 12 2z"/></svg>${t('dash.weather.humidity')}</span>
               <span class="bc-weather-stat-val" id="statHumidity">—</span>
             </div>
             <div class="bc-weather-stat">
-              <span class="bc-weather-stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h9a3 3 0 100-3M4 16h13a3 3 0 110 3M4 12h7"/></svg>Wind</span>
+              <span class="bc-weather-stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h9a3 3 0 100-3M4 16h13a3 3 0 110 3M4 12h7"/></svg>${t('dash.weather.wind')}</span>
               <span class="bc-weather-stat-val" id="statWind">—</span>
             </div>
           </div>
         </div>
         <div class="bc-weather-forecast" id="weatherForecast"></div>
         ` : `
-        <div class="bc-weather-label">Destination Weather</div>
+        <div class="bc-weather-label">${t('dash.weather.label')}</div>
         <div class="bc-weather-empty">
           <div class="bc-weather-icon wx-idle">☀️</div>
-          <div class="bc-weather-cond">Plan a trip first</div>
-          <div class="bc-weather-city">No destination</div>
+          <div class="bc-weather-cond">${t('dash.weather.planTripFirst')}</div>
+          <div class="bc-weather-city">${t('dash.weather.noDestination')}</div>
         </div>
         `}
       </div>
@@ -575,7 +580,7 @@
         <video id="tipVideo" autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity 0.8s ease;border-radius:inherit;"></video>
         <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(160deg,rgba(7,30,42,0.0) 0%,rgba(7,30,42,0.08) 100%);border-radius:inherit;pointer-events:none;"></div>
         <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:20px 22px;">
-          <div style="font-size:1rem;font-weight:700;color:#fff;line-height:1.25;text-shadow:0 1px 8px rgba(0,0,0,0.4);" id="nudgeTitle">Ready to start?</div>
+          <div style="font-size:1rem;font-weight:700;color:#fff;line-height:1.25;text-shadow:0 1px 8px rgba(0,0,0,0.4);" id="nudgeTitle">${t('dash.readyToStart')}</div>
           ${hasTrip ? `<div style="font-size:0.8rem;font-weight:600;color:rgba(255,255,255,0.8);margin-top:4px;text-shadow:0 1px 8px rgba(0,0,0,0.4);">${trip.destination}</div>` : ''}
         </div>
       </div>
@@ -678,7 +683,7 @@
         iconEl.className = 'bc-weather-icon ' + wxAnimClass(w.code);
         document.getElementById('weatherTemp').textContent = w.temp + '°F';
         document.getElementById('weatherCond').textContent = WMO_LABEL[w.code] || 'Current conditions';
-        document.getElementById('weatherFeels').textContent = `Feels like ${w.feelsLike}°`;
+        document.getElementById('weatherFeels').textContent = t('dash.weather.feelsLikeValue', { temp: w.feelsLike });
         document.getElementById('statFeels').textContent = w.feelsLike + '°F';
         document.getElementById('statHumidity').textContent = w.humidity + '%';
         document.getElementById('statWind').textContent = w.wind + ' mph';
@@ -719,7 +724,7 @@
         const isPast = isTripPast(t);
         const daysLabel = isPast ? 'Past trip' : tDays === null ? '' : tDays > 0 ? `${tDays}d away` : tDays === 0 ? 'Today!' : 'Underway';
         const isOwnedByMe = !t._ownerId || t._ownerId === _myId;
-        const deleteLabel = isOwnedByMe ? 'Delete trip' : 'Leave trip';
+        const deleteLabel = isOwnedByMe ? t('dash.deleteLabel') : t('dash.leaveLabel');
         return `
           <div class="trip-card${isActive ? ' trip-card--active' : ''}${isPast ? ' trip-card--past' : ''}" id="tc-${t.id}">
             <div class="trip-card-img" onclick="${isActive ? `window.top.location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}" style="position:relative">

@@ -14,6 +14,18 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <script>
+    /* Sets <html lang> before lib/i18n.js loads, so there's no flash of
+       the wrong lang attribute. lib/i18n.js's own getLang() does the
+       same lookup once loaded - this is just the pre-load version. */
+    document.documentElement.lang = (function () {
+      try {
+        var l = JSON.parse(localStorage.getItem('pm_profile') || '{}').language;
+        if (l) return l;
+      } catch (e) {}
+      return (navigator.language || 'en').slice(0, 2).toLowerCase();
+    })();
+  </script>
   <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
   <script>
     (function () {
@@ -60,7 +72,7 @@
     <div class="dash-header">
       <div class="dash-header-top">
         <div class="dash-greeting">
-          <h1 id="greetingText">Good Morning</h1>
+          <h1 id="greetingText" data-i18n="dash.greeting.morning">Good morning,</h1>
           <div class="dash-greeting-name-row">
             <span class="dash-greeting-name" id="greetingName"></span>
             <img class="dash-greeting-icon" id="greetingIcon" src="" alt="" style="display:none">
@@ -79,12 +91,12 @@
       <div class="dash-header-controls">
         <div class="search-box">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="homeSearchInput" placeholder="Search destinations…" autocomplete="off">
+          <input type="text" id="homeSearchInput" placeholder="Search destinations…" autocomplete="off" data-i18n-attr="placeholder:dash.searchPlaceholder">
           <div class="home-search-dd" id="homeSearchDd" style="display:none"></div>
         </div>
         <button class="btn-new-trip" onclick="window.top.location.href='newTrip.html'">
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Trip
+          <span data-i18n="dash.newTrip">New Trip</span>
         </button>
       </div>
     </div>
@@ -93,15 +105,15 @@
     <div class="dash-stats">
       <div class="dash-stat">
         <span class="dash-stat-num" id="statTrips" style="color:var(--navy)">—</span>
-        <span class="dash-stat-lbl">Trips</span>
+        <span class="dash-stat-lbl" data-i18n="dash.stats.trips">Trips</span>
       </div>
       <div class="dash-stat">
         <span class="dash-stat-num" id="statPacked" style="color:var(--green)">—</span>
-        <span class="dash-stat-lbl">Items Packed</span>
+        <span class="dash-stat-lbl" data-i18n="dash.stats.itemsPacked">Items Packed</span>
       </div>
       <div class="dash-stat">
         <span class="dash-stat-num" id="statDest" style="color:var(--teal-a)">—</span>
-        <span class="dash-stat-lbl">Destinations</span>
+        <span class="dash-stat-lbl" data-i18n="dash.stats.destinations">Destinations</span>
       </div>
     </div>
 
@@ -117,7 +129,7 @@
     <!-- Others Also Packed -->
     <div class="bento-section" id="packedSection">
       <div class="bento-section-header">
-        <h2>Others Also Packed</h2>
+        <h2 data-i18n="dash.section.othersPacked">Others Also Packed</h2>
         <div class="bento-section-line"></div>
       </div>
       <div class="packed-strip" id="packedStrip"></div>
@@ -126,9 +138,9 @@
     <!-- Explore Destinations -->
     <div class="bento-section">
       <div class="bento-section-header">
-        <h2>Explore Destinations</h2>
+        <h2 data-i18n="dash.section.explore">Explore Destinations</h2>
         <div class="bento-section-line"></div>
-        <a href="discover.html" target="_top" style="font-size:0.68rem;font-weight:700;color:var(--green);text-decoration:none;white-space:nowrap;letter-spacing:0.04em;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">See all →</a>
+        <a href="discover.html" target="_top" style="font-size:0.68rem;font-weight:700;color:var(--green);text-decoration:none;white-space:nowrap;letter-spacing:0.04em;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" data-i18n="dash.section.seeAll">See all →</a>
       </div>
       <div class="explore-strip" id="exploreStrip"></div>
     </div>
@@ -136,13 +148,13 @@
     <!-- Your Trips -->
     <div class="trips-grid-wrap" id="tripsSection">
       <div class="bento-section-header">
-        <h2>Your Trips</h2>
+        <h2 data-i18n="dash.section.yourTrips">Your Trips</h2>
         <div class="bento-section-line"></div>
       </div>
       <div class="trips-grid" id="tripsGrid"></div>
     </div>
 
-    <p style="font-size:0.72rem; line-height:1.6; color:var(--text-3, #7a9aad); max-width:640px; margin:2px auto 36px; padding:0 16px; text-align:center;">
+    <p style="font-size:0.72rem; line-height:1.6; color:var(--text-3, #7a9aad); max-width:640px; margin:2px auto 36px; padding:0 16px; text-align:center;" data-i18n="dash.aboutBlurb">
       Packmates AI builds your packing checklist from your real destination, travel dates, weather, and planned activities — not a generic template. Add a trip, and get a weather-aware packing list that updates as your plans change, synced live with everyone traveling with you. Browse trending destinations, track your packing streak, and keep every trip organized in one place.
     </p>
 
@@ -156,15 +168,16 @@
       <div class="confirm-icon" id="confirmIcon">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
       </div>
-      <div class="confirm-title" id="confirmTitle">Delete trip?</div>
+      <div class="confirm-title" id="confirmTitle" data-i18n="dash.confirm.deleteTitle">Delete trip?</div>
       <div class="confirm-message" id="confirmMessage"></div>
       <div class="confirm-actions">
-        <button class="confirm-btn confirm-btn--ghost" id="confirmCancelBtn">Cancel</button>
-        <button class="confirm-btn confirm-btn--danger" id="confirmOkBtn">Delete</button>
+        <button class="confirm-btn confirm-btn--ghost" id="confirmCancelBtn" data-i18n="profile.hero.cancel">Cancel</button>
+        <button class="confirm-btn confirm-btn--danger" id="confirmOkBtn" data-i18n="dash.confirm.deleteOk">Delete</button>
       </div>
     </div>
   </div>
 
+  <script src="lib/i18n.js"></script>
   <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
   <script src="notifications.js"></script>
