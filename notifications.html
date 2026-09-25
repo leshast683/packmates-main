@@ -24,6 +24,18 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <script>
+    /* Sets <html lang> before lib/i18n.js loads, so there's no flash of
+       the wrong lang attribute. lib/i18n.js's own getLang() does the
+       same lookup once loaded - this is just the pre-load version. */
+    document.documentElement.lang = (function () {
+      try {
+        var l = JSON.parse(localStorage.getItem('pm_profile') || '{}').language;
+        if (l) return l;
+      } catch (e) {}
+      return (navigator.language || 'en').slice(0, 2).toLowerCase();
+    })();
+  </script>
   <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
   <script>
     (function () {
@@ -348,13 +360,13 @@
           <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
         </div>
         <div>
-          <h1>Notifications</h1>
-          <p>Stay updated with your travel and packing activity</p>
+          <h1 data-i18n="notif.title">Notifications</h1>
+          <p data-i18n="notif.subtitle">Stay updated with your travel and packing activity</p>
         </div>
       </div>
       <button class="btn-notif-settings" onclick="window.top.location.href='profile.html'">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        Notification settings
+        <span data-i18n="notif.settingsBtn">Notification settings</span>
       </button>
     </div>
 
@@ -368,32 +380,32 @@
           </div>
           <span class="nstat-count" id="statUnread" style="font-size:1.5rem">—</span>
         </div>
-        <div class="nstat-label" style="color:rgba(255,255,255,.95);font-size:.8rem">Unread</div>
-        <div class="nstat-sub" id="statUnreadSub">Loading…</div>
+        <div class="nstat-label" style="color:rgba(255,255,255,.95);font-size:.8rem" data-i18n="notif.stats.unread">Unread</div>
+        <div class="nstat-sub" id="statUnreadSub" data-i18n="pack.loading">Loading…</div>
       </div>
       <!-- Today -->
       <div class="nstat">
-        <div class="nstat-meta">Today</div>
+        <div class="nstat-meta" data-i18n="notif.today">Today</div>
         <div class="nstat-icon-row" style="margin-top:4px">
           <div class="nstat-icon nstat-icon--cal">
             <svg viewBox="0 0 24 24" stroke="#5f9d30"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
           <span class="nstat-count" id="statToday">—</span>
         </div>
-        <div class="nstat-label">New</div>
-        <div class="nstat-sub">Latest updates</div>
+        <div class="nstat-label" data-i18n="notif.newLabel">New</div>
+        <div class="nstat-sub" data-i18n="notif.latestUpdates">Latest updates</div>
       </div>
       <!-- This Week -->
       <div class="nstat">
-        <div class="nstat-meta">This Week</div>
+        <div class="nstat-meta" data-i18n="notif.thisWeek">This Week</div>
         <div class="nstat-icon-row" style="margin-top:4px">
           <div class="nstat-icon nstat-icon--cal">
             <svg viewBox="0 0 24 24" stroke="#5f9d30"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
           <span class="nstat-count" id="statWeek">—</span>
         </div>
-        <div class="nstat-label">Updates</div>
-        <div class="nstat-sub">Recent activity</div>
+        <div class="nstat-label" data-i18n="notif.updatesLabel">Updates</div>
+        <div class="nstat-sub" data-i18n="notif.recentActivity">Recent activity</div>
       </div>
       <!-- All Clear -->
       <div class="nstat nstat--clear">
@@ -402,27 +414,27 @@
             <svg viewBox="0 0 24 24" stroke="#5f9d30"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           </div>
         </div>
-        <div class="nstat-label">All Clear</div>
-        <div class="nstat-sub">You're all caught up</div>
-        <div class="nstat-sub" style="font-weight:600;color:rgba(255,255,255,0.6);margin-top:2px">Keep packing! 🎒</div>
+        <div class="nstat-label" data-i18n="notif.allClear">All Clear</div>
+        <div class="nstat-sub" data-i18n="notif.allCaughtUp">You're all caught up</div>
+        <div class="nstat-sub" style="font-weight:600;color:rgba(255,255,255,0.6);margin-top:2px" data-i18n="notif.keepPacking">Keep packing! 🎒</div>
       </div>
     </div>
 
     <!-- Filter bar -->
     <div class="notif-filterbar">
       <div class="notif-tabs" id="filterTabs">
-        <button class="notif-tab active" data-filter="all" onclick="setFilter(this)">All</button>
-        <button class="notif-tab" data-filter="trip" onclick="setFilter(this)">Trips</button>
-        <button class="notif-tab" data-filter="packing" onclick="setFilter(this)">Packing List</button>
-        <button class="notif-tab" data-filter="alert" onclick="setFilter(this)">System</button>
-        <button class="notif-tab" data-filter="social" onclick="setFilter(this)">Community</button>
+        <button class="notif-tab active" data-filter="all" onclick="setFilter(this)" data-i18n="notif.filter.all">All</button>
+        <button class="notif-tab" data-filter="trip" onclick="setFilter(this)" data-i18n="notif.filter.trips">Trips</button>
+        <button class="notif-tab" data-filter="packing" onclick="setFilter(this)" data-i18n="notif.filter.packingList">Packing List</button>
+        <button class="notif-tab" data-filter="alert" onclick="setFilter(this)" data-i18n="notif.filter.system">System</button>
+        <button class="notif-tab" data-filter="social" onclick="setFilter(this)" data-i18n="notif.filter.community">Community</button>
       </div>
       <div class="notif-actions">
         <button class="btn-mark-read" onclick="markAllRead()">
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-          Mark all as read
+          <span data-i18n="notif.markAllRead">Mark all as read</span>
         </button>
-        <button class="btn-filter-icon" onclick="clearAll()" title="Clear all" aria-label="Clear all notifications">
+        <button class="btn-filter-icon" onclick="clearAll()" title="Clear all" aria-label="Clear all notifications" data-i18n-attr="title:notif.clearAllTitle;aria-label:notif.clearAllAriaLabel">
           <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
         </button>
       </div>
@@ -432,34 +444,36 @@
     <div class="notif-list-outer" id="notifListOuter">
 
       <div class="notif-group" id="group-today">
-        <div class="notif-group-head">Today</div>
+        <div class="notif-group-head" data-i18n="notif.today">Today</div>
         <div id="list-today"></div>
       </div>
 
       <div class="notif-group" id="group-week">
-        <div class="notif-group-head">This Week</div>
+        <div class="notif-group-head" data-i18n="notif.thisWeek">This Week</div>
         <div id="list-week"></div>
       </div>
 
       <div class="notif-group" id="group-earlier">
-        <div class="notif-group-head">Earlier</div>
+        <div class="notif-group-head" data-i18n="notif.earlier">Earlier</div>
         <div id="list-earlier"></div>
       </div>
 
       <div class="notif-empty" id="empty-card">
-        <h3>You're all caught up!</h3>
-        <p>No notifications right now. We'll let you know when something happens.</p>
+        <h3 data-i18n="notif.emptyTitle">You're all caught up!</h3>
+        <p data-i18n="notif.emptySubtitle">No notifications right now. We'll let you know when something happens.</p>
       </div>
 
     </div>
 
   </main>
 
+  <script src="lib/i18n.js"></script>
   <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
   <script src="notifications.js"></script>
   <script>
-    Auth.requireAuth('welcome.html');
+    const _pmAuthed = Auth.requireAuth('welcome.html');
+    if (_pmAuthed) applyTranslations();
 
     /* ── Storage helpers ── */
     function getStorageKey() {
@@ -483,14 +497,14 @@
     function getDefaultNotifs() {
       const now = Date.now();
       const trips = (() => { try { return JSON.parse(localStorage.getItem('pm_trips')||'[]'); } catch{return[];} })();
-      const dest = trips[0]?.destination || 'your trip';
+      const dest = trips[0]?.destination || tr('notif.defaultTripFallback');
       return [
-        { id:now-1,  type:'reminder', text:`Remember to finish packing for <strong>${dest}!</strong>`,  time:new Date(now-1*3600000).toISOString(),  read:false },
-        { id:now-2,  type:'packing',  text:`You're all packed for <strong>${dest}</strong>! Ready to go 🎒`,  time:new Date(now-5*3600000).toISOString(),  read:false },
-        { id:now-3,  type:'trip',     text:`Your trip to <strong>${dest}</strong> has been created!`,    time:new Date(now-3*86400000).toISOString(), read:false },
-        { id:now-4,  type:'alert',    text:'Your trip starts soon — check your packing list!',           time:new Date(now-5*86400000).toISOString(), read:false },
-        { id:now-5,  type:'like',     text:'<strong>Ellie</strong> liked your packing list',             time:new Date(now-13*86400000).toISOString(),read:false },
-        { id:now-6,  type:'social',   text:"You've been added as a <strong>Packmate</strong>",           time:new Date(now-14*86400000).toISOString(),read:false },
+        { id:now-1,  type:'reminder', text:tr('notif.default.reminder', { destination: dest }),  time:new Date(now-1*3600000).toISOString(),  read:false },
+        { id:now-2,  type:'packing',  text:tr('notif.default.packed', { destination: dest }),  time:new Date(now-5*3600000).toISOString(),  read:false },
+        { id:now-3,  type:'trip',     text:tr('notif.default.tripCreated', { destination: dest }),    time:new Date(now-3*86400000).toISOString(), read:false },
+        { id:now-4,  type:'alert',    text:tr('notif.default.tripStartsSoon'),           time:new Date(now-5*86400000).toISOString(), read:false },
+        { id:now-5,  type:'like',     text:tr('notif.default.liked', { name: 'Ellie' }),             time:new Date(now-13*86400000).toISOString(),read:false },
+        { id:now-6,  type:'social',   text:tr('notif.default.addedAsPackmate'),           time:new Date(now-14*86400000).toISOString(),read:false },
       ];
     }
 
@@ -515,14 +529,14 @@
     function timeAgo(iso) {
       const diff = Date.now() - new Date(iso).getTime();
       const m = Math.floor(diff / 60000);
-      if (m < 1)  return 'just now';
-      if (m < 60) return `${m}m ago`;
+      if (m < 1)  return tr('notif.time.justNow');
+      if (m < 60) return tr('notif.time.minutesAgo', { m });
       const h = Math.floor(m / 60);
-      if (h < 24) return `${h} hour${h>1?'s':''} ago`;
+      if (h < 24) return tr(h > 1 ? 'notif.time.hourPlural' : 'notif.time.hourSingular', { h });
       const d = Math.floor(h / 24);
-      if (d < 7)  return `${d} day${d>1?'s':''} ago`;
+      if (d < 7)  return tr(d > 1 ? 'notif.time.dayPlural' : 'notif.time.daySingular', { d });
       const w = Math.floor(d / 7);
-      return `${w} week${w>1?'s':''} ago`;
+      return tr(w > 1 ? 'notif.time.weekPlural' : 'notif.time.weekSingular', { w });
     }
 
     function getGroup(iso) {
@@ -566,7 +580,7 @@
     function updateStats(notifs) {
       const unread = notifs.filter(n => !n.read).length;
       document.getElementById('statUnread').textContent = unread;
-      document.getElementById('statUnreadSub').textContent = unread > 0 ? 'You have new updates' : "You're all caught up";
+      document.getElementById('statUnreadSub').textContent = unread > 0 ? tr('notif.hasNewUpdates') : tr('notif.allCaughtUp');
       document.getElementById('statToday').textContent = notifs.filter(n => getGroup(n.time)==='today').length;
       document.getElementById('statWeek').textContent  = notifs.filter(n => getGroup(n.time)==='week').length;
     }
@@ -615,7 +629,7 @@
     }
 
     function clearAll() {
-      if (!confirm('Clear all notifications?')) return;
+      if (!confirm(tr('notif.confirmClearAll'))) return;
       const items = document.querySelectorAll('.notif-item');
       let delay = 0;
       items.forEach(item => {
