@@ -98,11 +98,11 @@ function saveState() {
 }
 
 // ── Header ──
-document.getElementById('packingListTitle').textContent = destination + ' – Packing List';
+document.getElementById('packingListTitle').textContent = tr('pack.pageTitle', { destination });
 const metaParts = [];
 if (fromDate && toDate) metaParts.push(`${formatDate(fromDate)} – ${formatDate(toDate)}`);
-if (days)               metaParts.push(`${days} day${days !== 1 ? 's' : ''}`);
-metaParts.push(`${travelers} traveler${travelers !== 1 ? 's' : ''}`);
+if (days)               metaParts.push(tr(days === 1 ? 'pack.daySingular' : 'pack.dayPlural', { count: days }));
+metaParts.push(tr(travelers === 1 ? 'newTrip.travelerCountSingular' : 'newTrip.travelerCountPlural', { count: travelers }));
 const metaEl = document.getElementById('packingSummaryMeta');
 if (metaEl) metaEl.textContent = metaParts.join(' · ');
 
@@ -114,26 +114,26 @@ function _act(img, label) {
 function _txt(label) {
     return `<span class="pb-chip pb-chip--weather">${label}</span>`;
 }
-if (profile.hot)             profileBadges.push(_act('weather_warm.png',  'Warm'));
-if (profile.cold)            profileBadges.push(_act('weather_cold.png',  'Cold'));
-if (profile.snowy)           profileBadges.push(_act('weather_snowy.png', 'Snowy'));
-if (profile.rainy)           profileBadges.push(_act('weather_rainy.png', 'Rainy'));
-if (profile.windy)           profileBadges.push(_act('weather_windy.png', 'Windy'));
-if (profile.beach)           profileBadges.push(_act('activity_beach.png',       'Beach'));
-if (profile.ski)             profileBadges.push(_act('activity_snowsports.png',  'Ski'));
-if (profile.hiking)          profileBadges.push(_act('activity_hiking.png',      'Hiking'));
-if (profile.camping)         profileBadges.push(_act('activity_camping.png',     'Camping'));
-if (profile.swimming)        profileBadges.push(_act('activity_swimming.png',    'Swimming'));
-if (profile.gym)             profileBadges.push(_act('activity_gym.png',         'Gym'));
-if (profile.business)        profileBadges.push(_act('activity_business.png',    'Business'));
-if (profile.nightOut)        profileBadges.push(_act('activity_nightout.png',    'Night Out'));
-if (profile.baby)            profileBadges.push(_act('activity_baby.png',        'Baby'));
-if (profile.themePark)       profileBadges.push(_act('activity_themepark.png',   'Theme Park'));
-if (profile.festival)        profileBadges.push(_act('activity_festival.png',    'Festival'));
-if (profile.roadTrip)        profileBadges.push(_act('activity_roadtrip.png',    'Road Trip'));
-if (profile.citySightseeing) profileBadges.push(_act('activity_sightseeing.png', 'Sightseeing'));
-if (profile.dining)          profileBadges.push(_act('activity_dining.png',      'Dining'));
-if (profile.cruise)          profileBadges.push(_act('activity_cruise.png',      'Cruise'));
+if (profile.hot)             profileBadges.push(_act('weather_warm.png',  tr('pack.badge.warm')));
+if (profile.cold)            profileBadges.push(_act('weather_cold.png',  tr('pack.badge.cold')));
+if (profile.snowy)           profileBadges.push(_act('weather_snowy.png', tr('pack.badge.snowy')));
+if (profile.rainy)           profileBadges.push(_act('weather_rainy.png', tr('pack.badge.rainy')));
+if (profile.windy)           profileBadges.push(_act('weather_windy.png', tr('pack.badge.windy')));
+if (profile.beach)           profileBadges.push(_act('activity_beach.png',       tr('pack.badge.beach')));
+if (profile.ski)             profileBadges.push(_act('activity_snowsports.png',  tr('pack.badge.ski')));
+if (profile.hiking)          profileBadges.push(_act('activity_hiking.png',      tr('pack.badge.hiking')));
+if (profile.camping)         profileBadges.push(_act('activity_camping.png',     tr('pack.badge.camping')));
+if (profile.swimming)        profileBadges.push(_act('activity_swimming.png',    tr('pack.badge.swimming')));
+if (profile.gym)             profileBadges.push(_act('activity_gym.png',         tr('pack.badge.gym')));
+if (profile.business)        profileBadges.push(_act('activity_business.png',    tr('pack.badge.business')));
+if (profile.nightOut)        profileBadges.push(_act('activity_nightout.png',    tr('pack.badge.nightOut')));
+if (profile.baby)            profileBadges.push(_act('activity_baby.png',        tr('pack.badge.baby')));
+if (profile.themePark)       profileBadges.push(_act('activity_themepark.png',   tr('pack.badge.themePark')));
+if (profile.festival)        profileBadges.push(_act('activity_festival.png',    tr('pack.badge.festival')));
+if (profile.roadTrip)        profileBadges.push(_act('activity_roadtrip.png',    tr('pack.badge.roadTrip')));
+if (profile.citySightseeing) profileBadges.push(_act('activity_sightseeing.png', tr('pack.badge.sightseeing')));
+if (profile.dining)          profileBadges.push(_act('activity_dining.png',      tr('pack.badge.dining')));
+if (profile.cruise)          profileBadges.push(_act('activity_cruise.png',      tr('pack.badge.cruise')));
 
 // ── Count helpers ──
 // ALWAYS_SUGGEST_CATS provided by lib/packing-items.js
@@ -193,13 +193,13 @@ function updateCounts() {
         const allActivePacked = all.length > 0 && left === 0;
         finishEl.classList.toggle('pl-finish-banner--visible', allActivePacked);
         if (allActivePacked && dismissedSuggestedCount > 0) {
-            if (titleEl) titleEl.textContent = 'All visible items packed!';
-            if (subEl)   subEl.textContent   = `${dismissedSuggestedCount} item${dismissedSuggestedCount !== 1 ? 's' : ''} still hidden — restore to review`;
-            if (btnEl) { btnEl.textContent = 'Restore hidden'; btnEl.onclick = restoreDismissed; }
+            if (titleEl) titleEl.textContent = tr('pack.finish.allVisiblePackedTitle');
+            if (subEl)   subEl.textContent   = tr(dismissedSuggestedCount === 1 ? 'pack.finish.hiddenSingular' : 'pack.finish.hiddenPlural', { count: dismissedSuggestedCount });
+            if (btnEl) { btnEl.textContent = tr('pack.finish.restoreHidden'); btnEl.onclick = restoreDismissed; }
         } else {
-            if (titleEl) titleEl.textContent = "You're all packed!";
-            if (subEl)   subEl.textContent   = 'Every item on your list is checked off';
-            if (btnEl) { btnEl.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg> Back to Trip'; btnEl.onclick = () => window.top.location.href = 'tripPreview.html'; }
+            if (titleEl) titleEl.textContent = tr('pack.finish.allPackedTitle');
+            if (subEl)   subEl.textContent   = tr('pack.finish.allPackedSub');
+            if (btnEl) { btnEl.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg> ${tr('pack.backToTrip')}`; btnEl.onclick = () => window.top.location.href = 'tripPreview.html'; }
         }
     }
 
@@ -231,13 +231,13 @@ function updateFinishBar(packedCount, totalCount) {
 
     bar.classList.toggle('pl-finish-fixed-bar--done', finished);
     if (finished) {
-        if (title) title.textContent = 'Packing complete ✓';
-        if (sub)   sub.textContent   = `${packedCount} item${packedCount !== 1 ? 's' : ''} packed — edit anytime if you forgot something`;
-        if (label) label.textContent = 'Edit List';
+        if (title) title.textContent = tr('pack.finish.completeTitle');
+        if (sub)   sub.textContent   = tr(packedCount === 1 ? 'pack.finish.packedSummarySingular' : 'pack.finish.packedSummaryPlural', { count: packedCount });
+        if (label) label.textContent = tr('pack.finish.editList');
     } else {
-        if (title) title.textContent = 'Ready to finish?';
-        if (sub)   sub.textContent   = `${packedCount} of ${totalCount} packed — lock in your progress`;
-        if (label) label.textContent = 'Finish Packing';
+        if (title) title.textContent = tr('pack.finish.readyTitle');
+        if (sub)   sub.textContent   = tr('pack.finish.progressSummary', { packed: packedCount, total: totalCount });
+        if (label) label.textContent = tr('pack.finish.finishBtn');
     }
 
     // Editing controls (filters, search, add item) only make sense while
@@ -295,21 +295,21 @@ function buildItemRow(cat, name, isCustom) {
         ? '<span class="pl-gender-badge pl-gender-badge--female">♀</span>'
         : '';
     article.innerHTML = `
-        <button class="packing-check${packed ? ' packing-check--checked' : ''}" aria-label="${packed ? 'Mark as not packed' : 'Mark as packed'}"></button>
+        <button class="packing-check${packed ? ' packing-check--checked' : ''}" aria-label="${packed ? tr('pack.markUnpacked') : tr('pack.markPacked')}"></button>
         <div class="pl-item-icon-wrap"${iconStyle}>${iconSvg}</div>
         <div class="packing-item-content">
             <div class="packing-item-top">
-                <h3 class="packing-item-name" style="${packed ? 'text-decoration:line-through;color:#99a8b4;' : ''}">${name}</h3>
+                <h3 class="packing-item-name" style="${packed ? 'text-decoration:line-through;color:#99a8b4;' : ''}">${tItem(name)}</h3>
                 <div style="display:flex;align-items:center;gap:5px;">
                     <button class="qty-btn" data-key="${key}" data-delta="-1" style="width:18px;height:18px;border-radius:50%;border:1px solid #cdd6de;background:#f7fafc;cursor:pointer;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;">−</button>
                     <span class="packing-quantity qty-display" data-key="${key}">x${state.qty}</span>
                     <button class="qty-btn" data-key="${key}" data-delta="1" style="width:18px;height:18px;border-radius:50%;border:1px solid #cdd6de;background:#f7fafc;cursor:pointer;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;">+</button>
-                    <button class="dismiss-btn" data-key="${key}" data-cat="${cat}" data-name="${name}" title="Delete item" style="width:18px;height:18px;border-radius:50%;border:none;background:#fdecea;cursor:pointer;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;color:#c0392b;">✕</button>
+                    <button class="dismiss-btn" data-key="${key}" data-cat="${cat}" data-name="${name}" title="${tr('pack.deleteItem')}" style="width:18px;height:18px;border-radius:50%;border:none;background:#fdecea;cursor:pointer;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;color:#c0392b;">✕</button>
                 </div>
             </div>
             <div class="packing-item-meta">
-                ${genderBadge}<span class="packing-tag">${cat}</span>
-                <span class="packing-status ${packed ? 'packing-status--packed' : 'packing-status--not-packed'}">${packed ? 'Packed' : 'Unpacked'}</span>
+                ${genderBadge}<span class="packing-tag">${tCategory(cat)}</span>
+                <span class="packing-status ${packed ? 'packing-status--packed' : 'packing-status--not-packed'}">${packed ? tr('pack.status.packed') : tr('pack.status.unpacked')}</span>
             </div>
         </div>`;
 
@@ -385,8 +385,8 @@ function buildCategorySection(cat, itemEntries) {
     section.innerHTML = `
         <div class="packing-category-header">
             ${hasSuggested ? '<span class="suggested-dot"></span>' : ''}
-            ${cat}
-            ${hasSuggested ? '<span class="packing-suggested-badge">✨ Suggested</span>' : ''}
+            ${tCategory(cat)}
+            ${hasSuggested ? `<span class="packing-suggested-badge">${tr('pack.suggestedBadge')}</span>` : ''}
         </div>`;
 
     filtered.forEach(({ name }) => {
@@ -400,7 +400,7 @@ function buildCategorySection(cat, itemEntries) {
 (function initProfileBanner() {
     const wrap = document.getElementById('profileBannerWrap');
     if (!wrap || !profileBadges.length) return;
-    wrap.innerHTML = `<div class="packing-suggested-banner"><span class="pb-title">Adapted for your trip</span><div class="pb-badges">${profileBadges.join('')}</div></div>`;
+    wrap.innerHTML = `<div class="packing-suggested-banner"><span class="pb-title">${tr('pack.adaptedForTrip')}</span><div class="pb-badges">${profileBadges.join('')}</div></div>`;
 })();
 
 function renderList() {
@@ -442,7 +442,7 @@ function renderList() {
         if (!names.length) return;
         const section = document.createElement('div');
         section.className = 'packing-category-section';
-        section.innerHTML = `<div class="packing-category-header">${cat} <span style="font-size:0.6rem;font-weight:500;color:#5f9d30;text-transform:none;letter-spacing:0;">custom</span></div>`;
+        section.innerHTML = `<div class="packing-category-header">${tCategory(cat)} <span style="font-size:0.6rem;font-weight:500;color:#5f9d30;text-transform:none;letter-spacing:0;">${tr('pack.customLabel')}</span></div>`;
         names.forEach(name => {
             if (currentSearch && !name.toLowerCase().includes(currentSearch)) return;
             const key    = getItemKey(cat, name);
@@ -459,7 +459,7 @@ function renderList() {
     if (!finished) {
         const toggle = document.createElement('button');
         toggle.style.cssText = 'margin:16px auto 4px;display:block;background:none;border:1px solid #cdd6de;border-radius:999px;padding:6px 18px;font-size:0.78rem;cursor:pointer;color:#4b5a66;font-family:inherit;';
-        toggle.textContent = showAllItems ? '↑ Show suggested items only' : '↓ Browse all items';
+        toggle.textContent = tr(showAllItems ? 'pack.showSuggestedOnly' : 'pack.browseAll');
         toggle.addEventListener('click', () => {
             showAllItems = !showAllItems;
             renderList();
@@ -572,7 +572,11 @@ if (nativeShareBtn && navigator.share) {
     nativeShareBtn.style.display = 'flex';
     nativeShareBtn.addEventListener('click', async () => {
         try {
-            await navigator.share({ title: `${tripData.destination || 'Trip'} Packing List`, text: `Pack together for ${tripData.destination || 'this trip'} on Packmates AI!`, url: shareUrlInput.value });
+            await navigator.share({
+                title: tr('pack.share.nativeTitle', { destination: tripData.destination || tr('pack.share.defaultTrip') }),
+                text:  tr('pack.share.nativeText',  { destination: tripData.destination || tr('pack.share.defaultThisTrip') }),
+                url: shareUrlInput.value,
+            });
         } catch {} // user cancelled — not an error
     });
 }
@@ -613,8 +617,8 @@ document.getElementById('copyShareUrl').addEventListener('click', () => {
         const joinSub    = document.getElementById('joinSub');
         const joinAvatar = document.getElementById('joinAvatar');
 
-        if (joinTitle)  joinTitle.textContent = `${payload.dest} Packing List`;
-        if (joinSub)    joinSub.textContent   = `Shared by ${payload.by} — join to pack together`;
+        if (joinTitle)  joinTitle.textContent = tr('pack.share.nativeTitle', { destination: payload.dest });
+        if (joinSub)    joinSub.textContent   = tr('pack.join.sharedBy', { name: payload.by });
         if (joinAvatar) joinAvatar.textContent = (payload.by || 'PM').slice(0, 2).toUpperCase();
         if (joinBanner) joinBanner.style.display = 'flex';
 
@@ -696,7 +700,7 @@ function _acceptJoin(payload) {
             const bar = document.getElementById('collabBar');
             const lbl = document.getElementById('collabLabel');
             if (bar) bar.style.display = 'flex';
-            if (lbl) lbl.textContent = 'Packing together';
+            if (lbl) lbl.textContent = tr('pack.collab.together');
             try { _collabChannel.postMessage({ type: 'pong' }); } catch(e) {}
         }
 
@@ -704,7 +708,7 @@ function _acceptJoin(payload) {
             const bar = document.getElementById('collabBar');
             const lbl = document.getElementById('collabLabel');
             if (bar) bar.style.display = 'flex';
-            if (lbl) lbl.textContent = 'Packing together';
+            if (lbl) lbl.textContent = tr('pack.collab.together');
         }
 
         if (msg.type === 'state') {
@@ -764,7 +768,9 @@ function _broadcastState() {
         const avatarsEl = document.getElementById('collabAvatars');
         if (!others.length) { if (bar) bar.style.display = 'none'; return; }
         if (bar) bar.style.display = 'flex';
-        if (lbl) lbl.textContent = others.length === 1 ? `${others[0].name} is here too` : `${others.length} packmates are here too`;
+        if (lbl) lbl.textContent = others.length === 1
+            ? tr('pack.collab.oneHere', { name: others[0].name })
+            : tr('pack.collab.manyHere', { count: others.length });
         if (avatarsEl) {
             avatarsEl.innerHTML = others.slice(0, 4).map((p, i) =>
                 `<span style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}" title="${p.name}">${(p.name || '?').trim().charAt(0).toUpperCase()}</span>`

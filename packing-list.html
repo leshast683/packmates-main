@@ -42,6 +42,18 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <script>
+    /* Sets <html lang> before lib/i18n.js loads, so there's no flash of
+       the wrong lang attribute. lib/i18n.js's own getLang() does the
+       same lookup once loaded - this is just the pre-load version. */
+    document.documentElement.lang = (function () {
+      try {
+        var l = JSON.parse(localStorage.getItem('pm_profile') || '{}').language;
+        if (l) return l;
+      } catch (e) {}
+      return (navigator.language || 'en').slice(0, 2).toLowerCase();
+    })();
+  </script>
   <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
   <script>
     (function () {
@@ -91,11 +103,11 @@
         <div class="pl-join-avatar" id="joinAvatar">PM</div>
         <div>
           <strong id="joinTitle">Shared packing list</strong>
-          <span id="joinSub">Join to pack together in real time</span>
+          <span id="joinSub" data-i18n="pack.join.subtitle">Join to pack together in real time</span>
         </div>
       </div>
       <div class="pl-join-actions">
-        <button class="pl-join-btn pl-join-accept" id="joinAcceptBtn">Join</button>
+        <button class="pl-join-btn pl-join-accept" id="joinAcceptBtn" data-i18n="pack.join.accept">Join</button>
         <button class="pl-join-dismiss" id="joinDismissBtn">✕</button>
       </div>
     </div>
@@ -104,7 +116,7 @@
     <div class="pl-collab-bar" id="collabBar" style="display:none">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
       <div class="pl-collab-avatars" id="collabAvatars"></div>
-      <span id="collabLabel">Packing together</span>
+      <span id="collabLabel" data-i18n="pack.collab.together">Packing together</span>
       <div class="pl-collab-dot"></div>
     </div>
 
@@ -116,20 +128,20 @@
             <h1 id="packingListTitle">Packing List</h1>
             <button class="pl-share-btn" id="openShareModal">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-              Share
+              <span data-i18n="pack.share">Share</span>
             </button>
           </div>
-          <div class="pl-sub" id="packingSummaryMeta">Loading…</div>
+          <div class="pl-sub" id="packingSummaryMeta" data-i18n="pack.loading">Loading…</div>
         </div>
       </div>
       <div class="pl-header-right">
         <button class="pl-back-btn" onclick="window.top.location.href='tripPreview.html'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Back to Trip
+          <span data-i18n="pack.backToTrip">Back to Trip</span>
         </button>
         <button class="pl-add-btn" id="openAddItemModal">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add Item
+          <span data-i18n="pack.addItem">Add Item</span>
         </button>
       </div>
     </div>
@@ -138,17 +150,17 @@
     <div class="pl-stats-bar">
       <div class="pl-stat">
         <span class="pl-stat-num" id="packedCount">0</span>
-        <span class="pl-stat-lbl">Packed</span>
+        <span class="pl-stat-lbl" data-i18n="pack.stats.packed">Packed</span>
       </div>
       <div class="pl-stat-divider"></div>
       <div class="pl-stat">
         <span class="pl-stat-num" id="totalCount">0</span>
-        <span class="pl-stat-lbl">Total</span>
+        <span class="pl-stat-lbl" data-i18n="pack.stats.total">Total</span>
       </div>
       <div class="pl-stat-divider"></div>
       <div class="pl-stat">
         <span class="pl-stat-num" id="unpackedCount">0</span>
-        <span class="pl-stat-lbl">Remaining</span>
+        <span class="pl-stat-lbl" data-i18n="pack.stats.remaining">Remaining</span>
       </div>
       <div class="pl-progress-wrap">
         <div class="pl-progress-track">
@@ -158,28 +170,28 @@
       </div>
     </div>
     <div id="dismissedBar" style="display:none;font-size:.72rem;color:#888;text-align:center;margin:-6px 0 10px;padding:0 20px;">
-      <span id="dismissedCount"></span> items hidden &mdash; <button onclick="restoreDismissed()" style="background:none;border:none;color:#7cc63e;font-size:.72rem;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;">restore all</button>
+      <span id="dismissedCount"></span> <span data-i18n="pack.itemsHidden">items hidden</span> &mdash; <button onclick="restoreDismissed()" style="background:none;border:none;color:#7cc63e;font-size:.72rem;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;" data-i18n="pack.restoreAll">restore all</button>
     </div>
 
     <!-- Suggested banner -->
     <div class="pl-banner" id="suggestedBanner" style="display:none">
       <div class="pl-banner-icon">✨</div>
       <div>
-        <strong id="suggestedBannerTitle">Suggested for your trip</strong>
-        <span id="suggestedBannerBody">Based on your destination and activities</span>
+        <strong id="suggestedBannerTitle" data-i18n="pack.suggested.title">Suggested for your trip</strong>
+        <span id="suggestedBannerBody" data-i18n="pack.suggested.body">Based on your destination and activities</span>
       </div>
     </div>
 
     <!-- Filters -->
     <div class="pl-controls">
       <div class="pl-filters">
-        <button class="pl-filter active" data-filter="all">All</button>
-        <button class="pl-filter" data-filter="not-packed">To Pack</button>
-        <button class="pl-filter" data-filter="packed">Packed ✓</button>
+        <button class="pl-filter active" data-filter="all" data-i18n="pack.filter.all">All</button>
+        <button class="pl-filter" data-filter="not-packed" data-i18n="pack.filter.toPack">To Pack</button>
+        <button class="pl-filter" data-filter="packed" data-i18n="pack.filter.packed">Packed ✓</button>
       </div>
       <div class="pl-search-wrap">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="plSearch" placeholder="Search items…">
+        <input type="text" id="plSearch" placeholder="Search items…" data-i18n-attr="placeholder:pack.searchPlaceholder">
       </div>
     </div>
 
@@ -192,12 +204,12 @@
     <!-- Finish Packing sticky action bar -->
     <div class="pl-finish-fixed-bar" id="finishFixedBar">
       <div class="pl-finish-fixed-info">
-        <strong id="finishFixedTitle">Ready to finish?</strong>
-        <span id="finishFixedSub">Lock in your progress — you can edit again anytime</span>
+        <strong id="finishFixedTitle" data-i18n="pack.finish.readyTitle">Ready to finish?</strong>
+        <span id="finishFixedSub" data-i18n="pack.finish.readySub">Lock in your progress — you can edit again anytime</span>
       </div>
       <button class="pl-finish-fixed-btn" id="finishPackingBtn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        <span id="finishFixedBtnLabel">Finish Packing</span>
+        <span id="finishFixedBtnLabel" data-i18n="pack.finish.finishBtn">Finish Packing</span>
       </button>
     </div>
 
@@ -209,13 +221,13 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div>
-          <strong id="finishBannerTitle">You're all packed!</strong>
-          <span id="finishBannerSub">Every item on your list is checked off</span>
+          <strong id="finishBannerTitle" data-i18n="pack.finish.allPackedTitle">You're all packed!</strong>
+          <span id="finishBannerSub" data-i18n="pack.finish.allPackedSub">Every item on your list is checked off</span>
         </div>
       </div>
       <button class="pl-finish-btn" id="finishBannerBtn" onclick="window.top.location.href='tripPreview.html'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-        Back to Trip
+        <span data-i18n="pack.backToTrip">Back to Trip</span>
       </button>
     </div>
 
@@ -225,58 +237,58 @@
   <div class="pl-modal-backdrop" id="addItemModal">
     <div class="pl-modal">
       <div class="pl-modal-header">
-        <h2>Add Item</h2>
-        <button class="pl-modal-close" id="closeAddItemModal" aria-label="Close">
+        <h2 data-i18n="pack.addItem">Add Item</h2>
+        <button class="pl-modal-close" id="closeAddItemModal" aria-label="Close" data-i18n-attr="aria-label:pack.close">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
 
       <form class="pl-form" id="addItemForm">
         <div class="pl-field">
-          <label for="newItemName">Item Name</label>
-          <input type="text" id="newItemName" placeholder="e.g. Sneakers" autocomplete="off">
+          <label for="newItemName" data-i18n="pack.itemName">Item Name</label>
+          <input type="text" id="newItemName" placeholder="e.g. Sneakers" autocomplete="off" data-i18n-attr="placeholder:pack.itemNamePlaceholder">
         </div>
 
         <div class="pl-field">
-          <label for="newItemCategory">Category</label>
+          <label for="newItemCategory" data-i18n="pack.category">Category</label>
           <select id="newItemCategory">
-            <option>Essentials</option>
-            <option>Toiletries</option>
-            <option>Accessories</option>
-            <option>Clothing</option>
-            <option>Shoes</option>
-            <option>Electronics</option>
-            <option>Business Trip</option>
-            <option>Gym</option>
-            <option>Beach</option>
-            <option>Swimming</option>
-            <option>Snow Sports</option>
-            <option>Hiking</option>
-            <option>Camping</option>
-            <option>Night Out</option>
-            <option>Baby</option>
-            <option>Theme Park</option>
-            <option>Festival</option>
-            <option>Road Trip</option>
-            <option>City Sightseeing</option>
-            <option>Dining</option>
-            <option>Cruise</option>
-            <option>Rainy Weather</option>
-            <option>Hot &amp; Sunny Weather</option>
-            <option>Snowy Weather</option>
-            <option>Windy Weather</option>
-            <option>Cold Weather</option>
+            <option value="Essentials" data-i18n="pack.category.essentials">Essentials</option>
+            <option value="Toiletries" data-i18n="pack.category.toiletries">Toiletries</option>
+            <option value="Accessories" data-i18n="pack.category.accessories">Accessories</option>
+            <option value="Clothing" data-i18n="pack.category.clothing">Clothing</option>
+            <option value="Shoes" data-i18n="pack.category.shoes">Shoes</option>
+            <option value="Electronics" data-i18n="pack.category.electronics">Electronics</option>
+            <option value="Business Trip" data-i18n="pack.category.businessTrip">Business Trip</option>
+            <option value="Gym" data-i18n="pack.category.gym">Gym</option>
+            <option value="Beach" data-i18n="pack.category.beach">Beach</option>
+            <option value="Swimming" data-i18n="pack.category.swimming">Swimming</option>
+            <option value="Snow Sports" data-i18n="pack.category.snowSports">Snow Sports</option>
+            <option value="Hiking" data-i18n="pack.category.hiking">Hiking</option>
+            <option value="Camping" data-i18n="pack.category.camping">Camping</option>
+            <option value="Night Out" data-i18n="pack.category.nightOut">Night Out</option>
+            <option value="Baby" data-i18n="pack.category.baby">Baby</option>
+            <option value="Theme Park" data-i18n="pack.category.themePark">Theme Park</option>
+            <option value="Festival" data-i18n="pack.category.festival">Festival</option>
+            <option value="Road Trip" data-i18n="pack.category.roadTrip">Road Trip</option>
+            <option value="City Sightseeing" data-i18n="pack.category.citySightseeing">City Sightseeing</option>
+            <option value="Dining" data-i18n="pack.category.dining">Dining</option>
+            <option value="Cruise" data-i18n="pack.category.cruise">Cruise</option>
+            <option value="Rainy Weather" data-i18n="pack.category.rainyWeather">Rainy Weather</option>
+            <option value="Hot &amp; Sunny Weather" data-i18n="pack.category.hotSunnyWeather">Hot &amp; Sunny Weather</option>
+            <option value="Snowy Weather" data-i18n="pack.category.snowyWeather">Snowy Weather</option>
+            <option value="Windy Weather" data-i18n="pack.category.windyWeather">Windy Weather</option>
+            <option value="Cold Weather" data-i18n="pack.category.coldWeather">Cold Weather</option>
           </select>
         </div>
 
         <div class="pl-field pl-field--sm">
-          <label for="newItemQty">Quantity</label>
+          <label for="newItemQty" data-i18n="pack.quantity">Quantity</label>
           <input type="number" id="newItemQty" min="1" value="1">
         </div>
 
         <div class="pl-modal-actions">
-          <button type="button" class="pl-btn-ghost" id="cancelAddItem">Cancel</button>
-          <button type="submit" class="pl-btn-primary">Add Item</button>
+          <button type="button" class="pl-btn-ghost" id="cancelAddItem" data-i18n="profile.hero.cancel">Cancel</button>
+          <button type="submit" class="pl-btn-primary" data-i18n="pack.addItem">Add Item</button>
         </div>
       </form>
     </div>
@@ -286,8 +298,8 @@
   <div class="pl-modal-backdrop" id="shareModal">
     <div class="pl-modal pl-share-modal">
       <div class="pl-modal-header">
-        <h2>Share Packing List</h2>
-        <button class="pl-modal-close" id="closeShareModal" aria-label="Close">
+        <h2 data-i18n="pack.share.modalTitle">Share Packing List</h2>
+        <button class="pl-modal-close" id="closeShareModal" aria-label="Close" data-i18n-attr="aria-label:pack.close">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
@@ -295,32 +307,34 @@
         <div class="pl-share-icon-wrap">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7cc63e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         </div>
-        <p class="pl-share-desc">Share this link with your travel companions. Anyone with the link can join and pack together in real time.</p>
+        <p class="pl-share-desc" data-i18n="pack.share.desc">Share this link with your travel companions. Anyone with the link can join and pack together in real time.</p>
         <div class="pl-share-url-wrap">
           <input type="text" id="shareUrl" class="pl-share-url" readonly>
           <button class="pl-copy-btn" id="copyShareUrl">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copy
+            <span data-i18n="pack.share.copy">Copy</span>
           </button>
         </div>
-        <div class="pl-share-copied" id="shareCopied" style="display:none">Link copied!</div>
+        <div class="pl-share-copied" id="shareCopied" style="display:none" data-i18n="pack.share.copied">Link copied!</div>
         <button type="button" class="pl-btn-primary" id="nativeShareBtn" style="width:100%;display:none;align-items:center;justify-content:center;gap:7px;margin-top:10px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-          Share via…
+          <span data-i18n="pack.share.via">Share via…</span>
         </button>
         <div class="pl-share-info">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Changes sync live across all devices using the same link.
+          <span data-i18n="pack.share.syncInfo">Changes sync live across all devices using the same link.</span>
         </div>
       </div>
     </div>
   </div>
 
+  <script src="lib/i18n.js"></script>
   <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
   <script src="notifications.js"></script>
   <script>
-    Auth.requireAuth('welcome.html');
+    const _pmAuthed = Auth.requireAuth('welcome.html');
+    if (_pmAuthed) applyTranslations();
   </script>
   <script src="lib/badge-levels.js"></script>
   <script src="packing-icons.js?v=1"></script>
