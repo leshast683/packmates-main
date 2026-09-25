@@ -15,6 +15,18 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <script>
+    /* Sets <html lang> before lib/i18n.js loads, so there's no flash of
+       the wrong lang attribute. lib/i18n.js's own getLang() does the
+       same lookup once loaded - this is just the pre-load version. */
+    document.documentElement.lang = (function () {
+      try {
+        var l = JSON.parse(localStorage.getItem('pm_profile') || '{}').language;
+        if (l) return l;
+      } catch (e) {}
+      return (navigator.language || 'en').slice(0, 2).toLowerCase();
+    })();
+  </script>
   <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
   <script>
     (function () {
@@ -1012,13 +1024,13 @@
                     <div>
                         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                             <h1 id="tripTitleDisplay">Trip</h1>
-                            <span id="pastTripBadge" style="display:none;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:#e67e22;padding:4px 10px;border-radius:99px;">Past Trip</span>
+                            <span id="pastTripBadge" style="display:none;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:#e67e22;padding:4px 10px;border-radius:99px;" data-i18n="tripPreview.pastTripBadge">Past Trip</span>
                         </div>
                         <div class="avatars" id="travelerAvatars">
                             <p id="tripDatesDisplay"></p>
                         </div>
                     </div>
-                    <button class="primary" type="button" onclick="window.top.location.href='packing-list.html'">
+                    <button class="primary" type="button" onclick="window.top.location.href='packing-list.html'" data-i18n="tripPreview.fullPackingList">
                         Full Packing List
                     </button>
                 </div>
@@ -1026,7 +1038,7 @@
                 <div class="pl-collab-bar" id="collabBar" style="display:none">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                   <div class="pl-collab-avatars" id="collabAvatars"></div>
-                  <span id="collabLabel">Viewing together</span>
+                  <span id="collabLabel" data-i18n="tripPreview.viewingTogether">Viewing together</span>
                   <div class="pl-collab-dot"></div>
                 </div>
 
@@ -1039,42 +1051,42 @@
                       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                     </div>
                     <div>
-                      <div class="invite-label">Invite Packmates</div>
+                      <div class="invite-label" data-i18n="tripPreview.invitePackmates">Invite Packmates</div>
                       <div class="invite-code" id="inviteCodeDisplay">----</div>
                     </div>
                   </div>
                   <button class="invite-copy-btn" id="copyInviteBtn" onclick="copyInviteCode()">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                    Copy Link
+                    <span data-i18n="tripPreview.copyLink">Copy Link</span>
                   </button>
                 </div>
 
                 <!-- Trip Members -->
                 <div class="members-card" id="membersCard" style="display:none">
                   <div class="members-card-head">
-                    <span class="invite-label">Trip Members</span>
-                    <button class="invite-copy-btn" id="addPackmateBtn" style="display:none" onclick="toggleAddPackmatePanel()">+ Add packmate</button>
+                    <span class="invite-label" data-i18n="tripPreview.tripMembers">Trip Members</span>
+                    <button class="invite-copy-btn" id="addPackmateBtn" style="display:none" onclick="toggleAddPackmatePanel()" data-i18n="tripPreview.addPackmateBtn">+ Add packmate</button>
                   </div>
                   <div class="members-list" id="membersList"></div>
                   <div class="add-packmate-panel" id="addPackmatePanel" style="display:none">
-                    <div class="add-packmate-empty" id="addPackmateEmpty" style="display:none">No packmates available to add — everyone you've traveled with is already on this trip, or you haven't shared a trip with anyone yet.</div>
+                    <div class="add-packmate-empty" id="addPackmateEmpty" style="display:none" data-i18n="tripPreview.noPackmatesAvailable">No packmates available to add — everyone you've traveled with is already on this trip, or you haven't shared a trip with anyone yet.</div>
                     <div id="addPackmateList"></div>
                   </div>
                 </div>
 
                 <section class="itinerarySection">
                     <div class="itinerary-section-head">
-                        <span>Trip Itinerary</span>
+                        <span data-i18n="tripPreview.tripItinerary">Trip Itinerary</span>
                         <div class="itinerary-section-line"></div>
                     </div>
                     <div class="itineraryList" id="itineraryList"></div>
                     <button class="addActivityBtn" id="openActivityModal">
-                        <span class="addActivityLabel">↳ Add Activity</span>
+                        <span class="addActivityLabel" data-i18n="tripPreview.addActivity">↳ Add Activity</span>
                     </button>
                     <div id="bygCard" class="byg-card">
                         <div class="byg-header">
                             <span class="byg-spark">✦</span>
-                            <span class="byg-title">Before You Go</span>
+                            <span class="byg-title" data-i18n="tripPreview.beforeYouGo">Before You Go</span>
                             <span class="byg-badge">AI</span>
                         </div>
                         <div id="bygBody">
@@ -1101,9 +1113,9 @@
 
             <div class="packingPanelFilters">
                 <div class="packing-filters">
-                    <button class="packing-filter-btn packing-filter-btn--active" data-filter="all">All</button>
-                    <button class="packing-filter-btn" data-filter="not-packed">Unpacked</button>
-                    <button class="packing-filter-btn" data-filter="packed">Packed</button>
+                    <button class="packing-filter-btn packing-filter-btn--active" data-filter="all" data-i18n="tripPreview.filter.all">All</button>
+                    <button class="packing-filter-btn" data-filter="not-packed" data-i18n="tripPreview.filter.unpacked">Unpacked</button>
+                    <button class="packing-filter-btn" data-filter="packed" data-i18n="tripPreview.filter.packed">Packed</button>
                 </div>
             </div>
 
@@ -1111,7 +1123,7 @@
 
             <div class="packingPanelFooter">
                 <button class="primary" style="width:100%;font-family:inherit"
-                    onclick="window.top.location.href='packing-list.html'">
+                    onclick="window.top.location.href='packing-list.html'" data-i18n="tripPreview.viewFullPackingList">
                     View Full Packing List →
                 </button>
             </div>
@@ -1122,40 +1134,42 @@
     <div class="activityModal" id="activityModal">
         <div class="activityModalBox">
             <div class="activityModalHeader">
-                <h2>Add Activity</h2>
+                <h2 data-i18n="tripPreview.addActivityModalTitle">Add Activity</h2>
                 <button class="activityModalClose" id="closeActivityModal">✕</button>
             </div>
             <form class="activityForm" id="activityForm">
                 <label class="activityField">
-                    <span>Activity Name</span>
-                    <input type="text" id="activityName" placeholder="e.g. Central Park Walk">
+                    <span data-i18n="tripPreview.activityName">Activity Name</span>
+                    <input type="text" id="activityName" placeholder="e.g. Central Park Walk" data-i18n-attr="placeholder:tripPreview.activityNamePlaceholder">
                 </label>
                 <div class="activityField">
-                    <span>Type</span>
+                    <span data-i18n="tripPreview.type">Type</span>
                     <input type="hidden" id="activityType" value="Sightseeing">
                     <div class="activity-type-wrapper">
                         <div class="activity-type-trigger" id="activityTypeTrigger">
                             <img class="activity-type-img" id="activityTypeImg" src="img/activity_sightseeing.png" alt="" loading="lazy">
-                            <span class="activity-type-label-text" id="activityTypeLabelText">City Sightseeing</span>
+                            <span class="activity-type-label-text" id="activityTypeLabelText" data-i18n="tripPreview.activityTypeDefaultLabel">City Sightseeing</span>
                             <svg class="activity-type-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
                         </div>
                         <div class="activity-type-dropdown" id="activityTypeDropdown"></div>
                     </div>
                 </div>
                 <div class="activityModalActions">
-                    <button type="button" class="packing-btn-secondary" id="cancelActivity">Cancel</button>
-                    <button type="submit" class="packing-btn-primary">Add</button>
+                    <button type="button" class="packing-btn-secondary" id="cancelActivity" data-i18n="profile.hero.cancel">Cancel</button>
+                    <button type="submit" class="packing-btn-primary" data-i18n="tripPreview.add">Add</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <script src="lib/i18n.js"></script>
     <script src="lib/sync-guard.js"></script>
     <script src="auth.js"></script>
     <script src="lib/packing-math.js"></script>
     <script src="lib/packing-items.js"></script>
     <script>
-        if (typeof Auth !== 'undefined') Auth.requireAuth('welcome.html');
+        const _pmAuthed = typeof Auth !== 'undefined' && Auth.requireAuth('welcome.html');
+        if (_pmAuthed) applyTranslations();
 
         // ── Pexels image fetch ──
         async function fetchActivityImage(activityName, city) {
@@ -1234,7 +1248,7 @@
         if (bannerMetaEl) {
             const parts = [];
             if (fromDate && toDate) parts.push(`${formatDate(fromDate)} – ${formatDate(toDate)}`);
-            parts.push(`${travelers} traveler${travelers !== 1 ? 's' : ''}`);
+            parts.push(tr(travelers === 1 ? 'newTrip.travelerCountSingular' : 'newTrip.travelerCountPlural', { count: travelers }));
             bannerMetaEl.textContent = parts.join(' • ');
         }
 
@@ -1258,7 +1272,7 @@
                 members.slice().reverse().forEach((m, i) => {
                     const dot = document.createElement(m.avatar ? 'img' : 'span');
                     dot.className = 'member-avatar';
-                    dot.title = m.name || 'Packmate';
+                    dot.title = m.name || tr('discover.packmate');
                     if (m.avatar) {
                         dot.src = m.avatar;
                         dot.loading = 'lazy';
@@ -1296,7 +1310,9 @@
                 const avatarsEl = document.getElementById('collabAvatars');
                 if (!others.length) { if (bar) bar.style.display = 'none'; return; }
                 if (bar) bar.style.display = 'flex';
-                if (lbl) lbl.textContent = others.length === 1 ? `${others[0].name} is viewing this trip too` : `${others.length} packmates are viewing this trip too`;
+                if (lbl) lbl.textContent = others.length === 1
+                    ? tr('tripPreview.presence.oneViewing', { name: others[0].name })
+                    : tr('tripPreview.presence.manyViewing', { count: others.length });
                 if (avatarsEl) {
                     avatarsEl.innerHTML = others.slice(0, 4).map((p, i) =>
                         `<span style="background:${PRESENCE_COLORS[i % PRESENCE_COLORS.length]}" title="${p.name}">${(p.name || '?').trim().charAt(0).toUpperCase()}</span>`
@@ -1338,15 +1354,15 @@
                 return `
                 <div class="member-row">
                   <div class="member-row-avatar" style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}">${avatarInner}</div>
-                  <div class="member-row-name">${displayName || 'A packmate'}</div>
-                  <div class="member-row-role">${m.role === 'owner' ? 'Owner' : ''}</div>
-                  ${canRemove ? `<button class="member-row-remove" title="Remove from trip" aria-label="Remove ${(displayName || 'this packmate').replace(/"/g, '&quot;')} from trip" onclick="removeMemberFromTrip('${m.user_id}','${(displayName || 'this packmate').replace(/'/g, "\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
+                  <div class="member-row-name">${displayName || tr('tripPreview.aPackmate')}</div>
+                  <div class="member-row-role">${m.role === 'owner' ? tr('tripPreview.owner') : ''}</div>
+                  ${canRemove ? `<button class="member-row-remove" title="${tr('tripPreview.removeFromTripTitle')}" aria-label="${tr('tripPreview.removeFromTripAriaLabel', { name: displayName || tr('tripPreview.aPackmate') }).replace(/"/g, '&quot;')}" onclick="removeMemberFromTrip('${m.user_id}','${(displayName || tr('tripPreview.thisPackmate')).replace(/'/g, "\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
                 </div>`;
             }).join('');
         }
 
         async function removeMemberFromTrip(userId, name) {
-            if (!confirm(`Remove ${name} from this trip? They'll lose access to it and their packing progress.`)) return;
+            if (!confirm(tr('tripPreview.confirmRemoveMember', { name }))) return;
             const result = await DB.removeMember(tripData.id, userId);
             if (!result.success) { alert(result.error); return; }
             const members = await DB.getTripMembers(tripData.id);
@@ -1365,8 +1381,8 @@
             document.getElementById('addPackmateList').innerHTML = available.map(p => `
                 <div class="add-packmate-row">
                   <div class="member-row-avatar" style="background:var(--teal-a,#0c7a7a);width:26px;height:26px;font-size:0.64rem;">${(p.name||'?').trim().charAt(0).toUpperCase()}</div>
-                  <div class="member-row-name" style="font-size:0.8rem;">${p.name || 'A packmate'}</div>
-                  <button onclick="addPackmateToThisTrip('${p.user_id}',this)">Add</button>
+                  <div class="member-row-name" style="font-size:0.8rem;">${p.name || tr('tripPreview.aPackmate')}</div>
+                  <button onclick="addPackmateToThisTrip('${p.user_id}',this)">${tr('tripPreview.add')}</button>
                 </div>`).join('');
             return members;
         }
@@ -1379,38 +1395,38 @@
         }
 
         async function addPackmateToThisTrip(userId, btn) {
-            btn.disabled = true; btn.textContent = 'Adding…';
+            btn.disabled = true; btn.textContent = tr('tripPreview.adding');
             const result = await DB.addPackmateToTrip(tripData.id, userId);
-            if (!result.success) { alert(result.error); btn.disabled = false; btn.textContent = 'Add'; return; }
+            if (!result.success) { alert(result.error); btn.disabled = false; btn.textContent = tr('tripPreview.add'); return; }
             const members = await refreshAddPackmateList();
             renderMembersPanel(members, Auth.getSession()?.userId);
         }
         document.getElementById('packingPanelTitle').textContent = destination;
         const metaParts = [];
         if (fromDate && toDate) metaParts.push(`${formatDate(fromDate)} – ${formatDate(toDate)}`);
-        metaParts.push(`${travelers} traveler${travelers !== 1 ? 's' : ''}`);
+        metaParts.push(tr(travelers === 1 ? 'newTrip.travelerCountSingular' : 'newTrip.travelerCountPlural', { count: travelers }));
         document.getElementById('packingPanelMeta').textContent = metaParts.join(' · ');
 
         // ── Profile badge line ──
         const badges = [];
-        if (profile.hot)             badges.push({img:'weather_warm.png',      label:'Warm'});
-        if (profile.cold)            badges.push({img:'weather_cold.png',      label:'Cold'});
-        if (profile.snowy)           badges.push({img:'weather_snowy.png',     label:'Snowy'});
-        if (profile.rainy)           badges.push({img:'weather_rainy.png',     label:'Rainy'});
-        if (profile.beach)           badges.push({img:'activity_beach.png',       label:'Beach'});
-        if (profile.ski)             badges.push({img:'activity_snowsports.png',  label:'Ski'});
-        if (profile.hiking)          badges.push({img:'activity_hiking.png',      label:'Hiking'});
-        if (profile.camping)         badges.push({img:'activity_camping.png',     label:'Camping'});
-        if (profile.swimming)        badges.push({img:'activity_swimming.png',    label:'Swimming'});
-        if (profile.gym)             badges.push({img:'activity_gym.png',         label:'Gym'});
-        if (profile.business)        badges.push({img:'activity_business.png',    label:'Business'});
-        if (profile.nightOut)        badges.push({img:'activity_nightout.png',    label:'Night Out'});
-        if (profile.baby)            badges.push({img:'activity_baby.png',        label:'Baby'});
-        if (profile.themePark)       badges.push({img:'activity_themepark.png',   label:'Theme Park'});
-        if (profile.festival)        badges.push({img:'activity_festival.png',    label:'Festival'});
-        if (profile.roadTrip)        badges.push({img:'activity_roadtrip.png',    label:'Road Trip'});
-        if (profile.citySightseeing) badges.push({img:'activity_sightseeing.png', label:'Sightseeing'});
-        if (profile.dining)          badges.push({img:'activity_dining.png',      label:'Dining'});
+        if (profile.hot)             badges.push({img:'weather_warm.png',      label:tr('pack.badge.warm')});
+        if (profile.cold)            badges.push({img:'weather_cold.png',      label:tr('pack.badge.cold')});
+        if (profile.snowy)           badges.push({img:'weather_snowy.png',     label:tr('pack.badge.snowy')});
+        if (profile.rainy)           badges.push({img:'weather_rainy.png',     label:tr('pack.badge.rainy')});
+        if (profile.beach)           badges.push({img:'activity_beach.png',       label:tr('pack.badge.beach')});
+        if (profile.ski)             badges.push({img:'activity_snowsports.png',  label:tr('pack.badge.ski')});
+        if (profile.hiking)          badges.push({img:'activity_hiking.png',      label:tr('pack.badge.hiking')});
+        if (profile.camping)         badges.push({img:'activity_camping.png',     label:tr('pack.badge.camping')});
+        if (profile.swimming)        badges.push({img:'activity_swimming.png',    label:tr('pack.badge.swimming')});
+        if (profile.gym)             badges.push({img:'activity_gym.png',         label:tr('pack.badge.gym')});
+        if (profile.business)        badges.push({img:'activity_business.png',    label:tr('pack.badge.business')});
+        if (profile.nightOut)        badges.push({img:'activity_nightout.png',    label:tr('pack.badge.nightOut')});
+        if (profile.baby)            badges.push({img:'activity_baby.png',        label:tr('pack.badge.baby')});
+        if (profile.themePark)       badges.push({img:'activity_themepark.png',   label:tr('pack.badge.themePark')});
+        if (profile.festival)        badges.push({img:'activity_festival.png',    label:tr('pack.badge.festival')});
+        if (profile.roadTrip)        badges.push({img:'activity_roadtrip.png',    label:tr('pack.badge.roadTrip')});
+        if (profile.citySightseeing) badges.push({img:'activity_sightseeing.png', label:tr('pack.badge.sightseeing')});
+        if (profile.dining)          badges.push({img:'activity_dining.png',      label:tr('pack.badge.dining')});
 
         // ── Activities ──
         const CITY_DEFAULTS = {
@@ -1503,7 +1519,7 @@
                         <img id="actImg${i}" src="${placeholder}" alt="${act.name}" loading="lazy" style="object-fit:cover;width:76px;height:76px;border-radius:12px;flex-shrink:0;">
                         <div class="itineraryItemInfo">
                             <h3>${act.name}</h3>
-                            <p>${pinSvg} ${act.type}</p>
+                            <p>${pinSvg} ${tActivityType(act.type)}</p>
                         </div>
                     </div>`;
                 list.appendChild(item);
@@ -1542,14 +1558,14 @@
             ACTIVITY_OPTIONS.forEach((opt, idx) => {
                 const div = document.createElement('div');
                 div.className = 'activity-type-option' + (idx === 0 ? ' is-selected' : '');
-                div.innerHTML = `<img src="img/${opt.img}" alt="${opt.value}" loading="lazy"><span>${opt.value}</span>`;
+                div.innerHTML = `<img src="img/${opt.img}" alt="${tActivityType(opt.value)}" loading="lazy"><span>${tActivityType(opt.value)}</span>`;
                 div.addEventListener('click', e => {
                     e.stopPropagation();
                     dropdownEl.querySelectorAll('.activity-type-option').forEach(o => o.classList.remove('is-selected'));
                     div.classList.add('is-selected');
                     hiddenInput.value = opt.value;
                     imgEl.src = 'img/' + opt.img;
-                    labelEl.textContent = opt.value;
+                    labelEl.textContent = tActivityType(opt.value);
                     triggerEl.classList.remove('is-open');
                     dropdownEl.classList.remove('is-open');
                 });
@@ -1602,7 +1618,7 @@
             const packed = all.filter(({ key }) => !!itemState[key]?.packed).length;
             const pct    = PackingMath.calcPackedPct(packed, all.length);
             document.getElementById('packingProgressFill').style.width = pct + '%';
-            document.getElementById('packingProgressText').textContent = `${packed}/${all.length} packed`;
+            document.getElementById('packingProgressText').textContent = tr('tripPreview.packedProgress', { packed, total: all.length });
         }
 
         let currentFilter = 'all';
@@ -1637,7 +1653,7 @@
 
                 const group = document.createElement('div');
                 group.className = 'packingCategoryGroup';
-                group.innerHTML = `<div class="packingCategoryLabel"><span class="suggested-dot"></span>${cat}</div>`;
+                group.innerHTML = `<div class="packingCategoryLabel"><span class="suggested-dot"></span>${tCategory(cat)}</div>`;
 
                 items.forEach(item => {
                     const key    = getItemKey(cat, item.name);
@@ -1646,7 +1662,7 @@
                     row.className = 'packingPanelItem';
                     row.innerHTML = `
                         <button class="packingPanelCheck ${packed ? 'packingPanelCheck--checked' : ''}"></button>
-                        <span class="packingPanelItemName ${packed ? 'packingPanelItemName--packed' : ''}">${item.name}</span>
+                        <span class="packingPanelItemName ${packed ? 'packingPanelItemName--packed' : ''}">${tItem(item.name)}</span>
                         <button class="panel-dismiss" data-key="${key}" title="Remove" style="width:16px;height:16px;border-radius:50%;border:none;background:#fdecea;cursor:pointer;color:#c0392b;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;">✕</button>`;
                     row.querySelector('.packingPanelCheck').addEventListener('click', () => {
                         const wasPacked = !!itemState[key]?.packed;
@@ -1698,10 +1714,10 @@
                     </div>`;
                 const img = (src) => `<img src="${src}" loading="lazy" style="width:74px;height:74px;object-fit:contain;">`;
                 bygBody.innerHTML = `<div class="byg-grid">
-                    ${tile('byg-tile-visa',     img('img/byg_visa.png'),     'Visa',     b.visa||'Check requirements')}
-                    ${tile('byg-tile-currency', img('img/byg_currency.png'), 'Currency', b.currency||'Local currency')}
-                    ${tile('byg-tile-weather',  img('img/byg_weather.png'),  'Weather',  b.weather||'Varies')}
-                    ${tile('byg-tile-safety',   img('img/byg_safety.png'),   'Safety',   b.safety||'Stay aware')}
+                    ${tile('byg-tile-visa',     img('img/byg_visa.png'),     tr('discover.brief.visa'),     b.visa||tr('tripPreview.brief.defaultVisa'))}
+                    ${tile('byg-tile-currency', img('img/byg_currency.png'), tr('discover.brief.currency'), b.currency||tr('tripPreview.brief.defaultCurrency'))}
+                    ${tile('byg-tile-weather',  img('img/byg_weather.png'),  tr('discover.brief.weather'),  b.weather||tr('tripPreview.brief.defaultWeather'))}
+                    ${tile('byg-tile-safety',   img('img/byg_safety.png'),   tr('discover.brief.safety'),   b.safety||tr('tripPreview.brief.defaultSafety'))}
                 </div>`;
             };
             if (cached) { renderBrief(cached); return; }
@@ -1818,13 +1834,13 @@
                     </div>`;
                 }).join('');
 
-                const noteHtml = isHistorical ? `<span class="weather-strip-note">Based on last year</span>` : '';
+                const noteHtml = isHistorical ? `<span class="weather-strip-note">${tr('tripPreview.basedOnLastYear')}</span>` : '';
                 strip.innerHTML = `
                     <div class="wx-overlay"></div>
                     <div class="wx-content">
                         <div class="weather-strip-header">
                             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7cc63e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            <div class="weather-strip-label">7-Day Forecast</div>
+                            <div class="weather-strip-label">${tr('tripPreview.sevenDayForecast')}</div>
                             ${noteHtml}
                         </div>
                         <div class="weather-7grid">${cols}</div>
@@ -1853,14 +1869,14 @@
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const btn = document.getElementById('copyInviteBtn');
                 const original = btn.innerHTML;
-                btn.innerHTML = 'Copied!';
+                btn.innerHTML = tr('tripPreview.copied');
                 btn.classList.add('copied');
                 setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
             }).catch(() => {
                 const code = document.getElementById('inviteCodeDisplay').textContent;
                 const btn = document.getElementById('copyInviteBtn');
                 const original = btn.innerHTML;
-                btn.innerHTML = 'Copied!';
+                btn.innerHTML = tr('tripPreview.copied');
                 btn.classList.add('copied');
                 setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
             });
@@ -1875,9 +1891,9 @@
         // API support (most desktop browsers besides Safari).
         async function shareInvite() {
             const url = window._tripShareUrl || document.getElementById('inviteCodeDisplay').textContent;
-            const dest = document.getElementById('tripTitleDisplay')?.textContent || 'my trip';
+            const dest = document.getElementById('tripTitleDisplay')?.textContent || tr('tripPreview.myTripFallback');
             if (navigator.share) {
-                try { await navigator.share({ title: `Join my trip to ${dest}`, text: `Pack together for ${dest} on Packmates AI!`, url }); }
+                try { await navigator.share({ title: tr('tripPreview.joinMyTripTitle', { destination: dest }), text: tr('pack.share.nativeText', { destination: dest }), url }); }
                 catch {} // user cancelled the share sheet — not an error
                 return;
             }
