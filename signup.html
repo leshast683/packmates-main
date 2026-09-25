@@ -14,6 +14,18 @@
       document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
   </script>
+  <script>
+    /* Sets <html lang> before lib/i18n.js loads, so there's no flash of
+       the wrong lang attribute. lib/i18n.js's own getLang() does the
+       same lookup once loaded - this is just the pre-load version. */
+    document.documentElement.lang = (function () {
+      try {
+        var l = JSON.parse(localStorage.getItem('pm_profile') || '{}').language;
+        if (l) return l;
+      } catch (e) {}
+      return (navigator.language || 'en').slice(0, 2).toLowerCase();
+    })();
+  </script>
   <style>
     /* App-only: covers the moment this page resumes from background
        (e.g. tapping the emailed confirmation link while the app was
@@ -261,8 +273,8 @@
       <span class="logo-name">Packmates AI</span>
     </div>
 
-    <h1 id="mainTitle">Create Account</h1>
-    <p class="sub" id="mainSub">Join and start your first trip today</p>
+    <h1 id="mainTitle" data-i18n="signup.title">Create Account</h1>
+    <p class="sub" id="mainSub" data-i18n="signup.subtitle">Join and start your first trip today</p>
 
     <div class="msg" id="msg"></div>
 
@@ -273,7 +285,7 @@
         <span style="width:10px;height:10px;border-radius:50%;background:#5f9d30;display:inline-block;animation:dot-bounce 1.2s ease-in-out 0.2s infinite;"></span>
         <span style="width:10px;height:10px;border-radius:50%;background:#5f9d30;display:inline-block;animation:dot-bounce 1.2s ease-in-out 0.4s infinite;"></span>
       </div>
-      <p style="color:rgba(255,255,255,0.45);font-size:0.8rem;">Creating your account…</p>
+      <p style="color:rgba(255,255,255,0.45);font-size:0.8rem;" data-i18n="signup.creatingAccount">Creating your account…</p>
     </div>
 
     <!-- Success screen (shown after account created) -->
@@ -286,37 +298,37 @@
         </svg>
       </div>
       <p style="color:rgba(255,255,255,0.9);font-size:0.9rem;line-height:1.65;margin-bottom:8px;">
-        We sent a confirmation link to<br>
+        <span data-i18n="signup.confirmationSentTo">We sent a confirmation link to</span><br>
         <strong id="confirmedEmail" style="color:#7dcc40;"></strong>
       </p>
-      <p style="color:rgba(255,255,255,0.38);font-size:0.75rem;margin-bottom:28px;">
+      <p style="color:rgba(255,255,255,0.38);font-size:0.75rem;margin-bottom:28px;" data-i18n="signup.clickLinkToActivate">
         Click the link in your email to activate your account.
       </p>
-      <button onclick="openEmailApp()" class="btn-submit" style="margin-bottom:14px;">
+      <button onclick="openEmailApp()" class="btn-submit" style="margin-bottom:14px;" data-i18n="signup.checkEmailBtn">
         Check your email →
       </button>
       <div id="resendWrap" style="display:none;margin-top:4px;">
-        <a href="#" id="resendLink" style="color:rgba(255,255,255,0.35);font-size:0.75rem;text-decoration:none;" onclick="resendEmail(event)">
+        <a href="#" id="resendLink" style="color:rgba(255,255,255,0.35);font-size:0.75rem;text-decoration:none;" onclick="resendEmail(event)" data-i18n="signup.resendPrompt">
           Didn't receive it? Resend email
         </a>
       </div>
     </div>
 
     <form class="form" id="signupForm" onsubmit="handleSignup(event)">
-      <label class="field-label" for="name">Full Name</label>
+      <label class="field-label" for="name" data-i18n="signup.fullName">Full Name</label>
       <div class="field">
-        <input type="text" id="name" placeholder="Your name" required>
+        <input type="text" id="name" placeholder="Your name" required data-i18n-attr="placeholder:signup.namePlaceholder">
       </div>
 
-      <label class="field-label" for="email">Email</label>
+      <label class="field-label" for="email" data-i18n="login.email">Email</label>
       <div class="field">
-        <input type="email" id="email" placeholder="you@example.com" required>
+        <input type="email" id="email" placeholder="you@example.com" required data-i18n-attr="placeholder:login.emailPlaceholder">
       </div>
 
-      <label class="field-label" for="password">Password</label>
+      <label class="field-label" for="password" data-i18n="login.password">Password</label>
       <div class="field">
-        <input type="password" id="password" class="has-toggle" placeholder="Min. 8 characters" required oninput="checkStrength(this.value)">
-        <button type="button" class="toggle-pw" onclick="togglePassword('password',this)">Show</button>
+        <input type="password" id="password" class="has-toggle" placeholder="Min. 8 characters" required oninput="checkStrength(this.value)" data-i18n-attr="placeholder:signup.passwordPlaceholderMin">
+        <button type="button" class="toggle-pw" onclick="togglePassword('password',this)" data-i18n="login.show">Show</button>
       </div>
       <div class="strength-bars">
         <span id="b1"></span><span id="b2"></span>
@@ -324,13 +336,13 @@
       </div>
       <div class="strength-hint" id="shint"></div>
 
-      <label class="field-label" for="confirm">Confirm Password</label>
+      <label class="field-label" for="confirm" data-i18n="signup.confirmPassword">Confirm Password</label>
       <div class="field">
-        <input type="password" id="confirm" class="has-toggle" placeholder="Repeat password" required>
-        <button type="button" class="toggle-pw" onclick="togglePassword('confirm',this)">Show</button>
+        <input type="password" id="confirm" class="has-toggle" placeholder="Repeat password" required data-i18n-attr="placeholder:signup.repeatPasswordPlaceholder">
+        <button type="button" class="toggle-pw" onclick="togglePassword('confirm',this)" data-i18n="login.show">Show</button>
       </div>
 
-      <label class="field-label">Gender</label>
+      <label class="field-label" data-i18n="signup.gender">Gender</label>
       <div class="gender-group" id="genderGroup">
         <button type="button" class="gender-btn" data-gender="male" onclick="selectGender(this)">
           <svg viewBox="0 0 24 24">
@@ -338,7 +350,7 @@
             <line x1="14.2" y1="5.8" x2="20" y2="0"/>
             <polyline points="16 0 20 0 20 4"/>
           </svg>
-          Male
+          <span data-i18n="signup.genderMale">Male</span>
         </button>
         <button type="button" class="gender-btn" data-gender="female" onclick="selectGender(this)">
           <svg viewBox="0 0 24 24">
@@ -346,7 +358,7 @@
             <line x1="12" y1="14" x2="12" y2="22"/>
             <line x1="8" y1="19" x2="16" y2="19"/>
           </svg>
-          Female
+          <span data-i18n="signup.genderFemale">Female</span>
         </button>
         <button type="button" class="gender-btn" data-gender="nonbinary" onclick="selectGender(this)">
           <svg viewBox="0 0 24 24">
@@ -356,7 +368,7 @@
             <line x1="15.8" y1="5.2" x2="20" y2="1"/>
             <polyline points="17 1 20 1 20 4"/>
           </svg>
-          Non-binary
+          <span data-i18n="signup.genderNonbinary">Non-binary</span>
         </button>
       </div>
 
@@ -364,10 +376,10 @@
       <input type="text" id="hp_signup" name="hp_name" tabindex="-1" autocomplete="off" aria-hidden="true"
         style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
 
-      <button type="submit" class="btn-submit">Create Account</button>
+      <button type="submit" class="btn-submit" data-i18n="signup.createAccountBtn">Create Account</button>
     </form>
 
-    <div class="divider">or continue with</div>
+    <div class="divider" data-i18n="login.orContinueWith">or continue with</div>
     <div class="socials">
       <button class="social-btn" onclick="handleGoogle(event)">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#ea4335" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
@@ -380,28 +392,30 @@
     </div>
 
     <div class="switch">
-      Already have an account? <a href="login.html">Sign in</a>
+      <span data-i18n="signup.alreadyHaveAccount">Already have an account?</span> <a href="login.html" data-i18n="signup.signInLink">Sign in</a>
     </div>
   </div>
 
+  <script src="lib/i18n.js"></script>
   <script src="lib/sync-guard.js"></script>
   <script src="auth.js"></script>
   <script src="lib/auth-flow.js"></script>
   <script>
     if (Auth.isLoggedIn()) location.replace('index.html');
+    else applyTranslations();
 
     function togglePassword(id, btn) {
       const el = document.getElementById(id);
       const show = el.type === 'text';
       el.type = show ? 'password' : 'text';
-      btn.textContent = show ? 'Show' : 'Hide';
+      btn.textContent = show ? tr('login.hide') : tr('login.show');
     }
 
     function checkStrength(val) {
       const bars   = [1,2,3,4].map(i => document.getElementById('b'+i));
       const hint   = document.getElementById('shint');
       const colors = ['#e74c3c','#e67e22','#f1c40f','#5f9d30'];
-      const labels = ['Weak','Fair','Good','Strong'];
+      const labels = [tr('signup.strength.weak'), tr('signup.strength.fair'), tr('signup.strength.good'), tr('signup.strength.strong')];
       let score = 0;
       if (val.length >= 8)            score++;
       if (/[A-Z]/.test(val))          score++;
@@ -504,14 +518,14 @@
     async function resendEmail(e) {
       e.preventDefault();
       const link = document.getElementById('resendLink');
-      link.textContent = 'Sending…';
+      link.textContent = tr('login.sending');
       link.style.pointerEvents = 'none';
       const result = await Auth.resendConfirmation(_signedUpEmail);
       if (result.success) {
-        link.textContent = 'Sent! Check your inbox.';
+        link.textContent = tr('signup.resendSent');
         link.style.color = '#7dcc40';
       } else {
-        link.textContent = 'Failed — tap to try again';
+        link.textContent = tr('signup.resendFailed');
         link.style.pointerEvents = 'auto';
       }
     }
@@ -525,8 +539,8 @@
       form.style.pointerEvents = 'auto';
       sw.style.display = 'block';
       sw.style.opacity = '1';
-      document.getElementById('mainTitle').textContent = 'Create Account';
-      document.getElementById('mainSub').textContent = 'Join and start your first trip today';
+      document.getElementById('mainTitle').textContent = tr('signup.title');
+      document.getElementById('mainSub').textContent = tr('signup.subtitle');
       if (errorText) {
         const msg = document.getElementById('msg');
         msg.className = 'msg error';
@@ -561,8 +575,8 @@
       const conf   = document.getElementById('confirm').value;
 
       msg.className = 'msg';
-      if (pw !== conf)       { msg.className='msg error'; msg.textContent='Passwords do not match.'; return; }
-      if (!selectedGender)   { msg.className='msg error'; msg.textContent='Please select your gender.'; return; }
+      if (pw !== conf)       { msg.className='msg error'; msg.textContent=tr('signup.passwordMismatch'); return; }
+      if (!selectedGender)   { msg.className='msg error'; msg.textContent=tr('signup.selectGenderError'); return; }
 
       /* Fade out form while API call runs in parallel — no layout jump */
       const form = document.getElementById('signupForm');
@@ -575,8 +589,8 @@
       form.style.opacity = '0';
       form.style.pointerEvents = 'none';
       sw.style.opacity = '0';
-      document.getElementById('mainTitle').textContent = 'Creating account…';
-      document.getElementById('mainSub').textContent = 'Just a moment';
+      document.getElementById('mainTitle').textContent = tr('signup.creatingAccountTitle');
+      document.getElementById('mainSub').textContent = tr('signup.justAMoment');
 
       /* Keep password in memory for cross-device confirmation polling */
       _signedUpPw = pw;
@@ -610,15 +624,15 @@
       } else if (result.success) {
         _signedUpEmail = email;
         document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('mainTitle').textContent = 'Check your email';
-        document.getElementById('mainSub').textContent = 'One last step to get started';
+        document.getElementById('mainTitle').textContent = tr('signup.checkYourEmailTitle');
+        document.getElementById('mainSub').textContent = tr('signup.oneLastStep');
         document.getElementById('confirmedEmail').textContent = email;
         document.getElementById('successScreen').style.display = 'block';
         setTimeout(() => { document.getElementById('resendWrap').style.display = 'block'; }, 15000);
         _startConfirmationPoll(); /* cross-device: detect confirmation on phone/other browser */
       } else {
         const errText = (typeof result.error === 'string' && result.error && result.error !== '{}')
-          ? result.error : 'Sign up failed. Please try again.';
+          ? result.error : tr('signup.signupFailed');
         _showForm(errText);
       }
     }
