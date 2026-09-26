@@ -1327,7 +1327,7 @@
     let selectedAirline = null;
 
     function airlineRulesText(a) {
-      return `${tr('newTrip.carryOn')}: ${a.carry.dims}${a.carry.weight !== 'No limit' ? ' · ' + a.carry.weight : ''} · ${tr('newTrip.checked')}: ${a.checked.weight} · ${a.checked.fee}`;
+      return `${tr('newTrip.carryOn')}: ${a.carry.dims}${a.carry.weight !== 'No limit' ? ' · ' + tAirlineValue(a.carry.weight) : ''} · ${tr('newTrip.checked')}: ${tAirlineValue(a.checked.weight)} · ${tAirlineValue(a.checked.fee)}`;
     }
 
     function renderAirlineDd(query) {
@@ -1352,8 +1352,8 @@
             <div class="nt-airline-name">${a.name}</div>
             <div class="nt-airline-rules">
               <span class="nt-airline-pill">${tr('newTrip.carryOn')} ${a.carry.dims}</span>
-              <span class="nt-airline-pill">${tr('newTrip.checked')} ${a.checked.weight}</span>
-              <span class="nt-airline-pill">${a.checked.fee}</span>
+              <span class="nt-airline-pill">${tr('newTrip.checked')} ${tAirlineValue(a.checked.weight)}</span>
+              <span class="nt-airline-pill">${tAirlineValue(a.checked.fee)}</span>
             </div>
           </div>
         </div>`).join('');
