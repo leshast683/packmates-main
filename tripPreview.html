@@ -1486,9 +1486,9 @@
             const key = Object.keys(CITY_DEFAULTS).find(k => d.includes(k) || k.includes(d));
             if (key) return CITY_DEFAULTS[key].map(name => ({ name, type: 'Sightseeing' }));
             return [
-                { name: dest + ' City Center', type: 'Sightseeing' },
-                { name: dest + ' Old Town',    type: 'Sightseeing' },
-                { name: dest + ' Local Market', type: 'Food & Dining' },
+                { name: tr('tripPreview.defaultActivity.cityCenter', { destination: dest }), type: 'Sightseeing' },
+                { name: tr('tripPreview.defaultActivity.oldTown', { destination: dest }),    type: 'Sightseeing' },
+                { name: tr('tripPreview.defaultActivity.localMarket', { destination: dest }), type: 'Food & Dining' },
             ];
         }
 
@@ -1516,9 +1516,9 @@
                         <div class="tl-line"></div>
                     </div>
                     <div class="tl-card">
-                        <img id="actImg${i}" src="${placeholder}" alt="${act.name}" loading="lazy" style="object-fit:cover;width:76px;height:76px;border-radius:12px;flex-shrink:0;">
+                        <img id="actImg${i}" src="${placeholder}" alt="${tCityLandmark(act.name)}" loading="lazy" style="object-fit:cover;width:76px;height:76px;border-radius:12px;flex-shrink:0;">
                         <div class="itineraryItemInfo">
-                            <h3>${act.name}</h3>
+                            <h3>${tCityLandmark(act.name)}</h3>
                             <p>${pinSvg} ${tActivityType(act.type)}</p>
                         </div>
                     </div>`;
