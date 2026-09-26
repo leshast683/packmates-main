@@ -1273,7 +1273,7 @@
             <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
           </div>
           <div class="inspo-avatars">${avHtml}</div>
-          <div class="inspo-card-name">${s.dest}</div>
+          <div class="inspo-card-name">${tInspoDest(s.dest)}</div>
         </div>
         <div class="inspo-card-body">
           <div class="inspo-card-meta"><span class="inspo-card-country">${s.country}</span> &bull; ${s.dates}</div>
@@ -1339,7 +1339,7 @@
       const s = SHARED[idx];
       // header
       document.getElementById('tiCountry').textContent = s.country;
-      document.getElementById('tiTitle').textContent = s.dest;
+      document.getElementById('tiTitle').textContent = tInspoDest(s.dest);
       document.getElementById('tiDates').textContent = s.dates;
       const bg = document.getElementById('tiHeaderBg');
       bg.style.backgroundImage = s.fallback;
@@ -1370,12 +1370,12 @@
           <div class="ti-day-head">
             <span class="ti-day-emoji">${d.emoji}</span>
             <div>
-              <div class="ti-day-label">${d.day}</div>
-              <div class="ti-day-title">${d.title}</div>
+              <div class="ti-day-label">${tInspoDayLabel(d.day)}</div>
+              <div class="ti-day-title">${tInspoDay(d.title)}</div>
             </div>
           </div>
           <ul class="ti-day-acts">
-            ${d.acts.map(a => `<li>${a}</li>`).join('')}
+            ${d.acts.map(a => `<li>${tInspoAct(a)}</li>`).join('')}
           </ul>
         </div>`).join('');
 
@@ -1394,8 +1394,8 @@
       weatherContainer.id = 'tiWeatherPicks';
       document.getElementById('tiPanelPacking').innerHTML = packing.map(p => `
         <div class="ti-pack-section">
-          <div class="ti-pack-cat">${p.cat}</div>
-          <div class="ti-pack-chips">${p.items.map(item => `<span class="ti-pack-chip">${getItemIcon(item)}${item}</span>`).join('')}</div>
+          <div class="ti-pack-cat">${tInspoCat(p.cat)}</div>
+          <div class="ti-pack-chips">${p.items.map(item => `<span class="ti-pack-chip">${getItemIcon(item)}${tInspoItem(item)}</span>`).join('')}</div>
         </div>`).join('');
       document.getElementById('tiPanelPacking').prepend(weatherContainer);
 
