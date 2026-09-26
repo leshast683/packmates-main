@@ -880,8 +880,8 @@
     <!-- ── CTA BANNER ── -->
     <div class="cta-banner">
       <a class="cta-banner-icon" href="https://www.instagram.com/packmatesai/" target="_blank" rel="noopener" aria-label="Packmates AI on Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
-      <div class="cta-banner-text"><strong>Every trip is a new story.</strong><span>Pack smart. Travel light. Make memories.</span></div>
-      <button class="btn-signout" onclick="openLogoutModal()">Sign Out <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+      <div class="cta-banner-text"><strong data-i18n="profile.ctaBanner.title">Every trip is a new story.</strong><span data-i18n="profile.ctaBanner.subtitle">Pack smart. Travel light. Make memories.</span></div>
+      <button class="btn-signout" onclick="openLogoutModal()"><span data-i18n="profile.logoutModal.confirm">Sign Out</span> <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
     </div>
 
   </main>
@@ -918,7 +918,7 @@
           <div class="tp-avatar"></div>
           <div class="tp-avatar-status"></div>
         </div>
-        <button class="tp-follow-btn">Packmate</button>
+        <button class="tp-follow-btn" data-i18n="discover.packmate">Packmate</button>
       </div>
       <div class="tp-body">
         <div class="tp-name-row">
@@ -937,24 +937,24 @@
         <div class="tp-stats-row">
           <div class="tp-stat">
             <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20z"/></svg></div>
-            <span class="tp-stat-num" id="pmTpStatTrips">—</span><span class="tp-stat-lbl">Trips</span>
+            <span class="tp-stat-num" id="pmTpStatTrips">—</span><span class="tp-stat-lbl" data-i18n="discover.stats.trips">Trips</span>
           </div>
           <div class="tp-stat">
             <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
-            <span class="tp-stat-num" id="pmTpStatCountries">—</span><span class="tp-stat-lbl">Countries</span>
+            <span class="tp-stat-num" id="pmTpStatCountries">—</span><span class="tp-stat-lbl" data-i18n="discover.stats.countries">Countries</span>
           </div>
           <div class="tp-stat">
             <div class="tp-stat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-            <span class="tp-stat-num" id="pmTpStatFollowers">—</span><span class="tp-stat-lbl">Followers</span>
+            <span class="tp-stat-num" id="pmTpStatFollowers">—</span><span class="tp-stat-lbl" data-i18n="discover.stats.followers">Followers</span>
           </div>
         </div>
-        <div class="tp-section-title">🧭 Travel Style</div>
+        <div class="tp-section-title" data-i18n="discover.travelStyle">🧭 Travel Style</div>
         <div class="tp-chips tp-styles-chips"></div>
-        <div class="tp-section-title">📍 Favorite Destinations</div>
+        <div class="tp-section-title" data-i18n="discover.favoriteDestinations">📍 Favorite Destinations</div>
         <div class="tp-chips tp-places-chips"></div>
-        <div class="tp-section-title">📈 Favorite Activities</div>
+        <div class="tp-section-title" data-i18n="discover.favoriteActivities">📈 Favorite Activities</div>
         <div class="tp-chips tp-activities-chips"></div>
-        <div class="tp-section-title">🧳 Recent Packing Lists</div>
+        <div class="tp-section-title" data-i18n="discover.recentPackingLists">🧳 Recent Packing Lists</div>
         <div class="tp-trips-list tp-packing-list"></div>
       </div>
     </div>
