@@ -1199,9 +1199,15 @@
       attributionControl: true,
       scrollWheelZoom: false,
     });
-    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+    // CARTO's Voyager raster tiles (basemaps.cartocdn.com) started requiring
+    // an API key for every request - anonymous requests now come back as a
+    // placeholder tile watermarked "API KEY REQUIRED" instead of map imagery.
+    // Standard OSM tiles need no key/signup and need only the {s} subdomain
+    // rotation + their own required attribution below.
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '© <a href="https://openstreetmap.org">OSM</a> © <a href="https://carto.com">CARTO</a>',
+      subdomains: 'abc',
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(ntMap);
     L.control.zoom({ position: 'bottomright' }).addTo(ntMap);
     /* Ensure tiles render once layout is stable */
