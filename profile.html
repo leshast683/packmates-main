@@ -699,9 +699,9 @@
         <div class="profile-card">
           <div class="card-head">
             <h3 data-i18n="profile.recentLists.title">Recent Packing Lists</h3>
-            <a class="view-all-link" href="packing-list.html" target="_top">View all</a>
+            <a class="view-all-link" href="packing-list.html" target="_top" data-i18n="profile.aiInsights.viewAll">View all</a>
           </div>
-          <div id="recentPackingLists"><div class="list-empty">No trips yet. <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">Create one →</a></div></div>
+          <div id="recentPackingLists"><div class="list-empty"><span data-i18n="profile.timeline.empty">No trips yet.</span> <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600" data-i18n="profile.recentLists.createOne">Create one →</a></div></div>
         </div>
 
       </div>
@@ -867,7 +867,7 @@
         </div>
         <div class="ai-insights-body">
           <div class="ai-insights-list" id="aiInsightsList">
-            <div class="ai-insights-empty">Pack a trip to start seeing insights.</div>
+            <div class="ai-insights-empty" data-i18n="profile.aiInsights.empty">Pack a trip to start seeing insights.</div>
           </div>
           <div class="ai-insights-deco" aria-hidden="true">
             <img src="img/ai-packing-suitcase.png" alt="" loading="lazy" style="width:100%;height:auto;display:block;object-fit:contain;">
@@ -1060,7 +1060,7 @@
 
       const chip = document.getElementById('display-gender-chip');
       if (chip && session?.gender) {
-        const LABELS = { male:'♂ Male', female:'♀ Female', nonbinary:'⚧ Non-binary' };
+        const LABELS = { male:tr('profile.hero.genderMale'), female:tr('profile.hero.genderFemale'), nonbinary:tr('profile.hero.genderNonbinary') };
         const CLASS  = { male:'profile-gender-chip--male', female:'profile-gender-chip--female', nonbinary:'profile-gender-chip--nonbinary' };
         chip.textContent = LABELS[session.gender] || session.gender;
         chip.className   = 'profile-gender-chip ' + (CLASS[session.gender] || '');
@@ -1105,12 +1105,12 @@
 
     function loadStreakAndLevel() {
       const trips = getAllTrips();
-      let streakVal = 0, streakSub = 'Keep it up! ✈️';
+      let streakVal = 0, streakSub = tr('profile.hero.keepItUp');
       try {
         const cur = JSON.parse(localStorage.getItem('currentTrip') || 'null');
         if (cur?.fromDate) {
           const daysTo = Math.ceil((new Date(cur.fromDate + 'T00:00:00') - new Date()) / 86400000);
-          if (daysTo > 0 && daysTo <= 365) { streakVal = daysTo; streakSub = 'Days to trip ✈️'; }
+          if (daysTo > 0 && daysTo <= 365) { streakVal = daysTo; streakSub = tr('profile.hero.daysToTrip'); }
           else { streakVal = Math.min(trips.length * 7, 99); }
         } else { streakVal = Math.min(trips.length * 7, 99); }
       } catch(e) { streakVal = trips.length * 7; }
@@ -1133,9 +1133,9 @@
       const curIdx  = BadgeLevels.BADGE_TIERS.indexOf(cur);
       const next    = BadgeLevels.BADGE_TIERS[curIdx + 1];
       const pct     = next ? Math.min(100, Math.round((totalItemsPacked - cur.min) / (next.min - cur.min) * 100)) : 100;
-      const label   = next ? `${pct}% to ${next.name}` : '';
+      const label   = next ? tr('profile.hero.pctToNextLevel', { pct, level: tBadgeTier(next.name) }) : '';
       setTimeout(() => { document.getElementById('explorerFill').style.width = pct + '%'; }, 120);
-      document.getElementById('explorerLevelName').textContent = cur.name;
+      document.getElementById('explorerLevelName').textContent = tBadgeTier(cur.name);
       document.getElementById('explorerPctText').textContent = label;
 
       const iconBox = document.getElementById('explorerLevelIcon');
@@ -1148,7 +1148,7 @@
         // box may already be showing a *different* tier's image by then.
         iconBox.classList.add('explorer-level-icon--custom');
         const img = new Image();
-        img.alt = cur.name + ' badge';
+        img.alt = tr('profile.hero.badgeAlt', { level: tBadgeTier(cur.name) });
         img.onload = () => { iconBox.innerHTML = ''; iconBox.appendChild(img); };
         img.onerror = () => { iconBox.classList.remove('explorer-level-icon--custom'); iconBox.innerHTML = DEFAULT_LEVEL_ICON_SVG; };
         img.src = iconSrc;
@@ -1160,25 +1160,25 @@
       const counts = {};
       trips.forEach(t => (t.activityCategories || []).forEach(c => { counts[c] = (counts[c]||0)+1; }));
       const STYLE_MAP = {
-        'Beach':{'label':'Beach Lover','img':'activity_beach.png','cls':'style-chip--teal'},
-        'Hiking':{'label':'Adventure Seeker','img':'activity_hiking.png','cls':'style-chip--orange'},
-        'Camping':{'label':'Camper','img':'activity_camping.png','cls':'style-chip--green'},
-        'Gym':{'label':'Fitness Fan','img':'activity_gym.png','cls':'style-chip--blue'},
-        'Swimming':{'label':'Water Lover','img':'activity_swimming.png','cls':'style-chip--teal'},
-        'Snow Sports':{'label':'Snow Seeker','img':'activity_snowsports.png','cls':'style-chip--blue'},
-        'Business Trip':{'label':'Business Traveler','img':'activity_business.png','cls':'style-chip--purple'},
-        'Night Out':{'label':'Night Explorer','img':'activity_nightout.png','cls':'style-chip--purple'},
-        'Baby':{'label':'Family Traveler','img':'activity_baby.png','cls':'style-chip--pink'},
-        'Theme Park':{'label':'Thrill Seeker','img':'activity_themepark.png','cls':'style-chip--orange'},
-        'Festival':{'label':'Festival Goer','img':'activity_festival.png','cls':'style-chip--pink'},
-        'Road Trip':{'label':'Road Warrior','img':'activity_roadtrip.png','cls':'style-chip--orange'},
-        'City Sightseeing':{'label':'City Explorer','img':'activity_sightseeing.png','cls':'style-chip--blue'},
-        'Dining':{'label':'Food Lover','img':'activity_dining.png','cls':'style-chip--pink'},
+        'Beach':{'label':tr('profile.travelStyle.beachLover'),'img':'activity_beach.png','cls':'style-chip--teal'},
+        'Hiking':{'label':tr('profile.travelStyle.adventureSeeker'),'img':'activity_hiking.png','cls':'style-chip--orange'},
+        'Camping':{'label':tr('profile.travelStyle.camper'),'img':'activity_camping.png','cls':'style-chip--green'},
+        'Gym':{'label':tr('profile.travelStyle.fitnessFan'),'img':'activity_gym.png','cls':'style-chip--blue'},
+        'Swimming':{'label':tr('profile.travelStyle.waterLover'),'img':'activity_swimming.png','cls':'style-chip--teal'},
+        'Snow Sports':{'label':tr('profile.travelStyle.snowSeeker'),'img':'activity_snowsports.png','cls':'style-chip--blue'},
+        'Business Trip':{'label':tr('profile.travelStyle.businessTraveler'),'img':'activity_business.png','cls':'style-chip--purple'},
+        'Night Out':{'label':tr('profile.travelStyle.nightExplorer'),'img':'activity_nightout.png','cls':'style-chip--purple'},
+        'Baby':{'label':tr('profile.travelStyle.familyTraveler'),'img':'activity_baby.png','cls':'style-chip--pink'},
+        'Theme Park':{'label':tr('profile.travelStyle.thrillSeeker'),'img':'activity_themepark.png','cls':'style-chip--orange'},
+        'Festival':{'label':tr('profile.travelStyle.festivalGoer'),'img':'activity_festival.png','cls':'style-chip--pink'},
+        'Road Trip':{'label':tr('profile.travelStyle.roadWarrior'),'img':'activity_roadtrip.png','cls':'style-chip--orange'},
+        'City Sightseeing':{'label':tr('profile.travelStyle.cityExplorer'),'img':'activity_sightseeing.png','cls':'style-chip--blue'},
+        'Dining':{'label':tr('profile.travelStyle.foodLover'),'img':'activity_dining.png','cls':'style-chip--pink'},
       };
       const container = document.getElementById('travelStyleChips');
       if (!container) return;
       if (!Object.keys(counts).length) {
-        container.innerHTML = '<span class="style-empty">Plan a trip to discover your travel style!</span>';
+        container.innerHTML = `<span class="style-empty">${tr('profile.travelStyle.empty')}</span>`;
         return;
       }
       const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
@@ -1197,25 +1197,25 @@
       const trips = getAllTrips().sort((a,b) => new Date(b.fromDate||0) - new Date(a.fromDate||0)).slice(0,4);
       const c = document.getElementById('recentPackingLists');
       if (!c) return;
-      if (!trips.length) { c.innerHTML = '<div class="list-empty">No trips yet. <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">Create one →</a></div>'; return; }
+      if (!trips.length) { c.innerHTML = `<div class="list-empty">${tr('profile.timeline.empty')} <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">${tr('profile.recentLists.createOne')}</a></div>`; return; }
       c.innerHTML = trips.map(t => {
         const pd      = JSON.parse(localStorage.getItem(`pm_pack_${t.id}`) || '{}');
         const total   = pd.totalSuggested ?? pd.suggestedTotal ?? Object.keys(pd.itemState || {}).length;
         const packed  = Object.values(pd.itemState || {}).filter(v => v?.packed).length;
         const pct     = PackingMath.calcPackedPct(packed, total);
-        const dates   = t.fromDate && t.toDate ? `${fmtDate(t.fromDate)} – ${fmtDate(t.toDate)}` : 'Dates TBD';
+        const dates   = t.fromDate && t.toDate ? `${fmtDate(t.fromDate)} – ${fmtDate(t.toDate)}` : tr('profile.recentLists.datesTbd');
         const img     = t.imageUrl ? `<img src="${t.imageUrl}" alt="${t.destination}" loading="lazy" onerror="this.style.display='none'">` : '';
         const tripStr = encodeURIComponent(JSON.stringify(t));
         return `<div class="recent-list-item" onclick="localStorage.setItem('currentTrip',decodeURIComponent('${tripStr}'));window.top.location.href='packing-list.html'">
           <div class="recent-list-thumb">${img}</div>
           <div class="recent-list-info">
-            <strong>${t.destination||'Trip'}</strong>
+            <strong>${t.destination||tr('pack.share.defaultTrip')}</strong>
             <span>${dates}</span>
             <div style="margin-top:4px;height:3px;border-radius:99px;background:rgba(0,0,0,.08);overflow:hidden">
               <div style="height:100%;width:${pct}%;background:#7cc63e;border-radius:99px;transition:width .6s ease"></div>
             </div>
           </div>
-          <div class="recent-list-count"><strong>${packed}</strong><span>of ${total}</span></div>
+          <div class="recent-list-count"><strong>${packed}</strong><span>${tr('profile.recentLists.ofTotal', { total })}</span></div>
         </div>`;
       }).join('');
     }
@@ -1224,11 +1224,11 @@
       const trips = getAllTrips().sort((a,b) => new Date(b.fromDate||0) - new Date(a.fromDate||0));
       const c = document.getElementById('travelTimeline');
       if (!c) return;
-      if (!trips.length) { c.innerHTML = '<div class="list-empty">No trips yet. <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">Plan your first one →</a></div>'; return; }
+      if (!trips.length) { c.innerHTML = `<div class="list-empty">${tr('profile.timeline.empty')} <a href="newTrip.html" target="_top" style="color:#7cc63e;text-decoration:none;font-weight:600">${tr('profile.timeline.planFirst')}</a></div>`; return; }
       const COLORS = ['#7cc63e','#4a90d9','#e67e22','#9b59b6','#e74c3c','#1abc9c'];
       const ACT_IMG = { 'Beach':'activity_beach','Hiking':'activity_hiking','Camping':'activity_camping','Gym':'activity_gym','Swimming':'activity_swimming','Snow Sports':'activity_snowsports','Business Trip':'activity_business','Night Out':'activity_nightout','Baby':'activity_baby','Theme Park':'activity_themepark','Festival':'activity_festival','Road Trip':'activity_roadtrip','City Sightseeing':'activity_sightseeing','Dining':'activity_dining' };
       const byYear = {};
-      trips.forEach(t => { const y = t.fromDate ? new Date(t.fromDate+'T00:00:00').getFullYear() : 'Upcoming'; (byYear[y]=byYear[y]||[]).push(t); });
+      trips.forEach(t => { const y = t.fromDate ? new Date(t.fromDate+'T00:00:00').getFullYear() : tr('profile.timeline.upcoming'); (byYear[y]=byYear[y]||[]).push(t); });
       let idx = 0;
       let html = '<div class="timeline-wrap">';
       Object.entries(byYear).sort(([a],[b]) => Number(b)-Number(a)).forEach(([year, yTrips]) => {
@@ -1243,7 +1243,7 @@
             : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
           html += `<div class="timeline-item">
             <div class="timeline-dot" style="background:${col}18;border:2px solid ${col}44">${dotContent}</div>
-            <div class="timeline-content"><div class="timeline-dates">${dates}</div><div class="timeline-dest">${t.destination||'Trip'}</div></div>
+            <div class="timeline-content"><div class="timeline-dates">${dates}</div><div class="timeline-dest">${t.destination||tr('pack.share.defaultTrip')}</div></div>
           </div>`;
         });
       });
@@ -1276,9 +1276,6 @@
         return bare.trim().replace(/^\w/, c => c.toUpperCase());
       };
 
-      // "a" vs "an" based on first vowel
-      const article = n => /^[aeiou]/i.test(n.trim()) ? 'an' : 'a';
-
       // Icon SVG via shared packing-icons.js — same icons as the packing list
       const itemIconHtml = n => getItemIcon(n.toLowerCase(), '');
 
@@ -1292,7 +1289,7 @@
       if (alwaysItem) {
         usedNames.add(alwaysItem[0]);
         const aName = cleanName(alwaysItem[0]);
-        insights.push({ icon: itemIconHtml(aName), text: `You always pack ${article(aName)} <strong>${aName.toLowerCase()}</strong>` });
+        insights.push({ icon: itemIconHtml(aName), text: tr('profile.aiInsights.alwaysPack', { item: tItem(aName).toLowerCase() }) });
       }
 
       // You also pack — second distinct frequent item
@@ -1300,7 +1297,7 @@
       if (alsoItem) {
         usedNames.add(alsoItem[0]);
         const bName = cleanName(alsoItem[0]);
-        insights.push({ icon: itemIconHtml(bName), text: `You also pack ${article(bName)} <strong>${bName.toLowerCase()}</strong>` });
+        insights.push({ icon: itemIconHtml(bName), text: tr('profile.aiInsights.alsoPack', { item: tItem(bName).toLowerCase() }) });
       }
 
       // Forgot — item that appears in itemCounts but never packed (needs ≥2 trips to be meaningful)
@@ -1308,7 +1305,7 @@
       if (forgotItem) {
         usedNames.add(forgotItem[0]);
         const fName = cleanName(forgotItem[0]);
-        insights.push({ icon: itemIconHtml(fName), text: `You forgot <strong>${fName.toLowerCase()}</strong> ${forgotItem[1]} times on avg.` });
+        insights.push({ icon: itemIconHtml(fName), text: tr('profile.aiInsights.forgot', { item: tItem(fName).toLowerCase(), count: forgotItem[1] }) });
       }
 
       // Most packed item — by packed count, different from the first two
@@ -1316,7 +1313,7 @@
       if (mostPackedItem) {
         usedNames.add(mostPackedItem[0]);
         const mName = cleanName(mostPackedItem[0]);
-        insights.push({ icon: itemIconHtml(mName), text: `Most packed item: <strong>${mName}</strong>` });
+        insights.push({ icon: itemIconHtml(mName), text: tr('profile.aiInsights.mostPacked', { item: tItem(mName) }) });
       }
 
       // Favorite destination
@@ -1325,11 +1322,11 @@
       const topDest = Object.entries(destCounts).sort((a,b) => b[1]-a[1])[0];
       const pinSvg = `<svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#7cc63e"/></svg>`;
       if (topDest) {
-        insights.push({ icon: pinSvg, text: `Favorite destination: <strong>${topDest[0]}</strong>` });
+        insights.push({ icon: pinSvg, text: tr('profile.aiInsights.favoriteDestination', { destination: topDest[0] }) });
       }
 
       if (!insights.length) {
-        el.innerHTML = '<div class="ai-insights-empty">Pack a trip to start seeing insights.</div>';
+        el.innerHTML = `<div class="ai-insights-empty">${tr('profile.aiInsights.empty')}</div>`;
         return;
       }
 
@@ -1348,7 +1345,7 @@
       const edit = document.getElementById('profile-edit');
       if (editingProfile) {
         const p = _pmProfile(), s = Auth.getSession();
-        document.getElementById('edit-name').value     = p.name     || s?.name   || 'Traveler';
+        document.getElementById('edit-name').value     = p.name     || s?.name   || tr('profile.hero.travelerFallback');
         document.getElementById('edit-location').value = p.location || '';
         const bioInput = document.getElementById('edit-bio');
         bioInput.value = p.bio || '';
@@ -1361,7 +1358,7 @@
         document.getElementById('profileStreakCard').style.display = 'none';
         document.getElementById('explorerLevelBar').style.display  = 'none';
       } else {
-        const name     = document.getElementById('edit-name').value.trim()     || 'Traveler';
+        const name     = document.getElementById('edit-name').value.trim()     || tr('profile.hero.travelerFallback');
         const location = document.getElementById('edit-location').value.trim();
         const bio      = document.getElementById('edit-bio').value.trim().slice(0,30);
         hideLoc();
@@ -1479,9 +1476,9 @@
       const name  = document.getElementById('pd-name').value.trim();
       const email = document.getElementById('pd-email').value.trim();
       const phone = document.getElementById('pd-phone').value.trim();
-      if (!name || !email) { showMsg('pd-msg','Name and email are required.','error'); return; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMsg('pd-msg','Please enter a valid email.','error'); return; }
-      if (!selectedGender) { showMsg('pd-msg','Please select your gender.','error'); return; }
+      if (!name || !email) { showMsg('pd-msg',tr('profile.settings.personal.nameEmailRequired'),'error'); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMsg('pd-msg',tr('profile.settings.personal.invalidEmail'),'error'); return; }
+      if (!selectedGender) { showMsg('pd-msg',tr('signup.selectGenderError'),'error'); return; }
       try {
         const s = Auth.getSession();
         /* Update legacy local users list for backward compat */
@@ -1498,7 +1495,7 @@
         _savePmProfile({ pdName:name, pdEmail:email, pdPhone:phone, gender:selectedGender });
       } catch(e) {}
       loadProfile();
-      showMsg('pd-msg','Saved! Packing suggestions updated.','success');
+      showMsg('pd-msg',tr('profile.settings.personal.saved'),'success');
       showToast(tr('profile.toast.genderSaved'));
     }
 
@@ -1506,13 +1503,13 @@
       const current = document.getElementById('sec-current').value;
       const newPw   = document.getElementById('sec-new').value;
       const confirm = document.getElementById('sec-confirm').value;
-      if (!current)         { showMsg('sec-msg','Please enter your current password.','error'); return; }
-      if (newPw.length < 8) { showMsg('sec-msg','New password must be at least 8 characters.','error'); return; }
-      if (newPw !== confirm) { showMsg('sec-msg','Passwords do not match.','error'); return; }
+      if (!current)         { showMsg('sec-msg',tr('profile.settings.security.currentRequired'),'error'); return; }
+      if (newPw.length < 8) { showMsg('sec-msg',tr('profile.settings.security.minLength'),'error'); return; }
+      if (newPw !== confirm) { showMsg('sec-msg',tr('signup.passwordMismatch'),'error'); return; }
       const result = await Auth.changePassword(current, newPw);
       if (!result.success) { showMsg('sec-msg', result.error, 'error'); return; }
       ['sec-current','sec-new','sec-confirm'].forEach(id => document.getElementById(id).value = '');
-      showMsg('sec-msg','Password updated successfully!','success');
+      showMsg('sec-msg',tr('profile.settings.security.updated'),'success');
       showToast(tr('profile.toast.passwordUpdated'));
     }
 
@@ -1612,11 +1609,11 @@
     async function openPackmatesModal() {
       const list = await _loadPackmates();
       const count = list.length;
-      document.getElementById('pmListCount').textContent = count + ' packmate' + (count !== 1 ? 's' : '');
+      document.getElementById('pmListCount').textContent = tr(count === 1 ? 'profile.packmates.countSingular' : 'profile.packmates.countPlural', { count });
       const body = document.getElementById('pmListBody');
       body.innerHTML = '';
       if (count === 0) {
-        body.innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>No packmates yet.<br>Share a trip with someone to see them here!</div>`;
+        body.innerHTML = `<div class="pm-list-empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>${tr('profile.packmates.noneYet')}</div>`;
       } else {
         // Built as real DOM nodes (not one big innerHTML string) so each
         // item's tap handler can close over its own packmate object/color
@@ -1632,12 +1629,12 @@
           item.innerHTML = `
             <div class="pm-item-avatar" style="background:${color}">${avatarInner}</div>
             <div class="pm-item-info">
-              <div class="pm-item-name">${p.name || 'A packmate'}</div>
+              <div class="pm-item-name">${p.name || tr('tripPreview.aPackmate')}</div>
               <div class="pm-item-stats">
                 ${p._followed
-                  ? `<span class="pm-item-stat pm-item-stat--muted">${p.city || 'Followed on Discover'}</span>`
-                  : `<span class="pm-item-stat"><strong>${p.shared_trip_count}</strong> shared trip${p.shared_trip_count !== 1 ? 's' : ''}</span>
-                     ${p.first_shared_destination ? `<span class="pm-item-stat pm-item-stat--muted">Packmates since ${p.first_shared_destination}</span>` : ''}`
+                  ? `<span class="pm-item-stat pm-item-stat--muted">${p.city || tr('profile.packmates.followedOnDiscover')}</span>`
+                  : `<span class="pm-item-stat"><strong>${p.shared_trip_count}</strong> ${tr(p.shared_trip_count !== 1 ? 'profile.packmates.sharedTripWordPlural' : 'profile.packmates.sharedTripWordSingular')}</span>
+                     ${p.first_shared_destination ? `<span class="pm-item-stat pm-item-stat--muted">${tr('profile.packmates.packmatesSince', { destination: p.first_shared_destination })}</span>` : ''}`
                 }
               </div>
             </div>`;
@@ -1785,14 +1782,15 @@
       m.querySelector('.tp-avatar').textContent = t.avatar;
       m.querySelector('.tp-name').textContent = t.name;
       m.querySelector('.tp-location span').textContent = t.city;
-      m.querySelector('.tp-member').textContent = '📅 Joined ' + t.memberSince;
-      m.querySelector('.tp-gender').textContent = '👤 ' + t.gender;
-      m.querySelector('.tp-level').textContent = t.level;
+      m.querySelector('.tp-member').textContent = tr('discover.joinedOn', { date: t.memberSince });
+      m.querySelector('.tp-gender').textContent = tr('discover.genderPrefix', { gender: tGender(t.gender) });
+      const levelMatch = t.level.match(/^(.*?)(\s*⭐+)?$/);
+      m.querySelector('.tp-level').textContent = tBadgeTier(levelMatch[1].trim()) + (levelMatch[2] || '');
       m.querySelector('.tp-bio').textContent = t.bio;
       document.getElementById('pmTpStatTrips').textContent = t.trips;
       document.getElementById('pmTpStatCountries').textContent = t.countries;
       document.getElementById('pmTpStatFollowers').textContent = t.followers >= 1000 ? (t.followers/1000).toFixed(1)+'k' : t.followers;
-      m.querySelector('.tp-styles-chips').innerHTML = t.travelStyles.map(s => `<span class="tp-chip">${pmStyleIcon(s)} ${s}</span>`).join('');
+      m.querySelector('.tp-styles-chips').innerHTML = t.travelStyles.map(s => `<span class="tp-chip">${pmStyleIcon(s)} ${tTravelerStyle(s)}</span>`).join('');
       m.querySelector('.tp-places-chips').innerHTML = t.places.map(p =>
         `<span class="tp-chip place"><img class="tp-place-thumb" id="pmTpPlace-${p.replace(/\W+/g,'_')}" alt="">${p}</span>`).join('');
       t.places.forEach(p => {
@@ -1804,14 +1802,14 @@
         if (cached) { img.src = cached; return; }
         pmFetchDestPhoto(p).then(url => { if (url) { pmSetDestCache(cacheKey, url); img.src = url; } });
       });
-      m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${pmActivityIcon(a)} ${a}</span>`).join('');
+      m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${pmActivityIcon(a)} ${tTravelerActivity(a)}</span>`).join('');
       m.querySelector('.tp-packing-list').innerHTML = t.packingLists.map((r, i) => `
         <div class="tp-trip" id="pmTpPack-${i}">
           <div class="tp-trip-scrim"></div>
-          <span class="tp-trip-badge">${r.items} items</span>
+          <span class="tp-trip-badge">${tr('discover.itemsBadge', { count: r.items })}</span>
           <div class="tp-trip-info">
             <div class="tp-trip-name">${r.name}</div>
-            <div class="tp-trip-date">${r.status}</div>
+            <div class="tp-trip-date">${tTripStatus(r.status)}</div>
           </div>
         </div>`).join('');
       t.packingLists.forEach((r, i) => {
@@ -1831,14 +1829,14 @@
          interactive without faking a travel connection that never happened. */
       const btn = m.querySelector('.tp-follow-btn');
       const isFollowing = (() => { try { return JSON.parse(localStorage.getItem('pm_following')||'[]').includes(t.avatar); } catch { return false; } })();
-      btn.textContent = isFollowing ? 'Following ✓' : 'Follow';
+      btn.textContent = isFollowing ? tr('profile.packmates.following') : tr('profile.packmates.follow');
       btn.classList.toggle('following', isFollowing);
       btn.onclick = () => {
         let list = (() => { try { return JSON.parse(localStorage.getItem('pm_following')||'[]'); } catch { return []; } })();
         const adding = !list.includes(t.avatar);
         list = adding ? [...list, t.avatar] : list.filter(a => a !== t.avatar);
         localStorage.setItem('pm_following', JSON.stringify(list));
-        btn.textContent = adding ? 'Following ✓' : 'Follow';
+        btn.textContent = adding ? tr('profile.packmates.following') : tr('profile.packmates.follow');
         btn.classList.toggle('following', adding);
       };
       document.getElementById('pmTpBackdrop').classList.add('open');
@@ -1861,14 +1859,14 @@
       avatarEl.innerHTML = p.avatar
         ? `<img src="${p.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
         : (p.name || '?').trim().charAt(0).toUpperCase();
-      m.querySelector('.tp-name').textContent = p.name || 'A packmate';
+      m.querySelector('.tp-name').textContent = p.name || tr('tripPreview.aPackmate');
       const memberEl = m.querySelector('.tp-member');
       memberEl.style.display = '';
-      memberEl.textContent = '🤝 ' + p.shared_trip_count + ' shared trip' + (p.shared_trip_count !== 1 ? 's' : '');
+      memberEl.textContent = '🤝 ' + p.shared_trip_count + ' ' + tr(p.shared_trip_count !== 1 ? 'profile.packmates.sharedTripWordPlural' : 'profile.packmates.sharedTripWordSingular');
       const destEl = m.querySelector('.tp-gender');
       if (p.first_shared_destination) {
         destEl.style.display = '';
-        destEl.textContent = '📍 Packmates since ' + p.first_shared_destination;
+        destEl.textContent = '📍 ' + tr('profile.packmates.packmatesSince', { destination: p.first_shared_destination });
       } else {
         destEl.style.display = 'none';
       }
