@@ -32,9 +32,9 @@
       const session = Auth.getSession();
       el.innerHTML = `
         <div style="display:flex;align-items:center;gap:10px;background:#fdf3e2;border:1px solid #f0d9a6;border-radius:14px;padding:12px 14px;margin-bottom:16px;font-size:0.78rem;color:#7a5411;">
-          <span style="flex:1;">Verify your email${session?.email ? ` (<strong>${session.email}</strong>)` : ''} to keep your account secure.</span>
-          <a href="#" id="verifyResendLink" style="color:#7a5411;font-weight:700;text-decoration:underline;white-space:nowrap;flex-shrink:0;">Resend</a>
-          <button id="verifyDismissBtn" aria-label="Dismiss" style="background:none;border:none;color:#7a5411;font-size:1rem;cursor:pointer;line-height:1;padding:0 2px;flex-shrink:0;">&times;</button>
+          <span style="flex:1;">${session?.email ? tr('dash.verifyEmail.withEmail', { email: session.email }) : tr('dash.verifyEmail.noEmail')}</span>
+          <a href="#" id="verifyResendLink" style="color:#7a5411;font-weight:700;text-decoration:underline;white-space:nowrap;flex-shrink:0;">${tr('dash.verifyEmail.resend')}</a>
+          <button id="verifyDismissBtn" aria-label="${tr('dash.verifyEmail.dismiss')}" style="background:none;border:none;color:#7a5411;font-size:1rem;cursor:pointer;line-height:1;padding:0 2px;flex-shrink:0;">&times;</button>
         </div>`;
       document.getElementById('verifyDismissBtn').onclick = () => {
         localStorage.setItem(dismissKey, '1');
@@ -43,9 +43,9 @@
       document.getElementById('verifyResendLink').onclick = async (e) => {
         e.preventDefault();
         const link = e.currentTarget;
-        link.textContent = 'Sending…';
+        link.textContent = tr('login.sending');
         const result = await Auth.resendConfirmation(session?.email || '');
-        link.textContent = result.success ? 'Sent ✓' : 'Try again';
+        link.textContent = result.success ? tr('dash.verifyEmail.sent') : tr('login.tryAgain');
       };
     })();
 
@@ -205,16 +205,16 @@
       if (!t) return;
       const packRaw = JSON.parse(localStorage.getItem(`pm_pack_${tripId}`) || '{}');
       const items = Object.entries(packRaw.itemState || {}).map(([k, v]) => [k, v.packed ? 1 : 0, v.qty || 1]);
-      const by = Auth.getSession()?.name || 'A friend';
+      const by = Auth.getSession()?.name || tr('profile.hero.travelerFallback');
       const payload = { v:1, sid:tripId, dest:t.destination, from:t.fromDate||'', to:t.toDate||'', trav:t.travelers||1, by, items,
         custom: packRaw.customItems || {}, dismissed: packRaw.dismissed || [] };
       const code = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
       const url = `${location.origin}/packing-list.html?join=${code}`;
       // Show share sheet or copy to clipboard
       if (navigator.share) {
-        navigator.share({ title: `${t.destination} Packing List`, text: `Pack together for ${t.destination}!`, url }).catch(() => {});
+        navigator.share({ title: tr('pack.share.nativeTitle', { destination: t.destination }), text: tr('pack.share.nativeText', { destination: t.destination }), url }).catch(() => {});
       } else {
-        navigator.clipboard.writeText(url).then(() => toast('Share link copied!')).catch(() => {
+        navigator.clipboard.writeText(url).then(() => toast(tr('dash.shareToast.copied'))).catch(() => {
           prompt('Copy this link:', url);
         });
       }
@@ -274,7 +274,7 @@
 
     /* ── Weather ── */
     const WMO = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
-    const WMO_LABEL = {0:'Sunny',1:'Mostly Sunny',2:'Partly Cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Light Drizzle',53:'Drizzle',55:'Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',80:'Showers',81:'Showers',82:'Heavy Showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
+    const WMO_LABEL_KEY = {0:'sunny',1:'mostlySunny',2:'partlyCloudy',3:'cloudy',45:'foggy',48:'foggy',51:'lightDrizzle',53:'drizzle',55:'drizzle',61:'lightRain',63:'rain',65:'heavyRain',71:'lightSnow',73:'snow',75:'heavySnow',80:'showers',81:'showers',82:'heavyShowers',95:'thunderstorm',96:'thunderstorm',99:'thunderstorm'};
 
     function wxAnimClass(code) {
       if (code === 0 || code === 1)                          return 'wx-sunny';
@@ -302,7 +302,7 @@
         const c = w.current;
         const d = w.daily;
         const days = (d?.time || []).map((dateStr, i) => ({
-          label: i === 0 ? 'Today' : new Date(dateStr + 'T12:00').toLocaleDateString('en-US', { weekday: 'short' }),
+          label: i === 0 ? tr('dash.weather.today') : new Date(dateStr + 'T12:00').toLocaleDateString(getLang() === 'es' ? 'es-ES' : 'en-US', { weekday: 'short' }),
           code: d.weather_code[i],
           icon: WMO[d.weather_code[i]] || '🌡️',
           hi: Math.round(d.temperature_2m_max[i]),
@@ -422,7 +422,7 @@
     const days         = hasTrip ? daysTo(trip.fromDate) : null;
     const countdownNum = !hasTrip ? '—' : days === null ? '—' : days > 0 ? days : days === 0 ? '0' : '✓';
     const countdownUnit= !hasTrip ? 'no trip yet' : days === null ? '' : days > 0 ? 'days away' : days === 0 ? 'today!' : 'underway';
-    const chips        = hasTrip ? (trip.activityCategories||[]).slice(0,5).map(a=>`<span class="bc-hero-chip">${a}</span>`).join('') : '';
+    const chips        = hasTrip ? (trip.activityCategories||[]).slice(0,5).map(a=>`<span class="bc-hero-chip">${tCategory(a)}</span>`).join('') : '';
 
     /* ── Pre-compute nudge link ── */
     const nudgeLink = hasTrip ? 'packing-list.html' : 'newTrip.html';
@@ -438,29 +438,29 @@
         <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center;">
           <img src="img/appIcon.png" alt="Packmates AI" style="width:72px;height:72px;border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,0.3);object-fit:cover;">
           <div>
-            <div style="font-family:'Blauer Nue',sans-serif;font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:6px;">Plan your next adventure</div>
-            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);max-width:280px;line-height:1.6;">Create a trip and get a smart packing list tailored to your destination and activities.</div>
+            <div style="font-family:'Blauer Nue',sans-serif;font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:6px;">${tr('dash.hero.noTripTitle')}</div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);max-width:280px;line-height:1.6;">${tr('dash.hero.noTripSubtitle')}</div>
           </div>
           <button onclick="window.top.location.href='newTrip.html'" style="padding:12px 28px;background:var(--green);color:#fff;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background 0.2s,transform 0.2s;" onmouseover="this.style.background='#4d8225';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#5f9d30';this.style.transform=''">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Create First Trip
+            ${tr('dash.hero.createFirstTrip')}
           </button>
         </div>` : `
         <!-- Active trip hero -->
-        <div class="bc-hero-tag bc-hero-tag--corner${isPastTrip ? ' bc-hero-tag--past' : ''}">${isPastTrip ? 'Past Trip' : 'Active Trip'}</div>
+        <div class="bc-hero-tag bc-hero-tag--corner${isPastTrip ? ' bc-hero-tag--past' : ''}">${isPastTrip ? tr('dash.pastTrip') : tr('dash.activeTripFull')}</div>
         <button class="bc-hero-btn bc-hero-btn--corner" id="shareBtn">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          Share
+          ${tr('dash.share')}
         </button>
         <div class="bc-hero-body">
           <div class="bc-hero-left">
             <div class="bc-hero-dest">${trip.name || trip.destination}</div>
             <div class="bc-hero-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>${trip.destination}</div>
-            <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : 'Dates not set'}</div>
+            <div class="bc-hero-dates">${trip.fromDate && trip.toDate ? `${fmt(trip.fromDate)} — ${fmt(trip.toDate)}` : tr('dash.datesNotSet')}</div>
           </div>
           <div class="bc-hero-right">
             ${ring(pct, 96, 7)}
-            <div class="bc-hero-ring-label">${totalSuggested > 0 ? `${packedKeys.length} of ${totalSuggested}<br>items packed` : 'No items yet'}</div>
+            <div class="bc-hero-ring-label">${totalSuggested > 0 ? tr('dash.hero.itemsPackedLabel', { packed: packedKeys.length, total: totalSuggested }) : tr('dash.hero.noItemsYet')}</div>
           </div>
         </div>
         ${chips ? `<div class="bc-hero-chips bc-hero-chips--bottom">${chips}</div>` : ''}`}
@@ -471,29 +471,29 @@
         const airline = trip?.airline || null;
         const baggageRows = airline ? `
           <div class="bc-board-bag-row">
-            <span class="bc-board-bag-label">Carry-on</span>
+            <span class="bc-board-bag-label">${tr('newTrip.carryOn')}</span>
             <span class="bc-board-bag-val">${airline.carry.dims}</span>
-            ${airline.carry.weight !== 'No limit' ? `<span class="bc-board-bag-fee">${airline.carry.weight}</span>` : ''}
+            ${airline.carry.weight !== 'No limit' ? `<span class="bc-board-bag-fee">${tAirlineValue(airline.carry.weight)}</span>` : ''}
           </div>
           <div class="bc-board-bag-row">
-            <span class="bc-board-bag-label">Checked</span>
+            <span class="bc-board-bag-label">${tr('newTrip.checked')}</span>
             <span class="bc-board-bag-val">${airline.checked.weight}</span>
-            <span class="bc-board-bag-fee">${airline.checked.fee}</span>
+            <span class="bc-board-bag-fee">${tAirlineValue(airline.checked.fee)}</span>
           </div>` : `
           <div class="bc-board-bag-row">
-            <span class="bc-board-bag-label">Carry-on</span>
+            <span class="bc-board-bag-label">${tr('newTrip.carryOn')}</span>
             <span class="bc-board-bag-val">56×36×23 cm</span>
           </div>
           <div class="bc-board-bag-row">
-            <span class="bc-board-bag-label">Checked</span>
+            <span class="bc-board-bag-label">${tr('newTrip.checked')}</span>
             <span class="bc-board-bag-val">23 kg / 50 lbs</span>
-            <span class="bc-board-bag-fee" style="background:rgba(0,0,0,0.04);color:var(--text-3);">typical</span>
+            <span class="bc-board-bag-fee" style="background:rgba(0,0,0,0.04);color:var(--text-3);">${tr('dash.board.typical')}</span>
           </div>
-          <div style="font-size:0.6rem;color:var(--text-3);margin-top:2px;">Add airline for exact limits</div>`;
+          <div style="font-size:0.6rem;color:var(--text-3);margin-top:2px;">${tr('dash.board.addAirlineHint')}</div>`;
         return `
           <div class="bc-lug-top">
             <div class="bc-lug-header">
-              <div class="bc-label"><span class="bc-label-dot" style="background:#f59e0b;box-shadow:0 0 6px rgba(245,158,11,0.5)"></span>Luggage</div>
+              <div class="bc-label"><span class="bc-label-dot" style="background:#f59e0b;box-shadow:0 0 6px rgba(245,158,11,0.5)"></span>${tr('dash.board.luggage')}</div>
               ${airline ? `<div class="bc-board-airline" style="margin-bottom:0">
                 <div class="bc-board-airline-logo">
                   <img src="https://www.gstatic.com/flights/airline_logos/70px/${airline.iata}.png"
@@ -506,7 +506,7 @@
             </div>
             <div class="bc-lug-icon-area">
               <div class="bc-lug-icon-wrap">
-                <img src="img/luggage.png" alt="Luggage" class="bc-lug-img" loading="lazy">
+                <img src="img/luggage.png" alt="${tr('dash.board.luggage')}" class="bc-lug-img" loading="lazy">
               </div>
             </div>
           </div>
@@ -519,11 +519,11 @@
 
       <!-- PROGRESS -->
       <div class="bc bc-progress">
-        <div class="bc-progress-label">Packing Progress</div>
+        <div class="bc-progress-label">${tr('dash.progress.label')}</div>
         <div class="bc-progress-inner">
           <div class="bc-progress-text">
             <div class="bc-progress-pct">${pct}%</div>
-            <div class="bc-progress-sub">${totalSuggested > 0 ? `${packedKeys.length} of ${totalSuggested} items` : 'Create a trip to start'}</div>
+            <div class="bc-progress-sub">${totalSuggested > 0 ? tr('dash.progress.itemsSub', { packed: packedKeys.length, total: totalSuggested }) : tr('dash.progress.createTripToStart')}</div>
           </div>
           ${ring(pct, 72, 5)}
         </div>
@@ -616,26 +616,26 @@
         clearInterval(_qaConfirmTimer);
         const actionsHTML = `
       <div class="bc bc-actions" id="quickActionsCard">
-        <div class="bc-actions-title">Quick Actions</div>
+        <div class="bc-actions-title">${tr('dash.quickActions.title')}</div>
         <button class="bc-action-btn" onclick="window.top.location.href='newTrip.html'">
           <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          <span class="bca-label">New Trip</span><span class="bca-arrow">›</span>
+          <span class="bca-label">${tr('dash.newTrip')}</span><span class="bca-arrow">›</span>
         </button>
         <button class="bc-action-btn" onclick="window.top.location.href='packing-list.html'">
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-          <span class="bca-label">Packing List</span><span class="bca-arrow">›</span>
+          <span class="bca-label">${tr('dash.quickActions.packingList')}</span><span class="bca-arrow">›</span>
         </button>
         <button class="bc-action-btn" onclick="window.top.location.href='${hasTrip ? 'tripPreview.html' : 'newTrip.html'}'">
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          <span class="bca-label">${hasTrip ? 'Trip Details' : 'Plan a Trip'}</span><span class="bca-arrow">›</span>
+          <span class="bca-label">${hasTrip ? tr('dash.quickActions.tripDetails') : tr('dash.quickActions.planTrip')}</span><span class="bca-arrow">›</span>
         </button>
         <button class="bc-action-btn" onclick="window.top.location.href='discover.html'">
           <svg class="bca-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-          <span class="bca-label">Discover</span><span class="bca-arrow">›</span>
+          <span class="bca-label">${tr('nav.discover')}</span><span class="bca-arrow">›</span>
         </button>
         <button class="bc-action-btn" onclick="window.top.location.href='joinTrip.html'">
           <svg class="bca-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-          <span class="bca-label">Join Trip</span><span class="bca-arrow">›</span>
+          <span class="bca-label">${tr('dash.quickActions.joinTrip')}</span><span class="bca-arrow">›</span>
         </button>
       </div>`;
         bento.insertAdjacentHTML('beforeend', actionsHTML);
@@ -677,12 +677,12 @@
         if (bg) bg.style.transform = 'scale(1)';
       });
       fetchWeather(trip.destination).then(w => {
-        if (!w) { document.getElementById('weatherCond').textContent = 'Unavailable'; return; }
+        if (!w) { document.getElementById('weatherCond').textContent = tr('dash.weather.unavailable'); return; }
         const iconEl = document.getElementById('wIcon');
         iconEl.textContent = w.icon;
         iconEl.className = 'bc-weather-icon ' + wxAnimClass(w.code);
         document.getElementById('weatherTemp').textContent = w.temp + '°F';
-        document.getElementById('weatherCond').textContent = WMO_LABEL[w.code] || 'Current conditions';
+        document.getElementById('weatherCond').textContent = WMO_LABEL_KEY[w.code] ? tr('dash.weather.cond.' + WMO_LABEL_KEY[w.code]) : tr('dash.weather.currentConditions');
         document.getElementById('weatherFeels').textContent = tr('dash.weather.feelsLikeValue', { temp: w.feelsLike });
         document.getElementById('statFeels').textContent = w.feelsLike + '°F';
         document.getElementById('statHumidity').textContent = w.humidity + '%';
@@ -722,7 +722,7 @@
         const isActive = t.id === trip?.id;
         const tDays = t.fromDate ? daysTo(t.fromDate) : null;
         const isPast = isTripPast(t);
-        const daysLabel = isPast ? 'Past trip' : tDays === null ? '' : tDays > 0 ? `${tDays}d away` : tDays === 0 ? 'Today!' : 'Underway';
+        const daysLabel = isPast ? tr('dash.tripCard.pastTripDays') : tDays === null ? '' : tDays > 0 ? tr('dash.tripCard.daysAway', { days: tDays }) : tDays === 0 ? tr('dash.tripCard.today') : tr('dash.tripCard.underway');
         const isOwnedByMe = !t._ownerId || t._ownerId === _myId;
         const deleteLabel = isOwnedByMe ? tr('dash.deleteLabel') : tr('dash.leaveLabel');
         return `
@@ -730,20 +730,20 @@
             <div class="trip-card-img" onclick="${isActive ? `window.top.location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}" style="position:relative">
               <img src="${t.imageUrl || 'img/placeholderTrip.png'}" alt="${t.destination}" loading="lazy">
               ${isPast
-                ? '<div class="trip-card-badge trip-card-badge--past">Past Trip</div>'
+                ? `<div class="trip-card-badge trip-card-badge--past">${tr('dash.pastTrip')}</div>`
                 : isActive
-                ? '<div class="trip-card-badge">Active</div>'
-                : '<div class="trip-card-badge trip-card-badge--switch">Switch</div>'}
+                ? `<div class="trip-card-badge">${tr('dash.tripCard.active')}</div>`
+                : `<div class="trip-card-badge trip-card-badge--switch">${tr('dash.tripCard.switch')}</div>`}
             </div>
             <div class="trip-card-body" onclick="${isActive ? `window.top.location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}">
               <div class="trip-card-title">${t.name || t.destination}</div>
-              <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : 'Dates not set'}${daysLabel ? ` · <span style="color:${isPast ? '#e67e22' : 'var(--green-dark,#4d8225)'};font-weight:600">${daysLabel}</span>` : ''}</div>
+              <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : tr('dash.datesNotSet')}${daysLabel ? ` · <span style="color:${isPast ? '#e67e22' : 'var(--green-dark,#4d8225)'};font-weight:600">${daysLabel}</span>` : ''}</div>
               <div class="trip-card-footer">
                 <div class="avatars" id="cardAvatars-${t.id}"></div>
                 <div style="display:flex;align-items:center;gap:6px">
-                  <button class="trip-card-share" onclick="event.stopPropagation();shareTrip('${t.id}')" title="Share packing list">
+                  <button class="trip-card-share" onclick="event.stopPropagation();shareTrip('${t.id}')" title="${tr('dash.tripCard.sharePackingList')}">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                    Share
+                    ${tr('dash.share')}
                   </button>
                   <button class="trip-card-delete" onclick="event.stopPropagation();deleteTrip('${t.id}')" title="${deleteLabel}" aria-label="${deleteLabel}">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
@@ -935,8 +935,8 @@
         <div class="packed-chip-circle" style="background:${circleBg}">
           ${getItemIcon(name)}
         </div>
-        ${pct === topPct ? '<div class="packed-top-pick">⭐ TOP PICK</div>' : ''}
-        <div class="packed-chip-name">${name}</div>
+        ${pct === topPct ? `<div class="packed-top-pick">${tr('dash.popular.topPick')}</div>` : ''}
+        <div class="packed-chip-name">${tItem(name)}</div>
         <div class="packed-chip-bar"><div class="packed-chip-fill" style="width:${pct}%;background:${barColor}"></div></div>
       </div>`).join('');
 
