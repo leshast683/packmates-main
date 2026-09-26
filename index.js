@@ -412,6 +412,28 @@
       }, 500);
     }
 
+    // App-only: this "what is Packmates AI" blurb exists for first-time
+    // web visitors (SEO/context on desktop and mobile web) - redundant
+    // inside the installed app, where the person already has it. Unlike
+    // the Quick Actions guard above, a narrow mobile-web viewport should
+    // NOT hide this (it's wanted on mobile web, just not in the native
+    // shell), so this deliberately omits the innerWidth<=640 check. Same
+    // bridge-timing caveat applies: Capacitor's bridge can attach after
+    // this script already ran, so keep re-checking rather than only once.
+    (function () {
+      const el = document.getElementById('dashAboutBlurb');
+      if (!el) return;
+      const _checkNative = () => (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
+      const _removeIfNative = () => { if (_checkNative()) el.remove(); };
+      _removeIfNative();
+      window.addEventListener('resize', _removeIfNative);
+      let _ticks = 0;
+      const _interval = setInterval(() => {
+        _removeIfNative();
+        if (!document.body.contains(el) || ++_ticks >= 30) clearInterval(_interval); // ~15s at 500ms
+      }, 500);
+    })();
+
     const allKeys        = Object.keys(packState);
     const packedKeys     = allKeys.filter(k => packState[k]);
     // Use full suggested count (including dismissed) so packing 4/68 shows ~6%, not 100%
