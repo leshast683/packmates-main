@@ -1079,14 +1079,19 @@
       m.querySelector('.tp-name').textContent = t.name;
       m.querySelector('.tp-location span').textContent = t.city;
       m.querySelector('.tp-member').textContent = t.memberSince ? tr('discover.joinedOn', { date: t.memberSince }) : '';
-      m.querySelector('.tp-gender').textContent = t.gender ? tr('discover.genderPrefix', { gender: t.gender }) : '';
-      m.querySelector('.tp-level').textContent = t.isReal ? tr('discover.verifiedRealMember') : t.level;
-      m.querySelector('.tp-bio').textContent = t.bio || (t.isReal ? tr('discover.noBioYet') : '');
+      m.querySelector('.tp-gender').textContent = t.gender ? tr('discover.genderPrefix', { gender: tGender(t.gender) }) : '';
+      if (t.isReal) {
+        m.querySelector('.tp-level').textContent = tr('discover.verifiedRealMember');
+      } else {
+        const levelMatch = t.level.match(/^(.*?)(\s*⭐+)?$/);
+        m.querySelector('.tp-level').textContent = tBadgeTier(levelMatch[1].trim()) + (levelMatch[2] || '');
+      }
+      m.querySelector('.tp-bio').textContent = (t.bio ? tTravelerBio(t.bio) : '') || (t.isReal ? tr('discover.noBioYet') : '');
       m.querySelector('#tp-stat-trips').textContent = t.trips;
       m.querySelector('#tp-stat-countries').textContent = t.countries;
       const itemsPacked = (t.packingLists || []).reduce((sum, r) => sum + (parseInt(r.items) || 0), 0);
       m.querySelector('#tp-stat-packed').textContent = (itemsPacked >= 1000 ? (itemsPacked/1000).toFixed(1)+'k' : itemsPacked);
-      m.querySelector('.tp-styles-chips').innerHTML = t.travelStyles.map(s => `<span class="tp-chip">${styleIcon(s)} ${s}</span>`).join('');
+      m.querySelector('.tp-styles-chips').innerHTML = t.travelStyles.map(s => `<span class="tp-chip">${styleIcon(s)} ${tTravelerStyle(s)}</span>`).join('');
       const pinSvg = `<svg viewBox="0 0 24 24" style="width:11px;height:11px;flex-shrink:0" fill="#113a58"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
       m.querySelector('.tp-places-chips').innerHTML = t.places.map(p =>
         `<span class="tp-chip place"><img class="tp-place-thumb" id="tp-place-${p.replace(/\W+/g,'_')}" alt="">${p}</span>`).join('');
@@ -1101,14 +1106,14 @@
           if (url) { setDestCache(cacheKey, url); img.src = url; }
         });
       });
-      m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${activityIcon(a)} ${a}</span>`).join('');
+      m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${activityIcon(a)} ${tTravelerActivity(a)}</span>`).join('');
       m.querySelector('.tp-packing-list').innerHTML = t.packingLists.map((r, i) => `
         <div class="tp-trip" id="tp-pack-${i}">
           <div class="tp-trip-scrim"></div>
           <span class="tp-trip-badge">${tr('discover.itemsBadge', { count: r.items })}</span>
           <div class="tp-trip-info">
             <div class="tp-trip-name">${r.name}</div>
-            <div class="tp-trip-date">${r.status}</div>
+            <div class="tp-trip-date">${tTripStatus(r.status)}</div>
           </div>
         </div>`).join('');
       t.packingLists.forEach((r, i) => {

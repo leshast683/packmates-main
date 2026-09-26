@@ -1786,7 +1786,7 @@
       m.querySelector('.tp-gender').textContent = tr('discover.genderPrefix', { gender: tGender(t.gender) });
       const levelMatch = t.level.match(/^(.*?)(\s*⭐+)?$/);
       m.querySelector('.tp-level').textContent = tBadgeTier(levelMatch[1].trim()) + (levelMatch[2] || '');
-      m.querySelector('.tp-bio').textContent = t.bio;
+      m.querySelector('.tp-bio').textContent = tTravelerBio(t.bio);
       document.getElementById('pmTpStatTrips').textContent = t.trips;
       document.getElementById('pmTpStatCountries').textContent = t.countries;
       document.getElementById('pmTpStatFollowers').textContent = t.followers >= 1000 ? (t.followers/1000).toFixed(1)+'k' : t.followers;
