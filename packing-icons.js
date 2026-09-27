@@ -167,6 +167,7 @@ bra:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="ht
 sports_bra:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_sports_bra.png" x="0" y="0" width="20" height="20"/></svg>`,
 bomber_jacket:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-nrcvXJr22VXWX9PBtXNZ5UrplwAfhj.png" x="0" y="0" width="20" height="20"/></svg>`,
 platform_sandals:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-foHQsqKXIma8sVkPZ4InkOTIhlxVnp.png" x="0" y="0" width="20" height="20"/></svg>`,
+waterproof_sandals:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_waterproof_sandals.png" x="0" y="0" width="20" height="20"/></svg>`,
 crocs:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-UaDOopPLRhMS296mFjwtpnyb41NCad.png" x="0" y="0" width="20" height="20"/></svg>`,
 visor:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-buxqomwSVEJaZQ4HmLwMDGa9qiXUGo.png" x="0" y="0" width="20" height="20"/></svg>`,
 blouse:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-R0WhSAAz3gy2fa55CqAiEIIxhpC52J.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -415,6 +416,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('heel'))                                return PACKING_ICONS.heels;
   if (n.includes('flip flop'))                           return PACKING_ICONS.flip_flops;
   if (n.includes('platform sandal'))                     return PACKING_ICONS.platform_sandals;
+  if (n.includes('waterproof sandal'))                   return PACKING_ICONS.waterproof_sandals;
   if (n.includes('ballet flat') || n.includes('ballet shoe')) return PACKING_ICONS.ballet_flats;
   if (n.includes('croc'))                                return PACKING_ICONS.crocs;
   if (n.includes('sandal'))                              return PACKING_ICONS.sandal;
