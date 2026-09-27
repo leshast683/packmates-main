@@ -985,6 +985,32 @@ const DB = (() => {
       }));
       return true;
     },
+
+    /* Save this device's push-notification token so the server-side
+       reminder/weather/inactivity crons can actually send to it. Called
+       from lib/push-notifications.js once Capacitor's PushNotifications
+       plugin hands back a real token (native app only - a no-op call on
+       web, since that plugin is never loaded there). Upserts on
+       (user_id, token) so re-registering the same device is a no-op. */
+    async registerDeviceToken(token, platform = 'ios') {
+      const client = await sb(); const uid = _uid();
+      if (!client || !uid || !token) return { success: false };
+      const { error } = await client.from('device_tokens').upsert({
+        user_id: uid, token, platform, updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,token' });
+      if (error) { console.error('[DB] registerDeviceToken:', error.message); Auth.logError(error.message, { where: 'registerDeviceToken' }); return { success: false }; }
+      return { success: true };
+    },
+
+    /* Marks this user as "active right now" for the inactivity-nudge
+       cron. Throttled by the caller (index.js), not here, so this stays
+       a plain fire-and-forget write with no extra state to manage. */
+    async pingActive() {
+      const client = await sb(); const uid = _uid();
+      if (!client || !uid) return;
+      client.from('profiles').update({ last_active_at: new Date().toISOString() }).eq('id', uid)
+        .then(({ error }) => { if (error) console.error('[DB] pingActive:', error.message); });
+    },
   };
 })();
 

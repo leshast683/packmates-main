@@ -1011,6 +1011,19 @@
       }
     })();
 
+    /* ── Mark this user active (for the twice-a-week inactivity-nudge push) ──
+       Throttled to once/hour locally so a person bouncing between tabs or
+       reopening the app repeatedly doesn't spam profiles with writes -
+       the cron only needs "roughly how recently", not exact precision. */
+    (function () {
+      const THROTTLE_MS = 60 * 60 * 1000;
+      const last = parseInt(localStorage.getItem('pm_last_active_ping') || '0', 10);
+      if (Date.now() - last < THROTTLE_MS) return;
+      if (typeof DB === 'undefined' || !DB.pingActive) return;
+      localStorage.setItem('pm_last_active_ping', String(Date.now()));
+      DB.pingActive();
+    })();
+
     /* ── Supabase background sync: pull latest trips, reload once if data differs ── */
     if (!sessionStorage.getItem('pm_synced')) {
       (async () => {

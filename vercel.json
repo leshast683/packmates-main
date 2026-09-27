@@ -56,6 +56,9 @@
     }
   ],
   "crons": [
-    { "path": "/api/send-newsletter", "schedule": "0 14 * * 1" }
+    { "path": "/api/send-newsletter", "schedule": "0 14 * * 1" },
+    { "path": "/api/notify-trip-reminders", "schedule": "0 14 * * *" },
+    { "path": "/api/notify-weather-changes", "schedule": "0 8,20 * * *" },
+    { "path": "/api/notify-inactive-users", "schedule": "0 15 * * 1,4" }
   ]
 }

@@ -25,6 +25,20 @@
       "style": "LIGHT",
       "backgroundColor": "#0d3347",
       "overlaysWebView": true
+    },
+    "FirebaseMessaging": {
+      "presentationOptions": ["alert", "badge", "sound"]
+    }
+  },
+  "experimental": {
+    "ios": {
+      "spm": {
+        "packageOptions": {
+          "@capacitor-firebase/messaging": {
+            "symlink": true
+          }
+        }
+      }
     }
   }
 }
