@@ -75,6 +75,7 @@ thermal_socks:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><imag
 gloves:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-f6aak6Yv0iNA0ticTbBK4UWIFFmhbc.png" x="0" y="0" width="20" height="20"/></svg>`,
 scarf:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-Qt5El3U2ZF2YXGHQzXibfjhxrRGHFu.png" x="0" y="0" width="20" height="20"/></svg>`,
 beanie:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SK0Aaj1m2uTI5PZjoFR0OG5vvC2LnS.png" x="0" y="0" width="20" height="20"/></svg>`,
+ear_muffs:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_ear_muffs.png" x="0" y="0" width="20" height="20"/></svg>`,
 swimsuit:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-C6d9HfLLNfniScaSDDzYHYzQf06hr5.png" x="0" y="0" width="20" height="20"/></svg>`,
 underwear:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-j311WLBz7dERAzTfAqZqpCAlh8Kv3T.png" x="0" y="0" width="20" height="20"/></svg>`,
 sneaker:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-kDQMGK825nue93CX9JpWUWLCVJsD98.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -339,7 +340,8 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('cowboy hat'))                           return PACKING_ICONS.cowboy_hat;
   if (n.includes('panama hat') || n.includes('panama'))      return PACKING_ICONS.panama_hat;
   if (n.includes('sun hat') || (n.includes('hat') && !n.includes('beanie'))) return PACKING_ICONS.sun_hat;
-  if (n.includes('beanie') || n.includes('ear muff'))    return PACKING_ICONS.beanie;
+  if (n.includes('ear muff'))                            return PACKING_ICONS.ear_muffs;
+  if (n.includes('beanie'))                              return PACKING_ICONS.beanie;
   if (n.includes('scarf'))                               return PACKING_ICONS.scarf;
   if (n.includes('mitten'))                              return PACKING_ICONS.mittens;
   if (n.includes('gloves'))                              return PACKING_ICONS.gloves;
