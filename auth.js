@@ -938,7 +938,7 @@ const DB = (() => {
       localStorage.setItem('pm_profile', JSON.stringify(merged));
       const client = await sb(); const uid = _uid();
       if (!client || !uid) return;
-      client.from('profiles').upsert({
+      const payload = {
         id: uid,
         name:     merged.name    || null, handle:   merged.handle   || null,
         avatar:   merged.avatar  || null, gender:   merged.gender   || null,
@@ -946,8 +946,18 @@ const DB = (() => {
         pd_phone: merged.pdPhone || null, notif:    merged.notif    || {},
         privacy:  merged.privacy || {}, discoverable: !!merged.discoverable,
         bio:      merged.bio     || null, location: merged.location || null,
-      }, { onConflict: 'id' })
-        .then(({ error }) => { if (error) { console.error('[DB] saveProfile:', error.message); Auth.logError(error.message, { where: 'saveProfile' }); } });
+        language: merged.language || null,
+      };
+      let { error } = await client.from('profiles').upsert(payload, { onConflict: 'id' });
+      if (error && /language/.test(error.message || '')) {
+        /* profiles.language migration not applied yet on this project -
+           retry without it so every other field still saves instead of
+           the whole upsert failing (same pattern as savePackState's
+           'finished' column fallback below). */
+        delete payload.language;
+        ({ error } = await client.from('profiles').upsert(payload, { onConflict: 'id' }));
+      }
+      if (error) { console.error('[DB] saveProfile:', error.message); Auth.logError(error.message, { where: 'saveProfile' }); }
     },
 
     /* pull profile from Supabase → update localStorage */
@@ -971,6 +981,7 @@ const DB = (() => {
         discoverable: data.discoverable ?? existing.discoverable ?? false,
         bio:      data.bio      || existing.bio,
         location: data.location || existing.location,
+        language: data.language || existing.language,
       }));
       return true;
     },
