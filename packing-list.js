@@ -313,8 +313,9 @@ function buildItemRow(cat, name, isCustom) {
             </div>
         </div>`;
 
-    // Toggle packed
-    article.querySelector('.packing-check').addEventListener('click', () => {
+    // Toggle packed - both the checkbox and the item's own icon do this,
+    // so packing an item doesn't require aiming for the smaller checkbox.
+    const togglePacked = () => {
         const cur = itemState[key] || { packed: false, qty: 1 };
         cur.packed = !cur.packed;
         itemState[key] = cur;
@@ -324,7 +325,9 @@ function buildItemRow(cat, name, isCustom) {
         // Trigger milestone notifications after state changes
         if (window.Notify) setTimeout(() => Notify.checkTrip(), 0);
         if (window.BadgeLevels) setTimeout(() => BadgeLevels.checkBadgeLevelUp(), 0);
-    });
+    };
+    article.querySelector('.packing-check').addEventListener('click', togglePacked);
+    article.querySelector('.pl-item-icon-wrap').addEventListener('click', togglePacked);
 
     // Qty buttons
     article.querySelectorAll('.qty-btn').forEach(btn => {
