@@ -86,6 +86,7 @@ camera:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href=
 action_camera:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-AmqZZr6gQE3C9i2NzN6ZywoONrlwQD.png" x="0" y="0" width="20" height="20"/></svg>`,
 drone:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_drone.png" x="0" y="0" width="20" height="20"/></svg>`,
 sunglasses:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-0CfnFe8TfwtwCzUStRx2sclgeZgqGI.png" x="0" y="0" width="20" height="20"/></svg>`,
+glasses_case:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_glasses_case.png" x="0" y="0" width="20" height="20"/></svg>`,
 sun_hat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-tMMTRyfcwkP5GmHmEsBD2lZdN12BRz.png" x="0" y="0" width="20" height="20"/></svg>`,
 backpack:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-53doFZDyMbmChPPHfnbbPjt0Zvlzq7.png" x="0" y="0" width="20" height="20"/></svg>`,
 rain_cover:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-AbvH02C2XqrfmyICpipznmKPdgtcc1.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -327,6 +328,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('shaving cream') || n.includes('shaving gel') || n.includes('shave cream')) return PACKING_ICONS.shaving_cream;
   if (n.includes('insect') || n.includes('repellent') || n.includes('bug spray')) return PACKING_ICONS.insect_repellent;
   // Accessories
+  if (n.includes('glasses case'))                        return PACKING_ICONS.glasses_case;
   if (n.includes('sunglasses'))                          return PACKING_ICONS.sunglasses;
   if (n.includes('visor'))                               return PACKING_ICONS.visor;
   if (n.includes('bandana'))                             return PACKING_ICONS.bandana;
