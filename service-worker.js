@@ -1,4 +1,4 @@
-const CACHE = 'packmates-v3';
+const CACHE = 'packmates-v4';
 
 const PRECACHE = [
   '/img/appIcon.png',
@@ -55,17 +55,25 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  /* Static assets (images, fonts, videos): cache-first */
+  /* Static assets (images, fonts, videos): stale-while-revalidate - serve
+     the cached copy instantly if there is one (same speed as pure
+     cache-first), but always also re-fetch in the background and update
+     the cache for next time. Plain cache-first here meant a changed
+     asset (e.g. swapping a packing-item icon) stayed stuck on whatever
+     got cached on a person's first visit *forever*, with no way for
+     them to self-fix it (a browser hard-refresh doesn't touch Cache
+     Storage, only bumping CACHE above does) - this fixes that without
+     giving up the instant-from-cache speed for the common case. */
   e.respondWith(
     caches.match(request).then(cached => {
-      if (cached) return cached;
-      return fetch(request).then(res => {
+      const fetchPromise = fetch(request).then(res => {
         if (res.ok) {
           const clone = res.clone();
           caches.open(CACHE).then(c => c.put(request, clone));
         }
         return res;
-      });
+      }).catch(() => cached);
+      return cached || fetchPromise;
     })
   );
 });
