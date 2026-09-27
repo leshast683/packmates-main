@@ -41,6 +41,7 @@ ankle_socks:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image 
 band_aids:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_band_aids.png" x="0" y="0" width="20" height="20"/></svg>`,
 allergy_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/allergy_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
 prescription_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/prescription_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
+prescription_glasses:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_prescription_glasses.png" x="0" y="0" width="20" height="20"/></svg>`,
 spray_bottle:`<svg viewBox="0 0 20 20" fill="none"><rect x="6.5" y="7.5" width="7" height="11" rx="2.5" fill="#14532d" opacity="0.35"/><rect x="7" y="7" width="7" height="11" rx="2.5" fill="#166534"/><rect x="6" y="6.5" width="7" height="11" rx="2.5" fill="#16a34a"/><rect x="6" y="6.5" width="7" height="4.5" rx="2.5" fill="#22c55e"/><path d="M13 8 L16 8 L16 5" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 5 L18.5 5" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round"/><rect x="8.5" y="3.5" width="3" height="3.5" rx="1.5" fill="#14532d"/><rect x="8" y="2.5" width="4" height="1.5" rx="0.5" fill="#4ade80"/><ellipse cx="8" cy="7.5" rx="1.5" ry="0.7" fill="rgba(255,255,255,0.3)"/></svg>`,
 shampoo:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-KBuzBkev8p7CT4ixZUl0i6hzyjsQgM.png" x="0" y="0" width="20" height="20"/></svg>`,
 perfume:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-USYWgntKCcn9OMx7jLXrlx2zKxF9gA.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -464,6 +465,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('eye drop'))                            return PACKING_ICONS.eye_drops;
   if (n.includes('contact lens'))                        return PACKING_ICONS.contact_lenses;
   if (n.includes('allergy'))                             return PACKING_ICONS.allergy_medication;
+  if (n.includes('prescription glasses'))                return PACKING_ICONS.prescription_glasses;
   if (n.includes('prescription'))                        return PACKING_ICONS.prescription_medication;
   if (n.includes('firestarter') || n.includes('fire starter') || n.includes('lighter') || n.includes('matches')) return PACKING_ICONS.firestarter;
   if (n.includes('body glitter') || n.includes('glitter'))   return PACKING_ICONS.body_glitter;
