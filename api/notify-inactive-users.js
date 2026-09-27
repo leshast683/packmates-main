@@ -67,13 +67,17 @@ module.exports = async function handler(req, res) {
     const inactiveProfiles = await profRes.json();
 
     for (const p of inactiveProfiles) {
-      /* Spacing guard: skip if a nudge already went out too recently. */
-      const recentRes = await fetch(
-        `${SB_URL}/rest/v1/push_log?user_id=eq.${p.id}&type=eq.inactivity_nudge&sent_at=gte.${gapCutoff}&select=id&limit=1`,
+      /* Full send history (not just "was one sent recently") - needed for
+         two things: the spacing guard below, and picking which of the 10
+         inactivityNudge variants comes next, so a person nudged
+         repeatedly over time cycles through all 10 instead of ever
+         repeating one back-to-back. */
+      const historyRes = await fetch(
+        `${SB_URL}/rest/v1/push_log?user_id=eq.${p.id}&type=eq.inactivity_nudge&select=sent_at&order=sent_at.desc`,
         { headers: adminHeaders }
       );
-      const recentRows = recentRes.ok ? await recentRes.json() : [];
-      if (recentRows.length) continue;
+      const history = historyRes.ok ? await historyRes.json() : [];
+      if (history.length && history[0].sent_at >= gapCutoff) continue; // too recent
 
       const tokensRes = await fetch(
         `${SB_URL}/rest/v1/device_tokens?user_id=eq.${p.id}&select=token`,
@@ -83,7 +87,7 @@ module.exports = async function handler(req, res) {
       const tokens = tokenRows.map(r => r.token);
       if (!tokens.length) continue;
 
-      const { title, body } = pushCopy(p.language || 'en', 'inactivityNudge');
+      const { title, body } = pushCopy(p.language || 'en', 'inactivityNudge', history.length);
       const { successCount, invalidTokens } = await sendToTokens(tokens, {
         title, body, data: { type: 'inactivity_nudge' },
       });
