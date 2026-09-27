@@ -34,6 +34,7 @@ hand_fan:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image hre
 electrolyte_packets:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_electrolyte_packets.png" x="0" y="0" width="20" height="20"/></svg>`,
 gym_bag:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_gym_bag.png" x="0" y="0" width="20" height="20"/></svg>`,
 eye_patches:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_eye_patches.png" x="0" y="0" width="20" height="20"/></svg>`,
+eye_drops:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_eye_drops.png" x="0" y="0" width="20" height="20"/></svg>`,
 sarong:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_sarong.png" x="0" y="0" width="20" height="20"/></svg>`,
 ankle_socks:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_ankle_socks.png" x="0" y="0" width="20" height="20"/></svg>`,
 band_aids:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_band_aids.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -457,6 +458,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('hand sanitizer'))                      return PACKING_ICONS.hand_sanitizer;
   if (n.includes('face mask'))                           return PACKING_ICONS.face_mask;
   if (n.includes('eye patch'))                           return PACKING_ICONS.eye_patches;
+  if (n.includes('eye drop'))                            return PACKING_ICONS.eye_drops;
   if (n.includes('allergy'))                             return PACKING_ICONS.allergy_medication;
   if (n.includes('prescription'))                        return PACKING_ICONS.prescription_medication;
   if (n.includes('firestarter') || n.includes('fire starter') || n.includes('lighter') || n.includes('matches')) return PACKING_ICONS.firestarter;
