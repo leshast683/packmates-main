@@ -1750,9 +1750,6 @@
         })();
 
         // ── Weather Forecast ──
-        const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-        const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
         function isoDate(d) {
             return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
         }
@@ -1831,8 +1828,8 @@
                     const hi = Math.round(temperature_2m_max[i]);
                     const lo = Math.round(temperature_2m_min[i]);
                     return `<div class="weather-col">
-                        <div class="weather-col-day">${DAYS[d.getDay()]}</div>
-                        <div class="weather-col-date">${MONTHS[d.getMonth()]} ${d.getDate()}</div>
+                        <div class="weather-col-day">${d.toLocaleDateString(dateLocale(), { weekday: 'short' })}</div>
+                        <div class="weather-col-date">${d.toLocaleDateString(dateLocale(), { month: 'short', day: 'numeric' })}</div>
                         <span class="weather-col-icon">${wxEmoji(weathercode[i])}</span>
                         <div class="weather-col-hi">${hi}°</div>
                         <div class="weather-col-lo">${lo}°</div>

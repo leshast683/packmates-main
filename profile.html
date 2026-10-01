@@ -1080,7 +1080,7 @@
       // Joined date — store once, display forever
       if (!p.joinedDate) _savePmProfile({ joinedDate: new Date().toISOString().slice(0,7) });
       const [jy, jm] = (p.joinedDate || new Date().toISOString().slice(0,7)).split('-');
-      const joinedStr = new Date(Number(jy), Number(jm)-1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+      const joinedStr = new Date(Number(jy), Number(jm)-1).toLocaleDateString(dateLocale(),{month:'short',year:'numeric'});
       document.getElementById('meta-joined').textContent = tr('profile.hero.joinedWithDate', { date: joinedStr });
 
       // Packmates = real people you've shared a trip with (see refreshPackmatesCount)
@@ -1190,7 +1190,7 @@
 
     function fmtDate(d) {
       if (!d) return '';
-      return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      return new Date(d+'T00:00:00').toLocaleDateString(dateLocale(),{month:'short',day:'numeric'});
     }
 
     function loadRecentTrips() {

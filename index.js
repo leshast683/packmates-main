@@ -306,7 +306,7 @@
         const c = w.current;
         const d = w.daily;
         const days = (d?.time || []).map((dateStr, i) => ({
-          label: i === 0 ? tr('dash.weather.today') : new Date(dateStr + 'T12:00').toLocaleDateString(getLang() === 'es' ? 'es-ES' : 'en-US', { weekday: 'short' }),
+          label: i === 0 ? tr('dash.weather.today') : new Date(dateStr + 'T12:00').toLocaleDateString(dateLocale(), { weekday: 'short' }),
           code: d.weather_code[i],
           icon: WMO[d.weather_code[i]] || '🌡️',
           hi: Math.round(d.temperature_2m_max[i]),

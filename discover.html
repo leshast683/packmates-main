@@ -874,14 +874,19 @@
         </div>
         <div class="dest-card-info">
           <div>
-            <div class="dest-card-name">${d.name}</div>
-            <div class="dest-card-country">${d.country}</div>
+            <div class="dest-card-name">${tTrendingDest(d.name)}</div>
+            <div class="dest-card-country">${tTrendingDest(d.country)}</div>
           </div>
           <div class="dest-card-arrow">
             <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
         </div>`;
-      c.addEventListener('click', () => { localStorage.setItem('exploreDestination', d.name); window.top.location.href = 'newTrip.html'; });
+      /* Pass the translated name through - newTrip.html's own geocoding
+         (now language-aware, see its fetchSuggestions/geocodeLookup) will
+         look it up using the same current-language param, so e.g.
+         "Нью-Йорк" resolves correctly in Ukrainian instead of needing
+         the canonical English name. */
+      c.addEventListener('click', () => { localStorage.setItem('exploreDestination', tTrendingDest(d.name)); window.top.location.href = 'newTrip.html'; });
       destStrip.appendChild(c);
     });
 
@@ -1029,7 +1034,7 @@
     }
     function _fmtMemberSince(iso) {
       if (!iso) return '';
-      return new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      return new Date(iso).toLocaleDateString(dateLocale(), { month: 'short', year: 'numeric' });
     }
     if (typeof DB !== 'undefined') {
       DB.getDiscoverableTravelers().then(real => {
@@ -1276,7 +1281,7 @@
           <div class="inspo-card-name">${tInspoDest(s.dest)}</div>
         </div>
         <div class="inspo-card-body">
-          <div class="inspo-card-meta"><span class="inspo-card-country">${s.country}</span> &bull; ${s.dates}</div>
+          <div class="inspo-card-meta"><span class="inspo-card-country">${tTrendingDest(s.country)}</span> &bull; ${tInspoDates(s.dates)}</div>
         </div>`;
       c.addEventListener('click', () => openTripModal(idx));
       sharedGrid.appendChild(c);
@@ -1338,9 +1343,9 @@
     function openTripModal(idx) {
       const s = SHARED[idx];
       // header
-      document.getElementById('tiCountry').textContent = s.country;
+      document.getElementById('tiCountry').textContent = tTrendingDest(s.country);
       document.getElementById('tiTitle').textContent = tInspoDest(s.dest);
-      document.getElementById('tiDates').textContent = s.dates;
+      document.getElementById('tiDates').textContent = tInspoDates(s.dates);
       const bg = document.getElementById('tiHeaderBg');
       bg.style.backgroundImage = s.fallback;
       const cached = getDestCache('inspo_' + s.dest);
