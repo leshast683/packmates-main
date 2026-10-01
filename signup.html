@@ -159,6 +159,29 @@
     }
     .field input.has-toggle { padding-right:62px; }
 
+    .field select {
+      width:100%;
+      padding:13px 40px 13px 16px;
+      background:rgba(255,255,255,0.07);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:12px;
+      font-family:'Montserrat', sans-serif;
+      font-size:0.9rem;
+      color:#fff;
+      outline:none;
+      transition:border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      margin:0;
+      appearance:none;
+      -webkit-appearance:none;
+      cursor:pointer;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right 14px center;
+      background-size:16px;
+    }
+    .field select:focus { border-color:var(--green); background-color:rgba(255,255,255,0.1); box-shadow:0 0 0 3px rgba(95,157,48,0.15); }
+    .field select option { background:#0d1b2a; color:#fff; }
+
     .toggle-pw {
       position:absolute; right:14px; top:50%; transform:translateY(-50%);
       background:none; border:none; color:rgba(255,255,255,0.3);
@@ -342,6 +365,11 @@
         <button type="button" class="toggle-pw" onclick="togglePassword('confirm',this)" data-i18n="login.show">Show</button>
       </div>
 
+      <label class="field-label" for="language" data-i18n="signup.language">Language</label>
+      <div class="field">
+        <select id="language" onchange="selectLanguage(this.value)"></select>
+      </div>
+
       <label class="field-label" data-i18n="signup.gender">Gender</label>
       <div class="gender-group" id="genderGroup">
         <button type="button" class="gender-btn" data-gender="male" onclick="selectGender(this)">
@@ -402,7 +430,32 @@
   <script src="lib/auth-flow.js"></script>
   <script>
     if (Auth.isLoggedIn()) location.replace('index.html');
-    else applyTranslations();
+    else { applyTranslations(); populateLanguageSelect(); }
+
+    let selectedLanguage = getLang();
+
+    function populateLanguageSelect() {
+      const select = document.getElementById('language');
+      if (!select) return;
+      select.innerHTML = Object.keys(LANGUAGE_NAMES).map(code =>
+        `<option value="${code}"${code === selectedLanguage ? ' selected' : ''}>${LANGUAGE_NAMES[code]}</option>`
+      ).join('');
+    }
+
+    /* Updates the page's live language as the person picks one, without
+       the reload lib/i18n.js's own setLang() does elsewhere (profile.html
+       etc.) - here that would wipe whatever they've already typed into
+       the form above. The actual account write happens once, at signup,
+       via Auth.register()'s language param below. */
+    function selectLanguage(lang) {
+      if (!TRANSLATIONS[lang]) return;
+      selectedLanguage = lang;
+      let merged;
+      try { merged = { ...JSON.parse(localStorage.getItem('pm_profile') || '{}'), language: lang }; }
+      catch (e) { merged = { language: lang }; }
+      localStorage.setItem('pm_profile', JSON.stringify(merged));
+      applyTranslations();
+    }
 
     function togglePassword(id, btn) {
       const el = document.getElementById(id);
@@ -596,7 +649,7 @@
       _signedUpPw = pw;
 
       /* Start API call immediately, don't wait for fade */
-      const apiPromise = Auth.register(name, email, pw, selectedGender);
+      const apiPromise = Auth.register(name, email, pw, selectedGender, selectedLanguage);
 
       /* After CSS fade (150ms), swap to loading dots */
       await new Promise(r => setTimeout(r, 150));

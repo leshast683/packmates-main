@@ -195,7 +195,7 @@ const Auth = (() => {
 
   return {
     /* ── Register ── */
-    async register(name, email, pw, gender) {
+    async register(name, email, pw, gender, language) {
       const norm = email.trim().toLowerCase();
       if (!name.trim())        return { success: false, error: 'Please enter your name.' };
       if (!norm.includes('@')) return { success: false, error: 'Please enter a valid email.' };
@@ -210,7 +210,7 @@ const Auth = (() => {
         ({ data, error } = await sb.auth.signUp({
           email: norm, password: pw,
           options: {
-            data: { name: name.trim(), gender },
+            data: { name: name.trim(), gender, language: language || null },
             emailRedirectTo: 'https://packmatesai.com/welcome.html',
           }
         }));
