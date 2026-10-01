@@ -787,14 +787,19 @@
         { cls:'weather',  icon:'🌤️', label:tr('discover.brief.weather'),  text: brief.weather },
         { cls:'safety',   icon:'🛡️', label:tr('discover.brief.safety'),   text: brief.safety },
       ];
+      /* t.text is AI-generated (api/destination-brief.js) and may echo
+         back the queried destination name - escaped here as
+         defense-in-depth on top of the backend's own input stripping
+         (see tripPreview.html's identical renderBrief for the full
+         rationale). */
       document.getElementById('tiBriefBody').innerHTML =
         `<div class="ti-brief-grid">${tiles.map(t =>
           `<div class="ti-brief-tile ti-brief-tile-${t.cls}">
             <div class="ti-brief-tile-head">
               <span class="ti-brief-tile-icon">${t.icon}</span>
-              <span class="ti-brief-tile-label">${t.label}</span>
+              <span class="ti-brief-tile-label">${escapeHtml(t.label)}</span>
             </div>
-            <div class="ti-brief-tile-text">${t.text}</div>
+            <div class="ti-brief-tile-text">${escapeHtml(t.text)}</div>
           </div>`
         ).join('')}</div>`;
       if (brief.packingTips?.length && weatherPackingContainer) {
@@ -802,7 +807,7 @@
           <div class="ti-weather-section">
             <div class="ti-weather-label">${tr('discover.brief.weatherPicks')}</div>
             <div class="ti-pack-chips">${brief.packingTips.map(tip =>
-              `<span class="ti-pack-chip">${getItemIcon(tip)}${tip}</span>`
+              `<span class="ti-pack-chip">${getItemIcon(tip)}${escapeHtml(tip)}</span>`
             ).join('')}</div>
           </div>`;
       }
@@ -996,9 +1001,9 @@
       const isFollowing = getFollowingIds().has(t.avatar);
       c.innerHTML = `
         ${t.isReal ? `<div class="traveler-real-badge" title="${tr('discover.realMemberTitle')}">${tr('discover.realMemberBadge')}</div>` : ''}
-        <div class="traveler-avatar" style="background:${t.color}">${t.avatarImg ? `<img src="${t.avatarImg}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : t.avatar}</div>
-        <div class="traveler-name">${t.name.split(' ')[0]} ${(t.name.split(' ')[1]||'').charAt(0)}.</div>
-        <div class="traveler-city">${t.city}</div>
+        <div class="traveler-avatar" style="background:${t.color}">${t.avatarImg ? `<img src="${escapeHtml(t.avatarImg)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : escapeHtml(t.avatar)}</div>
+        <div class="traveler-name">${escapeHtml(t.name.split(' ')[0])} ${escapeHtml((t.name.split(' ')[1]||'').charAt(0))}.</div>
+        <div class="traveler-city">${escapeHtml(t.city)}</div>
         <div class="traveler-stats">
           <div class="traveler-stat"><span>${t.trips}</span><span>${tr('discover.stats.trips')}</span></div>
           <div class="traveler-stat"><span>${t.countries}</span><span>${tr('discover.stats.countries')}</span></div>

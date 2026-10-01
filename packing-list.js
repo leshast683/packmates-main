@@ -299,16 +299,16 @@ function buildItemRow(cat, name, isCustom) {
         <div class="pl-item-icon-wrap"${iconStyle}>${iconSvg}</div>
         <div class="packing-item-content">
             <div class="packing-item-top">
-                <h3 class="packing-item-name" style="${packed ? 'text-decoration:line-through;color:#99a8b4;' : ''}">${tItem(name)}</h3>
+                <h3 class="packing-item-name" style="${packed ? 'text-decoration:line-through;color:#99a8b4;' : ''}">${escapeHtml(tItem(name))}</h3>
                 <div style="display:flex;align-items:center;gap:5px;">
                     <button class="qty-btn" data-key="${key}" data-delta="-1" style="width:18px;height:18px;border-radius:50%;border:1px solid #cdd6de;background:#f7fafc;cursor:pointer;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;">−</button>
                     <span class="packing-quantity qty-display" data-key="${key}">x${state.qty}</span>
                     <button class="qty-btn" data-key="${key}" data-delta="1" style="width:18px;height:18px;border-radius:50%;border:1px solid #cdd6de;background:#f7fafc;cursor:pointer;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;">+</button>
-                    <button class="dismiss-btn" data-key="${key}" data-cat="${cat}" data-name="${name}" title="${tr('pack.deleteItem')}" style="width:18px;height:18px;border-radius:50%;border:none;background:#fdecea;cursor:pointer;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;color:#c0392b;">✕</button>
+                    <button class="dismiss-btn" data-key="${key}" data-cat="${escapeHtml(cat)}" data-name="${escapeHtml(name)}" title="${tr('pack.deleteItem')}" style="width:18px;height:18px;border-radius:50%;border:none;background:#fdecea;cursor:pointer;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;color:#c0392b;">✕</button>
                 </div>
             </div>
             <div class="packing-item-meta">
-                ${genderBadge}<span class="packing-tag">${tCategory(cat)}</span>
+                ${genderBadge}<span class="packing-tag">${escapeHtml(tCategory(cat))}</span>
                 <span class="packing-status ${packed ? 'packing-status--packed' : 'packing-status--not-packed'}">${packed ? tr('pack.status.packed') : tr('pack.status.unpacked')}</span>
             </div>
         </div>`;
@@ -388,7 +388,7 @@ function buildCategorySection(cat, itemEntries) {
     section.innerHTML = `
         <div class="packing-category-header">
             ${hasSuggested ? '<span class="suggested-dot"></span>' : ''}
-            ${tCategory(cat)}
+            ${escapeHtml(tCategory(cat))}
             ${hasSuggested ? `<span class="packing-suggested-badge">${tr('pack.suggestedBadge')}</span>` : ''}
         </div>`;
 
@@ -445,7 +445,7 @@ function renderList() {
         if (!names.length) return;
         const section = document.createElement('div');
         section.className = 'packing-category-section';
-        section.innerHTML = `<div class="packing-category-header">${tCategory(cat)} <span style="font-size:0.6rem;font-weight:500;color:#5f9d30;text-transform:none;letter-spacing:0;">${tr('pack.customLabel')}</span></div>`;
+        section.innerHTML = `<div class="packing-category-header">${escapeHtml(tCategory(cat))} <span style="font-size:0.6rem;font-weight:500;color:#5f9d30;text-transform:none;letter-spacing:0;">${tr('pack.customLabel')}</span></div>`;
         names.forEach(name => {
             if (currentSearch && !name.toLowerCase().includes(currentSearch)) return;
             const key    = getItemKey(cat, name);
@@ -776,7 +776,7 @@ function _broadcastState() {
             : tr('pack.collab.manyHere', { count: others.length });
         if (avatarsEl) {
             avatarsEl.innerHTML = others.slice(0, 4).map((p, i) =>
-                `<span style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}" title="${p.name}">${(p.name || '?').trim().charAt(0).toUpperCase()}</span>`
+                `<span style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}" title="${escapeHtml(p.name || '')}">${escapeHtml((p.name || '?').trim().charAt(0).toUpperCase())}</span>`
             ).join('');
         }
     }

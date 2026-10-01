@@ -1214,12 +1214,12 @@
         const packed  = Object.values(pd.itemState || {}).filter(v => v?.packed).length;
         const pct     = PackingMath.calcPackedPct(packed, total);
         const dates   = t.fromDate && t.toDate ? `${fmtDate(t.fromDate)} – ${fmtDate(t.toDate)}` : tr('profile.recentLists.datesTbd');
-        const img     = t.imageUrl ? `<img src="${t.imageUrl}" alt="${t.destination}" loading="lazy" onerror="this.style.display='none'">` : '';
+        const img     = t.imageUrl ? `<img src="${escapeHtml(t.imageUrl)}" alt="${escapeHtml(t.destination || '')}" loading="lazy" onerror="this.style.display='none'">` : '';
         const tripStr = encodeURIComponent(JSON.stringify(t));
         return `<div class="recent-list-item" onclick="localStorage.setItem('currentTrip',decodeURIComponent('${tripStr}'));window.top.location.href='packing-list.html'">
           <div class="recent-list-thumb">${img}</div>
           <div class="recent-list-info">
-            <strong>${t.destination||tr('pack.share.defaultTrip')}</strong>
+            <strong>${escapeHtml(t.destination || tr('pack.share.defaultTrip'))}</strong>
             <span>${dates}</span>
             <div style="margin-top:4px;height:3px;border-radius:99px;background:rgba(0,0,0,.08);overflow:hidden">
               <div style="height:100%;width:${pct}%;background:#7cc63e;border-radius:99px;transition:width .6s ease"></div>
@@ -1253,7 +1253,7 @@
             : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
           html += `<div class="timeline-item">
             <div class="timeline-dot" style="background:${col}18;border:2px solid ${col}44">${dotContent}</div>
-            <div class="timeline-content"><div class="timeline-dates">${dates}</div><div class="timeline-dest">${t.destination||tr('pack.share.defaultTrip')}</div></div>
+            <div class="timeline-content"><div class="timeline-dates">${dates}</div><div class="timeline-dest">${escapeHtml(t.destination || tr('pack.share.defaultTrip'))}</div></div>
           </div>`;
         });
       });
@@ -1437,7 +1437,7 @@
       if (!val) { hideLoc(); return; }
       const matches = LOC_CITIES.filter(c => c.toLowerCase().startsWith(val.toLowerCase())).slice(0, 8);
       if (!matches.length) { hideLoc(); return; }
-      dd.innerHTML = matches.map((c,i) => `<div class="loc-option" data-val="${c}" onmousedown="pickCity('${c.replace(/'/g,'\\\'')}')">${c}</div>`).join('');
+      dd.innerHTML = matches.map((c,i) => `<div class="loc-option" data-val="${escapeHtml(c)}" onmousedown="pickCity('${escapeHtml(c.replace(/'/g,"\\'"))}')">${escapeHtml(c)}</div>`).join('');
       dd.style.display = 'block';
       locHighlight = -1;
     }
@@ -1631,20 +1631,20 @@
         // onclick="" string — simpler and safer given names can contain
         // quotes/HTML-ish characters.
         list.forEach((p, i) => {
-          const initial = (p.name || '?').trim().charAt(0).toUpperCase();
-          const avatarInner = p.avatar ? `<img src="${p.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : initial;
+          const initial = escapeHtml((p.name || '?').trim().charAt(0).toUpperCase());
+          const avatarInner = p.avatar ? `<img src="${escapeHtml(p.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : initial;
           const color = PM_AVATAR_COLORS[i % PM_AVATAR_COLORS.length];
           const item = document.createElement('div');
           item.className = 'pm-item';
           item.innerHTML = `
             <div class="pm-item-avatar" style="background:${color}">${avatarInner}</div>
             <div class="pm-item-info">
-              <div class="pm-item-name">${p.name || tr('tripPreview.aPackmate')}</div>
+              <div class="pm-item-name">${escapeHtml(p.name || tr('tripPreview.aPackmate'))}</div>
               <div class="pm-item-stats">
                 ${p._followed
-                  ? `<span class="pm-item-stat pm-item-stat--muted">${p.city || tr('profile.packmates.followedOnDiscover')}</span>`
+                  ? `<span class="pm-item-stat pm-item-stat--muted">${escapeHtml(p.city || tr('profile.packmates.followedOnDiscover'))}</span>`
                   : `<span class="pm-item-stat"><strong>${p.shared_trip_count}</strong> ${tr(p.shared_trip_count !== 1 ? 'profile.packmates.sharedTripWordPlural' : 'profile.packmates.sharedTripWordSingular')}</span>
-                     ${p.first_shared_destination ? `<span class="pm-item-stat pm-item-stat--muted">${tr('profile.packmates.packmatesSince', { destination: p.first_shared_destination })}</span>` : ''}`
+                     ${p.first_shared_destination ? `<span class="pm-item-stat pm-item-stat--muted">${escapeHtml(tr('profile.packmates.packmatesSince', { destination: p.first_shared_destination }))}</span>` : ''}`
                 }
               </div>
             </div>`;
@@ -1867,8 +1867,8 @@
       const avatarEl = m.querySelector('.tp-avatar');
       avatarEl.style.background = color;
       avatarEl.innerHTML = p.avatar
-        ? `<img src="${p.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
-        : (p.name || '?').trim().charAt(0).toUpperCase();
+        ? `<img src="${escapeHtml(p.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
+        : escapeHtml((p.name || '?').trim().charAt(0).toUpperCase());
       m.querySelector('.tp-name').textContent = p.name || tr('tripPreview.aPackmate');
       const memberEl = m.querySelector('.tp-member');
       memberEl.style.display = '';

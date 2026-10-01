@@ -291,7 +291,12 @@
       const trip = JSON.parse(localStorage.getItem('currentTrip') || 'null');
       if (!trip?.id || !trip?.destination || !trip?.fromDate) return;
 
-      const dest  = trip.destination;
+      /* Escaped here, once, at the source - trip.destination is a free-text
+         field any trip member can set, and it flows unescaped into both
+         the stored notification feed (n.text, rendered via innerHTML in
+         notifications.html's buildItemHTML) and the toast (_renderToast's
+         innerHTML) below. */
+      const dest  = escapeHtml(trip.destination);
       const id    = trip.id;
       const now   = Date.now();
       const start = new Date(trip.fromDate).getTime();
@@ -402,7 +407,7 @@
       let prevFlags;
       try { prevFlags = JSON.parse(prevRaw); } catch { return; }
 
-      const dest = trip.destination;
+      const dest = escapeHtml(trip.destination); // see checkTrip()'s own dest for why
       // Priority order: precipitation first (biggest packing impact), then
       // temperature swings, then wind - fire at most one notification per
       // check so one forecast refresh can't spam several toasts at once.
@@ -517,8 +522,14 @@
               sbClient.from('trips').select('data').eq('id', row.trip_id).maybeSingle(),
             ]);
             const adder = members.find(m => m.user_id === row.added_by);
-            const name = adder?.name || 'A packmate';
-            const dest = tripRes?.data?.data?.destination || 'a trip';
+            /* Both are real, freely-editable text another person controls
+               (their own profile name / trip destination) - escaped here
+               since this lands in n.text, rendered via innerHTML in
+               notifications.html's buildItemHTML, and in the toast's own
+               innerHTML below. The <strong> tag itself is intentional,
+               developer-authored markup, not something to escape. */
+            const name = escapeHtml(adder?.name || 'A packmate');
+            const dest = escapeHtml(tripRes?.data?.data?.destination || 'a trip');
             const text = `<strong>${name}</strong> added you to their trip to ${dest}! 🎒`;
             if (push('join', text, dest, `real_added_${row.trip_id}_${myUserId}`)) {
               showToast(`${name} added you to their trip to ${dest}!`, 'join', dest);
@@ -532,8 +543,8 @@
 
           const members = await DB.getTripMembers(row.trip_id);
           const joiner = members.find(m => m.user_id === row.user_id);
-          const name = joiner?.name || 'Someone';
-          const dest = trip.destination || 'your trip';
+          const name = escapeHtml(joiner?.name || 'Someone');
+          const dest = escapeHtml(trip.destination || 'your trip');
           const text = `<strong>${name}</strong> joined your trip to ${dest}! 🎒`;
           if (push('join', text, dest, `real_join_${row.trip_id}_${row.user_id}`)) {
             showToast(`${name} joined your trip to ${dest}!`, 'join', dest);
@@ -594,8 +605,8 @@
           sbClient.from('trips').select('data').eq('id', row.trip_id).maybeSingle(),
         ]);
         const adder = members.find(m => m.user_id === row.added_by);
-        const name = adder?.name || 'A packmate';
-        const dest = tripRes?.data?.data?.destination || 'a trip';
+        const name = escapeHtml(adder?.name || 'A packmate'); // see _initRealSocialEvents()'s own name/dest for why
+        const dest = escapeHtml(tripRes?.data?.data?.destination || 'a trip');
         push('join', `<strong>${name}</strong> added you to their trip to ${dest}! 🎒`, dest, `real_added_${row.trip_id}_${myUserId}`);
       }
 

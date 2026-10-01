@@ -759,7 +759,7 @@
         return `
           <div class="trip-card${isActive ? ' trip-card--active' : ''}${isPast ? ' trip-card--past' : ''}" id="tc-${t.id}">
             <div class="trip-card-img" onclick="${isActive ? `window.top.location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}" style="position:relative">
-              <img src="${t.imageUrl || 'img/placeholderTrip.png'}" alt="${t.destination}" loading="lazy">
+              <img src="${t.imageUrl || 'img/placeholderTrip.png'}" alt="${escapeHtml(t.destination || '')}" loading="lazy">
               ${isPast
                 ? `<div class="trip-card-badge trip-card-badge--past">${tr('dash.pastTrip')}</div>`
                 : isActive
@@ -767,7 +767,7 @@
                 : `<div class="trip-card-badge trip-card-badge--switch">${tr('dash.tripCard.switch')}</div>`}
             </div>
             <div class="trip-card-body" onclick="${isActive ? `window.top.location.href='tripPreview.html'` : `switchToTrip('${t.id}')`}">
-              <div class="trip-card-title">${t.name || t.destination}</div>
+              <div class="trip-card-title">${escapeHtml(t.name || t.destination || '')}</div>
               <div class="trip-card-dates">${t.fromDate && t.toDate ? `${fmt(t.fromDate)} – ${fmt(t.toDate)}` : tr('dash.datesNotSet')}${daysLabel ? ` · <span style="color:${isPast ? '#e67e22' : 'var(--green-dark,#4d8225)'};font-weight:600">${daysLabel}</span>` : ''}</div>
               <div class="trip-card-footer">
                 <div class="avatars" id="cardAvatars-${t.id}"></div>

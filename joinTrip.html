@@ -337,7 +337,12 @@
         return;
       }
 
-      pushNotification('join', tr('joinTrip.joinedNotification', { destination: result.trip.destination }), result.trip.destination);
+      /* result.trip.destination is free text the trip's owner set - escape
+         before it reaches Notify.push()/showToast(), which both render it
+         via innerHTML (notifications.html's feed, notifications.js's
+         toast). */
+      const safeDest = escapeHtml(result.trip.destination);
+      pushNotification('join', tr('joinTrip.joinedNotification', { destination: safeDest }), safeDest);
       setTimeout(() => { window.top.location.href = 'tripPreview.html'; }, 400);
     }
 

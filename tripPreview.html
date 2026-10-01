@@ -1350,14 +1350,23 @@
                 // packmate", same as before.
                 const displayName = (m.user_id === myId && !m.name) ? (Auth.getSession()?.name || m.name) : m.name;
                 const initial = (displayName || '?').trim().charAt(0).toUpperCase();
-                const avatarInner = m.avatar ? `<img src="${m.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : initial;
+                const avatarInner = m.avatar ? `<img src="${escapeHtml(m.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : escapeHtml(initial);
                 const canRemove = _isTripOwner && m.user_id !== myId;
+                /* displayName is a real other user's profiles.name - render
+                   it through escapeHtml() everywhere it lands, including
+                   inside the onclick handler's own JS string literal (HTML-
+                   escape AFTER the JS-quote-escape, so the resulting
+                   attribute text is safe from both an HTML-attribute
+                   breakout via a literal `"` and a JS-string breakout via
+                   a literal `'`). */
+                const safeName = escapeHtml(displayName || tr('tripPreview.aPackmate'));
+                const jsEscapedName = escapeHtml((displayName || tr('tripPreview.thisPackmate')).replace(/'/g, "\\'"));
                 return `
                 <div class="member-row">
                   <div class="member-row-avatar" style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}">${avatarInner}</div>
-                  <div class="member-row-name">${displayName || tr('tripPreview.aPackmate')}</div>
+                  <div class="member-row-name">${safeName}</div>
                   <div class="member-row-role">${m.role === 'owner' ? tr('tripPreview.owner') : ''}</div>
-                  ${canRemove ? `<button class="member-row-remove" title="${tr('tripPreview.removeFromTripTitle')}" aria-label="${tr('tripPreview.removeFromTripAriaLabel', { name: displayName || tr('tripPreview.aPackmate') }).replace(/"/g, '&quot;')}" onclick="removeMemberFromTrip('${m.user_id}','${(displayName || tr('tripPreview.thisPackmate')).replace(/'/g, "\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
+                  ${canRemove ? `<button class="member-row-remove" title="${tr('tripPreview.removeFromTripTitle')}" aria-label="${escapeHtml(tr('tripPreview.removeFromTripAriaLabel', { name: displayName || tr('tripPreview.aPackmate') }))}" onclick="removeMemberFromTrip('${m.user_id}','${jsEscapedName}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
                 </div>`;
             }).join('');
         }
@@ -1517,10 +1526,10 @@
                         <div class="tl-line"></div>
                     </div>
                     <div class="tl-card">
-                        <img id="actImg${i}" src="${placeholder}" alt="${tCityLandmark(act.name)}" loading="lazy" style="object-fit:cover;width:76px;height:76px;border-radius:12px;flex-shrink:0;">
+                        <img id="actImg${i}" src="${escapeHtml(placeholder)}" alt="${escapeHtml(tCityLandmark(act.name))}" loading="lazy" style="object-fit:cover;width:76px;height:76px;border-radius:12px;flex-shrink:0;">
                         <div class="itineraryItemInfo">
-                            <h3>${tCityLandmark(act.name)}</h3>
-                            <p>${pinSvg} ${tActivityType(act.type)}</p>
+                            <h3>${escapeHtml(tCityLandmark(act.name))}</h3>
+                            <p>${pinSvg} ${escapeHtml(tActivityType(act.type))}</p>
                         </div>
                     </div>`;
                 list.appendChild(item);
@@ -1705,13 +1714,21 @@
             const cached = (() => { try { const r = JSON.parse(localStorage.getItem(cacheKey) || 'null'); if (r && Date.now() - r.ts < 86400000) return r.data; } catch {} return null; })();
             const renderBrief = (b) => {
                 if (!b) { bygCard.style.display = 'none'; return; }
+                /* b.visa/currency/weather/safety are AI-generated text
+                   (api/destination-brief.js) that very plausibly echoes
+                   back the trip's own destination name - a free-text field
+                   any trip member can set. The backend already strips
+                   <>'"`; from that input before prompting the model, but
+                   escaping again here is cheap, correct defense-in-depth
+                   across that trust boundary rather than relying solely on
+                   the backend's stripping never regressing. */
                 const tile = (cls, icon, label, text) => `
                     <div class="byg-tile ${cls}">
                         <div class="byg-tile-icon-box">${icon}</div>
                         <div class="byg-tile-head">
-                            <span class="byg-tile-label">${label}</span>
+                            <span class="byg-tile-label">${escapeHtml(label)}</span>
                         </div>
-                        <div class="byg-tile-text">${text}</div>
+                        <div class="byg-tile-text">${escapeHtml(text)}</div>
                     </div>`;
                 const img = (src) => `<img src="${src}" loading="lazy" style="width:74px;height:74px;object-fit:contain;">`;
                 bygBody.innerHTML = `<div class="byg-grid">
