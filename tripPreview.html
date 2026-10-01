@@ -1831,8 +1831,8 @@
                         <div class="weather-col-day">${d.toLocaleDateString(dateLocale(), { weekday: 'short' })}</div>
                         <div class="weather-col-date">${d.toLocaleDateString(dateLocale(), { month: 'short', day: 'numeric' })}</div>
                         <span class="weather-col-icon">${wxEmoji(weathercode[i])}</span>
-                        <div class="weather-col-hi">${hi}°</div>
-                        <div class="weather-col-lo">${lo}°</div>
+                        <div class="weather-col-hi">${formatTemp(hi)}</div>
+                        <div class="weather-col-lo">${formatTemp(lo)}</div>
                         <div class="weather-col-precip">${precipDisplay(i)}</div>
                     </div>`;
                 }).join('');

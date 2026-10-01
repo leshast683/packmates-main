@@ -946,7 +946,7 @@ const DB = (() => {
         pd_phone: merged.pdPhone || null, notif:    merged.notif    || {},
         privacy:  merged.privacy || {}, discoverable: !!merged.discoverable,
         bio:      merged.bio     || null, location: merged.location || null,
-        language: merged.language || null,
+        language: merged.language || null, temp_unit: merged.tempUnit || null,
       };
       let { error } = await client.from('profiles').upsert(payload, { onConflict: 'id' });
       if (error && /language/.test(error.message || '')) {
@@ -955,6 +955,11 @@ const DB = (() => {
            the whole upsert failing (same pattern as savePackState's
            'finished' column fallback below). */
         delete payload.language;
+        ({ error } = await client.from('profiles').upsert(payload, { onConflict: 'id' }));
+      }
+      if (error && /temp_unit/.test(error.message || '')) {
+        /* profiles.temp_unit migration not applied yet - same fallback. */
+        delete payload.temp_unit;
         ({ error } = await client.from('profiles').upsert(payload, { onConflict: 'id' }));
       }
       if (error) { console.error('[DB] saveProfile:', error.message); Auth.logError(error.message, { where: 'saveProfile' }); }
@@ -982,6 +987,7 @@ const DB = (() => {
         bio:      data.bio      || existing.bio,
         location: data.location || existing.location,
         language: data.language || existing.language,
+        tempUnit: data.temp_unit || existing.tempUnit,
       }));
       return true;
     },

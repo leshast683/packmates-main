@@ -712,10 +712,10 @@
         const iconEl = document.getElementById('wIcon');
         iconEl.textContent = w.icon;
         iconEl.className = 'bc-weather-icon ' + wxAnimClass(w.code);
-        document.getElementById('weatherTemp').textContent = w.temp + '°F';
+        document.getElementById('weatherTemp').textContent = formatTemp(w.temp);
         document.getElementById('weatherCond').textContent = WMO_LABEL_KEY[w.code] ? tr('dash.weather.cond.' + WMO_LABEL_KEY[w.code]) : tr('dash.weather.currentConditions');
-        document.getElementById('weatherFeels').textContent = tr('dash.weather.feelsLikeValue', { temp: w.feelsLike });
-        document.getElementById('statFeels').textContent = w.feelsLike + '°F';
+        document.getElementById('weatherFeels').textContent = tr('dash.weather.feelsLikeValue', { temp: formatTemp(w.feelsLike) });
+        document.getElementById('statFeels').textContent = formatTemp(w.feelsLike);
         document.getElementById('statHumidity').textContent = w.humidity + '%';
         document.getElementById('statWind').textContent = w.wind + ' mph';
         const forecastEl = document.getElementById('weatherForecast');
@@ -724,7 +724,7 @@
             <div class="bc-weather-day${i === 0 ? ' bc-weather-day--today' : ''}">
               <div class="bc-weather-day-label">${d.label}</div>
               <div class="bc-weather-day-icon">${d.icon}</div>
-              <div class="bc-weather-day-hi">${d.hi}°</div>
+              <div class="bc-weather-day-hi">${formatTemp(d.hi)}</div>
             </div>
           `).join('');
         }

@@ -812,6 +812,16 @@
             <select id="languageSelect" onchange="setLang(this.value)" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 10px;font-family:'Montserrat',sans-serif;font-size:.8rem;font-weight:600;color:var(--text-1);background:var(--surface)"></select>
           </div>
 
+          <!-- Temperature Unit -->
+          <div class="settings-row no-panel" id="row-temp-unit">
+            <div class="settings-row-icon" style="background:linear-gradient(145deg,#fb923c,#ea580c)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg></div>
+            <div class="settings-row-text"><strong data-i18n="profile.settings.tempUnit.title">Temperature Unit</strong><span data-i18n="profile.settings.tempUnit.subtitle">Choose °F or °C</span></div>
+            <select id="tempUnitSelect" onchange="setTempUnit(this.value)" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 10px;font-family:'Montserrat',sans-serif;font-size:.8rem;font-weight:600;color:var(--text-1);background:var(--surface)">
+              <option value="F">°F</option>
+              <option value="C">°C</option>
+            </select>
+          </div>
+
           <!-- Delete account confirmation modal -->
           <div id="deleteModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px">
             <div style="background:var(--surface);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:fadeUp .25s ease both">
@@ -1890,9 +1900,16 @@
       ).join('');
     }
 
+    function populateTempUnitSelect() {
+      const select = document.getElementById('tempUnitSelect');
+      if (!select) return;
+      select.value = getTempUnit();
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       applyTranslations();
       populateLanguageSelect();
+      populateTempUnitSelect();
       loadProfile();
       loadPersonalData();
       loadNotifications();
