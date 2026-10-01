@@ -288,7 +288,12 @@
     }
 
     async function fetchWeather(city, lang) {
-      const cacheKey = 'pm_wx_' + city.toLowerCase().replace(/\s+/g, '_');
+      /* Cache key includes the UI language, not just the city - the
+         cached payload bakes in display text (day-of-week labels via
+         dateLocale()), so a language switch needs its own cache entry
+         instead of reusing one rendered in the previous language for up
+         to WX_TTL. */
+      const cacheKey = 'pm_wx_' + city.toLowerCase().replace(/\s+/g, '_') + '_' + getLang();
       const WX_TTL = 15 * 60 * 1000;
       try {
         const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
