@@ -1195,6 +1195,7 @@
         }
         const profile     = buildTripProfile(tripData);
         const destination = tripData.destination || 'NYC Trip';
+        const destinationLang = tripData.destinationLang || 'en';
         const fromDate    = tripData.fromDate    || '';
         const toDate      = tripData.toDate      || '';
         const travelers   = tripData.travelers   || 2;
@@ -1775,7 +1776,12 @@
             const strip = document.getElementById('tripWeatherStrip');
             if (!strip) return;
             try {
-                const geoRes  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&format=json`);
+                /* destinationLang must match whatever language this
+                   destination's name was stored in - Open-Meteo's
+                   geocoding search only matches a name against that
+                   exact language's alternate-names table, confirmed
+                   empirically. */
+                const geoRes  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=${destinationLang}&format=json`);
                 const geoData = await geoRes.json();
                 if (!geoData.results?.length) return;
                 const { latitude, longitude } = geoData.results[0];

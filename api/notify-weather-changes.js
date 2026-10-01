@@ -35,9 +35,15 @@ function weatherCategory(code) {
 
 const TEMP_SWING_THRESHOLD_F = 15;
 
-async function fetchCurrentWeather(destination) {
+async function fetchCurrentWeather(destination, lang) {
   try {
-    const geo = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1`)).json();
+    /* lang must match whatever language this destination's name was
+       stored in (newTrip.html's destinationLang) - Open-Meteo's
+       geocoding search only matches a name against that exact
+       language's alternate-names table, confirmed empirically (an
+       unparametrized or mismatched-language query against a non-English
+       name returns zero results, even for well-known cities). */
+    const geo = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=${lang || 'en'}`)).json();
     const place = geo.results && geo.results[0];
     if (!place) return null;
     const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto`)).json();
@@ -83,7 +89,7 @@ module.exports = async function handler(req, res) {
       const dest = trip.data && trip.data.destination;
       if (!dest) continue;
 
-      const current = await fetchCurrentWeather(dest);
+      const current = await fetchCurrentWeather(dest, trip.data && trip.data.destinationLang);
       if (!current) continue;
       checked++;
 

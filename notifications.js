@@ -335,9 +335,13 @@
   const WX_COLD_THRESHOLD = 45; // °F min - below this, "cold" applies
   const WX_WIND_THRESHOLD = 20; // mph max - at/above this, "windy" applies
 
-  async function _fetchDailyForecast(city) {
+  async function _fetchDailyForecast(city, lang) {
     try {
-      const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)).json();
+      /* lang must match whatever language this destination's name was
+         stored in (newTrip.html's destinationLang) - Open-Meteo's
+         geocoding search only matches a name against that exact
+         language's alternate-names table, confirmed empirically. */
+      const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=${lang || 'en'}`)).json();
       if (!g.results?.[0]) return null;
       const { latitude: lat, longitude: lon } = g.results[0];
       const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`)).json();
@@ -381,7 +385,7 @@
       const last = parseInt(localStorage.getItem(lastKey) || '0', 10);
       if (Date.now() - last < 6 * 3600000) return;
 
-      const daily = await _fetchDailyForecast(trip.destination);
+      const daily = await _fetchDailyForecast(trip.destination, trip.destinationLang);
       if (!daily?.weather_code?.length) return;
       localStorage.setItem(lastKey, String(Date.now()));
 

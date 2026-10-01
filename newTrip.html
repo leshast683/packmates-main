@@ -1259,7 +1259,7 @@
 
     async function fetchSuggestions(query) {
       try {
-        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=12&language=en&format=json`);
+        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=12&language=${getLang()}&format=json`);
         const data = await res.json();
         const all  = data.results || [];
         /* keep only populated places — drop countries, admin regions, continents */
@@ -1425,7 +1425,7 @@
 
     async function geocodeLookup(city) {
       try {
-        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
+        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=${getLang()}&format=json`);
         const data = await res.json();
         return data.results?.[0] || null;
       } catch { return null; }
@@ -1655,7 +1655,16 @@
       const tripId     = Date.now().toString(36);
 
       const tripData = {
-        id: tripId, name: tripName || null, destination, fromDate, toDate, travelers,
+        id: tripId, name: tripName || null, destination,
+        /* Open-Meteo's geocoding search only matches a place's name in
+           the exact language passed as &language= (confirmed empirically -
+           an unparametrized or mismatched-language query against a
+           non-English name returns zero results, even for well-known
+           cities). Any later re-geocoding of this stored name (weather
+           lookups in index.js/notifications.js/tripPreview.html/
+           api/notify-weather-changes.js) needs this to find it again. */
+        destinationLang: getLang(),
+        fromDate, toDate, travelers,
         activityCategories, activities: [], notes,
         airline: selectedAirline || null,
         // From the geocoding dropdown selection above — null if the user

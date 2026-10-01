@@ -141,7 +141,7 @@
 
     async function homeFetchSuggestions(q) {
       try {
-        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=12&language=en&format=json`);
+        const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=12&language=${getLang()}&format=json`);
         const data = await res.json();
         return (data.results || [])
           .filter(r => { const fc = r.feature_code || ''; return fc.startsWith('PPL') || fc === 'PPLC'; })
@@ -287,7 +287,7 @@
       return 'wx-idle';
     }
 
-    async function fetchWeather(city) {
+    async function fetchWeather(city, lang) {
       const cacheKey = 'pm_wx_' + city.toLowerCase().replace(/\s+/g, '_');
       const WX_TTL = 15 * 60 * 1000;
       try {
@@ -295,7 +295,11 @@
         if (cached && Date.now() - cached.ts < WX_TTL) return cached.data;
       } catch {}
       try {
-        const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)).json();
+        /* lang must match whatever language this destination's name was
+           stored in (newTrip.html's destinationLang) - Open-Meteo's
+           geocoding search only matches a name against that exact
+           language's alternate-names table, confirmed empirically. */
+        const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=${lang || 'en'}`)).json();
         if (!g.results?.[0]) return null;
         const {latitude:lat, longitude:lon} = g.results[0];
         const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7`)).json();
@@ -698,7 +702,7 @@
       document.getElementById('heroCard').addEventListener('mouseleave', () => {
         if (bg) bg.style.transform = 'scale(1)';
       });
-      fetchWeather(trip.destination).then(w => {
+      fetchWeather(trip.destination, trip.destinationLang).then(w => {
         if (!w) { document.getElementById('weatherCond').textContent = tr('dash.weather.unavailable'); return; }
         const iconEl = document.getElementById('wIcon');
         iconEl.textContent = w.icon;
