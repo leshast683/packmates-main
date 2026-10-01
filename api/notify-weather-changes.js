@@ -1,6 +1,6 @@
 /**
  * /api/notify-weather-changes — fired by Vercel Cron (see vercel.json's
- * `crons`) a couple times a day. For every trip starting in the next 14
+ * `crons`) once a day. For every trip starting in the next 14
  * days, re-checks the destination's forecast and pushes a notification
  * (via Firebase Cloud Messaging) to the trip's members only when the
  * weather changed *meaningfully* since the last check - a swing between
