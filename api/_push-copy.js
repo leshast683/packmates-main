@@ -20,9 +20,23 @@
    bottle, offline maps, leaving room for souvenirs). */
 const PUSH_COPY = {
   en: {
-    tripReminder3d: (dest) => ({ title: 'Trip coming up! 🧳', body: `Your trip to ${dest} is in 3 days — is your packing list ready?` }),
-    tripReminder1d: (dest) => ({ title: 'Trip tomorrow! ⏰', body: `Your trip to ${dest} starts tomorrow. Last chance to finish packing!` }),
-    weatherChange: (dest) => ({ title: 'Weather update 🌦️', body: `The forecast for ${dest} just changed — check if your packing list still fits.` }),
+    tripReminder3d: [
+      (dest) => ({ title: `Trip coming up! 🧳`, body: `Your trip to ${dest} is in 3 days — is your packing list ready?` }),
+      (dest) => ({ title: `3 days to go! ✈️`, body: `Time to finalize your packing list for ${dest} — your trip is just 3 days away.` }),
+      (dest) => ({ title: `Almost time for ${dest}! 🗓️`, body: `3 days left to pack — check your list and make sure nothing\'s missing.` }),
+    ],
+    tripReminder1d: [
+      (dest) => ({ title: `Trip tomorrow! ⏰`, body: `Your trip to ${dest} starts tomorrow. Last chance to finish packing!` }),
+      (dest) => ({ title: `Tomorrow\'s the day! 🎒`, body: `${dest} is calling — make sure your packing list is all checked off.` }),
+      (dest) => ({ title: `One more sleep until ${dest}! 🌙`, body: `Final packing check — tomorrow you leave!` }),
+    ],
+    weatherChange: [
+      (dest) => ({ title: `Weather update 🌦️`, body: `The forecast for ${dest} just changed — check if your packing list still fits.` }),
+      (dest) => ({ title: `Forecast shift for ${dest} 🌡️`, body: `Conditions have changed since you last checked — update your packing list if needed.` }),
+      (dest) => ({ title: `Heads up: weather changed ⛅`, body: `${dest}\'s forecast looks different now — take a look before you pack.` }),
+      (dest) => ({ title: `New forecast for ${dest} 🌧️`, body: `The weather\'s shifted — make sure you\'ve packed the right things.` }),
+      (dest) => ({ title: `Pack accordingly! 🌤️`, body: `The forecast for ${dest} just updated — double-check your list matches the new conditions.` }),
+    ],
     inactivityNudge: [
       () => ({ title: 'Where to next? ✈️', body: 'Start a new trip and get a packing list built around your destination, dates, and activities.' }),
       () => ({ title: "Never forget an item again 🧳", body: 'Packmates AI builds your checklist from real weather and plans — not a generic template.' }),
@@ -47,9 +61,23 @@ const PUSH_COPY = {
     ],
   },
   es: {
-    tripReminder3d: (dest) => ({ title: '¡Se acerca tu viaje! 🧳', body: `Tu viaje a ${dest} es en 3 días — ¿ya tienes lista tu lista de empaque?` }),
-    tripReminder1d: (dest) => ({ title: '¡Viaje mañana! ⏰', body: `Tu viaje a ${dest} empieza mañana. ¡Última oportunidad para terminar de empacar!` }),
-    weatherChange: (dest) => ({ title: 'Actualización del clima 🌦️', body: `El pronóstico para ${dest} acaba de cambiar — revisa si tu lista de empaque sigue siendo la correcta.` }),
+    tripReminder3d: [
+      (dest) => ({ title: `¡Se acerca tu viaje! 🧳`, body: `Tu viaje a ${dest} es en 3 días — ¿ya tienes lista tu lista de empaque?` }),
+      (dest) => ({ title: `¡Faltan 3 días! ✈️`, body: `Es hora de terminar tu lista de empaque para ${dest} — tu viaje está a solo 3 días.` }),
+      (dest) => ({ title: `¡Ya casi es hora de ${dest}! 🗓️`, body: `Te quedan 3 días para empacar — revisa tu lista y asegúrate de no olvidar nada.` }),
+    ],
+    tripReminder1d: [
+      (dest) => ({ title: `¡Viaje mañana! ⏰`, body: `Tu viaje a ${dest} empieza mañana. ¡Última oportunidad para terminar de empacar!` }),
+      (dest) => ({ title: `¡Mañana es el día! 🎒`, body: `${dest} te espera — asegúrate de tener todo listo en tu lista de empaque.` }),
+      (dest) => ({ title: `¡Una noche más para ${dest}! 🌙`, body: `¡Último chequeo de tu equipaje — mañana sales de viaje!` }),
+    ],
+    weatherChange: [
+      (dest) => ({ title: `Actualización del clima 🌦️`, body: `El pronóstico para ${dest} acaba de cambiar — revisa si tu lista de empaque sigue siendo la correcta.` }),
+      (dest) => ({ title: `Cambio en el pronóstico de ${dest} 🌡️`, body: `Las condiciones cambiaron desde la última vez que revisaste — actualiza tu lista si es necesario.` }),
+      (dest) => ({ title: `Aviso: cambió el clima ⛅`, body: `El pronóstico de ${dest} se ve diferente ahora — échale un vistazo antes de empacar.` }),
+      (dest) => ({ title: `Nuevo pronóstico para ${dest} 🌧️`, body: `El clima cambió — asegúrate de haber empacado lo correcto.` }),
+      (dest) => ({ title: `¡Empaca según el clima! 🌤️`, body: `El pronóstico de ${dest} se actualizó — revisa que tu lista coincida con las nuevas condiciones.` }),
+    ],
     inactivityNudge: [
       () => ({ title: '¿A dónde vas ahora? ✈️', body: 'Crea un nuevo viaje y obtén una lista de empaque según tu destino, fechas y actividades.' }),
       () => ({ title: 'Nunca olvides nada 🧳', body: 'Packmates AI arma tu lista con el clima real y tus planes — no con una plantilla genérica.' }),
@@ -74,9 +102,23 @@ const PUSH_COPY = {
     ],
   },
   uk: {
-    tripReminder3d: (dest) => ({ title: 'Скоро подорож! 🧳', body: `Ваша подорож до ${dest} через 3 дні — список речей готовий?` }),
-    tripReminder1d: (dest) => ({ title: 'Подорож завтра! ⏰', body: `Ваша подорож до ${dest} починається завтра. Останній шанс закінчити пакування!` }),
-    weatherChange: (dest) => ({ title: 'Оновлення погоди 🌦️', body: `Прогноз для ${dest} щойно змінився — перевірте, чи актуальний ваш список речей.` }),
+    tripReminder3d: [
+      (dest) => ({ title: `Скоро подорож! 🧳`, body: `Ваша подорож до ${dest} через 3 дні — список речей готовий?` }),
+      (dest) => ({ title: `Залишилось 3 дні! ✈️`, body: `Час завершити список речей для ${dest} — до подорожі залишилось лише 3 дні.` }),
+      (dest) => ({ title: `Майже час їхати до ${dest}! 🗓️`, body: `Залишилось 3 дні на пакування — перевірте список і переконайтесь, що нічого не забули.` }),
+    ],
+    tripReminder1d: [
+      (dest) => ({ title: `Подорож завтра! ⏰`, body: `Ваша подорож до ${dest} починається завтра. Останній шанс закінчити пакування!` }),
+      (dest) => ({ title: `Завтра той самий день! 🎒`, body: `${dest} чекає на вас — перевірте, чи все позначено у списку речей.` }),
+      (dest) => ({ title: `Ще одна ніч до ${dest}! 🌙`, body: `Останній чек пакування — завтра ви вирушаєте!` }),
+    ],
+    weatherChange: [
+      (dest) => ({ title: `Оновлення погоди 🌦️`, body: `Прогноз для ${dest} щойно змінився — перевірте, чи актуальний ваш список речей.` }),
+      (dest) => ({ title: `Зміна прогнозу для ${dest} 🌡️`, body: `Умови змінилися відтоді, як ви перевіряли востаннє — оновіть список речей за потреби.` }),
+      (dest) => ({ title: `Увага: погода змінилася ⛅`, body: `Прогноз для ${dest} тепер виглядає інакше — перегляньте його перед пакуванням.` }),
+      (dest) => ({ title: `Новий прогноз для ${dest} 🌧️`, body: `Погода змінилася — перевірте, чи спакували ви потрібні речі.` }),
+      (dest) => ({ title: `Пакуйтеся за погодою! 🌤️`, body: `Прогноз для ${dest} щойно оновився — перевірте, чи відповідає ваш список новим умовам.` }),
+    ],
     inactivityNudge: [
       () => ({ title: 'Куди далі? ✈️', body: 'Створіть нову подорож і отримайте список речей на основі напрямку, дат і активностей.' }),
       () => ({ title: 'Більше нічого не забувайте 🧳', body: 'Packmates AI складає список на основі реальної погоди й планів — а не шаблону.' }),
@@ -101,9 +143,23 @@ const PUSH_COPY = {
     ],
   },
   pt: {
-    tripReminder3d: (dest) => ({ title: 'Viagem chegando! 🧳', body: `Sua viagem para ${dest} é em 3 dias — sua lista de itens já está pronta?` }),
-    tripReminder1d: (dest) => ({ title: 'Viagem amanhã! ⏰', body: `Sua viagem para ${dest} começa amanhã. Última chance de terminar de arrumar as malas!` }),
-    weatherChange: (dest) => ({ title: 'Atualização do clima 🌦️', body: `A previsão para ${dest} acabou de mudar — confira se sua lista de itens ainda está adequada.` }),
+    tripReminder3d: [
+      (dest) => ({ title: `Viagem chegando! 🧳`, body: `Sua viagem para ${dest} é em 3 dias — sua lista de itens já está pronta?` }),
+      (dest) => ({ title: `Faltam 3 dias! ✈️`, body: `Hora de finalizar sua lista de itens para ${dest} — sua viagem está a apenas 3 dias.` }),
+      (dest) => ({ title: `Quase na hora de ${dest}! 🗓️`, body: `Faltam 3 dias para arrumar as malas — confira sua lista e garanta que nada ficou de fora.` }),
+    ],
+    tripReminder1d: [
+      (dest) => ({ title: `Viagem amanhã! ⏰`, body: `Sua viagem para ${dest} começa amanhã. Última chance de terminar de arrumar as malas!` }),
+      (dest) => ({ title: `Amanhã é o dia! 🎒`, body: `${dest} está esperando — confira se sua lista de itens está toda marcada.` }),
+      (dest) => ({ title: `Mais uma noite até ${dest}! 🌙`, body: `Última checagem da mala — amanhã você viaja!` }),
+    ],
+    weatherChange: [
+      (dest) => ({ title: `Atualização do clima 🌦️`, body: `A previsão para ${dest} acabou de mudar — confira se sua lista de itens ainda está adequada.` }),
+      (dest) => ({ title: `Mudança na previsão de ${dest} 🌡️`, body: `As condições mudaram desde a última vez que você conferiu — atualize sua lista se necessário.` }),
+      (dest) => ({ title: `Atenção: o clima mudou ⛅`, body: `A previsão de ${dest} está diferente agora — dê uma olhada antes de arrumar as malas.` }),
+      (dest) => ({ title: `Nova previsão para ${dest} 🌧️`, body: `O clima mudou — confira se você arrumou as coisas certas.` }),
+      (dest) => ({ title: `Empacote de acordo com o clima! 🌤️`, body: `A previsão de ${dest} foi atualizada — confira se sua lista combina com as novas condições.` }),
+    ],
     inactivityNudge: [
       () => ({ title: 'Para onde agora? ✈️', body: 'Crie uma nova viagem e receba uma lista de itens baseada no destino, datas e atividades.' }),
       () => ({ title: 'Nunca mais esqueça nada 🧳', body: 'O Packmates AI monta sua lista com o clima real e seus planos — não um modelo genérico.' }),
@@ -129,15 +185,30 @@ const PUSH_COPY = {
   },
 };
 
-function pushCopy(lang, key, ...args) {
+/* Every template is now an array of variants (tripReminder3d/1d: 3 each,
+   weatherChange: 5, inactivityNudge: 20) - `index` picks which one (wraps
+   via modulo, so callers don't need to pre-clamp it), and any further
+   args (just `dest`, for everything except inactivityNudge) get passed
+   through to the chosen variant function. */
+function pushCopy(lang, key, index, ...args) {
   const dict = PUSH_COPY[lang] || PUSH_COPY.en;
-  const entry = dict[key] || PUSH_COPY.en[key];
-  if (Array.isArray(entry)) {
-    const index = args[0] || 0;
-    const fn = entry[index % entry.length];
-    return fn();
-  }
-  return entry(...args);
+  const variants = dict[key] || PUSH_COPY.en[key];
+  const fn = variants[(index || 0) % variants.length];
+  return fn(...args);
 }
 
-module.exports = { pushCopy };
+/* Deterministic variant picker for the templates that have no reliable
+   send history to rotate on (a trip's 3-day/1-day reminder each fire at
+   most once ever, so there's nothing to "rotate" across) - hashes
+   whatever varies the message (trip id alone for reminders; trip id +
+   the new weather code/temp for weather changes, so a trip's *next*
+   weather push is likely to land on a different variant than its last
+   one) into a stable index, so the same inputs always pick the same
+   variant rather than picking randomly on every cron run. */
+function hashToIndex(seed, variantCount) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
+  return Math.abs(h) % variantCount;
+}
+
+module.exports = { pushCopy, hashToIndex };

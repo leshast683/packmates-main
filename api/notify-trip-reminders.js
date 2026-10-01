@@ -16,7 +16,7 @@
  * api/send-newsletter.js.
  */
 const { sendToTokens } = require('./_fcm');
-const { pushCopy } = require('./_push-copy');
+const { pushCopy, hashToIndex } = require('./_push-copy');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed.' });
@@ -103,7 +103,8 @@ module.exports = async function handler(req, res) {
           const profRows = profRes.ok ? await profRes.json() : [];
           const lang = (profRows[0] && profRows[0].language) || 'en';
 
-          const { title, body } = pushCopy(lang, target.copyKey, dest);
+          const variantIndex = hashToIndex(trip.id + target.type, 3);
+          const { title, body } = pushCopy(lang, target.copyKey, variantIndex, dest);
           const { successCount, invalidTokens } = await sendToTokens(tokens, {
             title, body, data: { type: target.type, tripId: trip.id },
           });

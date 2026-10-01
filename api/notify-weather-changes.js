@@ -17,7 +17,7 @@
  * api/send-newsletter.js.
  */
 const { sendToTokens } = require('./_fcm');
-const { pushCopy } = require('./_push-copy');
+const { pushCopy, hashToIndex } = require('./_push-copy');
 
 /* Same category buckets as index.js's wxAnimClass() - a code change
    within the same bucket (e.g. 0 "sunny" -> 1 "mostly sunny") isn't
@@ -133,7 +133,8 @@ module.exports = async function handler(req, res) {
         const profRows = profRes.ok ? await profRes.json() : [];
         const lang = (profRows[0] && profRows[0].language) || 'en';
 
-        const { title, body } = pushCopy(lang, 'weatherChange', dest);
+        const variantIndex = hashToIndex(trip.id + current.code + '_' + current.temp, 5);
+        const { title, body } = pushCopy(lang, 'weatherChange', variantIndex, dest);
         const { successCount, invalidTokens } = await sendToTokens(tokens, {
           title, body, data: { type: 'weather_change', tripId: trip.id },
         });
