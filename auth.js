@@ -1020,6 +1020,25 @@ const DB = (() => {
   };
 })();
 
+/* ── Early profile sync ──────────────────────────────────────────────── */
+/* Language and temperature-unit (lib/i18n.js's getLang()/getTempUnit())
+   are read from localStorage's pm_profile on every page, but that only
+   gets refreshed from Supabase when DB.syncProfile() runs - previously
+   only called from profile.html's own load. That left a real gap: a
+   fresh login on a new device (or after clearing local storage) would
+   keep showing the device's default language/unit on every OTHER page
+   until the person happened to open Settings once. Firing this here
+   instead means it runs on every core page's load. Deliberately silent
+   and non-blocking - updates localStorage only, doesn't force a reload
+   or re-render mid-page (this page already rendered with whatever was
+   cached locally, and reloading on a background sync risks discarding
+   something the person is actively typing, e.g. a half-filled newTrip
+   form) - the benefit lands on the next navigation, which in this
+   multi-page app happens essentially immediately. */
+if (typeof Auth !== 'undefined' && Auth.isLoggedIn() && typeof DB !== 'undefined' && DB.syncProfile) {
+  DB.syncProfile().catch(() => {});
+}
+
 /* ── XSS escaper ─────────────────────────────────────────────────────── */
 function escapeHtml(str) {
   return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
