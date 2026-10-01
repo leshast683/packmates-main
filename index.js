@@ -987,11 +987,16 @@
         <div class="explore-card-bg" id="expbg-${d.name.replace(/\s+/g,'_')}" style="${bgStyle}"></div>
         <div class="explore-card-overlay"></div>
         <div class="explore-card-arrow"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
-        <div class="explore-card-label">${d.name}</div>
-        <div class="explore-card-country">${d.country}</div>`;
+        <div class="explore-card-label">${tTrendingDest(d.name)}</div>
+        <div class="explore-card-country">${tTrendingDest(d.country)}</div>`;
 
+      /* Pass the translated name through - newTrip.html's own geocoding
+         is language-aware (see its fetchSuggestions/geocodeLookup), so
+         e.g. "Нью-Йорк" resolves correctly in Ukrainian instead of
+         needing the canonical English name (same as discover.html's
+         Trending Destinations strip). */
       c.addEventListener('click', () => {
-        localStorage.setItem('exploreDestination', d.name);
+        localStorage.setItem('exploreDestination', tTrendingDest(d.name));
         window.top.location.href = 'newTrip.html';
       });
       strip.appendChild(c);
