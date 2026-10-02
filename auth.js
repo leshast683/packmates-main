@@ -278,6 +278,21 @@ async function _migrateLocalData(sbUser) {
   } catch(e) { console.error('[Auth] Migration error:', e); Auth.logError(e, { where: 'migration' }); }
 }
 
+/* Fire-and-forget report of a suspicious auth event (currently: failed
+   logins) to api/security-event.js - never blocks or affects the
+   caller's actual login flow, mirrors logError()'s existing pattern.
+   Deliberately doesn't require a session (there usually isn't one at the
+   exact moment a login fails). */
+function _reportSecurityEvent(eventType, email) {
+  try {
+    fetch('/api/security-event', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ event_type: eventType, email }),
+    }).catch(() => {});
+  } catch (e) {}
+}
+
 /* ── Auth ────────────────────────────────────────────────────────────── */
 const Auth = (() => {
 
@@ -397,6 +412,7 @@ const Auth = (() => {
             if (remember) localStorage.setItem(_SAVED_KEY, norm); else localStorage.removeItem(_SAVED_KEY);
             return { success: true };
           }
+          _reportSecurityEvent('login_failed', norm);
           return { success: false, error: 'No account found with this email or password is incorrect.' };
         }
 
@@ -406,7 +422,7 @@ const Auth = (() => {
 
       /* No Supabase CDN — pure local auth */
       const localUser = await _verifyLocal(norm, pw);
-      if (!localUser) return { success: false, error: 'Incorrect email or password.' };
+      if (!localUser) { _reportSecurityEvent('login_failed', norm); return { success: false, error: 'Incorrect email or password.' }; }
       localStorage.setItem(_SESS_KEY, JSON.stringify({ email: norm, name: localUser.name, gender: localUser.gender, loginAt: Date.now() }));
       if (remember) localStorage.setItem(_SAVED_KEY, norm); else localStorage.removeItem(_SAVED_KEY);
       return { success: true };

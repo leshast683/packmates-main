@@ -1522,8 +1522,13 @@
 
     /* ── Invite code generator ── */
     function generateInviteCode() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      const seg   = () => Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 32 chars - a power of 2, so byte % 32 below is unbiased
+      /* crypto.getRandomValues(), not Math.random() - Math.random() isn't
+         a CSPRNG, and while brute-forcing a specific 8-char code from
+         this alphabet (~1.1*10^12 combinations) is infeasible regardless,
+         there's no reason to use a weaker generator here when a stronger
+         one is this cheap. */
+      const seg = () => Array.from(crypto.getRandomValues(new Uint8Array(4)), b => chars[b % chars.length]).join('');
       return `${seg()}-${seg()}`;
     }
 

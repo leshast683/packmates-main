@@ -2,6 +2,7 @@
  * /api/destination-brief — secured AI endpoint
  * Guards: CORS origin check · JWT auth · per-user rate limit · input sanitisation
  */
+const { checkRateLimit } = require('./_rate-limit');
 
 const ALLOWED_ORIGINS = ['https://packmatesai.com', 'https://www.packmatesai.com'];
 const MAX_CALLS_PER_HOUR = 20;   // per authenticated user
@@ -33,7 +34,8 @@ module.exports = async function handler(req, res) {
 
   const SB_URL = process.env.SUPABASE_URL;
   const SB_KEY = process.env.SUPABASE_ANON_KEY;
-  if (!SB_URL || !SB_KEY) return res.status(500).json({ error: 'Server configuration error.' });
+  const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+  if (!SB_URL || !SB_KEY || !SERVICE_KEY) return res.status(500).json({ error: 'Server configuration error.' });
 
   /* ── Auth: verify Supabase JWT ───────────────────────────────────── */
   const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
@@ -53,48 +55,25 @@ module.exports = async function handler(req, res) {
   }
 
   /* ── Rate limiting: 20 calls / hour / user ───────────────────────── */
-  /* The counter PATCH below is bookkeeping — it's kicked off but not
-     awaited here, then picked back up (Promise.allSettled) right before
-     the Claude response returns. That runs it concurrently with the
-     Claude call instead of serially in front of it (a full extra
-     Supabase round-trip previously sat on the critical path of every
-     "Before You Go" load), while still finishing before the function's
-     execution ends — unlike true fire-and-forget, which risks the
-     invocation being torn down before a dangling promise completes. */
+  /* Backed by api_rate_limits (service-role-only, see its migration) -
+     this used to be profiles.brief_count/brief_window_start, read and
+     written with the caller's OWN token via the generic "own your
+     profile" RLS policy, which meant any user could
+     PATCH /rest/v1/profiles?id=eq.<self> {"brief_count":0} directly and
+     reset their own limit. The write below is kicked off but not
+     awaited here, then settled right before the response returns - runs
+     concurrently with the Claude call instead of serially in front of
+     it, while still finishing before the function's execution ends. */
   let rateLimitWrite = Promise.resolve();
-  try {
-    const profileRes = await fetch(
-      `${SB_URL}/rest/v1/profiles?id=eq.${userId}&select=brief_count,brief_window_start`,
-      { headers: { apikey: SB_KEY, Authorization: `Bearer ${token}` } }
-    );
-    if (profileRes.ok) {
-      const [profile] = await profileRes.json();
-      if (profile) {
-        const now = Date.now();
-        const windowStart = profile.brief_window_start ? new Date(profile.brief_window_start).getTime() : 0;
-        const windowAge   = now - windowStart;
-        const count       = profile.brief_count || 0;
-
-        if (windowAge < 3_600_000 && count >= MAX_CALLS_PER_HOUR) {
-          const resetIn = Math.ceil((3_600_000 - windowAge) / 60_000);
-          return res.status(429).json({
-            error: `Rate limit reached (${MAX_CALLS_PER_HOUR}/hr). Try again in ${resetIn} minute${resetIn !== 1 ? 's' : ''}.`
-          });
-        }
-
-        const newCount       = windowAge >= 3_600_000 ? 1 : count + 1;
-        const newWindowStart = windowAge >= 3_600_000 ? new Date().toISOString() : profile.brief_window_start;
-        rateLimitWrite = fetch(`${SB_URL}/rest/v1/profiles?id=eq.${userId}`, {
-          method:  'PATCH',
-          headers: {
-            apikey: SB_KEY, Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json', Prefer: 'return=minimal'
-          },
-          body: JSON.stringify({ brief_count: newCount, brief_window_start: newWindowStart })
-        });
-      }
-    }
-  } catch { /* non-fatal — allow request through if rate-limit check fails */ }
+  const rl = await checkRateLimit({
+    userId, endpoint: 'destination-brief', maxPerHour: MAX_CALLS_PER_HOUR, SB_URL, SERVICE_KEY,
+  });
+  if (!rl.allowed) {
+    return res.status(429).json({
+      error: `Rate limit reached (${MAX_CALLS_PER_HOUR}/hr). Try again in ${rl.resetIn} minute${rl.resetIn !== 1 ? 's' : ''}.`
+    });
+  }
+  rateLimitWrite = rl.writePromise;
 
   /* ── Input validation & sanitisation ────────────────────────────── */
   const { destination, country, dates } = req.body || {};
