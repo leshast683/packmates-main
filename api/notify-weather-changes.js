@@ -18,6 +18,7 @@
  */
 const { sendToTokens } = require('./_fcm');
 const { pushCopy, hashToIndex } = require('./_push-copy');
+const { isAuthorizedCron } = require('./_cron-auth');
 
 /* Same category buckets as index.js's wxAnimClass() - a code change
    within the same bucket (e.g. 0 "sunny" -> 1 "mostly sunny") isn't
@@ -55,9 +56,7 @@ async function fetchCurrentWeather(destination, lang) {
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed.' });
 
-  const CRON_SECRET = process.env.CRON_SECRET;
-  const auth = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
-  if (!CRON_SECRET || auth !== CRON_SECRET) {
+  if (!isAuthorizedCron(req)) {
     return res.status(401).json({ error: 'Unauthorized.' });
   }
 

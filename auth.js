@@ -27,18 +27,78 @@ const _SB_KEY  = 'sb_publishable_xS8gLHbIxrR62lI178O3ag_DtXp66Rv';
 /* Supabase JS v2 persists the session at this key */
 const _SB_LKEY = 'sb-ocwqpeyfxsovkqbmzlgh-auth-token';
 
+/* On native, back Supabase's session persistence with iOS Keychain
+   (capacitor-secure-storage-plugin, verified to use real Keychain
+   Services calls - SecItemAdd/kSecClass, not UserDefaults) instead of
+   its default localStorage, which on a Capacitor app is plain on-disk
+   WebKit storage: readable from an unencrypted device backup or on a
+   jailbroken device with no password required. Web keeps the default
+   localStorage-backed behavior unchanged (isNative is false there, so
+   `storage` is never set and Supabase falls back to its own default).
+   SecureStoragePlugin.get() rejects (rather than resolving null) for a
+   missing key - catch that here so getItem matches the SupportedStorage
+   contract Supabase expects (null for "not found", never a throw). */
+/* _getCapacitor(), not raw window.Capacitor: login.html/signup.html run
+   inside a hidden iframe on native (see _getCapacitor()'s own comment
+   further down) where window.Capacitor is genuinely undefined even
+   though the app IS native - using the raw check here would make those
+   two pages silently fall back to localStorage while every other page
+   (a real top-level document) correctly used Keychain, so which store
+   actually held a given person's session would depend on which page
+   last wrote it. */
+const _cap = _getCapacitor();
+const _isNativeApp = !!(_cap && _cap.isNativePlatform && _cap.isNativePlatform());
+const _SecureStorage = _isNativeApp && _cap.Plugins && _cap.Plugins.SecureStoragePlugin;
+const _nativeKeychainStorage = _SecureStorage ? {
+  async getItem(key) {
+    try { return (await _SecureStorage.get({ key })).value; }
+    catch (e) { return null; }
+  },
+  async setItem(key, value) {
+    await _SecureStorage.set({ key, value });
+  },
+  async removeItem(key) {
+    try { await _SecureStorage.remove({ key }); } catch (e) {}
+  },
+} : null;
+
 let _sbClient = null;
 /* Load Supabase CDN once, resolve with the created client */
 window._pm_sbLoaded = new Promise(resolve => {
   const _init = () => {
     try {
       _sbClient = window.supabase.createClient(_SB_URL, _SB_KEY, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        /* flowType: 'pkce' - without this, the SDK defaults to the
+           implicit flow, where Google/Apple sign-in returns the LIVE
+           access_token/refresh_token directly in the callback URL. On
+           native, that callback has to be relayed from the system
+           browser back into the app via a custom URL scheme
+           (packmatesai://auth-callback, see welcome.html/lib/deep-link.js)
+           because WKWebView can't do the OAuth redirect itself and
+           Google refuses embedded-webview sign-in. A custom scheme has
+           no exclusivity guarantee like a Universal Link does - another
+           app registering the same scheme could receive that callback.
+           Under the implicit flow that callback IS a ready-to-use
+           session; under PKCE it's only a single-use code whose matching
+           verifier never leaves this device's own storage, so a scheme
+           collision can't yield a usable token. */
+        auth: {
+          persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce',
+          ...(_nativeKeychainStorage ? { storage: _nativeKeychainStorage } : {}),
+        }
       });
       window._pm_sb = _sbClient;
 
-      /* Redirect to login when session truly expires (not on intentional logout) */
-      _sbClient.auth.onAuthStateChange((event) => {
+      /* Redirect to login when session truly expires (not on intentional logout).
+         Also keeps _SB_UCACHE_KEY in sync on native - fires once immediately
+         on registration with the current (Keychain-restored) session as
+         INITIAL_SESSION, then again on every sign-in/refresh/sign-out, so
+         _sbCachedUser()'s synchronous reads are never more than one event
+         stale. On web this is a harmless no-op write (_sbCachedUser() never
+         reads _SB_UCACHE_KEY there), kept unconditional rather than
+         branched on _isNativeApp so there's one code path to reason about. */
+      _sbClient.auth.onAuthStateChange((event, session) => {
+        _cacheSbUser(session);
         if (event === 'SIGNED_OUT' && !window._pm_intentional_signout) {
           const pub = ['welcome.html','login.html','signup.html','reset.html'];
           if (!pub.some(p => location.pathname.endsWith(p))) {
@@ -125,10 +185,38 @@ async function _verifyLocal(norm, pw) {
   return valid ? u : null;
 }
 
+/* Non-secret mirror of {user, expires_at} - deliberately NEVER the
+   access_token/refresh_token themselves - kept in plain localStorage
+   even on native, specifically so _sbCachedUser() below can stay
+   synchronous. Keychain access is a Capacitor bridge call and is always
+   async; isLoggedIn()/requireAuth()/getSession() are called synchronously
+   on effectively every page load throughout this app (gating render
+   before anything else runs), so they can't be rewritten to await a
+   Keychain read without that ricocheting through every page. Caching
+   just "who, until when" rather than the bearer credentials themselves
+   keeps that fast path working while the actual secrets live only in
+   Keychain - knowing a user id and an expiry timestamp grants no access
+   on its own. Written by the onAuthStateChange handler below on every
+   sign-in/refresh/sign-out, so it's never more than one auth event stale. */
+const _SB_UCACHE_KEY = 'pm_sb_user_cache';
+function _cacheSbUser(session) {
+  try {
+    if (session?.user) {
+      localStorage.setItem(_SB_UCACHE_KEY, JSON.stringify({ user: session.user, expires_at: session.expires_at }));
+    } else {
+      localStorage.removeItem(_SB_UCACHE_KEY);
+    }
+  } catch (e) {}
+}
+
 /* ── Read Supabase cached user synchronously (no CDN needed) ──────────── */
 function _sbCachedUser() {
   try {
-    const raw = localStorage.getItem(_SB_LKEY);
+    /* On native the real session (with its actual tokens) lives only in
+       Keychain - _isNativeApp is set at module load, before this can
+       ever be called, so this always reflects the storage this device
+       is actually using. */
+    const raw = localStorage.getItem(_isNativeApp ? _SB_UCACHE_KEY : _SB_LKEY);
     if (!raw) return null;
     const p = JSON.parse(raw);
     if (p?.expires_at && Date.now() / 1000 > p.expires_at) return null;
@@ -227,12 +315,23 @@ const Auth = (() => {
           return { success: false, error: 'We couldn\'t send a confirmation email. Please try again in a few minutes.' };
         if (msg.toLowerCase().includes('rate limit') || msg.toLowerCase().includes('too many') || error.status === 429)
           return { success: false, error: 'Too many attempts. Please wait a few minutes and try again.' };
+        /* Account enumeration: returning a distinct "already exists" error
+           lets anyone learn which emails have accounts just by submitting
+           them to signup. Responding exactly like a genuine new signup
+           (same success shape, same "check your email" screen) instead -
+           Supabase itself doesn't send a new confirmation email to an
+           already-confirmed address here, so the real difference only
+           shows up in that person's own inbox, never in this response. */
         if (msg.includes('already registered') || msg.includes('already exists') || msg.includes('already been registered'))
-          return { success: false, error: 'An account with this email already exists.' };
+          return { success: true, session: null };
         return { success: false, error: msg };
       }
       if (!data?.user)
-        return { success: false, error: 'An account with this email already exists. Try logging in instead.' };
+        /* Supabase's other "already registered" signal (seen when Confirm
+           Email is on and signUp is called again for an existing,
+           unconfirmed address: a fake/empty user object instead of an
+           explicit error) - same fix, same reasoning as above. */
+        return { success: true, session: null };
       /* Profile row is auto-created by the DB trigger.
          data.session is only populated here if Supabase's "Confirm
          email" requirement is OFF for this project - in that case the
@@ -450,6 +549,16 @@ const Auth = (() => {
     /* ── Logout ── */
     logout() {
       window._pm_intentional_signout = true;
+      /* Clears _sbCachedUser()'s sync-read cache immediately, synchronously
+         - don't wait for signOut()'s async SIGNED_OUT event to do it via
+         the onAuthStateChange handler, so a synchronous isLoggedIn() check
+         made right after calling logout() (before that event has had a
+         chance to fire) already sees "logged out". */
+      localStorage.removeItem(_SB_UCACHE_KEY);
+      /* Harmless on native (never written there - the real token lives in
+         Keychain instead, which signOut() below clears via the configured
+         storage adapter) - kept for web, and as cleanup for anyone
+         upgrading from a build that stored it here. */
       localStorage.removeItem(_SB_LKEY);
       localStorage.removeItem(_SESS_KEY);
       if (_sbClient) { _sbClient.auth.signOut().catch(() => {}); }
@@ -494,23 +603,32 @@ const Auth = (() => {
         return JSON.parse(localStorage.getItem(_SB_LKEY) || 'null')?.access_token || '';
       } catch { return ''; }
     },
-    /* Fire-and-forget error report — never throws, never blocks the caller.
-       Silently no-ops when logged out (nothing to attribute the error to). */
+    /* Fire-and-forget error report — never throws, never blocks the caller
+       (stays synchronous on the outside; the async work below is an
+       un-awaited IIFE so no caller needs to change).
+       Silently no-ops when logged out (nothing to attribute the error to).
+       Uses getTokenAsync(), not getToken() - on native the real token
+       lives in Keychain (async-only to read), so the synchronous
+       getToken() always returns '', which would make this no-op for
+       every single call on native and silently lose all error reporting
+       there. */
     logError(message, extra) {
-      try {
-        const token = this.getToken();
-        if (!token) return;
-        fetch('/api/log-error', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({
-            message: String(message?.message || message || 'Unknown error'),
-            stack: message?.stack || '',
-            page: location.pathname,
-            context: extra || {},
-          }),
-        }).catch(() => {});
-      } catch {}
+      (async () => {
+        try {
+          const token = await this.getTokenAsync();
+          if (!token) return;
+          fetch('/api/log-error', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({
+              message: String(message?.message || message || 'Unknown error'),
+              stack: message?.stack || '',
+              page: location.pathname,
+              context: extra || {},
+            }),
+          }).catch(() => {});
+        } catch {}
+      })();
     },
     requireAuth(redirect = 'welcome.html') {
       if (!this.isLoggedIn()) { location.replace(redirect); return false; }
@@ -548,8 +666,12 @@ const Auth = (() => {
       const session = this.getSession();
       const email   = session?.email || '';
 
-      /* Server-side: delete all Supabase rows + auth user */
-      const token = this.getToken();
+      /* Server-side: delete all Supabase rows + auth user.
+         getTokenAsync(), not getToken() - on native the real token lives
+         in Keychain (async-only to read), so the synchronous getToken()
+         always returns '' there, which would make this silently skip the
+         actual server-side deletion call. */
+      const token = await this.getTokenAsync();
       if (token) {
         try {
           await fetch('/api/delete-account', {
@@ -566,7 +688,7 @@ const Auth = (() => {
       const remaining = trips.filter(t => email && t.ownerEmail && t.ownerEmail !== email);
       localStorage.setItem('pm_trips', JSON.stringify(remaining));
       ['pm_session','pm_profile','currentTrip','pm_tip_videos','pm_tip_idx','pm_tip_ver',
-       'pm_packmates', _SB_LKEY, `pm_notifications_${email}`, `pm_sb_migrated_${session?.userId||''}`]
+       'pm_packmates', _SB_LKEY, _SB_UCACHE_KEY, `pm_notifications_${email}`, `pm_sb_migrated_${session?.userId||''}`]
         .forEach(k => localStorage.removeItem(k));
       _saveLocalUsers(_localUsers().filter(u => u.email !== email));
       window._pm_intentional_signout = true;
@@ -629,14 +751,13 @@ Auth.migrate();
 
 /* ── DB layer: localStorage cache + Supabase background sync ────────── */
 const DB = (() => {
+  /* _sbCachedUser(), not a raw localStorage read - every DB.* write/read
+     below gates on this, and the real Supabase session lives only in
+     Keychain on native, not in localStorage under the raw key this used
+     to read directly. _sbCachedUser() already reads whichever store this
+     platform actually uses. */
   function _uid() {
-    try {
-      const raw = localStorage.getItem('sb-ocwqpeyfxsovkqbmzlgh-auth-token');
-      if (!raw) return null;
-      const p = JSON.parse(raw);
-      if (p?.expires_at && Date.now() / 1000 > p.expires_at) return null;
-      return p?.user?.id || null;
-    } catch { return null; }
+    try { return _sbCachedUser()?.id || null; } catch { return null; }
   }
 
   async function sb() { return window._pm_sb || await window._pm_sbLoaded || null; }
@@ -996,14 +1117,19 @@ const DB = (() => {
        reminder/weather/inactivity crons can actually send to it. Called
        from lib/push-notifications.js once Capacitor's PushNotifications
        plugin hands back a real token (native app only - a no-op call on
-       web, since that plugin is never loaded there). Upserts on
-       (user_id, token) so re-registering the same device is a no-op. */
+       web, since that plugin is never loaded there). Upserts on token
+       alone (device_tokens.token is uniquely constrained) so re-
+       registering the same device is a no-op, and a token that was
+       previously registered to someone else - a device reset/resold and
+       signed into by a new person, the ordinary case this also happens
+       to close off a stolen-token-replay scenario for - gets reassigned
+       to the current user instead of erroring out. */
     async registerDeviceToken(token, platform = 'ios') {
       const client = await sb(); const uid = _uid();
       if (!client || !uid || !token) return { success: false };
       const { error } = await client.from('device_tokens').upsert({
         user_id: uid, token, platform, updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id,token' });
+      }, { onConflict: 'token' });
       if (error) { console.error('[DB] registerDeviceToken:', error.message); Auth.logError(error.message, { where: 'registerDeviceToken' }); return { success: false }; }
       return { success: true };
     },

@@ -17,6 +17,7 @@
  */
 const { sendToTokens } = require('./_fcm');
 const { pushCopy } = require('./_push-copy');
+const { isAuthorizedCron } = require('./_cron-auth');
 
 const INACTIVE_DAYS = 7;
 const MIN_GAP_DAYS   = 3;
@@ -24,9 +25,7 @@ const MIN_GAP_DAYS   = 3;
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed.' });
 
-  const CRON_SECRET = process.env.CRON_SECRET;
-  const auth = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
-  if (!CRON_SECRET || auth !== CRON_SECRET) {
+  if (!isAuthorizedCron(req)) {
     return res.status(401).json({ error: 'Unauthorized.' });
   }
 

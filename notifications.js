@@ -505,7 +505,12 @@
       if (!sbClient) return;
       const session = Auth.getSession();
       if (!session) return;
-      const myUserId = (() => { try { return JSON.parse(localStorage.getItem('sb-ocwqpeyfxsovkqbmzlgh-auth-token'))?.user?.id; } catch { return null; } })();
+      /* session.userId is the same value this used to re-derive by
+         reading the raw Supabase localStorage key directly - that read
+         returns nothing on native now that the real token lives in
+         Keychain instead (see auth.js). Auth.getSession() already reads
+         the right store for the current platform. */
+      const myUserId = session.userId;
       if (!myUserId) return;
 
       sbClient.channel('trip-members-notify')
@@ -584,7 +589,9 @@
       if (!sbClient) return;
       const session = Auth.getSession();
       if (!session) return;
-      const myUserId = (() => { try { return JSON.parse(localStorage.getItem('sb-ocwqpeyfxsovkqbmzlgh-auth-token'))?.user?.id; } catch { return null; } })();
+      /* See _initRealSocialEvents()'s identical fix for why this no longer
+         reads the raw Supabase localStorage key directly. */
+      const myUserId = session.userId;
       if (!myUserId) return;
 
       const lastCheckKey = 'pm_notif_lastcheck_' + myUserId;

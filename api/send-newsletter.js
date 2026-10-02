@@ -6,15 +6,14 @@
  * toggle (profiles.notif->>'updates' = true), then marks that row 'sent'.
  * If nothing is queued, this is a no-op for the week.
  * Guard: only Vercel Cron (or a manual call carrying the same secret) may
- * trigger this — see CRON_SECRET below.
+ * trigger this — see isAuthorizedCron() below.
  */
+const { isAuthorizedCron } = require('./_cron-auth');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed.' });
 
-  const CRON_SECRET = process.env.CRON_SECRET;
-  const auth = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
-  if (!CRON_SECRET || auth !== CRON_SECRET) {
+  if (!isAuthorizedCron(req)) {
     return res.status(401).json({ error: 'Unauthorized.' });
   }
 
