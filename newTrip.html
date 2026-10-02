@@ -1763,8 +1763,16 @@
     document.head.appendChild(style);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js" integrity="sha384-5JqMv4L/Xa0hfvtF06qboNdhvuYXUku9ZrhZh3bSk8VXF0A/RuSLHpLsSV9Zqhl6" crossorigin="anonymous"></script>
+  <!-- Flatpickr month/weekday names - one file per supported app language
+       (lib/i18n.js's TRANSLATIONS keys), loaded unconditionally since
+       they're a few KB each; picked at init time below via getLang(). -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/es.js" integrity="sha384-j/aEP2b+3OKmGqank2qCSosSrlrF9jpIpdgApXq2ryJYBpLSbEi63/PDdL+rKmcQ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/uk.js" integrity="sha384-HG+M/dqt+UQSFlJ+nBWGfRQV14nMLazc9UDtv6FbGVgyS4K1DwWWXAv3qWyzPSWw" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/pt.js" integrity="sha384-agbVpcY312cNMSL1b3CUo060bj9FmbwUX8HUCNSE17+jOU/en4yz3w9ro9IWVusF" crossorigin="anonymous"></script>
   <script>
     (function () {
+      // getLang() comes from lib/i18n.js, loaded earlier on this page.
+      const _fpLocale = (typeof getLang === 'function' && flatpickr.l10ns[getLang()]) || 'default';
       let toPickr;
       const fromPickr = flatpickr('#tripFromDate', {
         dateFormat: 'Y-m-d',
@@ -1773,6 +1781,7 @@
         altInputClass: 'nt-date-input',
         minDate: 'today',
         disableMobile: true,
+        locale: _fpLocale,
         onChange(selectedDates, dateStr) {
           document.getElementById('tripFromDate').dispatchEvent(new Event('change'));
           if (toPickr) {
@@ -1789,6 +1798,7 @@
         altInputClass: 'nt-date-input',
         minDate: 'today',
         disableMobile: true,
+        locale: _fpLocale,
         onChange() {
           document.getElementById('tripToDate').dispatchEvent(new Event('change'));
         }
