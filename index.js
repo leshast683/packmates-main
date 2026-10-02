@@ -382,7 +382,7 @@
     // check ought to still hold there, but this is a defensive fallback
     // in case bridge injection into that particular iframe ever proves
     // less reliable than it is for the shell's own tab iframes.
-    const _isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
+    const _isNativeOrAuthFlow = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
 
     // Permanent, self-contained guard against the Quick Actions card ever
     // staying visible in the app - independent of both the timing race
@@ -616,7 +616,7 @@
         </div>
       </div>
 
-      <!-- ACTIONS: intentionally never rendered here even when _isNativeApp
+      <!-- ACTIONS: intentionally never rendered here even when _isNativeOrAuthFlow
            reads false - see the delayed injection below, which only ever
            adds this card after confirming (twice, with a delay) that this
            truly is the public website. Rendering it immediately and
@@ -627,7 +627,7 @@
            users can never see it at all, under any race condition. -->
     `;
 
-    if (!_isNativeApp) {
+    if (!_isNativeOrAuthFlow) {
       // A single delayed check (400ms, then 1.5s) still wasn't reliable
       // on a real device - Capacitor's bridge can apparently take
       // longer than that to attach, especially right after heavier
