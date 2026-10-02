@@ -75,8 +75,20 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag("js", new Date());
+    /* Google Consent Mode v2 - defaults to denied until lib/cookie-consent.js
+       reads a stored choice or the person picks one from the banner. Must run
+       before any gtag("config"/"event") call below, which is why it's inserted
+       directly into this existing inline block rather than left to the
+       separately-loaded cookie-consent.js (whose <script> tag could execute
+       after this one's gtag("config", ...) already fired). */
+    gtag("consent", "default", {
+      analytics_storage: "denied", ad_storage: "denied",
+      ad_user_data: "denied", ad_personalization: "denied",
+      wait_for_update: 500
+    });
     gtag("config", "G-5QYXT3Q3HW");
   </script>
+    <script src="lib/cookie-consent.js"></script>
   <title>Packmates AI — Packing List & Trip Planner App</title>
   <meta name="description" content="Packmates AI is a free packing list and trip planner app — build a weather-aware checklist for any destination and collaborate with your crew in real time.">
   <meta property="og:type" content="website">
