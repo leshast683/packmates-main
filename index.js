@@ -1,11 +1,6 @@
     /* ── Auth guard ── */
     const _pmAuthed = Auth.requireAuth('welcome.html');
 
-    /* TEMPORARY - testing only: forces the welcome tour on every reload
-       of this page, bypassing pm_tour_seen. Remove this block (and the
-       matching one in welcomeTour.html, if added) once done testing. */
-    if (_pmAuthed) { location.replace('welcomeTour.html'); }
-
     /* Translate the static shell now; JS-rendered sections below (bento
        grid, weather card, etc.) already call tr() directly in their own
        template strings, so they don't need a second pass here. */

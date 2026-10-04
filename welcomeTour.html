@@ -264,12 +264,7 @@
   <script src="auth.js"></script>
   <script>
     const _pmAuthed = Auth.requireAuth('welcome.html');
-    /* TEMPORARY - testing only: the pm_tour_seen skip-check is disabled
-       while index.js is force-redirecting every home-page load here;
-       leaving it active would bounce straight back to index.html (which
-       then bounces right back here) in an infinite loop. Re-enable this
-       line when removing index.js's matching temporary redirect. */
-    // if (_pmAuthed && localStorage.getItem('pm_tour_seen') === '1') location.replace('index.html');
+    if (_pmAuthed && localStorage.getItem('pm_tour_seen') === '1') location.replace('index.html');
 
     if (_pmAuthed) {
       const session = Auth.getSession();
