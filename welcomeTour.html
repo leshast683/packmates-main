@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script src="lib/deep-link.js"></script>
+  <script>
+    /* App-only: pinch/double-tap zoom reads as a bug in a native app -
+       see newTrip.html for the full rationale. Website unaffected. */
+    if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+      document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    }
+  </script>
+  <script>
+    document.documentElement.lang = (function () {
+      try {
+        var l = JSON.parse(localStorage.getItem('pm_profile') || '{}').language;
+        if (l) return l;
+      } catch (e) {}
+      return (navigator.language || 'en').slice(0, 2).toLowerCase();
+    })();
+  </script>
+  <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
+  <script>
+    (function () {
+      var on = true;
+      try { on = (JSON.parse(localStorage.getItem('pm_profile') || '{}').privacy || {}).analytics ?? true; } catch (e) {}
+      if (!on) return;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments); };
+      gtag("js", new Date());
+      gtag("consent", "default", {
+        analytics_storage: "denied", ad_storage: "denied",
+        ad_user_data: "denied", ad_personalization: "denied",
+        wait_for_update: 500
+      });
+      gtag("config", "G-5QYXT3Q3HW");
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW';
+      document.head.appendChild(s);
+    })();
+  </script>
+  <script src="lib/cookie-consent.js"></script>
+  <title>Welcome — Packmates AI</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="img/appIcon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0d3347">
+  <link rel="apple-touch-icon" href="/img/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; background: #0d3347; }
+
+    .wt-root { position: fixed; inset: 0; background: #0d3347; }
+
+    .wt-track {
+      display: flex; height: 100%; overflow-x: auto;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .wt-track::-webkit-scrollbar { display: none; }
+
+    .wt-slide {
+      flex: 0 0 100%; width: 100%; height: 100%; position: relative;
+      scroll-snap-align: start; scroll-snap-stop: always;
+      overflow: hidden; display: flex; flex-direction: column;
+    }
+
+    /* Real photo goes in the FIRST background-image layer - drop
+       img/onboarding-1.jpg ... onboarding-5.jpg in and it's picked up
+       automatically with no code change. Until then, the gradient layer
+       underneath shows instead (a 404'd layer just reveals what's below
+       it - no broken-image icon, no code branch needed). */
+    .wt-bg { position: absolute; inset: 0; z-index: 0; background-size: cover; background-position: center; }
+    .wt-slide-1 .wt-bg { background-image: url('img/onboarding-1.jpg'), linear-gradient(165deg, #8fd3f4 0%, #5fa8d3 38%, #2d7a8c 68%, #1a4a5c 100%); }
+    .wt-slide-2 .wt-bg { background-image: url('img/onboarding-2.jpg'), linear-gradient(165deg, #a8e0d8 0%, #6fb8c9 45%, #3d7a9c 100%); }
+    .wt-slide-3 .wt-bg { background-image: url('img/onboarding-3.jpg'), linear-gradient(165deg, #2d6a7c 0%, #1a4a5c 55%, #0d3347 100%); }
+    .wt-slide-4 .wt-bg { background-image: url('img/onboarding-4.jpg'), linear-gradient(165deg, #9fd4e8 0%, #6fa8c9 45%, #e8c99a 100%); }
+    .wt-slide-5 .wt-bg { background-image: url('img/onboarding-5.jpg'), linear-gradient(165deg, #f0d9b0 0%, #e8b97a 45%, #4a7a8c 100%); }
+
+    .wt-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .wt-overlay-dark { background: linear-gradient(180deg, rgba(10,25,35,0.45) 0%, rgba(10,25,35,0.1) 32%, rgba(10,25,35,0.3) 100%); }
+
+    .wt-content {
+      position: relative; z-index: 2;
+      padding: calc(40px + env(safe-area-inset-top)) 24px 0;
+      text-align: center;
+    }
+    .wt-logo { width: 72px; height: 72px; border-radius: 18px; box-shadow: var(--shadow-lg); margin-bottom: 20px; }
+    .wt-title {
+      font-family: 'Blauer Nue', sans-serif; font-weight: 800;
+      font-size: 1.7rem; line-height: 1.25; color: var(--text-1);
+      text-wrap: balance; margin-bottom: 10px;
+    }
+    .wt-title-light { color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.25); }
+    .wt-subtitle {
+      font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 500;
+      color: var(--text-2); line-height: 1.5; max-width: 320px; margin: 0 auto;
+    }
+    .wt-subtitle-light { color: rgba(255,255,255,0.92); text-shadow: 0 1px 6px rgba(0,0,0,0.25); }
+
+    .wt-bottom {
+      position: relative; z-index: 2; margin-top: auto;
+      padding: 0 24px calc(64px + env(safe-area-inset-bottom));
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+
+    .wt-btn {
+      width: 100%; max-width: 360px; padding: 15px 24px; border-radius: 999px;
+      font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 8px; transition: transform 0.15s ease, box-shadow 0.15s ease; border: none;
+    }
+    .wt-btn:active { transform: scale(0.97); }
+    .wt-btn-primary {
+      background: linear-gradient(90deg, var(--green), var(--teal-4));
+      color: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+    }
+    .wt-btn-secondary {
+      background: rgba(255,255,255,0.9); color: var(--green-dark);
+      border: 1.5px solid var(--green);
+    }
+
+    /* ── Progress dots - fixed over every slide, same element throughout ── */
+    .wt-progress {
+      position: fixed; left: 0; right: 0; z-index: 10;
+      bottom: calc(26px + env(safe-area-inset-bottom));
+      display: flex; align-items: center; justify-content: center; pointer-events: none;
+    }
+    .wt-dot {
+      width: 9px; height: 9px; border-radius: 50%; background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3); flex-shrink: 0;
+      transition: width 0.25s ease, height 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+    .wt-dot.reached { background: var(--green); }
+    .wt-dot.current {
+      width: 16px; height: 16px; background: var(--green);
+      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(0,0,0,0.35);
+    }
+    .wt-line { width: 22px; height: 2px; background: rgba(255,255,255,0.9); margin: 0 5px; border-radius: 1px; transition: background 0.25s ease; }
+    .wt-line.reached { background: var(--green); }
+
+    /* ── Slide 2: activity grid ── */
+    .wt-activity-grid {
+      position: relative; z-index: 2; margin-top: 20px; padding: 0 16px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+      overflow-y: auto; flex: 1;
+    }
+    .wt-activity-card { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .wt-activity-thumb {
+      width: 100%; aspect-ratio: 1; border-radius: 14px; position: relative;
+      box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+    }
+    .wt-activity-badge {
+      position: absolute; top: -6px; right: -6px; width: 24px; height: 24px;
+      border-radius: 50%; background: #fff; display: flex; align-items: center;
+      justify-content: center; font-size: 0.75rem; box-shadow: var(--shadow-sm);
+    }
+    .wt-activity-card span.wt-activity-label {
+      font-family: 'Montserrat', sans-serif; font-size: 0.64rem; font-weight: 700;
+      color: var(--text-1); text-align: center; line-height: 1.2;
+    }
+
+    /* ── Slide 3: social proof cards ── */
+    .wt-social { position: relative; z-index: 2; flex: 1; margin-top: 10px; }
+    .wt-avatar-card {
+      position: absolute; display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.97); border-radius: 16px; padding: 8px 12px 8px 8px;
+      box-shadow: var(--shadow-md);
+    }
+    .wt-avatar-photo {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 1.05rem;
+    }
+    .wt-avatar-info { display: flex; flex-direction: column; }
+    .wt-avatar-info strong { font-family: 'Blauer Nue', sans-serif; font-size: 0.82rem; color: var(--text-1); }
+    .wt-avatar-info span { font-family: 'Montserrat', sans-serif; font-size: 0.68rem; color: var(--text-3); }
+    .wt-avatar-add {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--green);
+      color: #fff; border: none; font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; margin-left: 4px;
+    }
+    .wt-avatar-tl { top: 14%; left: 6%; }
+    .wt-avatar-tr { top: 28%; right: 6%; }
+    .wt-avatar-bl { top: 56%; left: 4%; }
+    .wt-avatar-br { top: 66%; right: 4%; }
+    .wt-group-card {
+      position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.97); border-radius: 18px; padding: 14px 18px;
+      box-shadow: var(--shadow-lg); text-align: left; min-width: 160px;
+    }
+    .wt-group-card strong { display: block; font-family: 'Blauer Nue', sans-serif; font-size: 0.92rem; color: var(--text-1); line-height: 1.3; }
+    .wt-group-avatars { display: flex; align-items: center; margin-top: 10px; }
+    .wt-group-avatars span {
+      width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff;
+      margin-left: -8px; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 0.6rem; font-weight: 800; font-family: 'Blauer Nue', sans-serif;
+    }
+    .wt-group-avatars span:first-child { margin-left: 0; }
+    .wt-group-avatars span.wt-more { background: var(--green-bg); color: var(--green-dark); }
+
+    /* ── Slide 4: feature pills ── */
+    .wt-pills { position: relative; z-index: 2; margin-top: 32px; padding: 0 28px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+    .wt-pill {
+      display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.95);
+      border-radius: 999px; padding: 14px 24px; box-shadow: var(--shadow-md);
+      font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--text-1);
+      width: 100%; max-width: 280px;
+    }
+    .wt-pill span:first-child { font-size: 1.1rem; }
+
+    @media (max-width: 380px) {
+      .wt-title { font-size: 1.45rem; }
+      .wt-activity-card span.wt-activity-label { font-size: 0.58rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wt-root">
+    <div class="wt-track" id="wtTrack">
+
+      <!-- Slide 1 -->
+      <section class="wt-slide wt-slide-1" data-slide="1">
+        <div class="wt-bg"></div>
+        <div class="wt-content">
+          <img class="wt-logo" src="img/appIcon.png" alt="PackMates AI">
+          <h1 class="wt-title" id="wtTitle1"></h1>
+          <p class="wt-subtitle" data-i18n="onboarding.s1.subtitle"></p>
+        </div>
+        <div class="wt-bottom">
+          <button type="button" class="wt-btn wt-btn-primary" id="wtNextBtn" data-i18n="onboarding.s1.cta"></button>
+        </div>
+      </section>
+
+      <!-- Slide 2 -->
+      <section class="wt-slide wt-slide-2" data-slide="2">
+        <div class="wt-bg"></div>
+        <div class="wt-content">
+          <h1 class="wt-title">
+            <span data-i18n="onboarding.s2.titleLine1"></span><br>
+            <span data-i18n="onboarding.s2.titleLine2"></span>
+          </h1>
+          <p class="wt-subtitle" data-i18n="onboarding.s2.subtitle"></p>
+        </div>
+        <div class="wt-activity-grid" id="wtActivityGrid"></div>
+      </section>
+
+      <!-- Slide 3 -->
+      <section class="wt-slide wt-slide-3" data-slide="3">
+        <div class="wt-bg"></div>
+        <div class="wt-overlay wt-overlay-dark"></div>
+        <div class="wt-content">
+          <h1 class="wt-title wt-title-light">
+            <span data-i18n="onboarding.s3.titleLine1"></span><br>
+            <span data-i18n="onboarding.s3.titleLine2"></span>
+          </h1>
+          <p class="wt-subtitle wt-subtitle-light" data-i18n="onboarding.s3.subtitle"></p>
+        </div>
+        <div class="wt-social">
+          <div class="wt-avatar-card wt-avatar-tl">
+            <div class="wt-avatar-photo" style="background:linear-gradient(135deg,#f0a35c,#e07a5f)">S</div>
+            <div class="wt-avatar-info"><strong>Sofia M.</strong><span data-i18n="onboarding.s3.trips14"></span></div>
+            <button class="wt-avatar-add">+</button>
+          </div>
+          <div class="wt-avatar-card wt-avatar-tr">
+            <div class="wt-avatar-photo" style="background:linear-gradient(135deg,#5fa8d3,#2d6a7c)">J</div>
+            <div class="wt-avatar-info"><strong>James T.</strong><span data-i18n="onboarding.s3.trips22"></span></div>
+            <button class="wt-avatar-add">+</button>
+          </div>
+          <div class="wt-avatar-card wt-avatar-bl">
+            <div class="wt-avatar-photo" style="background:linear-gradient(135deg,#7cc63e,#4d8225)">R</div>
+            <div class="wt-avatar-info"><strong>Ryan K.</strong><span data-i18n="onboarding.s3.trips8"></span></div>
+            <button class="wt-avatar-add">+</button>
+          </div>
+          <div class="wt-avatar-card wt-avatar-br">
+            <div class="wt-avatar-photo" style="background:linear-gradient(135deg,#c97bb0,#8a4a9c)">E</div>
+            <div class="wt-avatar-info"><strong>Emma L.</strong><span data-i18n="onboarding.s3.trips11"></span></div>
+            <button class="wt-avatar-add">+</button>
+          </div>
+          <div class="wt-group-card">
+            <strong data-i18n="onboarding.s3.groupTripLine1"></strong>
+            <strong data-i18n="onboarding.s3.groupTripLine2"></strong>
+            <div class="wt-group-avatars">
+              <span style="background:linear-gradient(135deg,#f0a35c,#e07a5f)">S</span>
+              <span style="background:linear-gradient(135deg,#5fa8d3,#2d6a7c)">J</span>
+              <span style="background:linear-gradient(135deg,#7cc63e,#4d8225)">R</span>
+              <span class="wt-more">+3</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 4 -->
+      <section class="wt-slide wt-slide-4" data-slide="4">
+        <div class="wt-bg"></div>
+        <div class="wt-content">
+          <h1 class="wt-title">
+            <span data-i18n="onboarding.s4.titleLine1"></span><br>
+            <span data-i18n="onboarding.s4.titleLine2"></span>
+          </h1>
+          <p class="wt-subtitle" data-i18n="onboarding.s4.subtitle"></p>
+        </div>
+        <div class="wt-pills">
+          <div class="wt-pill"><span>☀️</span><span data-i18n="onboarding.s4.weather"></span></div>
+          <div class="wt-pill"><span>📍</span><span data-i18n="onboarding.s4.destination"></span></div>
+          <div class="wt-pill"><span>🏔️</span><span data-i18n="onboarding.s4.activities"></span></div>
+          <div class="wt-pill"><span>📅</span><span data-i18n="onboarding.s4.tripLength"></span></div>
+        </div>
+      </section>
+
+      <!-- Slide 5 -->
+      <section class="wt-slide wt-slide-5" data-slide="5">
+        <div class="wt-bg"></div>
+        <div class="wt-bottom">
+          <h1 class="wt-title" id="wtTitle5"></h1>
+          <p class="wt-subtitle" data-i18n="onboarding.s5.subtitle" style="margin-bottom:8px"></p>
+          <button type="button" class="wt-btn wt-btn-primary" id="wtCreateTripBtn">
+            <span>+</span><span data-i18n="onboarding.s5.ctaPrimary"></span>
+          </button>
+          <button type="button" class="wt-btn wt-btn-secondary" id="wtExploreBtn" data-i18n="onboarding.s5.ctaSecondary"></button>
+        </div>
+      </section>
+
+    </div>
+    <div class="wt-progress" id="wtProgress"></div>
+  </div>
+
+  <script src="lib/i18n.js"></script>
+  <script src="lib/sync-guard.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    const _pmAuthed = Auth.requireAuth('welcome.html');
+    if (_pmAuthed && localStorage.getItem('pm_tour_seen') === '1') location.replace('index.html');
+
+    if (_pmAuthed) {
+      const session = Auth.getSession();
+      const rawName = session?.name?.split(' ')[0] || tr('profile.hero.travelerFallback');
+      const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
+      document.getElementById('wtTitle1').textContent = tr('onboarding.s1.title', { name: firstName });
+      document.getElementById('wtTitle5').textContent = tr('onboarding.s5.title', { name: firstName });
+    }
+
+    /* Decorative only - illustrates the range of activities PackMates
+       supports, not wired to any trip data. Each tile's background is a
+       placeholder gradient swatch until real thumbnail photos exist. */
+    const ACTIVITIES = [
+      ['beach', '☀️', '#f6c453,#f0a35c'], ['cityTrips', '🏙️', '#e76f6f,#c94f4f'],
+      ['hiking', '⛰️', '#7cc63e,#4d8225'], ['camping', '⛺', '#f0a35c,#d9823c'],
+      ['cruises', '🚢', '#a98bd9,#7a5cb8'], ['snowSports', '❄️', '#7fc4e8,#4a9bc9'],
+      ['swimming', '🌊', '#5fb8d3,#2d8aa8'], ['diving', '🤿', '#4fc9a8,#2a9b7c'],
+      ['sightseeing', '📷', '#e86f8a,#c94f6f'], ['dining', '🍴', '#f0a35c,#e07a3c'],
+      ['nightlife', '🍸', '#e87ab0,#c94f8c'], ['themeParks', '🎢', '#a98bd9,#8a5cc9'],
+      ['wellness', '🌿', '#7cc69e,#4d9270'], ['wildlife', '🐘', '#b08968,#8a6a4c'],
+      ['cultural', '⛩️', '#e76f6f,#c9504f'], ['photography', '📸', '#9aa5b1,#6c7684'],
+    ];
+    const grid = document.getElementById('wtActivityGrid');
+    ACTIVITIES.forEach(([key, emoji, gradient]) => {
+      const card = document.createElement('div');
+      card.className = 'wt-activity-card';
+      card.innerHTML = `
+        <div class="wt-activity-thumb" style="background:linear-gradient(135deg,${gradient})">
+          <span class="wt-activity-badge">${emoji}</span>
+        </div>
+        <span class="wt-activity-label" data-i18n="onboarding.activity.${key}"></span>`;
+      grid.appendChild(card);
+    });
+    if (_pmAuthed) applyTranslations();
+
+    /* ── Progress dots + swipe tracking ── */
+    const SLIDE_COUNT = 5;
+    const prog = document.getElementById('wtProgress');
+    for (let i = 0; i < SLIDE_COUNT; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'wt-dot';
+      prog.appendChild(dot);
+      if (i < SLIDE_COUNT - 1) {
+        const line = document.createElement('span');
+        line.className = 'wt-line';
+        prog.appendChild(line);
+      }
+    }
+    const dots = prog.querySelectorAll('.wt-dot');
+    const lines = prog.querySelectorAll('.wt-line');
+    function updateProgress(activeIdx) {
+      dots.forEach((d, i) => {
+        d.classList.toggle('reached', i <= activeIdx);
+        d.classList.toggle('current', i === activeIdx);
+      });
+      lines.forEach((l, i) => l.classList.toggle('reached', i < activeIdx));
+    }
+    updateProgress(0);
+
+    const track = document.getElementById('wtTrack');
+    let _scrollRaf = null;
+    track.addEventListener('scroll', () => {
+      if (_scrollRaf) return;
+      _scrollRaf = requestAnimationFrame(() => {
+        _scrollRaf = null;
+        const idx = Math.round(track.scrollLeft / track.clientWidth);
+        updateProgress(Math.max(0, Math.min(SLIDE_COUNT - 1, idx)));
+      });
+    }, { passive: true });
+
+    document.getElementById('wtNextBtn').addEventListener('click', () => {
+      track.scrollTo({ left: track.clientWidth, behavior: 'smooth' });
+    });
+
+    /* window.top, not window: this page can be running inside the native
+       app's auth-flow iframe (see lib/auth-flow.js) when reached straight
+       from signup - same pattern signup.html's own _goHome() uses. */
+    function _finishTour(page) {
+      try { localStorage.setItem('pm_tour_seen', '1'); } catch (e) {}
+      if (window.top !== window.self && window.top.PmAuthFlow) window.top.PmAuthFlow.reveal(page);
+      else location.replace(page);
+    }
+    document.getElementById('wtCreateTripBtn').addEventListener('click', () => _finishTour('newTrip.html'));
+    document.getElementById('wtExploreBtn').addEventListener('click', () => _finishTour('index.html'));
+  </script>
+</body>
+</html>
