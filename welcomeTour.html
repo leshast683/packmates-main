@@ -100,6 +100,11 @@
        ever looking like a panel sitting on the photo. */
     .wt-title-scrim { text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 8px #fff, 0 0 8px #fff, 0 0 22px #fff, 0 0 22px #fff; }
     .wt-subtitle-scrim { text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 26px #fff, 0 0 26px #fff; }
+    /* Slide 2's subtitle is longer (wraps 4 lines) over a brighter/busier
+       part of the photo than slide 1's, so it needs an even stronger
+       glow - kept separate from wt-subtitle-scrim so slide 1 isn't
+       affected. */
+    .wt-slide-2 .wt-subtitle-scrim { text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 30px #fff, 0 0 30px #fff, 0 0 30px #fff; }
     .wt-slide-1 .wt-subtitle, .wt-slide-2 .wt-subtitle { color: var(--text-1); }
     .wt-subtitle {
       font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 500;
