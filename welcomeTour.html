@@ -264,7 +264,23 @@
   <script src="auth.js"></script>
   <script>
     const _pmAuthed = Auth.requireAuth('welcome.html');
-    if (_pmAuthed && localStorage.getItem('pm_tour_seen') === '1') location.replace('index.html');
+    /* localStorage is per-browser - pm_profile.tourSeen (synced from the
+       profiles.tour_seen column) is the account-wide source of truth, so
+       a person who already completed this on one device never sees it
+       again on another. Pull the latest copy from the server before
+       trusting the local flag alone, since a fresh browser/device won't
+       have it locally yet even though the account does. Not awaited at
+       the top level (plain <script>, not a module) - the rest of this
+       script keeps running immediately, so a returning person on a new
+       device may see the tour flash briefly before this redirects them. */
+    if (_pmAuthed) {
+      DB.syncProfile().catch(() => {}).then(() => {
+        const tourSeen = localStorage.getItem('pm_tour_seen') === '1'
+          || JSON.parse(localStorage.getItem('pm_profile') || '{}').tourSeen === true;
+        if (tourSeen) location.replace('index.html');
+      });
+      if (localStorage.getItem('pm_tour_seen') === '1') location.replace('index.html');
+    }
 
     if (_pmAuthed) {
       const session = Auth.getSession();
@@ -274,11 +290,6 @@
       document.getElementById('wtTitle5').textContent = tr('onboarding.s5.title', { name: firstName });
     }
 
-    /* Reuses newTrip.html's own activity-chip icon set where a matching
-       category exists (same icons the real trip-creation flow uses, not
-       lookalikes), so this preview is honest about what the app already
-       has. The categories with no equivalent icon yet fall back to a
-       plain color swatch - no emoji. */
     /* Same 15 categories/icons/i18n keys as newTrip.html's own activity
        chips - not a separate lookalike set. */
     const ACTIVITIES = [
@@ -383,6 +394,9 @@
        from signup - same pattern signup.html's own _goHome() uses. */
     function _finishTour(page) {
       try { localStorage.setItem('pm_tour_seen', '1'); } catch (e) {}
+      // Fire-and-forget: persists to profiles.tour_seen so this never
+      // shows again on another device, but never blocks navigation on it.
+      if (typeof DB !== 'undefined' && DB.saveProfile) DB.saveProfile({ tourSeen: true }).catch(() => {});
       if (window.top !== window.self && window.top.PmAuthFlow) window.top.PmAuthFlow.reveal(page);
       else location.replace(page);
     }

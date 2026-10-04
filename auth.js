@@ -1084,6 +1084,7 @@ const DB = (() => {
         privacy:  merged.privacy || {}, discoverable: !!merged.discoverable,
         bio:      merged.bio     || null, location: merged.location || null,
         language: merged.language || null, temp_unit: merged.tempUnit || null,
+        tour_seen: !!merged.tourSeen,
       };
       let { error } = await client.from('profiles').upsert(payload, { onConflict: 'id' });
       if (error && /language/.test(error.message || '')) {
@@ -1097,6 +1098,11 @@ const DB = (() => {
       if (error && /temp_unit/.test(error.message || '')) {
         /* profiles.temp_unit migration not applied yet - same fallback. */
         delete payload.temp_unit;
+        ({ error } = await client.from('profiles').upsert(payload, { onConflict: 'id' }));
+      }
+      if (error && /tour_seen/.test(error.message || '')) {
+        /* profiles.tour_seen migration not applied yet - same fallback. */
+        delete payload.tour_seen;
         ({ error } = await client.from('profiles').upsert(payload, { onConflict: 'id' }));
       }
       if (error) { console.error('[DB] saveProfile:', error.message); Auth.logError(error.message, { where: 'saveProfile' }); }
@@ -1125,6 +1131,7 @@ const DB = (() => {
         location: data.location || existing.location,
         language: data.language || existing.language,
         tempUnit: data.temp_unit || existing.tempUnit,
+        tourSeen: data.tour_seen ?? existing.tourSeen ?? false,
       }));
       return true;
     },
