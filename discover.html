@@ -695,6 +695,7 @@
           <span class="tp-member"></span>
           <span class="tp-gender"></span>
           <span class="tp-level"></span>
+          <span class="tp-verified" style="color:var(--green,#5f9d30);font-weight:700;"></span>
         </div>
         <div class="tp-bio"></div>
         <div class="tp-stats-row">
@@ -1037,14 +1038,40 @@
       'linear-gradient(135deg,#84fab0,#8fd3f4)', 'linear-gradient(135deg,#43e97b,#38f9d7)',
       'linear-gradient(135deg,#fa709a,#fee140)', 'linear-gradient(135deg,#0c7a7a,#7cc63e)',
     ];
-    function _colorForUser(userId) {
+    // Same 8 destinations the demo travelers above use as their cover
+    // photo search terms, in the same order - a real member's modal
+    // header gets whichever one its hash lands on, stable across
+    // reloads rather than re-randomizing every time.
+    const REAL_MEMBER_DESTS = [
+      'Santorini Greece white buildings ocean sunset', 'Tokyo Japan street night neon lights',
+      'Bali rice terraces temple Indonesia', 'Colombia coffee region mountains green',
+      'Amsterdam Netherlands canals boats flowers', 'Maldives overwater bungalow turquoise ocean',
+      'Bhutan monastery mountains landscape', 'Norwegian fjords mountains water scenic',
+    ];
+    function _hashUser(userId) {
       let h = 0;
       for (let i = 0; i < (userId || '').length; i++) h = (h * 31 + userId.charCodeAt(i)) >>> 0;
-      return REAL_MEMBER_COLORS[h % REAL_MEMBER_COLORS.length];
+      return h;
+    }
+    function _colorForUser(userId) {
+      return REAL_MEMBER_COLORS[_hashUser(userId) % REAL_MEMBER_COLORS.length];
+    }
+    function _destForUser(userId) {
+      return REAL_MEMBER_DESTS[_hashUser(userId) % REAL_MEMBER_DESTS.length];
     }
     function _fmtMemberSince(iso) {
       if (!iso) return '';
       return new Date(iso).toLocaleDateString(dateLocale(), { month: 'short', year: 'numeric' });
+    }
+    // Same tier names profile.html's own level bar uses (lib/badge-levels.js),
+    // just scaled to trip count instead of lifetime items packed - there's
+    // no way to read another person's items-packed total (it only ever
+    // lived in *their* localStorage, never synced), but trip_count is
+    // real, server-computed data available for anyone marked discoverable.
+    function _realLevelForTrips(n) {
+      const tiers = [[26,'World Citizen',5],[13,'Globetrotter',4],[7,'Explorer',3],[4,'Wanderer',2],[2,'Adventurer',1],[0,'Beginner',0]];
+      const t = tiers.find(t => n >= t[0]);
+      return t[1] + (t[2] ? ' ' + '⭐'.repeat(t[2]) : '');
     }
     if (typeof DB !== 'undefined') {
       DB.getDiscoverableTravelers().then(real => {
@@ -1055,8 +1082,9 @@
             city: r.location || (r.handle ? '@' + r.handle : tr('discover.defaultCommunityCity')),
             trips: r.trip_count || 0, countries: 0, followers: 0,
             avatar: (r.name || '?').trim().charAt(0).toUpperCase(),
-            avatarImg: r.avatar || null, gender: '', color: _colorForUser(r.user_id),
-            coverDest: '', memberSince: _fmtMemberSince(r.member_since), level: '', travelStyles: [],
+            avatarImg: r.avatar || null, gender: r.gender || '', color: _colorForUser(r.user_id),
+            coverDest: _destForUser(r.user_id), memberSince: _fmtMemberSince(r.member_since),
+            level: _realLevelForTrips(r.trip_count || 0), travelStyles: [],
             bio: r.bio || '',
             places: [], activities: [], packingLists: [], recentTrips: [], isReal: true,
           });
@@ -1091,16 +1119,18 @@
       }
       m.querySelector('.tp-avatar').style.background = t.color;
       m.querySelector('.tp-avatar').textContent = t.avatar;
-      m.querySelector('.tp-name').textContent = t.name;
+      // Real users: first name + last initial only ("Simon G."), same
+      // as the Community Travelers card already shows - never their
+      // full real last name, even in the expanded profile view.
+      m.querySelector('.tp-name').textContent = t.isReal
+        ? `${t.name.split(' ')[0]} ${(t.name.split(' ')[1] || '').charAt(0)}.`.trim().replace(/\s+\.$/, '')
+        : t.name;
       m.querySelector('.tp-location span').textContent = t.city;
       m.querySelector('.tp-member').textContent = t.memberSince ? tr('discover.joinedOn', { date: t.memberSince }) : '';
       m.querySelector('.tp-gender').textContent = t.gender ? tr('discover.genderPrefix', { gender: tGender(t.gender) }) : '';
-      if (t.isReal) {
-        m.querySelector('.tp-level').textContent = tr('discover.verifiedRealMember');
-      } else {
-        const levelMatch = t.level.match(/^(.*?)(\s*⭐+)?$/);
-        m.querySelector('.tp-level').textContent = tBadgeTier(levelMatch[1].trim()) + (levelMatch[2] || '');
-      }
+      const levelMatch = t.level.match(/^(.*?)(\s*⭐+)?$/);
+      m.querySelector('.tp-level').textContent = tBadgeTier(levelMatch[1].trim()) + (levelMatch[2] || '');
+      m.querySelector('.tp-verified').textContent = t.isReal ? tr('discover.verifiedRealMember') : '';
       m.querySelector('.tp-bio').textContent = (t.bio ? tTravelerBio(t.bio) : '') || (t.isReal ? tr('discover.noBioYet') : '');
       m.querySelector('#tp-stat-trips').textContent = t.trips;
       m.querySelector('#tp-stat-countries').textContent = t.countries;
