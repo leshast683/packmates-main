@@ -1,4 +1,4 @@
-const CACHE = 'packmates-v4';
+const CACHE = 'packmates-v5';
 
 const PRECACHE = [
   '/img/appIcon.png',
