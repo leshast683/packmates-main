@@ -81,6 +81,11 @@
 
     .wt-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
     .wt-overlay-dark { background: linear-gradient(180deg, rgba(10,25,35,0.45) 0%, rgba(10,25,35,0.1) 32%, rgba(10,25,35,0.3) 100%); }
+    /* Dark text over a bright/busy photo or video needs its own scrim too -
+       without it, a bright sky or clouds directly behind the title washes
+       the text out to near-illegible, same problem wt-overlay-dark solves
+       for light text on a dark photo, just inverted. */
+    .wt-overlay-light { background: linear-gradient(180deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.3) 45%, rgba(255,255,255,0) 72%); }
 
     .wt-content {
       position: relative; z-index: 2;
@@ -94,6 +99,12 @@
       text-wrap: balance; margin-bottom: 10px;
     }
     .wt-title-light { color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.25); }
+    /* Extra legibility margin for dark text sitting on a photo/video
+       background, on top of wt-overlay-light's scrim - a soft light glow
+       instead of a dark shadow, so it helps against bright backgrounds
+       without muddying the text itself. */
+    .wt-title-scrim { text-shadow: 0 1px 3px rgba(255,255,255,0.8), 0 0 18px rgba(255,255,255,0.5); }
+    .wt-subtitle-scrim { text-shadow: 0 1px 3px rgba(255,255,255,0.9), 0 0 14px rgba(255,255,255,0.6); }
     .wt-subtitle {
       font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 500;
       color: var(--text-2); line-height: 1.5; max-width: 320px; margin: 0 auto;
@@ -227,10 +238,11 @@
         <video class="wt-bg-video" id="wtSlide1Video" poster="img/onboarding-1.jpg" autoplay muted playsinline webkit-playsinline preload="auto">
           <source src="img/onboarding-1.mp4" type="video/mp4">
         </video>
+        <div class="wt-overlay wt-overlay-light"></div>
         <div class="wt-content">
-          <img class="wt-logo" src="img/appIcon.png" alt="PackMates AI">
-          <h1 class="wt-title" id="wtTitle1"></h1>
-          <p class="wt-subtitle" data-i18n="onboarding.s1.subtitle"></p>
+          <img class="wt-logo" src="img/appIcon.png" alt="Packmates AI">
+          <h1 class="wt-title wt-title-scrim" id="wtTitle1"></h1>
+          <p class="wt-subtitle wt-subtitle-scrim" data-i18n="onboarding.s1.subtitle"></p>
         </div>
         <div class="wt-bottom">
           <button type="button" class="wt-btn wt-btn-primary" id="wtNextBtn" data-i18n="onboarding.s1.cta"></button>
@@ -350,7 +362,7 @@
       document.getElementById('wtTitle5').textContent = tr('onboarding.s5.title', { name: firstName });
     }
 
-    /* Decorative only - illustrates the range of activities PackMates
+    /* Decorative only - illustrates the range of activities Packmates AI
        supports, not wired to any trip data. Each tile's background is a
        placeholder gradient swatch until real thumbnail photos exist. */
     const ACTIVITIES = [
