@@ -152,13 +152,12 @@
        own activity chips, and the same tap-to-select feedback (toggles
        .selected, not real :hover since this is a touch context). ── */
     .wt-activity-grid {
-      position: relative; z-index: 2; margin-top: 20px; padding: 0 16px;
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
-      overflow-y: auto; flex: 1;
+      position: relative; z-index: 2; margin-top: 14px; padding: 0 14px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
     }
     .wt-activity-card {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 4px; aspect-ratio: 1; border-radius: 12px;
+      gap: 2px; height: 78px; border-radius: 12px;
       border: 1.5px solid var(--border); background: rgba(255,255,255,0.92);
       box-shadow: var(--shadow-sm); cursor: pointer;
       transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
@@ -168,7 +167,7 @@
       background: var(--green-bg, rgba(95,157,48,0.12)); border-color: var(--green);
       box-shadow: 0 4px 16px rgba(95,157,48,0.18);
     }
-    .wt-activity-card img.wt-activity-icon { width: 26px; height: 26px; flex-shrink: 0; }
+    .wt-activity-card img.wt-activity-icon { width: 40px; height: 40px; flex-shrink: 0; }
     .wt-activity-card span.wt-activity-label {
       font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700;
       color: var(--text-1); text-align: center; line-height: 1.2;
@@ -178,7 +177,9 @@
 
     @media (max-width: 380px) {
       .wt-title { font-size: 1.45rem; }
-      .wt-activity-card span.wt-activity-label { font-size: 0.58rem; }
+      .wt-activity-card { height: 70px; }
+      .wt-activity-card img.wt-activity-icon { width: 34px; height: 34px; }
+      .wt-activity-card span.wt-activity-label { font-size: 0.56rem; }
     }
   </style>
 </head>
