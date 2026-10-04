@@ -95,8 +95,8 @@
        itself gets the contrast boost. */
     .wt-text-scrim {
       display: inline-block; max-width: 320px;
-      background: rgba(255,255,255,0.14);
-      backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(1.5px); -webkit-backdrop-filter: blur(1.5px);
       border-radius: 18px; padding: 14px 22px;
     }
     .wt-title {
@@ -242,7 +242,10 @@
         <div class="wt-content">
           <img class="wt-logo" src="img/appIcon.png" alt="Packmates AI">
           <div class="wt-text-scrim">
-            <h1 class="wt-title" id="wtTitle1"></h1>
+            <h1 class="wt-title">
+              <span data-i18n="onboarding.s1.titleLine1"></span><br>
+              <span id="wtTitle1Line2"></span>
+            </h1>
             <p class="wt-subtitle" data-i18n="onboarding.s1.subtitle"></p>
           </div>
         </div>
@@ -360,7 +363,7 @@
       const session = Auth.getSession();
       const rawName = session?.name?.split(' ')[0] || tr('profile.hero.travelerFallback');
       const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
-      document.getElementById('wtTitle1').textContent = tr('onboarding.s1.title', { name: firstName });
+      document.getElementById('wtTitle1Line2').textContent = tr('onboarding.s1.titleLine2', { name: firstName });
       document.getElementById('wtTitle5').textContent = tr('onboarding.s5.title', { name: firstName });
     }
 
