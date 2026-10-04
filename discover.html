@@ -232,12 +232,6 @@
       cursor:pointer;
       position:relative;
     }
-    .traveler-real-badge {
-      position:absolute; top:10px; right:10px;
-      background:rgba(95,157,48,.12); color:var(--green,#5f9d30);
-      font-size:.55rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
-      padding:2px 7px; border-radius:99px;
-    }
     .traveler-card:hover {
       transform:translateY(-4px);
       box-shadow:0 12px 30px rgba(0,0,0,.09);
@@ -1012,7 +1006,6 @@
       c.className = 'traveler-card';
       const isFollowing = getFollowingIds().has(t.avatar);
       c.innerHTML = `
-        ${t.isReal ? `<div class="traveler-real-badge" title="${tr('discover.realMemberTitle')}">${tr('discover.realMemberBadge')}</div>` : ''}
         <div class="traveler-avatar" style="background:${t.color}">${t.avatarImg ? `<img src="${escapeHtml(t.avatarImg)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : escapeHtml(t.avatar)}</div>
         <div class="traveler-name">${escapeHtml(t.name.split(' ')[0])} ${escapeHtml((t.name.split(' ')[1]||'').charAt(0))}.</div>
         <div class="traveler-city">${escapeHtml(t.city)}</div>
