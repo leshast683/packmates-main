@@ -411,13 +411,24 @@
     updateProgress(0);
 
     const track = document.getElementById('wtTrack');
+    const _wtVideo1 = document.getElementById('wtSlide1Video');
     let _scrollRaf = null;
+    let _wtLastSlideIdx = 0;
     track.addEventListener('scroll', () => {
       if (_scrollRaf) return;
       _scrollRaf = requestAnimationFrame(() => {
         _scrollRaf = null;
-        const idx = Math.round(track.scrollLeft / track.clientWidth);
-        updateProgress(Math.max(0, Math.min(SLIDE_COUNT - 1, idx)));
+        const idx = Math.max(0, Math.min(SLIDE_COUNT - 1, Math.round(track.scrollLeft / track.clientWidth)));
+        updateProgress(idx);
+        // Swiping back to slide 1 restarts its video from the top,
+        // rather than leaving it paused on whatever frame it was at
+        // (its last frame if it already played through once, or
+        // mid-clip if they swiped away before it finished).
+        if (idx === 0 && _wtLastSlideIdx !== 0) {
+          _wtVideo1.currentTime = 0;
+          _wtVideo1.play().catch(() => {});
+        }
+        _wtLastSlideIdx = idx;
       });
     }, { passive: true });
 
@@ -431,7 +442,6 @@
        moves on instead of being left on a frozen last frame. Only
        fires if they're still on slide 1 - having come back to rewatch
        it from a later slide shouldn't yank them forward again. */
-    const _wtVideo1 = document.getElementById('wtSlide1Video');
     _wtVideo1.addEventListener('ended', () => {
       if (Math.round(track.scrollLeft / track.clientWidth) === 0) _goToSlide2();
     });
