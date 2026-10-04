@@ -107,6 +107,24 @@
     }
     .wt-subtitle-light { color: rgba(255,255,255,0.92); text-shadow: 0 1px 6px rgba(0,0,0,0.25); }
 
+    /* Slide 2: text for the 4 empty white pills already in the photo
+       (icon badge on the left of each, blank on the right). Positions
+       are % of the slide, measured from where those pills actually sit
+       in img/onboarding-2.jpg at its native 941x1672. */
+    .wt-s2-label {
+      position: absolute; z-index: 2;
+      display: flex; align-items: center;
+      font-family: 'Blauer Nue', sans-serif; font-weight: 700;
+      font-size: 0.82rem; color: var(--text-1);
+    }
+    .wt-s2-weather     { left: 26%;   top: 41.1%; width: 18%; height: 9.5%; }
+    .wt-s2-destination { left: 67.5%; top: 42.0%; width: 18%; height: 8.8%; }
+    .wt-s2-activities  { left: 24%;   top: 50.4%; width: 18%; height: 9.2%; }
+    .wt-s2-tripLength  { left: 71.5%; top: 55.6%; width: 18%; height: 8.3%; }
+    @media (max-width: 380px) {
+      .wt-s2-label { font-size: 0.7rem; }
+    }
+
     .wt-bottom {
       position: relative; z-index: 2; margin-top: auto;
       padding: 0 24px calc(64px + env(safe-area-inset-bottom));
@@ -247,6 +265,15 @@
           </h1>
           <p class="wt-subtitle wt-subtitle-scrim" data-i18n="onboarding.s4.subtitle"></p>
         </div>
+        <!-- Text for the 4 empty white pill shapes already baked into
+             img/onboarding-2.jpg (icon on the left half of each pill,
+             blank space on the right) - positioned as % of the slide to
+             land in that blank space; coordinates measured from the
+             photo's own pill locations, not arbitrary. -->
+        <div class="wt-s2-label wt-s2-weather" data-i18n="onboarding.s4.weather"></div>
+        <div class="wt-s2-label wt-s2-destination" data-i18n="onboarding.s4.destination"></div>
+        <div class="wt-s2-label wt-s2-activities" data-i18n="onboarding.s4.activities"></div>
+        <div class="wt-s2-label wt-s2-tripLength" data-i18n="onboarding.s4.tripLength"></div>
       </section>
 
       <!-- Slide 3 -->
