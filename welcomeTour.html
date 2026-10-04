@@ -209,16 +209,6 @@
     .wt-group-avatars span:first-child { margin-left: 0; }
     .wt-group-avatars span.wt-more { background: var(--green-bg); color: var(--green-dark); }
 
-    /* ── Slide 4: feature pills ── */
-    .wt-pills { position: relative; z-index: 2; margin-top: 32px; padding: 0 28px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
-    .wt-pill {
-      display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.95);
-      border-radius: 999px; padding: 14px 24px; box-shadow: var(--shadow-md);
-      font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--text-1);
-      width: 100%; max-width: 280px;
-    }
-    .wt-pill span:first-child { font-size: 1.1rem; }
-
     @media (max-width: 380px) {
       .wt-title { font-size: 1.45rem; }
       .wt-activity-card span.wt-activity-label { font-size: 0.58rem; }
@@ -256,12 +246,6 @@
             <span data-i18n="onboarding.s4.titleLine2"></span>
           </h1>
           <p class="wt-subtitle" data-i18n="onboarding.s4.subtitle"></p>
-        </div>
-        <div class="wt-pills">
-          <div class="wt-pill"><span>☀️</span><span data-i18n="onboarding.s4.weather"></span></div>
-          <div class="wt-pill"><span>📍</span><span data-i18n="onboarding.s4.destination"></span></div>
-          <div class="wt-pill"><span>🏔️</span><span data-i18n="onboarding.s4.activities"></span></div>
-          <div class="wt-pill"><span>📅</span><span data-i18n="onboarding.s4.tripLength"></span></div>
         </div>
       </section>
 
