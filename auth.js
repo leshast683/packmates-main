@@ -1125,7 +1125,18 @@ const DB = (() => {
         pdEmail:  data.pd_email || existing.pdEmail,
         pdPhone:  data.pd_phone || existing.pdPhone,
         notif:    data.notif    || existing.notif,
-        privacy:  data.privacy  || existing.privacy,
+        /* Key-by-key merge, not a wholesale replace: saveProfile()'s
+           write (e.g. accepting the cookie banner) isn't awaited by its
+           callers, so a syncProfile() firing on the very next page load
+           (auth.js runs this on every page) can land before that write
+           has actually settled server-side. A flat `data.privacy ||
+           existing.privacy` would then overwrite the just-accepted
+           local choice with a stale/incomplete server copy, bringing
+           the banner right back. Spreading data.privacy over existing
+           keeps any locally-set key data.privacy doesn't (yet) have,
+           while still letting a real cross-device change win for any
+           key the server does have. */
+        privacy: { ...existing.privacy, ...data.privacy },
         discoverable: data.discoverable ?? existing.discoverable ?? false,
         bio:      data.bio      || existing.bio,
         location: data.location || existing.location,
