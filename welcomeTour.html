@@ -79,9 +79,6 @@
     .wt-slide-4 .wt-bg { background-image: url('img/onboarding-4.jpg'), linear-gradient(165deg, #9fd4e8 0%, #6fa8c9 45%, #e8c99a 100%); }
     .wt-slide-5 .wt-bg { background-image: url('img/onboarding-5.jpg'), linear-gradient(165deg, #f0d9b0 0%, #e8b97a 45%, #4a7a8c 100%); }
 
-    .wt-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-    .wt-overlay-dark { background: linear-gradient(180deg, rgba(10,25,35,0.45) 0%, rgba(10,25,35,0.1) 32%, rgba(10,25,35,0.3) 100%); }
-
     .wt-content {
       position: relative; z-index: 2;
       padding: calc(40px + env(safe-area-inset-top)) 24px 0;
@@ -93,24 +90,22 @@
       font-size: 1.7rem; line-height: 1.25; color: var(--text-1);
       text-wrap: balance; margin-bottom: 10px;
     }
-    .wt-title-light { color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.25); }
     /* A busy/bright photo or video directly behind dark text can wash it
        out - a soft light glow traced right on the glyphs themselves
        (not a box/backdrop behind the whole line) fixes that without
        ever looking like a panel sitting on the photo. */
     .wt-title-scrim { text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 8px #fff, 0 0 8px #fff, 0 0 22px #fff, 0 0 22px #fff; }
     .wt-subtitle-scrim { text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 26px #fff, 0 0 26px #fff; }
-    /* Slide 2's subtitle is longer (wraps 4 lines) over a brighter/busier
-       part of the photo than slide 1's, so it needs an even stronger
-       glow - kept separate from wt-subtitle-scrim so slide 1 isn't
-       affected. */
-    .wt-slide-2 .wt-subtitle-scrim { text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 30px #fff, 0 0 30px #fff, 0 0 30px #fff; }
-    .wt-slide-1 .wt-subtitle, .wt-slide-2 .wt-subtitle { color: var(--text-1); }
+    /* Slides 2 and 3's subtitles are longer (wrap multiple lines) over a
+       brighter/busier part of their photos than slide 1's, so they need
+       an even stronger glow - kept separate from wt-subtitle-scrim so
+       slide 1 isn't affected. */
+    .wt-slide-2 .wt-subtitle-scrim, .wt-slide-3 .wt-subtitle-scrim { text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 30px #fff, 0 0 30px #fff, 0 0 30px #fff; }
+    .wt-slide-1 .wt-subtitle, .wt-slide-2 .wt-subtitle, .wt-slide-3 .wt-subtitle { color: var(--text-1); }
     .wt-subtitle {
       font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 500;
       color: var(--text-2); line-height: 1.5; max-width: 320px; margin: 0 auto;
     }
-    .wt-subtitle-light { color: rgba(255,255,255,0.92); text-shadow: 0 1px 6px rgba(0,0,0,0.25); }
 
     .wt-bottom {
       position: relative; z-index: 2; margin-top: auto;
@@ -161,58 +156,15 @@
     }
     .wt-activity-card { display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .wt-activity-thumb {
-      width: 100%; aspect-ratio: 1; border-radius: 14px; position: relative;
+      width: 100%; aspect-ratio: 1; border-radius: 14px;
       box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
     }
-    .wt-activity-badge {
-      position: absolute; top: -6px; right: -6px; width: 24px; height: 24px;
-      border-radius: 50%; background: #fff; display: flex; align-items: center;
-      justify-content: center; font-size: 0.75rem; box-shadow: var(--shadow-sm);
-    }
+    .wt-activity-thumb-icon { background: var(--surface); padding: 10px; }
+    .wt-activity-thumb-icon img { width: 100%; height: 100%; object-fit: contain; }
     .wt-activity-card span.wt-activity-label {
       font-family: 'Montserrat', sans-serif; font-size: 0.64rem; font-weight: 700;
       color: var(--text-1); text-align: center; line-height: 1.2;
     }
-
-    /* ── Slide 3: social proof cards ── */
-    .wt-social { position: relative; z-index: 2; flex: 1; margin-top: 10px; }
-    .wt-avatar-card {
-      position: absolute; display: flex; align-items: center; gap: 10px;
-      background: rgba(255,255,255,0.97); border-radius: 16px; padding: 8px 12px 8px 8px;
-      box-shadow: var(--shadow-md);
-    }
-    .wt-avatar-photo {
-      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 1.05rem;
-    }
-    .wt-avatar-info { display: flex; flex-direction: column; }
-    .wt-avatar-info strong { font-family: 'Blauer Nue', sans-serif; font-size: 0.82rem; color: var(--text-1); }
-    .wt-avatar-info span { font-family: 'Montserrat', sans-serif; font-size: 0.68rem; color: var(--text-3); }
-    .wt-avatar-add {
-      width: 22px; height: 22px; border-radius: 50%; background: var(--green);
-      color: #fff; border: none; font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; margin-left: 4px;
-    }
-    .wt-avatar-tl { top: 14%; left: 6%; }
-    .wt-avatar-tr { top: 28%; right: 6%; }
-    .wt-avatar-bl { top: 56%; left: 4%; }
-    .wt-avatar-br { top: 66%; right: 4%; }
-    .wt-group-card {
-      position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
-      background: rgba(255,255,255,0.97); border-radius: 18px; padding: 14px 18px;
-      box-shadow: var(--shadow-lg); text-align: left; min-width: 160px;
-    }
-    .wt-group-card strong { display: block; font-family: 'Blauer Nue', sans-serif; font-size: 0.92rem; color: var(--text-1); line-height: 1.3; }
-    .wt-group-avatars { display: flex; align-items: center; margin-top: 10px; }
-    .wt-group-avatars span {
-      width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff;
-      margin-left: -8px; display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 0.6rem; font-weight: 800; font-family: 'Blauer Nue', sans-serif;
-    }
-    .wt-group-avatars span:first-child { margin-left: 0; }
-    .wt-group-avatars span.wt-more { background: var(--green-bg); color: var(--green-dark); }
 
     @media (max-width: 380px) {
       .wt-title { font-size: 1.45rem; }
@@ -257,45 +209,12 @@
       <!-- Slide 3 -->
       <section class="wt-slide wt-slide-3" data-slide="3">
         <div class="wt-bg"></div>
-        <div class="wt-overlay wt-overlay-dark"></div>
         <div class="wt-content">
-          <h1 class="wt-title wt-title-light">
+          <h1 class="wt-title wt-title-scrim">
             <span data-i18n="onboarding.s3.titleLine1"></span><br>
             <span data-i18n="onboarding.s3.titleLine2"></span>
           </h1>
-          <p class="wt-subtitle wt-subtitle-light" data-i18n="onboarding.s3.subtitle"></p>
-        </div>
-        <div class="wt-social">
-          <div class="wt-avatar-card wt-avatar-tl">
-            <div class="wt-avatar-photo" style="background:linear-gradient(135deg,#f0a35c,#e07a5f)">S</div>
-            <div class="wt-avatar-info"><strong>Sofia M.</strong><span data-i18n="onboarding.s3.trips14"></span></div>
-            <button class="wt-avatar-add">+</button>
-          </div>
-          <div class="wt-avatar-card wt-avatar-tr">
-            <div class="wt-avatar-photo" style="background:linear-gradient(135deg,#5fa8d3,#2d6a7c)">J</div>
-            <div class="wt-avatar-info"><strong>James T.</strong><span data-i18n="onboarding.s3.trips22"></span></div>
-            <button class="wt-avatar-add">+</button>
-          </div>
-          <div class="wt-avatar-card wt-avatar-bl">
-            <div class="wt-avatar-photo" style="background:linear-gradient(135deg,#7cc63e,#4d8225)">R</div>
-            <div class="wt-avatar-info"><strong>Ryan K.</strong><span data-i18n="onboarding.s3.trips8"></span></div>
-            <button class="wt-avatar-add">+</button>
-          </div>
-          <div class="wt-avatar-card wt-avatar-br">
-            <div class="wt-avatar-photo" style="background:linear-gradient(135deg,#c97bb0,#8a4a9c)">E</div>
-            <div class="wt-avatar-info"><strong>Emma L.</strong><span data-i18n="onboarding.s3.trips11"></span></div>
-            <button class="wt-avatar-add">+</button>
-          </div>
-          <div class="wt-group-card">
-            <strong data-i18n="onboarding.s3.groupTripLine1"></strong>
-            <strong data-i18n="onboarding.s3.groupTripLine2"></strong>
-            <div class="wt-group-avatars">
-              <span style="background:linear-gradient(135deg,#f0a35c,#e07a5f)">S</span>
-              <span style="background:linear-gradient(135deg,#5fa8d3,#2d6a7c)">J</span>
-              <span style="background:linear-gradient(135deg,#7cc63e,#4d8225)">R</span>
-              <span class="wt-more">+3</span>
-            </div>
-          </div>
+          <p class="wt-subtitle wt-subtitle-scrim" data-i18n="onboarding.s3.subtitle"></p>
         </div>
       </section>
 
@@ -349,28 +268,37 @@
       document.getElementById('wtTitle5').textContent = tr('onboarding.s5.title', { name: firstName });
     }
 
-    /* Decorative only - illustrates the range of activities Packmates AI
-       supports, not wired to any trip data. Each tile's background is a
-       placeholder gradient swatch until real thumbnail photos exist. */
+    /* Reuses newTrip.html's own activity-chip icon set where a matching
+       category exists (same icons the real trip-creation flow uses, not
+       lookalikes), so this preview is honest about what the app already
+       has. The categories with no equivalent icon yet fall back to a
+       plain color swatch - no emoji. */
     const ACTIVITIES = [
-      ['beach', '☀️', '#f6c453,#f0a35c'], ['cityTrips', '🏙️', '#e76f6f,#c94f4f'],
-      ['hiking', '⛰️', '#7cc63e,#4d8225'], ['camping', '⛺', '#f0a35c,#d9823c'],
-      ['cruises', '🚢', '#a98bd9,#7a5cb8'], ['snowSports', '❄️', '#7fc4e8,#4a9bc9'],
-      ['swimming', '🌊', '#5fb8d3,#2d8aa8'], ['diving', '🤿', '#4fc9a8,#2a9b7c'],
-      ['sightseeing', '📷', '#e86f8a,#c94f6f'], ['dining', '🍴', '#f0a35c,#e07a3c'],
-      ['nightlife', '🍸', '#e87ab0,#c94f8c'], ['themeParks', '🎢', '#a98bd9,#8a5cc9'],
-      ['wellness', '🌿', '#7cc69e,#4d9270'], ['wildlife', '🐘', '#b08968,#8a6a4c'],
-      ['cultural', '⛩️', '#e76f6f,#c9504f'], ['photography', '📸', '#9aa5b1,#6c7684'],
+      ['beach', 'img/activity_beach.png', '#f6c453,#f0a35c'],
+      ['cityTrips', null, '#e76f6f,#c94f4f'],
+      ['hiking', 'img/activity_hiking.png', '#7cc63e,#4d8225'],
+      ['camping', 'img/activity_camping.png', '#f0a35c,#d9823c'],
+      ['cruises', 'img/activity_cruise.png', '#a98bd9,#7a5cb8'],
+      ['snowSports', 'img/activity_snowsports.png', '#7fc4e8,#4a9bc9'],
+      ['swimming', 'img/activity_swimming.png', '#5fb8d3,#2d8aa8'],
+      ['diving', null, '#4fc9a8,#2a9b7c'],
+      ['sightseeing', 'img/activity_sightseeing.png', '#e86f8a,#c94f6f'],
+      ['dining', 'img/activity_dining.png', '#f0a35c,#e07a3c'],
+      ['nightlife', 'img/activity_nightout.png', '#e87ab0,#c94f8c'],
+      ['themeParks', 'img/activity_themepark.png', '#a98bd9,#8a5cc9'],
+      ['wellness', null, '#7cc69e,#4d9270'],
+      ['wildlife', null, '#b08968,#8a6a4c'],
+      ['cultural', null, '#e76f6f,#c9504f'],
+      ['photography', null, '#9aa5b1,#6c7684'],
     ];
     const grid = document.getElementById('wtActivityGrid');
-    ACTIVITIES.forEach(([key, emoji, gradient]) => {
+    ACTIVITIES.forEach(([key, iconSrc, gradient]) => {
       const card = document.createElement('div');
       card.className = 'wt-activity-card';
-      card.innerHTML = `
-        <div class="wt-activity-thumb" style="background:linear-gradient(135deg,${gradient})">
-          <span class="wt-activity-badge">${emoji}</span>
-        </div>
-        <span class="wt-activity-label" data-i18n="onboarding.activity.${key}"></span>`;
+      const thumb = iconSrc
+        ? `<div class="wt-activity-thumb wt-activity-thumb-icon"><img src="${iconSrc}" alt=""></div>`
+        : `<div class="wt-activity-thumb" style="background:linear-gradient(135deg,${gradient})"></div>`;
+      card.innerHTML = `${thumb}<span class="wt-activity-label" data-i18n="onboarding.activity.${key}"></span>`;
       grid.appendChild(card);
     });
     if (_pmAuthed) applyTranslations();
