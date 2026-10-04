@@ -73,7 +73,7 @@
        underneath shows instead (a 404'd layer just reveals what's below
        it - no broken-image icon, no code branch needed). */
     .wt-bg { position: absolute; inset: 0; z-index: 0; background-size: cover; background-position: center; }
-    .wt-slide-1 .wt-bg { background-image: url('img/onboarding-1.jpg'), linear-gradient(165deg, #8fd3f4 0%, #5fa8d3 38%, #2d7a8c 68%, #1a4a5c 100%); }
+    .wt-bg-video { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; background: #0d3347; }
     .wt-slide-2 .wt-bg { background-image: url('img/onboarding-2.jpg'), linear-gradient(165deg, #a8e0d8 0%, #6fb8c9 45%, #3d7a9c 100%); }
     .wt-slide-3 .wt-bg { background-image: url('img/onboarding-3.jpg'), linear-gradient(165deg, #2d6a7c 0%, #1a4a5c 55%, #0d3347 100%); }
     .wt-slide-4 .wt-bg { background-image: url('img/onboarding-4.jpg'), linear-gradient(165deg, #9fd4e8 0%, #6fa8c9 45%, #e8c99a 100%); }
@@ -224,7 +224,9 @@
 
       <!-- Slide 1 -->
       <section class="wt-slide wt-slide-1" data-slide="1">
-        <div class="wt-bg"></div>
+        <video class="wt-bg-video" id="wtSlide1Video" poster="img/onboarding-1.jpg" autoplay muted playsinline webkit-playsinline preload="auto">
+          <source src="img/onboarding-1.mp4" type="video/mp4">
+        </video>
         <div class="wt-content">
           <img class="wt-logo" src="img/appIcon.png" alt="PackMates AI">
           <h1 class="wt-title" id="wtTitle1"></h1>
@@ -409,8 +411,26 @@
       });
     }, { passive: true });
 
-    document.getElementById('wtNextBtn').addEventListener('click', () => {
+    function _goToSlide2() {
       track.scrollTo({ left: track.clientWidth, behavior: 'smooth' });
+    }
+    document.getElementById('wtNextBtn').addEventListener('click', _goToSlide2);
+
+    /* Slide 1's background video auto-advances to slide 2 once it
+       finishes, so a person who doesn't tap "Show me around" still
+       moves on instead of being left on a frozen last frame. Only
+       fires if they're still on slide 1 - having come back to rewatch
+       it from a later slide shouldn't yank them forward again. */
+    const _wtVideo1 = document.getElementById('wtSlide1Video');
+    _wtVideo1.addEventListener('ended', () => {
+      if (Math.round(track.scrollLeft / track.clientWidth) === 0) _goToSlide2();
+    });
+    // Some mobile browsers block autoplay even when muted; retry once on
+    // first user interaction with the page rather than leaving it stuck
+    // on the poster frame with no fallback.
+    _wtVideo1.play().catch(() => {
+      const _retryPlay = () => { _wtVideo1.play().catch(() => {}); document.removeEventListener('touchstart', _retryPlay); };
+      document.addEventListener('touchstart', _retryPlay, { once: true, passive: true });
     });
 
     /* window.top, not window: this page can be running inside the native
