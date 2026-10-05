@@ -679,6 +679,11 @@
          Let it size to its content instead. */
       .headline { flex:none; justify-content:flex-start; padding:0; margin-top:12px; }
       .main-title { font-size:2.8rem; }
+      /* .footer-row's own margin-top:52px (set above for the desktop
+         space-between row) stacks on top of .left's 28px flex gap here,
+         leaving a bigger gap after the Sign In/Create Account buttons
+         than any other gap on this screen. Shrink it to match. */
+      .footer-row { margin-top:12px; }
       /* .right (floating card/badges) is hidden here, but the orbs are body-level
          and were still drifting forever in the background — keep the page stable. */
       .orb { animation: none; }
