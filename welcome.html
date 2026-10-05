@@ -386,8 +386,10 @@
 
     .footer-row {
       display:flex;
-      justify-content:space-between;
+      flex-direction:column;
+      justify-content:center;
       align-items:center;
+      gap:10px;
       margin-top:52px;
       font-size:0.62rem;
       color:rgba(255,255,255,0.18);
@@ -396,7 +398,7 @@
     }
     .footer-row a { color:rgba(255,255,255,0.25); text-decoration:none; transition:color 0.2s; }
     .footer-row a:hover { color:rgba(255,255,255,0.6); }
-    .footer-links { display:flex; gap:16px; }
+    .footer-links { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; }
 
     /* ══════════════════════
        RIGHT PANEL
@@ -747,7 +749,6 @@
       </div>
 
       <div class="footer-row">
-        <span>© 2025 Packmates AI</span>
         <div class="footer-links">
           <a href="packing-guide.html">Packing Guide</a>
           <a href="packing-assistant.html">Packing Assistant</a>
@@ -756,6 +757,7 @@
           <a href="terms.html">Terms</a>
           <a href="support.html">Support</a>
         </div>
+        <span>© 2025 Packmates AI</span>
       </div>
     </div>
   </div>
