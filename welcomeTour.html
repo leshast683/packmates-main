@@ -273,20 +273,14 @@
        the top level (plain <script>, not a module) - the rest of this
        script keeps running immediately, so a returning person on a new
        device may see the tour flash briefly before this redirects them. */
-    /* TEMPORARY - testing only: both tourSeen skip-checks below are
-       disabled while index.js is force-redirecting every home-page load
-       here; leaving them active would bounce straight back to
-       index.html (which then bounces right back here) in an infinite
-       loop. Re-enable this block when removing index.js's matching
-       temporary redirect. */
-    // if (_pmAuthed) {
-    //   DB.syncProfile().catch(() => {}).then(() => {
-    //     const tourSeen = localStorage.getItem('pm_tour_seen') === '1'
-    //       || JSON.parse(localStorage.getItem('pm_profile') || '{}').tourSeen === true;
-    //     if (tourSeen) location.replace('index.html');
-    //   });
-    //   if (localStorage.getItem('pm_tour_seen') === '1') location.replace('index.html');
-    // }
+    if (_pmAuthed) {
+      DB.syncProfile().catch(() => {}).then(() => {
+        const tourSeen = localStorage.getItem('pm_tour_seen') === '1'
+          || JSON.parse(localStorage.getItem('pm_profile') || '{}').tourSeen === true;
+        if (tourSeen) location.replace('index.html');
+      });
+      if (localStorage.getItem('pm_tour_seen') === '1') location.replace('index.html');
+    }
 
     if (_pmAuthed) {
       const session = Auth.getSession();
