@@ -1616,7 +1616,22 @@
       const real = await _loadRealPackmates();
       return real.concat(_loadFollowedTravelers());
     }
+    // Pulls this account's synced follows (see DB.syncFollowedTravelers)
+    // into localStorage's pm_following once per page load, so a follow
+    // made on another device shows up here too - cached on the promise
+    // itself so repeat calls (e.g. right after toggling a follow in this
+    // same session) don't redo the round trip.
+    let _pmFollowedSyncPromise = null;
+    function _syncFollowedTravelersOnce() {
+      if (!_pmFollowedSyncPromise) {
+        _pmFollowedSyncPromise = (typeof DB !== 'undefined' && DB.syncFollowedTravelers)
+          ? DB.syncFollowedTravelers().catch(() => {})
+          : Promise.resolve();
+      }
+      return _pmFollowedSyncPromise;
+    }
     async function refreshPackmatesCount() {
+      await _syncFollowedTravelersOnce();
       const list = await _loadPackmates();
       const count = list.length;
       document.getElementById('stat-packmates').textContent = count;
@@ -1629,6 +1644,7 @@
     window.addEventListener('storage', e => { if (e.key === 'pm_following') refreshPackmatesCount(); });
     const PM_AVATAR_COLORS = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#f7971e,#ffd200)','linear-gradient(135deg,#7cc63e,#4d8225)','linear-gradient(135deg,#e74c3c,#c0392b)','linear-gradient(135deg,#1abc9c,#16a085)'];
     async function openPackmatesModal() {
+      await _syncFollowedTravelersOnce();
       const list = await _loadPackmates();
       const count = list.length;
       document.getElementById('pmListCount').textContent = tr(count === 1 ? 'profile.packmates.countSingular' : 'profile.packmates.countPlural', { count });
@@ -1860,6 +1876,8 @@
         localStorage.setItem('pm_following', JSON.stringify(list));
         btn.textContent = adding ? tr('profile.packmates.following') : tr('profile.packmates.follow');
         btn.classList.toggle('following', adding);
+        if (typeof DB !== 'undefined' && DB.setFollowedTraveler) DB.setFollowedTraveler(t.avatar, adding).catch(() => {});
+        refreshPackmatesCount();
       };
       document.getElementById('pmTpBackdrop').classList.add('open');
       m.scrollTop = 0;

@@ -999,10 +999,10 @@
       try { return JSON.parse(localStorage.getItem('pm_following') || '[]'); } catch { return []; }
     }
     function getFollowingIds() { return new Set(getFollowing()); }
-    function toggleFollow(avatar) {
+    function toggleFollow(key) {
       const set = getFollowingIds();
-      const adding = !set.has(avatar);
-      adding ? set.add(avatar) : set.delete(avatar);
+      const adding = !set.has(key);
+      adding ? set.add(key) : set.delete(key);
       localStorage.setItem('pm_following', JSON.stringify([...set]));
       return adding;
     }
@@ -1013,10 +1013,18 @@
     }
 
     const travelersStrip = document.getElementById('travelersStrip');
+    /* The follow key: a real traveler's own user_id when there is one
+       (stable and unique), falling back to the avatar code for demo
+       travelers (who have no user_id). t.avatar alone is NOT safe for
+       real travelers - it's just their name's first initial (see the
+       TRAVELERS.push above), which collides between any two real people
+       whose names start with the same letter. */
+    function _followKey(t) { return t.userId || t.avatar; }
     function renderTravelerCard(t, idx) {
       const c = document.createElement('div');
       c.className = 'traveler-card';
-      const isFollowing = getFollowingIds().has(t.avatar);
+      const key = _followKey(t);
+      const isFollowing = getFollowingIds().has(key);
       c.innerHTML = `
         <div class="traveler-avatar" style="background:${t.color}">${t.avatarImg ? `<img src="${escapeHtml(t.avatarImg)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : escapeHtml(t.avatar)}</div>
         <div class="traveler-name">${escapeHtml(t.name.split(' ')[0])} ${escapeHtml((t.name.split(' ')[1]||'').charAt(0))}.</div>
@@ -1025,17 +1033,26 @@
           <div class="traveler-stat"><span>${t.trips}</span><span>${tr('discover.stats.trips')}</span></div>
           <div class="traveler-stat"><span>${t.countries}</span><span>${tr('discover.stats.countries')}</span></div>
         </div>
-        <button class="follow-btn">${isFollowing ? tr('discover.packmateFollowing') : tr('discover.packmateFollow')}</button>`;
+        <button class="follow-btn" data-key="${escapeHtml(key)}">${isFollowing ? tr('discover.packmateFollowing') : tr('discover.packmateFollow')}</button>`;
       const cardBtn = c.querySelector('.follow-btn');
       if (isFollowing) { cardBtn.style.background = 'var(--green)'; cardBtn.style.color = '#fff'; }
       cardBtn.addEventListener('click', e => {
         e.stopPropagation();
-        applyFollowBtn(cardBtn, toggleFollow(t.avatar));
+        const adding = toggleFollow(key);
+        applyFollowBtn(cardBtn, adding);
+        if (typeof DB !== 'undefined') DB.setFollowedTraveler(key, adding).catch(() => {});
       });
       c.addEventListener('click', () => openTravelerModal(idx));
       return c;
     }
     TRAVELERS.forEach((t, idx) => travelersStrip.appendChild(renderTravelerCard(t, idx)));
+    if (typeof DB !== 'undefined') {
+      DB.syncFollowedTravelers().then(() => {
+        document.querySelectorAll('.follow-btn[data-key]').forEach(btn => {
+          applyFollowBtn(btn, getFollowingIds().has(btn.dataset.key));
+        });
+      }).catch(() => {});
+    }
 
     /* Real, opt-in Community Travelers — blended in alongside the bots
        above once they load (progressive enhancement, doesn't delay the
@@ -1092,7 +1109,7 @@
             name: r.name || tr('discover.defaultMemberName'),
             city: r.location || (r.handle ? '@' + r.handle : tr('discover.defaultCommunityCity')),
             trips: r.trip_count || 0, countries: 0, followers: 0,
-            avatar: (r.name || '?').trim().charAt(0).toUpperCase(),
+            avatar: (r.name || '?').trim().charAt(0).toUpperCase(), userId: r.user_id,
             avatarImg: r.avatar || null, gender: r.gender || '', color: _colorForUser(r.user_id),
             coverDest: _destForUser(r.user_id), memberSince: _fmtMemberSince(r.member_since),
             level: _realLevelForTrips(r.trip_count || 0), travelStyles: [],
@@ -1184,13 +1201,15 @@
       });
 
       const btn = m.querySelector('.tp-follow-btn');
-      const isAlreadyFollowing = getFollowingIds().has(t.avatar);
+      const followKey = _followKey(t);
+      const isAlreadyFollowing = getFollowingIds().has(followKey);
       btn.textContent = isAlreadyFollowing ? tr('discover.packmateFollowing') : tr('discover.packmateFollow');
       btn.classList.toggle('following', isAlreadyFollowing);
       btn.onclick = () => {
-        const adding = toggleFollow(t.avatar);
+        const adding = toggleFollow(followKey);
         btn.textContent = adding ? tr('discover.packmateFollowing') : tr('discover.packmateFollow');
         btn.classList.toggle('following', adding);
+        if (typeof DB !== 'undefined') DB.setFollowedTraveler(followKey, adding).catch(() => {});
         // Sync the card button in the strip
         const cards = document.querySelectorAll('.traveler-card');
         if (cards[idx]) applyFollowBtn(cards[idx].querySelector('.follow-btn'), adding);

@@ -1050,6 +1050,44 @@ const DB = (() => {
       return data || [];
     },
 
+    /* "Follow" on a Community Traveler card (demo avatar code, or a real
+       user's UUID) - cosmetic, not a real packmate, but still synced so
+       the same follows show up on every device the account signs in on.
+       Call on page load, before anything reads localStorage's
+       pm_following - pushes any pre-existing local-only follows up
+       first (idempotent upsert, safe to repeat every load - handles
+       both a genuine first migration and an offline toggle made since
+       the last sync), then makes the server list authoritative so a
+       remote unfollow is reflected here too, not just new follows. */
+    async syncFollowedTravelers() {
+      const client = await sb(); const uid = _uid();
+      if (!client || !uid) return;
+      let local = [];
+      try { local = JSON.parse(localStorage.getItem('pm_following') || '[]'); } catch (e) {}
+      if (local.length) {
+        const rows = local.map(key => ({ user_id: uid, traveler_key: key }));
+        const { error: pushErr } = await client.from('followed_travelers').upsert(rows, { onConflict: 'user_id,traveler_key' });
+        if (pushErr) { console.error('[DB] syncFollowedTravelers (push):', pushErr.message); Auth.logError(pushErr.message, { where: 'syncFollowedTravelers push' }); }
+      }
+      const { data, error } = await client.from('followed_travelers').select('traveler_key').eq('user_id', uid);
+      if (error) { console.error('[DB] syncFollowedTravelers:', error.message); Auth.logError(error.message, { where: 'syncFollowedTravelers' }); return; }
+      localStorage.setItem('pm_following', JSON.stringify((data || []).map(r => r.traveler_key)));
+    },
+    /* Fire-and-forget, matching every other DB.* write in this file -
+       callers already update localStorage/the UI synchronously before
+       calling this. */
+    async setFollowedTraveler(key, following) {
+      const client = await sb(); const uid = _uid();
+      if (!client || !uid) return;
+      if (following) {
+        const { error } = await client.from('followed_travelers').upsert({ user_id: uid, traveler_key: key }, { onConflict: 'user_id,traveler_key' });
+        if (error) { console.error('[DB] setFollowedTraveler:', error.message); Auth.logError(error.message, { where: 'setFollowedTraveler' }); }
+      } else {
+        const { error } = await client.from('followed_travelers').delete().eq('user_id', uid).eq('traveler_key', key);
+        if (error) { console.error('[DB] setFollowedTraveler:', error.message); Auth.logError(error.message, { where: 'setFollowedTraveler' }); }
+      }
+    },
+
     /* real, opt-in Community Travelers — only users who turned this on */
     async getDiscoverableTravelers(limit = 12) {
       const client = await sb();
