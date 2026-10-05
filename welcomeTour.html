@@ -273,14 +273,20 @@
        the top level (plain <script>, not a module) - the rest of this
        script keeps running immediately, so a returning person on a new
        device may see the tour flash briefly before this redirects them. */
-    if (_pmAuthed) {
-      DB.syncProfile().catch(() => {}).then(() => {
-        const tourSeen = localStorage.getItem('pm_tour_seen') === '1'
-          || JSON.parse(localStorage.getItem('pm_profile') || '{}').tourSeen === true;
-        if (tourSeen) location.replace('index.html');
-      });
-      if (localStorage.getItem('pm_tour_seen') === '1') location.replace('index.html');
-    }
+    /* TEMPORARY - testing only: both tourSeen skip-checks below are
+       disabled while index.js is force-redirecting every home-page load
+       here; leaving them active would bounce straight back to
+       index.html (which then bounces right back here) in an infinite
+       loop. Re-enable this block when removing index.js's matching
+       temporary redirect. */
+    // if (_pmAuthed) {
+    //   DB.syncProfile().catch(() => {}).then(() => {
+    //     const tourSeen = localStorage.getItem('pm_tour_seen') === '1'
+    //       || JSON.parse(localStorage.getItem('pm_profile') || '{}').tourSeen === true;
+    //     if (tourSeen) location.replace('index.html');
+    //   });
+    //   if (localStorage.getItem('pm_tour_seen') === '1') location.replace('index.html');
+    // }
 
     if (_pmAuthed) {
       const session = Auth.getSession();
@@ -291,32 +297,36 @@
     }
 
     /* Same 15 categories/icons/i18n keys as newTrip.html's own activity
-       chips - not a separate lookalike set. */
+       chips - not a separate lookalike set. The category string is the
+       same data-category value newTrip.html's chips use, so a selection
+       made here round-trips cleanly through profiles.favorite_activities
+       and back out as discover.html's real-user "Favorite Activities". */
     const ACTIVITIES = [
-      ['img/activity_beach.png', 'newTrip.activity.beach'],
-      ['img/activity_hiking.png', 'newTrip.activity.hiking'],
-      ['img/activity_camping.png', 'newTrip.activity.camping'],
-      ['img/activity_swimming.png', 'newTrip.activity.swimming'],
-      ['img/activity_snowsports.png', 'newTrip.activity.snowSports'],
-      ['img/activity_gym.png', 'newTrip.activity.gym'],
-      ['img/activity_business.png', 'newTrip.activity.business'],
-      ['img/activity_nightout.png', 'newTrip.activity.nightOut'],
-      ['img/activity_baby.png', 'newTrip.activity.baby'],
-      ['img/activity_themepark.png', 'newTrip.activity.themePark'],
-      ['img/activity_festival.png', 'newTrip.activity.festival'],
-      ['img/activity_roadtrip.png', 'newTrip.activity.roadTrip'],
-      ['img/activity_sightseeing.png', 'newTrip.activity.sightseeing'],
-      ['img/activity_dining.png', 'newTrip.activity.dining'],
-      ['img/activity_cruise.png', 'newTrip.activity.cruise'],
+      ['img/activity_beach.png', 'newTrip.activity.beach', 'Beach'],
+      ['img/activity_hiking.png', 'newTrip.activity.hiking', 'Hiking'],
+      ['img/activity_camping.png', 'newTrip.activity.camping', 'Camping'],
+      ['img/activity_swimming.png', 'newTrip.activity.swimming', 'Swimming'],
+      ['img/activity_snowsports.png', 'newTrip.activity.snowSports', 'Snow Sports'],
+      ['img/activity_gym.png', 'newTrip.activity.gym', 'Gym'],
+      ['img/activity_business.png', 'newTrip.activity.business', 'Business Trip'],
+      ['img/activity_nightout.png', 'newTrip.activity.nightOut', 'Night Out'],
+      ['img/activity_baby.png', 'newTrip.activity.baby', 'Baby'],
+      ['img/activity_themepark.png', 'newTrip.activity.themePark', 'Theme Park'],
+      ['img/activity_festival.png', 'newTrip.activity.festival', 'Festival'],
+      ['img/activity_roadtrip.png', 'newTrip.activity.roadTrip', 'Road Trip'],
+      ['img/activity_sightseeing.png', 'newTrip.activity.sightseeing', 'City Sightseeing'],
+      ['img/activity_dining.png', 'newTrip.activity.dining', 'Dining'],
+      ['img/activity_cruise.png', 'newTrip.activity.cruise', 'Cruise'],
     ];
     const grid = document.getElementById('wtActivityGrid');
-    ACTIVITIES.forEach(([iconSrc, i18nKey]) => {
+    ACTIVITIES.forEach(([iconSrc, i18nKey, category]) => {
       const card = document.createElement('div');
       card.className = 'wt-activity-card';
+      card.dataset.category = category;
       card.innerHTML = `<img class="wt-activity-icon" src="${iconSrc}" alt="">
         <span class="wt-activity-label" data-i18n="${i18nKey}"></span>`;
-      // Decorative only, same tap-to-select feedback as newTrip.html's
-      // chips - not wired to any trip data here.
+      // Tap-to-select feedback matches newTrip.html's chips; the actual
+      // selection is read back in _finishTour() below.
       card.addEventListener('click', () => card.classList.toggle('selected'));
       grid.appendChild(card);
     });
@@ -394,9 +404,12 @@
        from signup - same pattern signup.html's own _goHome() uses. */
     function _finishTour(page) {
       try { localStorage.setItem('pm_tour_seen', '1'); } catch (e) {}
-      // Fire-and-forget: persists to profiles.tour_seen so this never
-      // shows again on another device, but never blocks navigation on it.
-      if (typeof DB !== 'undefined' && DB.saveProfile) DB.saveProfile({ tourSeen: true }).catch(() => {});
+      const favoriteActivities = Array.from(document.querySelectorAll('.wt-activity-card.selected'))
+        .map(c => c.dataset.category);
+      // Fire-and-forget: persists to profiles.tour_seen/favorite_activities
+      // so neither needs to be redone on another device, but never blocks
+      // navigation on it.
+      if (typeof DB !== 'undefined' && DB.saveProfile) DB.saveProfile({ tourSeen: true, favoriteActivities }).catch(() => {});
       if (window.top !== window.self && window.top.PmAuthFlow) window.top.PmAuthFlow.reveal(page);
       else location.replace(page);
     }

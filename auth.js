@@ -1084,9 +1084,14 @@ const DB = (() => {
         privacy:  merged.privacy || {}, discoverable: !!merged.discoverable,
         bio:      merged.bio     || null, location: merged.location || null,
         language: merged.language || null, temp_unit: merged.tempUnit || null,
-        tour_seen: !!merged.tourSeen,
+        tour_seen: !!merged.tourSeen, favorite_activities: merged.favoriteActivities || [],
       };
       let { error } = await client.from('profiles').upsert(payload, { onConflict: 'id' });
+      if (error && /favorite_activities/.test(error.message || '')) {
+        /* profiles.favorite_activities migration not applied yet - same fallback. */
+        delete payload.favorite_activities;
+        ({ error } = await client.from('profiles').upsert(payload, { onConflict: 'id' }));
+      }
       if (error && /language/.test(error.message || '')) {
         /* profiles.language migration not applied yet on this project -
            retry without it so every other field still saves instead of
@@ -1143,6 +1148,7 @@ const DB = (() => {
         language: data.language || existing.language,
         tempUnit: data.temp_unit || existing.tempUnit,
         tourSeen: data.tour_seen ?? existing.tourSeen ?? false,
+        favoriteActivities: data.favorite_activities || existing.favoriteActivities || [],
       }));
       return true;
     },

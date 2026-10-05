@@ -851,7 +851,18 @@
       [/jazz|dance|salsa/i,'💃'], [/garden/i,'🌿'], [/ski/i,'⛷️'], [/bik|cycl/i,'🚴'], [/whale/i,'🐋'],
       [/desert|jeep|off-road/i,'🚙'], [/shop/i,'🛍️'], [/café|coffee/i,'☕'], [/kayak/i,'🛶'], [/solo/i,'🧍'],
     ];
+    /* Real users' favorite_activities are the exact 15 category strings
+       from newTrip.html's own activity chips / welcomeTour.html's
+       onboarding slide - checked before the free-text regex rules above
+       (which are tuned for the Community Traveler mock bios) so e.g.
+       "Theme Park" doesn't wrongly match the hiking-trail regex. */
+    const REAL_ACTIVITY_ICONS = {
+      'Beach':'🏖️', 'Hiking':'🥾', 'Camping':'🏕️', 'Swimming':'🏊', 'Snow Sports':'⛷️',
+      'Gym':'🏋️', 'Business Trip':'💼', 'Night Out':'🌃', 'Baby':'👶', 'Theme Park':'🎢',
+      'Festival':'🎉', 'Road Trip':'🚗', 'City Sightseeing':'🏙️', 'Dining':'🍽️', 'Cruise':'🚢',
+    };
     function activityIcon(a) {
+      if (REAL_ACTIVITY_ICONS[a]) return REAL_ACTIVITY_ICONS[a];
       const hit = ACTIVITY_ICON_RULES.find(([re]) => re.test(a));
       return hit ? hit[1] : '📌';
     }
@@ -1086,7 +1097,7 @@
             coverDest: _destForUser(r.user_id), memberSince: _fmtMemberSince(r.member_since),
             level: _realLevelForTrips(r.trip_count || 0), travelStyles: [],
             bio: r.bio || '',
-            places: [], activities: [], packingLists: [], recentTrips: [], isReal: true,
+            places: [], activities: r.favorite_activities || [], packingLists: [], recentTrips: [], isReal: true,
           });
           travelersStrip.insertBefore(renderTravelerCard(TRAVELERS[idx], idx), travelersStrip.firstChild);
         });
