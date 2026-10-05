@@ -219,7 +219,22 @@ function _sbCachedUser() {
     const raw = localStorage.getItem(_isNativeApp ? _SB_UCACHE_KEY : _SB_LKEY);
     if (!raw) return null;
     const p = JSON.parse(raw);
-    if (p?.expires_at && Date.now() / 1000 > p.expires_at) return null;
+    /* Deliberately NOT checking p.expires_at here - that's the short-lived
+       (~1hr) access token's expiry, not the actual session's. This runs
+       synchronously on every page load, before the Supabase client has
+       loaded from CDN and had a chance to auto-refresh via the
+       long-lived refresh token (which it does on init - see the
+       onAuthStateChange registration above). Backgrounding the app for
+       over an hour is routine (WKWebView suspends JS timers while
+       backgrounded, so autoRefreshToken's timer never even gets to run),
+       and used to make this comparison trip on practically every cold
+       relaunch, bouncing a still-validly-logged-in person to login even
+       though their refresh token was perfectly fine. Genuine
+       expiry/revocation (refresh token itself invalid) is already caught
+       correctly - asynchronously, by the SDK's own refresh attempt -
+       via the SIGNED_OUT handler above, which redirects to
+       login.html?expired=1. No need to duplicate that guess here with
+       the wrong token's lifetime. */
     return p?.user || null;
   } catch { return null; }
 }
