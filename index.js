@@ -426,21 +426,32 @@
     // inside the installed app, where the person already has it. Unlike
     // the Quick Actions guard above, a narrow mobile-web viewport should
     // NOT hide this (it's wanted on mobile web, just not in the native
-    // shell), so this deliberately omits the innerWidth<=640 check. Same
-    // bridge-timing caveat applies: Capacitor's bridge can attach after
-    // this script already ran, so keep re-checking rather than only once.
+    // shell), so this deliberately omits the innerWidth<=640 check.
+    //
+    // Starts hidden (inline style) and is only ever *revealed* here once
+    // confirmed non-native, rather than starting visible and racing to
+    // remove it on native - Capacitor's bridge can attach after this
+    // script already ran, so detecting "native" needs a time-bounded
+    // retry loop, but detecting "not native" doesn't (window.Capacitor's
+    // absence is certain on a real web load, no bridge to wait for). That
+    // asymmetry means defaulting to hidden fails safe: if this is native
+    // and the bridge is ever slow enough to outlast the retry window, the
+    // blurb now stays hidden (correct) instead of getting stuck visible
+    // forever, which is what happened when this started visible and the
+    // remove-if-native check lost that race - most reliably reproduced by
+    // switching languages a few times in a row (each one a fresh top-
+    // level reload of this page, re-running this whole script).
     (function () {
       const el = document.getElementById('dashAboutBlurb');
       if (!el) return;
       const _checkNative = () => (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) || location.hash === '#pmAuthFlow';
-      const _removeIfNative = () => { if (_checkNative()) el.remove(); };
-      _removeIfNative();
-      window.addEventListener('resize', _removeIfNative);
+      const _revealIfWeb = () => { if (!_checkNative()) { el.style.display = ''; clearInterval(_interval); } };
       let _ticks = 0;
       const _interval = setInterval(() => {
-        _removeIfNative();
-        if (!document.body.contains(el) || ++_ticks >= 30) clearInterval(_interval); // ~15s at 500ms
+        _revealIfWeb();
+        if (++_ticks >= 30) clearInterval(_interval); // ~15s at 500ms - still hidden after this stays hidden (native)
       }, 500);
+      _revealIfWeb();
     })();
 
     const allKeys        = Object.keys(packState);
