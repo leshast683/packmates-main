@@ -85,15 +85,8 @@
     .pm-hw-web { position: absolute; top: -6px; left: -6px; width: 92px; height: 92px; opacity: .6; }
     .pm-hw-spider { position: absolute; top: 44px; left: 44px; font-size: 15px; transform-origin: top center; animation: pmHwDangle 4s ease-in-out infinite; }
     @keyframes pmHwDangle { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(6px) rotate(4deg); } }
-    .pm-hw-bat { position: absolute; top: 9%; left: -10vw; font-size: 20px; opacity: .8; animation: pmHwFly 19s linear infinite; }
-    .pm-hw-bat.pm-hw-bat-2 { top: 16%; font-size: 15px; opacity: .65; animation-duration: 25s; animation-delay: 7s; }
-    @keyframes pmHwFly {
-      0%   { transform: translate(0, 0); }
-      50%  { transform: translate(65vw, -16px); }
-      100% { transform: translate(130vw, 8px); }
-    }
     @media (prefers-reduced-motion: reduce) {
-      .pm-hw-spider, .pm-hw-bat { animation: none; }
+      .pm-hw-spider { animation: none; }
     }
   </style>
   <!-- ============ END HALLOWEEN DECOR STYLE ============ -->
@@ -117,8 +110,6 @@
       <path d="M85,0 L85,30 L60,60 L30,85 L0,85"/>
     </svg>
     <span class="pm-hw-spider">🕷️</span>
-    <span class="pm-hw-bat">🦇</span>
-    <span class="pm-hw-bat pm-hw-bat-2">🦇</span>
   </div>
   <script>
     (function () {
