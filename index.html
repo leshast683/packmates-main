@@ -70,9 +70,61 @@
   <link rel="apple-touch-icon" href="/img/icon-192.png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="index.css">
+  <!-- ============ HALLOWEEN DECOR (seasonal) — delete this whole <style>
+       block, the matching HTML block right after <body> below, and this
+       comment, any time after Halloween to remove it in one clean cut.
+       It also auto-removes itself starting Nov 1 (see the inline script
+       right after the markup), so leaving it in by accident is harmless. ============ -->
+  <style>
+    #pmHalloweenDecor { position: fixed; inset: 0; z-index: 40; pointer-events: none; overflow: hidden; }
+    .pm-hw-web { position: absolute; top: -6px; left: -6px; width: 92px; height: 92px; opacity: .6; }
+    .pm-hw-spider { position: absolute; top: 44px; left: 44px; font-size: 15px; transform-origin: top center; animation: pmHwDangle 4s ease-in-out infinite; }
+    @keyframes pmHwDangle { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(6px) rotate(4deg); } }
+    .pm-hw-bat { position: absolute; top: 9%; left: -10vw; font-size: 20px; opacity: .8; animation: pmHwFly 19s linear infinite; }
+    .pm-hw-bat.pm-hw-bat-2 { top: 16%; font-size: 15px; opacity: .65; animation-duration: 25s; animation-delay: 7s; }
+    @keyframes pmHwFly {
+      0%   { transform: translate(0, 0); }
+      50%  { transform: translate(65vw, -16px); }
+      100% { transform: translate(130vw, 8px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pm-hw-spider, .pm-hw-bat { animation: none; }
+    }
+  </style>
+  <!-- ============ END HALLOWEEN DECOR STYLE ============ -->
 </head>
 
 <body>
+  <!-- ============ HALLOWEEN DECOR (seasonal) — delete this block (and
+       the matching <style> block in <head>) any time after Halloween to
+       remove it in one clean cut. Auto-removes itself starting Nov 1
+       via the inline script right below, so it's harmless even if left
+       in by accident. ============ -->
+  <div id="pmHalloweenDecor">
+    <svg class="pm-hw-web" viewBox="0 0 100 100" fill="none" stroke="rgba(170,170,180,.55)" stroke-width="1.4">
+      <path d="M0,0 L100,0"/>
+      <path d="M0,0 L100,35"/>
+      <path d="M0,0 L70,70"/>
+      <path d="M0,0 L35,100"/>
+      <path d="M0,0 L0,100"/>
+      <path d="M35,0 L35,12 L25,25 L12,35 L0,35"/>
+      <path d="M62,0 L62,22 L43,43 L22,62 L0,62"/>
+      <path d="M85,0 L85,30 L60,60 L30,85 L0,85"/>
+    </svg>
+    <span class="pm-hw-spider">🕷️</span>
+    <span class="pm-hw-bat">🦇</span>
+    <span class="pm-hw-bat pm-hw-bat-2">🦇</span>
+  </div>
+  <script>
+    (function () {
+      var cutoff = new Date(new Date().getFullYear(), 10, 1); // Nov 1
+      if (new Date() >= cutoff) {
+        var el = document.getElementById('pmHalloweenDecor');
+        if (el) el.remove();
+      }
+    })();
+  </script>
+  <!-- ============ END HALLOWEEN DECOR ============ -->
   <!-- ══════════ SIDEBAR ══════════ -->
   <nav class="sidebar" data-page="index.html"></nav>
   <script src="nav.js"></script>
