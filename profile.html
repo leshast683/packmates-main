@@ -1840,7 +1840,7 @@
         if (cached) { img.src = cached; return; }
         pmFetchDestPhoto(p).then(url => { if (url) { pmSetDestCache(cacheKey, url); img.src = url; } });
       });
-      m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${pmActivityIcon(a)} ${tTravelerActivity(a)}</span>`).join('');
+      m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${escapeHtml(pmActivityIcon(a))} ${escapeHtml(tTravelerActivity(a))}</span>`).join('');
       m.querySelector('.tp-packing-list').innerHTML = t.packingLists.map((r, i) => `
         <div class="tp-trip" id="pmTpPack-${i}">
           <div class="tp-trip-scrim"></div>
