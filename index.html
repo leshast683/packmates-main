@@ -76,7 +76,12 @@
        It also auto-removes itself starting Nov 1 (see the inline script
        right after the markup), so leaving it in by accident is harmless. ============ -->
   <style>
-    #pmHalloweenDecor { position: fixed; inset: 0; z-index: 40; pointer-events: none; overflow: hidden; }
+    /* z-index:150 - above .dash-header (z-index:100, which otherwise
+       paints its opaque background right over the corner web) but still
+       below .bottom-nav/.modal-overlay (200) and .toast/in-app
+       notification banners (300+), so it never covers anything that
+       actually matters. */
+    #pmHalloweenDecor { position: fixed; inset: 0; z-index: 150; pointer-events: none; overflow: hidden; }
     .pm-hw-web { position: absolute; top: -6px; left: -6px; width: 92px; height: 92px; opacity: .6; }
     .pm-hw-spider { position: absolute; top: 44px; left: 44px; font-size: 15px; transform-origin: top center; animation: pmHwDangle 4s ease-in-out infinite; }
     @keyframes pmHwDangle { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(6px) rotate(4deg); } }
