@@ -5,19 +5,23 @@
  * file is browser-only (relies on `document`/`localStorage`) and these
  * templates are needed from Vercel serverless functions instead.
  */
-/* inactivityNudge has 20 distinct variants rather than one repeated
+/* inactivityNudge has 30 distinct variants rather than one repeated
    message, so a person nudged twice a week for weeks on end sees real
    variety instead of the same line over and over - see
    api/notify-inactive-users.js's rotation logic (picks the next one
-   based on how many this person has already received, wrapping at 20).
-   First 10: feature/engagement angles (trip planning, the smart
-   checklist itself, community/social, the streak/badge system,
-   destination inspiration, weather-aware packing, collaborative
-   packing, badge-progress, seasonal daydreaming, quick/easy trip
-   creation). Second 10: concrete packing/travel tips (roll vs fold,
+   based on how many this person has already received, wrapping at 30).
+   Interleaved feature/tip, alternating one of each: feature/engagement
+   angles (trip planning, the smart checklist itself, community/social,
+   the streak/badge system, destination inspiration, weather-aware
+   packing, collaborative packing, badge-progress, seasonal daydreaming,
+   quick/easy trip creation, trending destinations, language support,
+   packing-progress tracking, traveling with packmates, day-by-day
+   forecast) paired with concrete packing/travel tips (roll vs fold,
    carry-on backup outfit, packing cubes, wearing bulky items, document
    backups, luggage tags, rechecking the forecast, an empty water
-   bottle, offline maps, leaving room for souvenirs). */
+   bottle, offline maps, leaving room for souvenirs, compression bags,
+   a portable charger, carry-on valuables, airline baggage limits,
+   medication in original bottles). */
 const PUSH_COPY = {
   en: {
     tripReminder3d: [
@@ -58,6 +62,16 @@ const PUSH_COPY = {
       () => ({ title: 'Download offline maps 🗺️', body: 'Grab offline maps for your destination before you go, in case you lose signal.' }),
       () => ({ title: 'Plan a trip in seconds ⚡', body: 'Just enter your destination and dates — Packmates AI builds the rest of your packing list.' }),
       () => ({ title: 'Leave room for souvenirs 🎁', body: 'Pack a foldable bag or leave a little extra space for anything you pick up on the trip.' }),
+      () => ({ title: 'Explore trending destinations 🔥', body: 'Browse the destinations other travelers are packing for right now on Packmates AI.' }),
+      () => ({ title: 'Use compression bags 🧳', body: 'Compression bags squeeze bulky items like jackets and sweaters down to half their size.' }),
+      () => ({ title: 'Now in your language 🌍', body: 'Packmates AI now speaks Spanish, Ukrainian, and Portuguese — switch anytime in Settings.' }),
+      () => ({ title: 'Pack a portable charger 🔋', body: 'A charged power bank means you are never stuck with a dead phone on travel days.' }),
+      () => ({ title: 'Watch your packing progress 📊', body: 'See exactly how much you have packed at a glance, right on your Home screen.' }),
+      () => ({ title: 'Keep valuables in your carry-on 💎', body: 'Jewelry, electronics, and anything irreplaceable should stay with you, not in checked luggage.' }),
+      () => ({ title: 'Bring your crew along 👨‍👩‍👧‍👦', body: 'Add packmates to any trip so everyone packs from the same live list.' }),
+      () => ({ title: 'Check your airline\'s baggage limits 🧾', body: 'Weight and size rules vary by airline — confirm yours before you pack to avoid surprise fees.' }),
+      () => ({ title: 'Know before you go ⛅', body: 'Check the day-by-day forecast for your destination, built right into your trip.' }),
+      () => ({ title: 'Keep medications in their original bottles 💊', body: 'Labeled containers make security checks faster and avoid issues at customs.' }),
     ],
   },
   es: {
@@ -99,6 +113,16 @@ const PUSH_COPY = {
       () => ({ title: 'Descarga mapas sin conexión 🗺️', body: 'Descarga mapas sin conexión de tu destino antes de salir, por si no tienes señal.' }),
       () => ({ title: 'Planea un viaje en segundos ⚡', body: 'Solo ingresa tu destino y fechas — Packmates AI arma el resto de tu lista de empaque.' }),
       () => ({ title: 'Deja espacio para souvenirs 🎁', body: 'Lleva una bolsa plegable o deja espacio extra para lo que compres en el viaje.' }),
+      () => ({ title: 'Explora destinos en tendencia 🔥', body: 'Descubre los destinos que otros viajeros están empacando ahora mismo en Packmates AI.' }),
+      () => ({ title: 'Usa bolsas de compresión 🧳', body: 'Las bolsas de compresión reducen a la mitad el tamaño de prendas voluminosas como abrigos y suéteres.' }),
+      () => ({ title: 'Ahora en tu idioma 🌍', body: 'Packmates AI ya habla español, ucraniano y portugués — cámbialo cuando quieras en Configuración.' }),
+      () => ({ title: 'Lleva un cargador portátil 🔋', body: 'Una batería portátil cargada evita que te quedes sin batería en los días de viaje.' }),
+      () => ({ title: 'Observa tu progreso de empaque 📊', body: 'Mira de un vistazo cuánto llevas empacado, directo en tu pantalla de inicio.' }),
+      () => ({ title: 'Lleva tus objetos de valor en el equipaje de mano 💎', body: 'Joyas, electrónicos y cualquier cosa irremplazable deben ir contigo, no en el equipaje facturado.' }),
+      () => ({ title: 'Viaja con tu grupo 👨‍👩‍👧‍👦', body: 'Agrega packmates a cualquier viaje para que todos empaquen desde la misma lista en vivo.' }),
+      () => ({ title: 'Revisa los límites de equipaje de tu aerolínea 🧾', body: 'El peso y tamaño permitido varían según la aerolínea — confírmalo antes de empacar para evitar cargos sorpresa.' }),
+      () => ({ title: 'Entérate antes de viajar ⛅', body: 'Consulta el pronóstico día a día de tu destino, directo en tu viaje.' }),
+      () => ({ title: 'Lleva los medicamentos en sus frascos originales 💊', body: 'Los envases etiquetados agilizan los controles de seguridad y evitan problemas en aduana.' }),
     ],
   },
   uk: {
@@ -140,6 +164,16 @@ const PUSH_COPY = {
       () => ({ title: 'Завантажте офлайн-карти 🗺️', body: 'Завантажте офлайн-карти напрямку заздалегідь, на випадок відсутності зв\'язку.' }),
       () => ({ title: 'Сплануйте подорож за секунди ⚡', body: 'Просто вкажіть напрямок і дати — Packmates AI створить решту вашого списку речей.' }),
       () => ({ title: 'Залиште місце для сувенірів 🎁', body: 'Візьміть складану сумку або залиште трохи вільного місця для сувенірів.' }),
+      () => ({ title: 'Відкрийте популярні напрямки 🔥', body: 'Перегляньте напрямки, для яких зараз пакуються інші мандрівники в Packmates AI.' }),
+      () => ({ title: 'Використовуйте компресійні мішки 🧳', body: 'Компресійні мішки зменшують обʼємні речі, як куртки й светри, удвічі.' }),
+      () => ({ title: 'Тепер вашою мовою 🌍', body: 'Packmates AI тепер розмовляє іспанською, українською та португальською — змініть мову в будь-який час у Налаштуваннях.' }),
+      () => ({ title: 'Візьміть портативний зарядний пристрій 🔋', body: 'Заряджений павербанк убереже вас від розрядженого телефону в дорозі.' }),
+      () => ({ title: 'Стежте за прогресом пакування 📊', body: 'Дивіться, скільки ви вже спакували, одразу на головному екрані.' }),
+      () => ({ title: 'Тримайте цінні речі в ручній поклажі 💎', body: 'Прикраси, електроніку та все незамінне краще тримати при собі, а не в зданому багажі.' }),
+      () => ({ title: 'Подорожуйте з компанією 👨‍👩‍👧‍👦', body: 'Додайте супутників до подорожі, щоб усі пакувались за одним спільним списком.' }),
+      () => ({ title: 'Перевірте норми багажу своєї авіакомпанії 🧾', body: 'Вага та розміри багажу відрізняються в різних авіакомпаній — перевірте заздалегідь, щоб уникнути доплат.' }),
+      () => ({ title: 'Дізнайтесь прогноз заздалегідь ⛅', body: 'Перегляньте погоду на кожен день вашої подорожі прямо в додатку.' }),
+      () => ({ title: 'Тримайте ліки в оригінальній упаковці 💊', body: 'Марковані упаковки прискорюють перевірку на безпеці та допомагають уникнути проблем на митниці.' }),
     ],
   },
   pt: {
@@ -181,6 +215,16 @@ const PUSH_COPY = {
       () => ({ title: 'Baixe mapas offline 🗺️', body: 'Baixe mapas offline do seu destino antes de viajar, caso fique sem sinal.' }),
       () => ({ title: 'Planeje uma viagem em segundos ⚡', body: 'Basta informar o destino e as datas — o Packmates AI monta o resto da sua lista de itens.' }),
       () => ({ title: 'Deixe espaço para lembrancinhas 🎁', body: 'Leve uma bolsa dobrável ou deixe espaço extra para o que comprar na viagem.' }),
+      () => ({ title: 'Explore destinos em alta 🔥', body: 'Veja os destinos para os quais outros viajantes estão fazendo as malas agora no Packmates AI.' }),
+      () => ({ title: 'Use sacos de compressão 🧳', body: 'Sacos de compressão reduzem pela metade o tamanho de itens volumosos como casacos e suéteres.' }),
+      () => ({ title: 'Agora no seu idioma 🌍', body: 'O Packmates AI agora fala espanhol, ucraniano e português — mude quando quiser nas Configurações.' }),
+      () => ({ title: 'Leve um carregador portátil 🔋', body: 'Um power bank carregado evita que seu celular fique sem bateria durante a viagem.' }),
+      () => ({ title: 'Acompanhe seu progresso de empacotamento 📊', body: 'Veja rapidamente quanto você já empacotou, direto na tela inicial.' }),
+      () => ({ title: 'Leve seus itens de valor na bagagem de mão 💎', body: 'Joias, eletrônicos e qualquer coisa insubstituível devem ficar com você, não na bagagem despachada.' }),
+      () => ({ title: 'Viaje com seu grupo 👨‍👩‍👧‍👦', body: 'Adicione packmates a qualquer viagem para que todos empacotem a partir da mesma lista em tempo real.' }),
+      () => ({ title: 'Confira os limites de bagagem da sua companhia aérea 🧾', body: 'Peso e tamanho permitidos variam por companhia — confirme antes de fazer as malas para evitar taxas surpresa.' }),
+      () => ({ title: 'Saiba antes de viajar ⛅', body: 'Veja a previsão dia a dia do seu destino, direto na sua viagem.' }),
+      () => ({ title: 'Leve os remédios nas embalagens originais 💊', body: 'Embalagens identificadas agilizam a inspeção de segurança e evitam problemas na alfândega.' }),
     ],
   },
 };
