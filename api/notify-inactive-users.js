@@ -1,18 +1,33 @@
 /**
  * /api/notify-inactive-users — fired twice a week by Vercel Cron (see
- * vercel.json's `crons`, Monday and Thursday). Sends a general
- * engagement push (via Firebase Cloud Messaging, feature highlights +
- * packing tips - see _push-copy.js's inactivityNudge variants, none of
- * which actually reference inactivity) to every user with a registered
- * device, regardless of how recently they last opened the app. Despite
- * the filename/type name (kept as-is so push_log history and the
- * variant-rotation logic stay continuous), this is no longer gated on
- * profiles.last_active_at - it's a regular Mon/Thu send to everyone.
+ * vercel.json's `crons`: 0 15 * * 1,4 - every Monday and Thursday).
+ * Sends a general engagement push (via Firebase Cloud Messaging,
+ * feature highlights + packing tips - see _push-copy.js's
+ * inactivityNudge variants, none of which actually reference
+ * inactivity) to every user with a registered device, regardless of
+ * how recently they last opened the app. Despite the filename/type
+ * name (kept as-is so push_log history and the variant-rotation logic
+ * stay continuous), this is no longer gated on profiles.last_active_at
+ * - it's a regular Mon/Thu send to everyone.
+ *
+ * Guarantee: exactly one push per person each Monday and each
+ * Thursday (see the spacing guard below for how that's kept reliable
+ * across the exact 3-day Mon->Thu gap), cycling through all 40
+ * inactivityNudge variants in order (picked by push_log history
+ * length, modulo 40 - see pushCopy()) before any variant repeats -
+ * i.e. no one sees the same notification twice within a 20-week
+ * span of uninterrupted sends.
  *
  * Spacing guard: skips anyone who already got one within the last
- * MIN_GAP_DAYS days, so this can't fire more than roughly twice a week
- * per person even if the cron schedule or a manual trigger runs more
- * often than intended.
+ * MIN_GAP_DAYS days, so a duplicate/manual trigger can't double-send
+ * the same day. Deliberately 2, not 3 - the cron's own Mon->Thu gap
+ * IS exactly 3 days, and a >= comparison against an exact 3-day-old
+ * timestamp risks landing on the wrong side of that boundary if this
+ * run fires even a few seconds earlier than last week's exact time,
+ * silently skipping that day's send. 2 days is comfortably below the
+ * real 3-day (Mon->Thu) and 4-day (Thu->Mon) gaps between scheduled
+ * runs, so every person gets exactly one send each Monday and each
+ * Thursday, while still blocking a true same-day duplicate.
  *
  * Guard: only Vercel Cron (or a manual call carrying the same secret) may
  * trigger this — see CRON_SECRET below, same pattern as
@@ -22,7 +37,7 @@ const { sendToTokens } = require('./_fcm');
 const { pushCopy } = require('./_push-copy');
 const { isAuthorizedCron } = require('./_cron-auth');
 
-const MIN_GAP_DAYS = 3;
+const MIN_GAP_DAYS = 2;
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed.' });
