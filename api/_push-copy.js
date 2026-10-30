@@ -5,23 +5,27 @@
  * file is browser-only (relies on `document`/`localStorage`) and these
  * templates are needed from Vercel serverless functions instead.
  */
-/* inactivityNudge has 30 distinct variants rather than one repeated
+/* inactivityNudge has 40 distinct variants rather than one repeated
    message, so a person nudged twice a week for weeks on end sees real
    variety instead of the same line over and over - see
    api/notify-inactive-users.js's rotation logic (picks the next one
-   based on how many this person has already received, wrapping at 30).
+   based on how many this person has already received, wrapping at 40).
    Interleaved feature/tip, alternating one of each: feature/engagement
    angles (trip planning, the smart checklist itself, community/social,
    the streak/badge system, destination inspiration, weather-aware
    packing, collaborative packing, badge-progress, seasonal daydreaming,
    quick/easy trip creation, trending destinations, language support,
    packing-progress tracking, traveling with packmates, day-by-day
-   forecast) paired with concrete packing/travel tips (roll vs fold,
-   carry-on backup outfit, packing cubes, wearing bulky items, document
-   backups, luggage tags, rechecking the forecast, an empty water
-   bottle, offline maps, leaving room for souvenirs, compression bags,
-   a portable charger, carry-on valuables, airline baggage limits,
-   medication in original bottles). */
+   forecast, trip reminders, weather-change alerts, following other
+   travelers, showing off favorite activities, the 250+ item database)
+   paired with concrete packing/travel tips (roll vs fold, carry-on
+   backup outfit, packing cubes, wearing bulky items, document backups,
+   luggage tags, rechecking the forecast, an empty water bottle, offline
+   maps, leaving room for souvenirs, compression bags, a portable
+   charger, carry-on valuables, airline baggage limits, medication in
+   original bottles, photographing your packed bag, the 3-1-1 liquids
+   rule, making your bag stand out, stuffing shoes to save space,
+   weighing your bag before you leave). */
 const PUSH_COPY = {
   en: {
     tripReminder3d: [
@@ -72,6 +76,16 @@ const PUSH_COPY = {
       () => ({ title: 'Check your airline\'s baggage limits 🧾', body: 'Weight and size rules vary by airline — confirm yours before you pack to avoid surprise fees.' }),
       () => ({ title: 'Know before you go ⛅', body: 'Check the day-by-day forecast for your destination, built right into your trip.' }),
       () => ({ title: 'Keep medications in their original bottles 💊', body: 'Labeled containers make security checks faster and avoid issues at customs.' }),
+      () => ({ title: 'Never miss a trip reminder 🔔', body: 'Get a nudge 3 days and 1 day before your trip so packing never sneaks up on you.' }),
+      () => ({ title: 'Photograph your packed suitcase 📸', body: 'A quick photo of your bag\'s contents makes insurance claims easier if luggage gets lost.' }),
+      () => ({ title: 'Know the moment weather shifts 🌦️', body: 'Packmates AI alerts you if the forecast for your trip changes, so your list stays accurate.' }),
+      () => ({ title: 'Follow the 3-1-1 liquids rule ✈️', body: 'Keep liquids in containers of 3.4oz or less, all in one quart-sized bag, for a smoother security check.' }),
+      () => ({ title: 'Follow fellow travelers 🤝', body: 'Follow Community Travelers you like and keep up with their trips and packing style.' }),
+      () => ({ title: 'Make your bag stand out 🎀', body: 'Tie a bright ribbon or strap to your suitcase so it is easy to spot at baggage claim.' }),
+      () => ({ title: 'Show off your travel style 🏖️', body: 'Pick your favorite activities and let your Community Traveler profile show who you are.' }),
+      () => ({ title: 'Stuff your shoes to save space 👟', body: 'Pack socks or small items inside your shoes — it saves space and keeps their shape.' }),
+      () => ({ title: '250+ packing items, ready to go 📋', body: 'Packmates AI pulls from a database of 250+ items so nothing gets left off your list.' }),
+      () => ({ title: 'Weigh your bag before you leave home 🏋️', body: 'A quick check with a luggage scale avoids surprise overweight fees at the airport.' }),
     ],
   },
   es: {
@@ -123,6 +137,16 @@ const PUSH_COPY = {
       () => ({ title: 'Revisa los límites de equipaje de tu aerolínea 🧾', body: 'El peso y tamaño permitido varían según la aerolínea — confírmalo antes de empacar para evitar cargos sorpresa.' }),
       () => ({ title: 'Entérate antes de viajar ⛅', body: 'Consulta el pronóstico día a día de tu destino, directo en tu viaje.' }),
       () => ({ title: 'Lleva los medicamentos en sus frascos originales 💊', body: 'Los envases etiquetados agilizan los controles de seguridad y evitan problemas en aduana.' }),
+      () => ({ title: 'Nunca te pierdas un recordatorio de viaje 🔔', body: 'Recibe un aviso 3 días y 1 día antes de tu viaje para que empacar nunca te tome por sorpresa.' }),
+      () => ({ title: 'Fotografía tu maleta ya empacada 📸', body: 'Una foto rápida del contenido de tu maleta facilita los reclamos de seguro si se pierde el equipaje.' }),
+      () => ({ title: 'Entérate en el momento en que cambia el clima 🌦️', body: 'Packmates AI te avisa si el pronóstico de tu viaje cambia, para que tu lista siga siendo precisa.' }),
+      () => ({ title: 'Sigue la regla de líquidos 3-1-1 ✈️', body: 'Lleva los líquidos en envases de 100 ml o menos, todos en una bolsa de un cuarto de galón, para un control de seguridad más rápido.' }),
+      () => ({ title: 'Sigue a otros viajeros 🤝', body: 'Sigue a los Viajeros de la Comunidad que te gusten y entérate de sus viajes y estilo de empaque.' }),
+      () => ({ title: 'Haz que tu maleta destaque 🎀', body: 'Ata una cinta o correa de color llamativo a tu maleta para identificarla fácilmente en la cinta de equipaje.' }),
+      () => ({ title: 'Muestra tu estilo de viaje 🏖️', body: 'Elige tus actividades favoritas y deja que tu perfil de Viajero de la Comunidad muestre quién eres.' }),
+      () => ({ title: 'Aprovecha el espacio dentro de tus zapatos 👟', body: 'Guarda calcetines u objetos pequeños dentro de tus zapatos — ahorras espacio y mantienes su forma.' }),
+      () => ({ title: 'Más de 250 artículos listos para ti 📋', body: 'Packmates AI usa una base de datos de más de 250 artículos para que nada falte en tu lista.' }),
+      () => ({ title: 'Pesa tu maleta antes de salir de casa 🏋️', body: 'Revisarla con una báscula de equipaje evita cargos sorpresa por exceso de peso en el aeropuerto.' }),
     ],
   },
   uk: {
@@ -174,6 +198,16 @@ const PUSH_COPY = {
       () => ({ title: 'Перевірте норми багажу своєї авіакомпанії 🧾', body: 'Вага та розміри багажу відрізняються в різних авіакомпаній — перевірте заздалегідь, щоб уникнути доплат.' }),
       () => ({ title: 'Дізнайтесь прогноз заздалегідь ⛅', body: 'Перегляньте погоду на кожен день вашої подорожі прямо в додатку.' }),
       () => ({ title: 'Тримайте ліки в оригінальній упаковці 💊', body: 'Марковані упаковки прискорюють перевірку на безпеці та допомагають уникнути проблем на митниці.' }),
+      () => ({ title: 'Не пропустіть нагадування про подорож 🔔', body: 'Отримуйте нагадування за 3 дні та за 1 день до подорожі, щоб пакування не застало вас зненацька.' }),
+      () => ({ title: 'Сфотографуйте спаковану валізу 📸', body: 'Швидке фото вмісту валізи полегшить страхове відшкодування, якщо багаж загубиться.' }),
+      () => ({ title: 'Дізнавайтесь про зміну погоди одразу 🌦️', body: 'Packmates AI попередить вас, якщо прогноз для вашої подорожі зміниться, щоб список залишався точним.' }),
+      () => ({ title: 'Дотримуйтесь правила рідин 3-1-1 ✈️', body: 'Тримайте рідини в ємностях до 100 мл, усі в одному пакеті розміром з кварту, для швидшого контролю безпеки.' }),
+      () => ({ title: 'Підписуйтесь на інших мандрівників 🤝', body: 'Підписуйтесь на Мандрівників спільноти, які вам подобаються, і стежте за їхніми подорожами та стилем пакування.' }),
+      () => ({ title: 'Зробіть свою валізу помітною 🎀', body: 'Прив\'яжіть яскраву стрічку чи ремінець до валізи, щоб легко впізнати її на видачі багажу.' }),
+      () => ({ title: 'Покажіть свій стиль подорожей 🏖️', body: 'Оберіть улюблені активності, і ваш профіль Мандрівника спільноти розповість, хто ви.' }),
+      () => ({ title: 'Використовуйте простір усередині взуття 👟', body: 'Покладіть шкарпетки чи дрібні речі всередину взуття — це економить місце та зберігає форму.' }),
+      () => ({ title: 'Понад 250 речей напоготові 📋', body: 'Packmates AI використовує базу з понад 250 речей, щоб нічого не забути у вашому списку.' }),
+      () => ({ title: 'Зважте валізу перед виходом з дому 🏋️', body: 'Швидка перевірка на вазі для багажу вбереже від несподіваної доплати за перевагу в аеропорту.' }),
     ],
   },
   pt: {
@@ -225,6 +259,16 @@ const PUSH_COPY = {
       () => ({ title: 'Confira os limites de bagagem da sua companhia aérea 🧾', body: 'Peso e tamanho permitidos variam por companhia — confirme antes de fazer as malas para evitar taxas surpresa.' }),
       () => ({ title: 'Saiba antes de viajar ⛅', body: 'Veja a previsão dia a dia do seu destino, direto na sua viagem.' }),
       () => ({ title: 'Leve os remédios nas embalagens originais 💊', body: 'Embalagens identificadas agilizam a inspeção de segurança e evitam problemas na alfândega.' }),
+      () => ({ title: 'Nunca perca um lembrete de viagem 🔔', body: 'Receba um aviso 3 dias e 1 dia antes da sua viagem para que fazer as malas nunca pegue você de surpresa.' }),
+      () => ({ title: 'Fotografe sua mala já arrumada 📸', body: 'Uma foto rápida do conteúdo da mala facilita o processo do seguro caso a bagagem se perca.' }),
+      () => ({ title: 'Saiba no momento em que o clima muda 🌦️', body: 'O Packmates AI avisa se a previsão da sua viagem mudar, para que sua lista continue precisa.' }),
+      () => ({ title: 'Siga a regra de líquidos 3-1-1 ✈️', body: 'Leve líquidos em recipientes de até 100 ml, todos em uma embalagem de até 1 litro, para agilizar a inspeção de segurança.' }),
+      () => ({ title: 'Siga outros viajantes 🤝', body: 'Siga Viajantes da Comunidade que você gosta e acompanhe as viagens e o estilo de empacotamento deles.' }),
+      () => ({ title: 'Faça sua mala se destacar 🎀', body: 'Amarre uma fita ou alça colorida na mala para identificá-la facilmente na esteira de bagagem.' }),
+      () => ({ title: 'Mostre seu estilo de viagem 🏖️', body: 'Escolha suas atividades favoritas e deixe seu perfil de Viajante da Comunidade mostrar quem você é.' }),
+      () => ({ title: 'Aproveite o espaço dentro dos sapatos 👟', body: 'Guarde meias ou itens pequenos dentro dos sapatos — economiza espaço e mantém o formato deles.' }),
+      () => ({ title: 'Mais de 250 itens prontos para você 📋', body: 'O Packmates AI usa um banco com mais de 250 itens para que nada fique de fora da sua lista.' }),
+      () => ({ title: 'Pese sua mala antes de sair de casa 🏋️', body: 'Conferir com uma balança de bagagem evita taxas surpresa por excesso de peso no aeroporto.' }),
     ],
   },
 };

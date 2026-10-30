@@ -69,9 +69,9 @@ module.exports = async function handler(req, res) {
 
     for (const p of profiles) {
       /* Full send history (not just "was one sent recently") - needed for
-         two things: the spacing guard below, and picking which of the 30
+         two things: the spacing guard below, and picking which of the 40
          inactivityNudge variants comes next, so a person nudged
-         repeatedly over time cycles through all 30 instead of ever
+         repeatedly over time cycles through all 40 instead of ever
          repeating one back-to-back. */
       const historyRes = await fetch(
         `${SB_URL}/rest/v1/push_log?user_id=eq.${p.id}&type=eq.inactivity_nudge&select=sent_at&order=sent_at.desc`,
