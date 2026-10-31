@@ -163,6 +163,7 @@ car_blanket:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image 
 baby_carrier:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_baby_carrier.png" x="0" y="0" width="20" height="20"/></svg>`,
 pacifier_teether:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_pacifier_teether.png" x="0" y="0" width="20" height="20"/></svg>`,
 baby_formula:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_baby_formula.png" x="0" y="0" width="20" height="20"/></svg>`,
+baby_sunscreen:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_baby_sunscreen.png" x="0" y="0" width="20" height="20"/></svg>`,
 onesie:`<svg viewBox="0 0 20 20" fill="none"><path d="M5 2.5 L1 4.5 L3 8.5 L5 7.5 L5 12.5 L15 12.5 L15 7.5 L17 8.5 L19 4.5 L15 2.5 Q13 5.5 10 5.5 Q7 5.5 5 2.5Z" fill="#d97706" opacity="0.4"/><path d="M5 2 L1 4 L3 8 L5 7 L5 12 L15 12 L15 7 L17 8 L19 4 L15 2 Q13 5 10 5 Q7 5 5 2Z" fill="#fbbf24"/><path d="M5 2 Q6.5 4.5 10 4.5 Q13.5 4.5 15 2 L14.5 2.5 Q13 5 10 5 Q7 5 5.5 2.5Z" fill="#fcd34d"/><path d="M5 2 L1 4 L3 8 L5 7 L5 8" fill="#fcd34d"/><path d="M5 12 L6 18 Q6 19.5 10 19.5 Q14 19.5 14 18 L15 12Z" fill="#f59e0b"/><line x1="10" y1="12" x2="10" y2="18" stroke="#d97706" stroke-width="0.8"/><circle cx="7" cy="15" r="1" fill="#fef9c3"/><circle cx="13" cy="15" r="1" fill="#fef9c3"/></svg>`,
 swim_cap:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-sN6BdGo5TEUdURfnV9nfcfDBT95P6d.png" x="0" y="0" width="20" height="20"/></svg>`,
 hydration_pack:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-aPBr0yfDJZNTeT5rBB6KUpr6PcK7xp.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -308,6 +309,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('toothpaste'))                          return PACKING_ICONS.toothpaste;
   if (n.includes('razor'))                               return PACKING_ICONS.razor;
   if (n.includes('nail clipper'))                        return PACKING_ICONS.nail_clippers;
+  if (n.includes('baby') && n.includes('sunscreen'))     return PACKING_ICONS.baby_sunscreen;
   if (n.includes('sunscreen') || n.includes('spf'))      return PACKING_ICONS.sunscreen;
   if (n.includes('lip balm'))                            return PACKING_ICONS.lip_balm;
   if (n.includes('hair brush'))                          return PACKING_ICONS.hair_brush;
