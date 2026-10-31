@@ -154,6 +154,7 @@ clutch_purse:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image
 diaper_bag:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_diaper_bag.png" x="0" y="0" width="20" height="20"/></svg>`,
 baby_monitor:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_baby_monitor.png" x="0" y="0" width="20" height="20"/></svg>`,
 crayons:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_crayons.png" x="0" y="0" width="20" height="20"/></svg>`,
+swim_diapers:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_swim_diapers.png" x="0" y="0" width="20" height="20"/></svg>`,
 tote_bag:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-pDLFY2aJ6Wy7iz4f6hQ9Gz8XKDf4HP.png" x="0" y="0" width="20" height="20"/></svg>`,
 baby_wipes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-nKj5LX1UWFA7mrHpVCmlabiLyJgWjB.png" x="0" y="0" width="20" height="20"/></svg>`,
 baby_blanket:`<svg viewBox="0 0 20 20" fill="none"><path d="M2 6.5 Q2 4.5 4 4.5 L16 4.5 Q18 4.5 18 6.5 L18 14.5 Q18 16.5 16 16.5 L4 16.5 Q2 16.5 2 14.5Z" fill="#92400e" opacity="0.25"/><path d="M2 6 Q2 4 4 4 L16 4 Q18 4 18 6 L18 14 Q18 16 16 16 L4 16 Q2 16 2 14Z" fill="#fbbf24"/><path d="M2 6 Q2 4 4 4 L16 4 Q18 4 18 6 L18 9 Q10 10 2 9Z" fill="#fef3c7"/><path d="M2 6 Q2 4 4 4 L16 4 Q18 4 18 5 Q10 5.5 2 5Z" fill="rgba(255,255,255,0.4)"/><line x1="5" y1="7" x2="15" y2="7" stroke="#d97706" stroke-width="1"/><line x1="5" y1="10" x2="15" y2="10" stroke="#d97706" stroke-width="1"/><line x1="5" y1="13" x2="15" y2="13" stroke="#d97706" stroke-width="1"/></svg>`,
@@ -495,6 +496,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('stroller'))                            return PACKING_ICONS.stroller;
   if (n.includes('baby monitor') || n.includes('video monitor')) return PACKING_ICONS.baby_monitor;
   if (n.includes('baby bottle'))                         return PACKING_ICONS.baby_bottle;
+  if (n.includes('swim diaper'))                         return PACKING_ICONS.swim_diapers;
   if (n.includes('diaper') && !n.includes('bag'))        return PACKING_ICONS.diapers;
   if (n.includes('baby wipe'))                           return PACKING_ICONS.baby_wipes;
   if (n.includes('car blanket'))                           return PACKING_ICONS.car_blanket;
