@@ -120,7 +120,7 @@
     }
     body { font-family: 'Montserrat', sans-serif; background: var(--paper); color: var(--ink); }
 
-    .pg-header { position: relative; background: linear-gradient(160deg, rgba(9,36,54,0.58) 0%, rgba(8,34,51,0.88) 78%, rgba(8,34,51,0.97) 100%), url('img/hero-packing-assistant.jpg') 22% 58%/cover no-repeat; color: #fff; padding: 28px 24px 64px; overflow: hidden; }
+    .pg-header { position: relative; background: linear-gradient(160deg, rgba(9,36,54,0.58) 0%, rgba(8,34,51,0.88) 78%, rgba(8,34,51,0.97) 100%), url('img/hero-packing-list-app.jpg') center 58%/cover no-repeat; color: #fff; padding: 28px 24px 64px; overflow: hidden; }
     .pg-header::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, rgba(95,157,48,0.22), transparent 40%); pointer-events: none; }
     .pg-header-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
     .pg-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
@@ -178,6 +178,24 @@
     .feat-card-text h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.08rem; font-weight: 700; color: var(--teal-2); margin-bottom: 6px; letter-spacing: -0.01em; }
     .feat-card-text p { font-size: 0.85rem; line-height: 1.68; color: #5c6d78; }
     .pg-tint .feat-card { background: #fff; }
+
+    .tile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .tile { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px 16px; text-align: center; }
+    .tile-icon { width: 44px; height: 44px; border-radius: 12px; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; background: var(--amber-bg); color: var(--amber); }
+    .tile-icon.c-green { background: #eef7e2; color: var(--green); }
+    .tile-icon.c-teal { background: #e7eef4; color: var(--teal-3); }
+    .tile h3 { font-family: 'Blauer Nue', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--teal-2); margin-bottom: 6px; letter-spacing: -0.01em; }
+    .tile p { font-size: 0.78rem; line-height: 1.55; color: #5c6d78; }
+
+    .sample-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 28px 26px 26px; box-shadow: 0 16px 40px rgba(13,51,71,0.1); }
+    .sample-trip-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal-3); background: #e7eef4; padding: 5px 12px; border-radius: 20px; margin-bottom: 16px; }
+    .sample-checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; margin-top: 4px; }
+    .sample-item { display: flex; align-items: center; gap: 9px; font-size: 0.86rem; color: var(--ink); padding: 3px 0; }
+    .sample-item-icon { width: 26px; height: 26px; border-radius: 8px; background: var(--paper); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sample-item-icon img { width: 18px; height: 18px; display: block; object-fit: contain; }
+    .sample-cta { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 22px; padding: 12px; border-radius: 12px; border: 1.5px dashed #c7d2d9; color: var(--teal-3); text-decoration: none; font-weight: 700; font-size: 0.84rem; transition: border-color 0.2s, background 0.2s; }
+    .sample-cta:hover { border-color: var(--green); background: #f6faf0; }
+    @media (max-width: 560px) { .tile-grid { grid-template-columns: 1fr; } .sample-checklist { grid-template-columns: 1fr; } }
 
     .steps-row { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 6px; }
     .steps-row::before { content: ''; position: absolute; top: 27px; left: 16.6%; right: 16.6%; height: 2px; background-image: repeating-linear-gradient(90deg, #ced9e0 0 8px, transparent 8px 18px); }
@@ -285,28 +303,44 @@
       <h2 class="pg-h2">Why it's not just another checklist app</h2>
       <p class="pg-h2-sub">Built to generate the right list, not just hold one.</p>
 
-      <div class="feat-card">
-        <div class="why-num">01</div>
-        <div class="feat-card-text">
+      <div class="tile-grid">
+        <div class="tile">
+          <div class="tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a8 8 0 1 0-16 0"/><circle cx="12" cy="10" r="6"/></svg></div>
           <h3>Built from your real trip</h3>
-          <p>Enter your destination, dates, and activities and Packmates AI generates a matched packing list in seconds - not a generic "beach trip" or "city trip" template.</p>
+          <p>Destination, dates, and activities feed in - not a generic "beach trip" template.</p>
         </div>
-      </div>
-
-      <div class="feat-card">
-        <div class="why-num c-teal">02</div>
-        <div class="feat-card-text">
-          <h3>Pulled from 250+ real items</h3>
-          <p>The app draws from a database of 250+ packing items, so the list includes the specific gear your trip actually calls for, not a generic ten-item starter list.</p>
+        <div class="tile">
+          <div class="tile-icon c-teal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></div>
+          <h3>250+ real items</h3>
+          <p>Pulled from an actual database, not a generic ten-item starter list.</p>
         </div>
-      </div>
-
-      <div class="feat-card">
-        <div class="why-num c-green">03</div>
-        <div class="feat-card-text">
+        <div class="tile">
+          <div class="tile-icon c-green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
           <h3>Adapts as plans change</h3>
-          <p>Add a hike or a swap in your dates and the list updates automatically - it doesn't go stale the moment your trip changes shape.</p>
+          <p>Add a hike or swap your dates and the list updates - it doesn't go stale.</p>
         </div>
+      </div>
+    </section>
+
+    <section class="pg-section">
+      <h2 class="pg-h2">What a real list actually looks like</h2>
+      <p class="pg-h2-sub">No made-up example - this is what the app generates.</p>
+      <div class="sample-card">
+        <span class="sample-trip-tag">5 days · Tokyo · Sightseeing + Dining</span>
+        <div class="sample-checklist">
+          <span class="sample-item"><span class="sample-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-YxxWewuwXdRncaZSbQNORwOieVOP39.png" alt="" loading="lazy"></span>Passport</span>
+          <span class="sample-item"><span class="sample-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-KuYCB2ggXWqJ9fLErN8ArVlWCqFtTU.png" alt="" loading="lazy"></span>Phone Charger</span>
+          <span class="sample-item"><span class="sample-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-KUiU6Lyx7ucBrdj6KmS1tmfbFOuHht.png" alt="" loading="lazy"></span>Power Bank</span>
+          <span class="sample-item"><span class="sample-item-icon"><img src="img/walking_shoes.png" alt="" loading="lazy"></span>Walking Shoes</span>
+          <span class="sample-item"><span class="sample-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-elw4GyvNsROSSzsDAUmaiKotqamYXy.png" alt="" loading="lazy"></span>Light Jacket</span>
+          <span class="sample-item"><span class="sample-item-icon"><img src="img/item_portable_umbrella.png" alt="" loading="lazy"></span>Portable Umbrella</span>
+          <span class="sample-item"><span class="sample-item-icon"><img src="img/item_reusable_water_bottle.png" alt="" loading="lazy"></span>Reusable Water Bottle</span>
+          <span class="sample-item"><span class="sample-item-icon"><img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-wnzXfGqb6aI838iS9TCufJSh2ToJP8.png" alt="" loading="lazy"></span>Cash</span>
+        </div>
+        <a class="sample-cta" href="packing-list-generator.html">
+          Try it with your own trip
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
       </div>
     </section>
 
