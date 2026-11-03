@@ -109,7 +109,7 @@
     }
     body { font-family: 'Montserrat', sans-serif; background: var(--paper); color: var(--ink); }
 
-    .pg-header { position: relative; background: linear-gradient(160deg, rgba(9,36,54,0.72) 0%, rgba(8,34,51,0.9) 78%, rgba(8,34,51,0.97) 100%), url('img/hero-packing-assistant.jpg') 22% 58%/cover no-repeat; color: #fff; padding: 28px 24px 56px; overflow: hidden; }
+    .pg-header { position: relative; background: linear-gradient(160deg, rgba(9,36,54,0.72) 0%, rgba(8,34,51,0.9) 78%, rgba(8,34,51,0.97) 100%), url('img/hero-packing-list-generator.jpg') center 40%/cover no-repeat; color: #fff; padding: 28px 24px 56px; overflow: hidden; }
     .pg-header-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
     .pg-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
     .pg-logo-row img { width: 30px; height: 30px; border-radius: 8px; }
@@ -130,6 +130,14 @@
     .gen-row { display: flex; gap: 12px; flex-wrap: wrap; }
     .gen-input { flex: 1; min-width: 160px; font: inherit; font-size: 0.9rem; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); }
     .gen-input:focus { outline: none; border-color: var(--green); background: #fff; }
+    .gen-dest-wrap { position: relative; flex: 1; min-width: 160px; }
+    .gen-dest-wrap .gen-input { width: 100%; }
+    .gen-dropdown { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 34px rgba(13,51,71,0.18); max-height: 230px; overflow-y: auto; z-index: 30; }
+    .gen-dropdown-item { padding: 10px 14px; font-size: 0.86rem; color: var(--ink); cursor: pointer; }
+    .gen-dropdown-item:hover, .gen-dropdown-item.active { background: var(--paper); color: var(--green); }
+    .gen-quick-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .gen-quick-pill { font-size: 0.74rem; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--line); background: #fff; color: #5c6d78; cursor: pointer; }
+    .gen-quick-pill:hover { border-color: var(--green); color: var(--green); }
     .gen-gender-row { display: flex; gap: 8px; }
     .gen-gender-btn { font-size: 0.8rem; font-weight: 600; padding: 9px 16px; border-radius: 20px; border: 1.5px solid var(--line); background: #fff; color: #5c6d78; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
     .gen-gender-btn.selected { border-color: var(--green); background: #eef7e2; color: var(--green); }
@@ -185,6 +193,18 @@
     .pg-footer { text-align: center; font-size: 0.76rem; color: #8a99a4; }
     .pg-footer a { color: #8a99a4; margin: 0 8px; }
 
+    .mid-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px 24px; margin-bottom: 48px; flex-wrap: wrap; }
+    .mid-cta-text h3 { font-family: 'Blauer Nue', sans-serif; font-size: 0.98rem; font-weight: 700; color: var(--teal-2); margin-bottom: 4px; }
+    .mid-cta-text p { font-size: 0.8rem; color: #6b7c88; }
+    .mid-cta-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .mid-cta-links a { font-size: 0.78rem; font-weight: 700; color: var(--teal-3); background: var(--paper); border: 1px solid var(--line); padding: 8px 15px; border-radius: 20px; text-decoration: none; white-space: nowrap; }
+    .mid-cta-links a:hover { border-color: var(--green); color: var(--green); }
+
+    .pg-related { text-align: center; max-width: 620px; margin: 0 auto 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+    .pg-related-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #8a99a4; margin-bottom: 10px; }
+    .pg-related a { display: inline-block; font-size: 0.78rem; font-weight: 600; color: var(--teal-3); background: #fff; border: 1px solid var(--line); padding: 6px 13px; border-radius: 20px; margin: 3px; text-decoration: none; }
+    .pg-related a:hover { border-color: var(--green); color: var(--green); }
+
     @media (max-width: 560px) {
       .gen-chip-grid { grid-template-columns: repeat(3, 1fr); }
       .pg-checklist { grid-template-columns: 1fr; }
@@ -210,7 +230,18 @@
     <section class="gen-card" aria-label="Packing list generator">
       <span class="gen-label">Destination</span>
       <div class="gen-row">
-        <input type="text" id="gen-dest" class="gen-input" placeholder="e.g. Bali, Paris, New York..." autocomplete="off">
+        <div class="gen-dest-wrap">
+          <input type="text" id="gen-dest" class="gen-input" placeholder="e.g. Bali, Paris, New York..." autocomplete="off">
+          <div class="gen-dropdown" id="gen-dropdown" hidden></div>
+        </div>
+      </div>
+      <div class="gen-quick-row">
+        <button type="button" class="gen-quick-pill" data-dest="Bali">Bali</button>
+        <button type="button" class="gen-quick-pill" data-dest="Paris">Paris</button>
+        <button type="button" class="gen-quick-pill" data-dest="New York">New York</button>
+        <button type="button" class="gen-quick-pill" data-dest="Thailand">Thailand</button>
+        <button type="button" class="gen-quick-pill" data-dest="Disney World">Disney World</button>
+        <button type="button" class="gen-quick-pill" data-dest="Aspen">Aspen</button>
       </div>
 
       <span class="gen-label">Trip start date (optional)</span>
@@ -259,7 +290,7 @@
       <div id="gen-results-body"></div>
       <div class="gen-save-cta">
         <h3>Want to save this list and pack with others?</h3>
-        <p>Create a free Packmates AI account to keep this list, check items off as you pack, and invite anyone traveling with you to the same live checklist.</p>
+        <p>Create a free Packmates AI account to keep this list, check items off as you pack, and invite anyone traveling with you to the same <a href="shared-packing-list-app.html" style="color:#fff;text-decoration:underline;">live shared checklist</a>.</p>
         <a class="gen-save-cta-btn" href="signup.html">
           Save it free
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -293,6 +324,18 @@
       </div>
     </section>
 
+    <div class="mid-cta">
+      <div class="mid-cta-text">
+        <h3>Want to see the rest of the app?</h3>
+        <p>The generator is just a preview of what Packmates AI can do.</p>
+      </div>
+      <div class="mid-cta-links">
+        <a href="packing-list-app.html">Packing List App</a>
+        <a href="shared-packing-list-app.html">Shared Lists</a>
+        <a href="packing-assistant.html">Packing Assistant</a>
+      </div>
+    </div>
+
     <section class="pg-section">
       <h2 class="pg-h2">Common questions</h2>
       <details class="pg-faq-item" open>
@@ -322,6 +365,15 @@
       </a>
     </div>
 
+    <div class="pg-related">
+      <div class="pg-related-label">Popular destination guides</div>
+      <a href="bali-packing-list.html">Bali Packing List</a>
+      <a href="paris-packing-list.html">Paris Packing List</a>
+      <a href="new-york-packing-list.html">NYC Packing List</a>
+      <a href="disney-world-packing-list.html">Disney World Packing List</a>
+      <a href="carry-on-packing-list.html">Carry-On Packing List</a>
+      <a href="family-packing-list.html">Family Packing List</a>
+    </div>
     <div class="pg-footer">
       <a href="welcome.html">← Packmates AI</a>
       <a href="packing-list-app.html">Packing List App</a>
@@ -336,6 +388,86 @@
   <script>
     (function () {
       let selectedGender = '';
+
+      const DESTINATIONS = [
+        'Bali','Paris','Japan','Tokyo','Cancún','Iceland','Dubai','New York','Disney World',
+        'London','Rome','Thailand','Hawaii','Las Vegas','Costa Rica',
+        'Miami','Maldives','Ibiza','Florida','Bahamas','Phuket','Tulum','Cabo','St. Lucia',
+        'Dominican Republic','Jamaica','Aruba','Barbados','Key West','Malibu','Santa Monica',
+        'San Diego','Rio de Janeiro',
+        'Aspen','Vail','Whistler','Verbier','Zermatt','Jackson Hole','Lake Tahoe','Banff',
+        'Park City','Breckenridge','Steamboat Springs','Telluride','Killington','Courchevel',
+        'Alaska','Norway','Sweden','Finland','Greenland',
+        'Amsterdam','Portland','Seattle','Dublin','Edinburgh','Vancouver','Brussels','Glasgow',
+        'Bergen','Reykjavik',
+        'Phoenix','Doha','Cairo','Marrakech','Palm Springs','Abu Dhabi',
+        'Chicago','Boston','Montreal','Toronto','Berlin','Vienna','Budapest','Prague','Milan',
+        'Zurich','Munich','Madrid','Barcelona','Lisbon','Athens','Stockholm','Copenhagen','Istanbul',
+        'Sri Lanka','Malaysia','Philippines','Fiji','Seychelles','Mauritius'
+      ];
+
+      const destInput = document.getElementById('gen-dest');
+      const dropdown = document.getElementById('gen-dropdown');
+      let activeIndex = -1;
+      let currentMatches = [];
+
+      function renderDropdown(matches) {
+        currentMatches = matches;
+        activeIndex = -1;
+        if (!matches.length) { dropdown.hidden = true; dropdown.innerHTML = ''; return; }
+        dropdown.innerHTML = matches.map((m, i) =>
+          `<div class="gen-dropdown-item" data-index="${i}">${m}</div>`
+        ).join('');
+        dropdown.hidden = false;
+      }
+
+      function selectDestination(name) {
+        destInput.value = name;
+        dropdown.hidden = true;
+        destInput.style.borderColor = '';
+      }
+
+      destInput.addEventListener('input', () => {
+        const q = destInput.value.trim().toLowerCase();
+        destInput.style.borderColor = '';
+        if (!q) { dropdown.hidden = true; return; }
+        const starts = DESTINATIONS.filter(d => d.toLowerCase().startsWith(q));
+        const contains = DESTINATIONS.filter(d => !d.toLowerCase().startsWith(q) && d.toLowerCase().includes(q));
+        renderDropdown([...starts, ...contains].slice(0, 8));
+      });
+
+      destInput.addEventListener('keydown', e => {
+        if (dropdown.hidden || !currentMatches.length) return;
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeIndex = Math.min(activeIndex + 1, currentMatches.length - 1);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeIndex = Math.max(activeIndex - 1, 0);
+        } else if (e.key === 'Enter') {
+          if (activeIndex >= 0) { e.preventDefault(); selectDestination(currentMatches[activeIndex]); }
+          return;
+        } else if (e.key === 'Escape') {
+          dropdown.hidden = true;
+          return;
+        } else {
+          return;
+        }
+        Array.from(dropdown.children).forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+      });
+
+      dropdown.addEventListener('click', e => {
+        const item = e.target.closest('.gen-dropdown-item');
+        if (item) selectDestination(currentMatches[parseInt(item.dataset.index, 10)]);
+      });
+
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.gen-dest-wrap')) dropdown.hidden = true;
+      });
+
+      document.querySelectorAll('.gen-quick-pill').forEach(pill => {
+        pill.addEventListener('click', () => selectDestination(pill.dataset.dest));
+      });
 
       document.querySelectorAll('.gen-gender-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -416,10 +548,6 @@
         });
 
         renderResults(byCat, destination);
-      });
-
-      document.getElementById('gen-dest').addEventListener('input', e => {
-        e.target.style.borderColor = '';
       });
     })();
   </script>
