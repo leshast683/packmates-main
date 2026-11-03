@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://analytics.ahrefs.com/analytics.js" data-key="ZwbceU4znFxojIMuQlrb0Q" async></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script>
+    if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+      document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    }
+  </script>
+  <!-- Google tag (gtag.js) - gated on Profile > Privacy > Analytics (default on) -->
+  <script>
+    (function () {
+      var on = true;
+      try { on = (JSON.parse(localStorage.getItem('pm_profile') || '{}').privacy || {}).analytics ?? true; } catch (e) {}
+      if (!on) return;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments); };
+      gtag("js", new Date());
+      gtag("consent", "default", {
+        analytics_storage: "denied", ad_storage: "denied",
+        ad_user_data: "denied", ad_personalization: "denied",
+        wait_for_update: 500
+      });
+      gtag("config", "G-5QYXT3Q3HW");
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-5QYXT3Q3HW';
+      document.head.appendChild(s);
+    })();
+  </script>
+      <script src="lib/cookie-consent.js"></script>
+  <title>Packing List Generator — Free, No Signup | Packmates AI</title>
+  <meta name="description" content="Generate a real packing list for your trip in seconds. Enter your destination, dates, and activities and get a matched checklist - free, no signup required.">
+  <meta name="keywords" content="packing list generator, packing list maker, packing list creator, travel packing list generator">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Packing List Generator — Free, No Signup | Packmates AI">
+  <meta property="og:description" content="Generate a real packing list for your trip in seconds. Enter your destination, dates, and activities and get a matched checklist - free, no signup required.">
+  <meta property="og:image" content="https://packmatesai.com/img/og-share.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://packmatesai.com/packing-list-generator.html">
+  <link rel="canonical" href="https://packmatesai.com/packing-list-generator.html">
+  <link rel="icon" type="image/png" href="img/appIcon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0d3347">
+  <link rel="apple-touch-icon" href="/img/icon-192.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Packmates AI Packing List Generator",
+    "applicationCategory": "TravelApplication",
+    "operatingSystem": "Web, iOS",
+    "url": "https://packmatesai.com/packing-list-generator.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "ratingCount": "7" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is the packing list generator really free, with no signup?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Enter your destination, dates, and activities and the list generates instantly in your browser - no account, no email, nothing saved anywhere unless you choose to create a free Packmates AI account afterward."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does the packing list generator decide what to include?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It uses the same logic as the Packmates AI app: your destination and travel month set an expected weather profile, and the activities you pick (beach, hiking, business, baby, and more) pull in matching items from a database of 250+ packing items."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I save or edit the generated packing list?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The generator gives you an instant preview with no account needed. To save a list, check items off as you pack, or share it with people you're traveling with, create a free Packmates AI account and it becomes a real trip you can keep updating."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does the generated list change if I add more activities?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes - add or remove activities and regenerate to see the list update immediately. In the full Packmates AI app, this same adaptive behavior keeps working after you've saved the trip, as your plans or the weather forecast change."
+        }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="standalone.css">
+  <style>
+    :root {
+      --teal-1: #082233; --teal-2: #0d3347; --teal-3: #113a58;
+      --green: #5f9d30; --green2: #7cc63e;
+      --amber: #d99a2b; --amber-bg: #fdf3e2;
+      --ink: #16222c; --paper: #f6f8f9; --line: #e2e8ec;
+    }
+    body { font-family: 'Montserrat', sans-serif; background: var(--paper); color: var(--ink); }
+
+    .pg-header { position: relative; background: linear-gradient(160deg, rgba(9,36,54,0.72) 0%, rgba(8,34,51,0.9) 78%, rgba(8,34,51,0.97) 100%), url('img/hero-packing-assistant.jpg') 22% 58%/cover no-repeat; color: #fff; padding: 28px 24px 56px; overflow: hidden; }
+    .pg-header-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+    .pg-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+    .pg-logo-row img { width: 30px; height: 30px; border-radius: 8px; }
+    .pg-logo-row span { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .pg-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #fff; background: linear-gradient(120deg, var(--green), var(--green2)); padding: 6px 14px; border-radius: 20px; margin-bottom: 18px; box-shadow: 0 8px 20px rgba(95,157,48,0.35); }
+    .pg-h1 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: clamp(1.9rem, 4.2vw, 2.6rem); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 14px; text-wrap: balance; max-width: 560px; text-shadow: 0 2px 18px rgba(0,0,0,0.35); }
+    .pg-intro { font-size: 0.92rem; line-height: 1.7; color: rgba(255,255,255,0.85); max-width: 480px; text-shadow: 0 1px 10px rgba(0,0,0,0.3); }
+
+    .pg-body { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
+    .pg-section { margin-bottom: 48px; }
+    .pg-h2 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--teal-2); margin-bottom: 8px; letter-spacing: -0.01em; text-align: center; }
+    .pg-h2-sub { font-size: 0.85rem; color: #6b7c88; line-height: 1.6; margin-bottom: 26px; text-align: center; max-width: 480px; margin-left: auto; margin-right: auto; }
+
+    /* ── Generator card ── */
+    .gen-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 28px 24px 26px; margin-top: -34px; position: relative; z-index: 2; box-shadow: 0 24px 60px rgba(13,51,71,0.18); }
+    .gen-label { display: block; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #7a8a96; margin: 18px 0 8px; }
+    .gen-label:first-child { margin-top: 0; }
+    .gen-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .gen-input { flex: 1; min-width: 160px; font: inherit; font-size: 0.9rem; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); }
+    .gen-input:focus { outline: none; border-color: var(--green); background: #fff; }
+    .gen-gender-row { display: flex; gap: 8px; }
+    .gen-gender-btn { font-size: 0.8rem; font-weight: 600; padding: 9px 16px; border-radius: 20px; border: 1.5px solid var(--line); background: #fff; color: #5c6d78; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+    .gen-gender-btn.selected { border-color: var(--green); background: #eef7e2; color: var(--green); }
+    .gen-chip-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .gen-chip { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 4px 8px; border-radius: 12px; border: 1.5px solid var(--line); background: #fff; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .gen-chip img { width: 26px; height: 26px; display: block; }
+    .gen-chip span { font-size: 0.6rem; font-weight: 700; color: #5c6d78; text-align: center; line-height: 1.2; }
+    .gen-chip.selected { border-color: var(--green); background: #eef7e2; }
+    .gen-chip.selected span { color: var(--green); }
+    .gen-submit-btn { width: 100%; margin-top: 22px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 15px; background: var(--green); color: #fff; border: none; border-radius: 14px; font-weight: 700; font-size: 0.92rem; cursor: pointer; transition: background 0.2s, transform 0.2s; font-family: inherit; }
+    .gen-submit-btn:hover { background: var(--green2); transform: translateY(-1px); }
+    .gen-hint { font-size: 0.74rem; color: #8a99a4; text-align: center; margin-top: 10px; }
+
+    /* ── Results ── */
+    .gen-results { margin-top: 44px; }
+    .gen-results-head { text-align: center; margin-bottom: 26px; }
+    .gen-results-head h2 { font-family: 'Blauer Nue', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--teal-2); margin-bottom: 6px; }
+    .gen-results-head p { font-size: 0.84rem; color: #6b7c88; }
+    .gen-cat { margin-bottom: 22px; }
+    .gen-cat-header { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #7a8a96; margin-bottom: 10px; padding-left: 2px; }
+    .pg-checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; }
+    .pg-item { display: flex; align-items: center; gap: 9px; font-size: 0.86rem; color: var(--ink); padding: 3px 0; }
+    .pg-item-icon { width: 26px; height: 26px; border-radius: 8px; background: var(--paper); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pg-item-icon svg, .pg-item-icon img { width: 18px; height: 18px; display: block; object-fit: contain; }
+
+    .gen-save-cta { background: linear-gradient(135deg, var(--teal-2), var(--teal-1)); border-radius: 18px; padding: 26px 24px; text-align: center; color: #fff; margin-top: 30px; }
+    .gen-save-cta h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.08rem; margin-bottom: 8px; }
+    .gen-save-cta p { font-size: 0.82rem; color: rgba(255,255,255,0.68); margin-bottom: 18px; max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.55; }
+    .gen-save-cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; background: var(--green); color: #fff; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 0.82rem; }
+    .gen-save-cta-btn:hover { background: var(--green2); }
+
+    .why-num { flex-shrink: 0; font-family: 'Blauer Nue', sans-serif; font-weight: 800; font-size: 0.78rem; color: var(--amber); background: var(--amber-bg); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .why-num.c-green { color: var(--green); background: #eef7e2; }
+    .why-num.c-teal { color: var(--teal-3); background: #e7eef4; }
+    .feat-card { display: flex; align-items: flex-start; gap: 18px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; margin-bottom: 14px; }
+    .feat-card-text h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.08rem; font-weight: 700; color: var(--teal-2); margin-bottom: 6px; letter-spacing: -0.01em; }
+    .feat-card-text p { font-size: 0.85rem; line-height: 1.68; color: #5c6d78; }
+
+    .pg-faq-item { background: #fff; border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
+    .pg-faq-item summary { cursor: pointer; padding: 18px 22px; font-family: 'Blauer Nue', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--teal-2); display: flex; align-items: center; justify-content: space-between; gap: 16px; list-style: none; }
+    .pg-faq-item summary::-webkit-details-marker { display: none; }
+    .faq-chevron { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--paper); display: flex; align-items: center; justify-content: center; transition: transform 0.25s ease; }
+    .faq-chevron::after { content: ''; width: 7px; height: 7px; border-right: 1.6px solid #8a99a4; border-bottom: 1.6px solid #8a99a4; transform: rotate(45deg) translate(-1px, -1px); }
+    .pg-faq-item[open] .faq-chevron { transform: rotate(180deg); background: var(--amber-bg); }
+    .pg-faq-item[open] .faq-chevron::after { border-color: var(--amber); }
+    .pg-faq-item p { padding: 0 22px 20px; font-size: 0.84rem; line-height: 1.6; color: #5c6d78; }
+
+    .pg-cta { background: linear-gradient(135deg, var(--teal-2), var(--teal-1)); border-radius: 20px; padding: 40px 32px; text-align: center; color: #fff; margin: 8px 0 40px; }
+    .pg-cta h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
+    .pg-cta p { font-size: 0.86rem; color: rgba(255,255,255,0.65); margin-bottom: 22px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+    .pg-cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 30px; background: var(--green); color: #fff; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 0.84rem; transition: background 0.2s, transform 0.2s; }
+    .pg-cta-btn:hover { background: var(--green2); transform: translateY(-1px); }
+    .pg-footer { text-align: center; font-size: 0.76rem; color: #8a99a4; }
+    .pg-footer a { color: #8a99a4; margin: 0 8px; }
+
+    @media (max-width: 560px) {
+      .gen-chip-grid { grid-template-columns: repeat(3, 1fr); }
+      .pg-checklist { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="pg-header">
+    <div class="pg-header-inner">
+      <div class="pg-logo-row">
+        <img src="img/appIcon.png" alt="Packmates AI">
+        <span>Packmates AI</span>
+      </div>
+      <div class="pg-eyebrow">Packing List Generator</div>
+      <h1 class="pg-h1">Build a real packing list in 10 seconds</h1>
+      <p class="pg-intro">Enter your destination, dates, and activities below and get a matched checklist instantly - pulled from a database of 250+ real packing items, not a generic template. Free, and no signup required to try it.</p>
+    </div>
+  </header>
+
+  <main class="pg-body">
+
+    <section class="gen-card" aria-label="Packing list generator">
+      <span class="gen-label">Destination</span>
+      <div class="gen-row">
+        <input type="text" id="gen-dest" class="gen-input" placeholder="e.g. Bali, Paris, New York..." autocomplete="off">
+      </div>
+
+      <span class="gen-label">Trip start date (optional)</span>
+      <div class="gen-row">
+        <input type="date" id="gen-date" class="gen-input">
+      </div>
+
+      <span class="gen-label">Packing for (optional)</span>
+      <div class="gen-gender-row">
+        <button type="button" class="gen-gender-btn" data-gender="female">Female</button>
+        <button type="button" class="gen-gender-btn" data-gender="male">Male</button>
+        <button type="button" class="gen-gender-btn selected" data-gender="">Skip</button>
+      </div>
+
+      <span class="gen-label">Activities (optional, pick any)</span>
+      <div class="gen-chip-grid" id="gen-chip-grid">
+        <button type="button" class="gen-chip" data-category="Beach"><img src="img/activity_beach.png" alt=""><span>Beach</span></button>
+        <button type="button" class="gen-chip" data-category="Hiking"><img src="img/activity_hiking.png" alt=""><span>Hiking</span></button>
+        <button type="button" class="gen-chip" data-category="Camping"><img src="img/activity_camping.png" alt=""><span>Camping</span></button>
+        <button type="button" class="gen-chip" data-category="Swimming"><img src="img/activity_swimming.png" alt=""><span>Swimming</span></button>
+        <button type="button" class="gen-chip" data-category="Snow Sports"><img src="img/activity_snowsports.png" alt=""><span>Snow Sports</span></button>
+        <button type="button" class="gen-chip" data-category="Gym"><img src="img/activity_gym.png" alt=""><span>Gym</span></button>
+        <button type="button" class="gen-chip" data-category="Business Trip"><img src="img/activity_business.png" alt=""><span>Business</span></button>
+        <button type="button" class="gen-chip" data-category="Night Out"><img src="img/activity_nightout.png" alt=""><span>Night Out</span></button>
+        <button type="button" class="gen-chip" data-category="Baby"><img src="img/activity_baby.png" alt=""><span>Baby</span></button>
+        <button type="button" class="gen-chip" data-category="Theme Park"><img src="img/activity_themepark.png" alt=""><span>Theme Park</span></button>
+        <button type="button" class="gen-chip" data-category="Festival"><img src="img/activity_festival.png" alt=""><span>Festival</span></button>
+        <button type="button" class="gen-chip" data-category="Road Trip"><img src="img/activity_roadtrip.png" alt=""><span>Road Trip</span></button>
+        <button type="button" class="gen-chip" data-category="City Sightseeing"><img src="img/activity_sightseeing.png" alt=""><span>Sightseeing</span></button>
+        <button type="button" class="gen-chip" data-category="Dining"><img src="img/activity_dining.png" alt=""><span>Dining</span></button>
+        <button type="button" class="gen-chip" data-category="Cruise"><img src="img/activity_cruise.png" alt=""><span>Cruise</span></button>
+      </div>
+
+      <button type="button" class="gen-submit-btn" id="gen-submit">
+        Generate my packing list
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <div class="gen-hint">Nothing is saved or sent anywhere - this runs entirely in your browser.</div>
+    </section>
+
+    <section class="gen-results" id="gen-results" hidden>
+      <div class="gen-results-head">
+        <h2 id="gen-results-title">Your packing list</h2>
+        <p id="gen-results-count"></p>
+      </div>
+      <div id="gen-results-body"></div>
+      <div class="gen-save-cta">
+        <h3>Want to save this list and pack with others?</h3>
+        <p>Create a free Packmates AI account to keep this list, check items off as you pack, and invite anyone traveling with you to the same live checklist.</p>
+        <a class="gen-save-cta-btn" href="signup.html">
+          Save it free
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <section class="pg-section">
+      <h2 class="pg-h2">Not just a template with your name on it</h2>
+      <p class="pg-h2-sub">A packing list generator that actually reads your trip.</p>
+      <div class="feat-card">
+        <div class="why-num">01</div>
+        <div class="feat-card-text">
+          <h3>Matched to your destination and month</h3>
+          <p>Known beach, ski, and cold-weather destinations shape the list automatically, and travel month adjusts it further for cities with real seasons.</p>
+        </div>
+      </div>
+      <div class="feat-card">
+        <div class="why-num c-teal">02</div>
+        <div class="feat-card-text">
+          <h3>Built from 250+ real items</h3>
+          <p>Every item comes from the same database the full Packmates AI app uses - not a fixed ten-item starter list copied for every trip.</p>
+        </div>
+      </div>
+      <div class="feat-card">
+        <div class="why-num c-green">03</div>
+        <div class="feat-card-text">
+          <h3>Updates the moment you change activities</h3>
+          <p>Add or remove an activity and regenerate - the list reflects it immediately, the same way the full app keeps adapting after you save a trip.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pg-section">
+      <h2 class="pg-h2">Common questions</h2>
+      <details class="pg-faq-item" open>
+        <summary>Is the packing list generator really free, with no signup?<span class="faq-chevron"></span></summary>
+        <p>Yes. Enter your destination, dates, and activities and the list generates instantly in your browser - no account, no email, nothing saved anywhere unless you choose to create a free Packmates AI account afterward.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>How does the packing list generator decide what to include?<span class="faq-chevron"></span></summary>
+        <p>It uses the same logic as the Packmates AI app: your destination and travel month set an expected weather profile, and the activities you pick (beach, hiking, business, baby, and more) pull in matching items from a database of 250+ packing items.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>Can I save or edit the generated packing list?<span class="faq-chevron"></span></summary>
+        <p>The generator gives you an instant preview with no account needed. To save a list, check items off as you pack, or share it with people you're traveling with, create a free Packmates AI account and it becomes a real trip you can keep updating.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>Does the generated list change if I add more activities?<span class="faq-chevron"></span></summary>
+        <p>Yes - add or remove activities and regenerate to see the list update immediately. In the full Packmates AI app, this same adaptive behavior keeps working after you've saved the trip, as your plans or the weather forecast change.</p>
+      </details>
+    </section>
+
+    <div class="pg-cta">
+      <h3>Get the full app, not just the preview</h3>
+      <p>Packmates AI saves your trip, keeps the list current as weather and plans change, and syncs live with anyone traveling with you.</p>
+      <a class="pg-cta-btn" href="signup.html">
+        Try it free
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <div class="pg-footer">
+      <a href="welcome.html">← Packmates AI</a>
+      <a href="packing-list-app.html">Packing List App</a>
+      <a href="packing-assistant.html">Packing Assistant</a>
+      <a href="shared-packing-list-app.html">Shared Packing List</a>
+      <a href="packing-guide.html">Packing Guide</a>
+    </div>
+  </main>
+
+  <script src="packing-icons.js"></script>
+  <script src="lib/packing-items.js"></script>
+  <script>
+    (function () {
+      let selectedGender = '';
+
+      document.querySelectorAll('.gen-gender-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.gen-gender-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedGender = btn.dataset.gender;
+        });
+      });
+
+      document.querySelectorAll('.gen-chip').forEach(chip => {
+        chip.addEventListener('click', () => chip.classList.toggle('selected'));
+      });
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+      }
+
+      function renderResults(byCat, destination) {
+        const body = document.getElementById('gen-results-body');
+        body.innerHTML = '';
+        let total = 0;
+
+        Object.entries(byCat).forEach(([cat, names]) => {
+          total += names.length;
+          const section = document.createElement('div');
+          section.className = 'gen-cat';
+          const header = document.createElement('div');
+          header.className = 'gen-cat-header';
+          header.textContent = cat;
+          section.appendChild(header);
+
+          const grid = document.createElement('div');
+          grid.className = 'pg-checklist';
+          names.forEach(name => {
+            const row = document.createElement('span');
+            row.className = 'pg-item';
+            let iconSvg = '';
+            try { iconSvg = getItemIcon(name, cat, selectedGender || null); } catch (e) {}
+            row.innerHTML = `<span class="pg-item-icon">${iconSvg || ''}</span>${escapeHtml(name)}`;
+            grid.appendChild(row);
+          });
+          section.appendChild(grid);
+          body.appendChild(section);
+        });
+
+        const title = document.getElementById('gen-results-title');
+        title.textContent = destination ? `Your packing list for ${destination}` : 'Your packing list';
+        document.getElementById('gen-results-count').textContent = `${total} items, matched to your trip`;
+
+        const results = document.getElementById('gen-results');
+        results.hidden = false;
+        results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      document.getElementById('gen-submit').addEventListener('click', () => {
+        const destination = document.getElementById('gen-dest').value.trim();
+        const fromDate = document.getElementById('gen-date').value || null;
+        const activityCategories = Array.from(document.querySelectorAll('.gen-chip.selected')).map(el => el.dataset.category);
+
+        if (!destination) {
+          document.getElementById('gen-dest').focus();
+          document.getElementById('gen-dest').style.borderColor = '#e07a5f';
+          return;
+        }
+
+        const tripData = { destination, fromDate, activityCategories, destinationCountry: null, id: null };
+        const profile = buildTripProfile(tripData);
+        const keys = getSuggestedItemKeys({ profile, userGender: selectedGender || null, dismissed: new Set(), customItems: {} });
+
+        const byCat = {};
+        keys.forEach(k => {
+          const idx = k.indexOf('::');
+          const cat = k.slice(0, idx);
+          const name = k.slice(idx + 2);
+          (byCat[cat] = byCat[cat] || []).push(name);
+        });
+
+        renderResults(byCat, destination);
+      });
+
+      document.getElementById('gen-dest').addEventListener('input', e => {
+        e.target.style.borderColor = '';
+      });
+    })();
+  </script>
+
+</body>
+</html>
