@@ -8,6 +8,7 @@ Allow: /packing-guide.html
 Allow: /packing-assistant.html
 Allow: /packing-assistant-*.html$
 Allow: /shared-packing-list-app.html
+Allow: /packing-list-app.html
 Allow: /blog.html
 Allow: /*-packing-list.html$
 Allow: /travel-app-i-use-before-every-trip.html
