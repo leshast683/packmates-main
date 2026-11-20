@@ -87,6 +87,13 @@
     .pg-universal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
     .pg-universal-chip { font-size: 0.78rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: #475763; }
     .pg-universal-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7a8a96; margin-bottom: 12px; margin-top: 44px; }
+    .pg-faq { margin: 0 0 44px; }
+    .pg-faq-item { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 4px 22px; margin-bottom: 10px; }
+    .pg-faq-item summary { padding: 16px 0; font-weight: 700; font-size: 0.9rem; color: var(--teal-2); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .pg-faq-item summary::-webkit-details-marker { display: none; }
+    .pg-faq-item summary::after { content: '+'; font-size: 1.3rem; color: #8a99a4; flex-shrink: 0; }
+    .pg-faq-item[open] summary::after { content: '−'; }
+    .pg-faq-item p { font-size: 0.85rem; line-height: 1.65; color: #475763; padding-bottom: 18px; margin: 0; }
     .pg-cta { background: linear-gradient(135deg, var(--teal-2), var(--teal-1)); border-radius: 20px; padding: 40px 32px; text-align: center; color: #fff; margin: 56px 0 40px; }
     .pg-cta h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
     .pg-cta p { font-size: 0.86rem; color: rgba(255,255,255,0.65); margin-bottom: 22px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; }
@@ -122,6 +129,39 @@
       .pin-showcase-img { flex: 0 0 auto; width: 62%; max-width: 220px; }
     }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the dress code for temples in Thailand?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Covered shoulders and knees, and it applies to everyone — the Grand Palace and Wat Pho in Bangkok check at the entrance. A sarong or light cover-up in your day bag is the standard fix for shorts days. Treat it as non-negotiable rather than a suggestion: temple days are where travellers most often get caught out." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I pack for island hopping in Thailand?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Quick-dry everything. In Thailand's humidity, clothes simply don't dry overnight, so fabrics that dry fast — and a spare dry set in a dry bag — make island days work. Add swimwear, sun protection and water shoes if you'll be climbing in and out of boats. Packmates AI counts your island days when it builds the list, so quick-dry gear gets in without you having to think about it." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I pack for Thailand in rainy season?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A light rain jacket, quick-dry clothes and a waterproof pouch for your phone. Rainy-season downpours are intense but often short, and the timing differs between the Gulf and Andaman coasts, so check your specific islands rather than the country as a whole. Sandals that survive getting soaked beat shoes that don't." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need mosquito protection in Thailand?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — pack repellent and use it, especially in the evenings and anywhere near water or greenery. Light long sleeves and trousers for evenings do double duty: they help with mosquitoes and cover you for an unplanned temple stop. It's a small bag-space cost for a much more comfortable trip." }
+      },
+      {
+        "@type": "Question",
+        "name": "What shoes should I pack for Thailand?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Slip-ons are the local superpower: you'll take your shoes off constantly at temples, shops and homes, and laces get old fast. Bring sandals or slip-ons for daily wear plus one closed, sturdier pair for travel days and any hiking. Two pairs, chosen well, beat four pairs chosen hopefully." }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -215,6 +255,30 @@
         </ul>
       </div>
     </div>
+
+    <section class="pg-faq">
+      <h2 class="pg-h2">Thailand Packing FAQ</h2>
+      <details class="pg-faq-item">
+        <summary>What is the dress code for temples in Thailand?</summary>
+        <p>Covered shoulders and knees, and it applies to everyone — the Grand Palace and Wat Pho in Bangkok check at the entrance. A sarong or light cover-up in your day bag is the standard fix for shorts days. Treat it as non-negotiable rather than a suggestion: temple days are where travellers most often get caught out.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I pack for island hopping in Thailand?</summary>
+        <p>Quick-dry everything. In Thailand's humidity, clothes simply don't dry overnight, so fabrics that dry fast — and a spare dry set in a dry bag — make island days work. Add swimwear, sun protection and water shoes if you'll be climbing in and out of boats. Packmates AI counts your island days when it builds the list, so quick-dry gear gets in without you having to think about it.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I pack for Thailand in rainy season?</summary>
+        <p>A light rain jacket, quick-dry clothes and a waterproof pouch for your phone. Rainy-season downpours are intense but often short, and the timing differs between the Gulf and Andaman coasts, so check your specific islands rather than the country as a whole. Sandals that survive getting soaked beat shoes that don't.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>Do I need mosquito protection in Thailand?</summary>
+        <p>Yes — pack repellent and use it, especially in the evenings and anywhere near water or greenery. Light long sleeves and trousers for evenings do double duty: they help with mosquitoes and cover you for an unplanned temple stop. It's a small bag-space cost for a much more comfortable trip.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What shoes should I pack for Thailand?</summary>
+        <p>Slip-ons are the local superpower: you'll take your shoes off constantly at temples, shops and homes, and laces get old fast. Bring sandals or slip-ons for daily wear plus one closed, sturdier pair for travel days and any hiking. Two pairs, chosen well, beat four pairs chosen hopefully.</p>
+      </details>
+    </section>
 
     <div class="pg-cta">
       <h3>This list, auto-built for your actual dates</h3>

@@ -83,6 +83,13 @@
     .pg-universal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
     .pg-universal-chip { font-size: 0.78rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: #475763; }
     .pg-universal-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7a8a96; margin-bottom: 12px; margin-top: 44px; }
+    .pg-faq { margin: 0 0 44px; }
+    .pg-faq-item { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 4px 22px; margin-bottom: 10px; }
+    .pg-faq-item summary { padding: 16px 0; font-weight: 700; font-size: 0.9rem; color: var(--teal-2); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .pg-faq-item summary::-webkit-details-marker { display: none; }
+    .pg-faq-item summary::after { content: '+'; font-size: 1.3rem; color: #8a99a4; flex-shrink: 0; }
+    .pg-faq-item[open] summary::after { content: '−'; }
+    .pg-faq-item p { font-size: 0.85rem; line-height: 1.65; color: #475763; padding-bottom: 18px; margin: 0; }
     .pg-cta { background: linear-gradient(135deg, var(--teal-2), var(--teal-1)); border-radius: 20px; padding: 40px 32px; text-align: center; color: #fff; margin: 56px 0 40px; }
     .pg-cta h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
     .pg-cta p { font-size: 0.86rem; color: rgba(255,255,255,0.65); margin-bottom: 22px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; }
@@ -96,6 +103,39 @@
     .pg-footer a { color: #8a99a4; margin: 0 8px; }
     @media (max-width: 560px) { .pg-checklist { grid-template-columns: 1fr; } .pg-body { margin-top: -20px; } }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the dress code for Las Vegas clubs and upscale restaurants?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Many clubs and upscale restaurants enforce one — for men, that typically means no sneakers, shorts or flip-flops in the evening. Pack one smart evening outfit with proper shoes and you're covered for clubs, shows and nice dinners. The dress code is the most common reason Vegas plans change at the door." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do I need a jacket in Las Vegas in summer?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Casinos, clubs and restaurants run their air conditioning cold — properly cold, while it's desert-hot outside. A light jacket or layer that works with your evening outfit is one of the most-used things you'll pack. The Strip is a two-climate trip in a single day." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I pack for Las Vegas during the day?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Light, breathable clothes, serious sun protection and the most comfortable walking shoes you own — the Strip is much longer than it looks, and casino-to-casino distances add up to miles. Carry water; desert heat dehydrates quietly. Save your feet for the evening instead of spending them by 2 p.m." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I pack for Las Vegas in winter?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A real jacket and layers. Desert winter days can be mild, but nights get properly cold, and the wind along the Strip cuts. The indoor-outdoor swing still applies, just in reverse: heat inside, cold outside. One warm layer plus your evening outfit handles most winter trips." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I pack for a Las Vegas pool party or dayclub?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Swimwear, a cover-up for walking through the casino, sunscreen and a small secure pouch for your phone and card — lockers and bag storage are limited, so carry light. If you're building your list in Packmates AI, adding the pool day as an activity puts this kit on the list automatically instead of as a last-minute scramble." }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -162,6 +202,30 @@
       <span class="pg-universal-chip">Medications</span>
       <span class="pg-universal-chip">Underwear &amp; socks</span>
     </div>
+
+    <section class="pg-faq">
+      <h2 class="pg-h2">Las Vegas Packing FAQ</h2>
+      <details class="pg-faq-item">
+        <summary>What is the dress code for Las Vegas clubs and upscale restaurants?</summary>
+        <p>Many clubs and upscale restaurants enforce one — for men, that typically means no sneakers, shorts or flip-flops in the evening. Pack one smart evening outfit with proper shoes and you're covered for clubs, shows and nice dinners. The dress code is the most common reason Vegas plans change at the door.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>Why do I need a jacket in Las Vegas in summer?</summary>
+        <p>Casinos, clubs and restaurants run their air conditioning cold — properly cold, while it's desert-hot outside. A light jacket or layer that works with your evening outfit is one of the most-used things you'll pack. The Strip is a two-climate trip in a single day.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I pack for Las Vegas during the day?</summary>
+        <p>Light, breathable clothes, serious sun protection and the most comfortable walking shoes you own — the Strip is much longer than it looks, and casino-to-casino distances add up to miles. Carry water; desert heat dehydrates quietly. Save your feet for the evening instead of spending them by 2 p.m.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I pack for Las Vegas in winter?</summary>
+        <p>A real jacket and layers. Desert winter days can be mild, but nights get properly cold, and the wind along the Strip cuts. The indoor-outdoor swing still applies, just in reverse: heat inside, cold outside. One warm layer plus your evening outfit handles most winter trips.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I pack for a Las Vegas pool party or dayclub?</summary>
+        <p>Swimwear, a cover-up for walking through the casino, sunscreen and a small secure pouch for your phone and card — lockers and bag storage are limited, so carry light. If you're building your list in Packmates AI, adding the pool day as an activity puts this kit on the list automatically instead of as a last-minute scramble.</p>
+      </details>
+    </section>
 
     <div class="pg-cta">
       <h3>This list, auto-built for your actual dates</h3>

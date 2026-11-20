@@ -87,6 +87,13 @@
     .pg-universal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
     .pg-universal-chip { font-size: 0.78rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: #475763; }
     .pg-universal-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7a8a96; margin-bottom: 12px; margin-top: 44px; }
+    .pg-faq { margin: 0 0 44px; }
+    .pg-faq-item { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 4px 22px; margin-bottom: 10px; }
+    .pg-faq-item summary { padding: 16px 0; font-weight: 700; font-size: 0.9rem; color: var(--teal-2); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .pg-faq-item summary::-webkit-details-marker { display: none; }
+    .pg-faq-item summary::after { content: '+'; font-size: 1.3rem; color: #8a99a4; flex-shrink: 0; }
+    .pg-faq-item[open] summary::after { content: '−'; }
+    .pg-faq-item p { font-size: 0.85rem; line-height: 1.65; color: #475763; padding-bottom: 18px; margin: 0; }
     .pg-cta { background: linear-gradient(135deg, var(--teal-2), var(--teal-1)); border-radius: 20px; padding: 40px 32px; text-align: center; color: #fff; margin: 56px 0 40px; }
     .pg-cta h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
     .pg-cta p { font-size: 0.86rem; color: rgba(255,255,255,0.65); margin-bottom: 22px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; }
@@ -100,6 +107,39 @@
     .pg-footer a { color: #8a99a4; margin: 0 8px; }
     @media (max-width: 560px) { .pg-checklist { grid-template-columns: 1fr; } .pg-body { margin-top: -20px; } }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What should I wear in Dubai malls and public places?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Modest, covered clothing is the norm: shoulders and knees covered in malls and public spaces keeps you comfortable and within local expectations. Light, breathable fabrics make that easy in the heat. Swimwear is for the beach and pool, not the mall on the way back." }
+      },
+      {
+        "@type": "Question",
+        "name": "What do I need to wear to visit a mosque in Dubai?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Mosque dress requirements are strict: women need to cover their hair, arms and legs, and men should cover shoulders and legs too. Bring a light scarf in your day bag so you're ready without reorganising your outfit. It's the one dress rule in Dubai with no flexibility, so plan for it rather than hoping to sort it out at the door." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do I need a jacket in Dubai if it's so hot?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because indoors is a different climate. Malls, restaurants and the Metro run their air conditioning cold, and the jump from desert heat to icy interiors catches everyone out. A light layer that lives in your bag is one of the most-used items on a Dubai trip." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I pack for a desert safari in Dubai?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Closed shoes for walking on sand, sunglasses for the daytime glare, and a light jacket — the desert cools down quickly in the evening, which surprises people dressed for the city heat. Loose, comfortable clothes work best for the ride itself. Leave anything precious behind; sand gets everywhere." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I pack for Dubai in summer?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Breathable, modest clothing for extreme outdoor heat, planned around short hops between air-conditioned spaces, plus that ever-present light layer for indoors. Sun protection and a refillable water bottle earn their space. Packmates AI builds the list from your dates, so a summer trip gets the heat version of the list rather than the milder winter one." }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -187,6 +227,30 @@
       <span class="pg-universal-chip">Medications</span>
       <span class="pg-universal-chip">Underwear &amp; socks</span>
     </div>
+
+    <section class="pg-faq">
+      <h2 class="pg-h2">Dubai Packing FAQ</h2>
+      <details class="pg-faq-item">
+        <summary>What should I wear in Dubai malls and public places?</summary>
+        <p>Modest, covered clothing is the norm: shoulders and knees covered in malls and public spaces keeps you comfortable and within local expectations. Light, breathable fabrics make that easy in the heat. Swimwear is for the beach and pool, not the mall on the way back.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What do I need to wear to visit a mosque in Dubai?</summary>
+        <p>Mosque dress requirements are strict: women need to cover their hair, arms and legs, and men should cover shoulders and legs too. Bring a light scarf in your day bag so you're ready without reorganising your outfit. It's the one dress rule in Dubai with no flexibility, so plan for it rather than hoping to sort it out at the door.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>Why do I need a jacket in Dubai if it's so hot?</summary>
+        <p>Because indoors is a different climate. Malls, restaurants and the Metro run their air conditioning cold, and the jump from desert heat to icy interiors catches everyone out. A light layer that lives in your bag is one of the most-used items on a Dubai trip.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I pack for a desert safari in Dubai?</summary>
+        <p>Closed shoes for walking on sand, sunglasses for the daytime glare, and a light jacket — the desert cools down quickly in the evening, which surprises people dressed for the city heat. Loose, comfortable clothes work best for the ride itself. Leave anything precious behind; sand gets everywhere.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I pack for Dubai in summer?</summary>
+        <p>Breathable, modest clothing for extreme outdoor heat, planned around short hops between air-conditioned spaces, plus that ever-present light layer for indoors. Sun protection and a refillable water bottle earn their space. Packmates AI builds the list from your dates, so a summer trip gets the heat version of the list rather than the milder winter one.</p>
+      </details>
+    </section>
 
     <div class="pg-cta">
       <h3>This list, auto-built for your actual dates</h3>

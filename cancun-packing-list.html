@@ -92,6 +92,13 @@
     .pg-universal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
     .pg-universal-chip { font-size: 0.78rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: #475763; }
     .pg-universal-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7a8a96; margin-bottom: 12px; margin-top: 44px; }
+    .pg-faq { margin: 0 0 44px; }
+    .pg-faq-item { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 4px 22px; margin-bottom: 10px; }
+    .pg-faq-item summary { padding: 16px 0; font-weight: 700; font-size: 0.9rem; color: var(--teal-2); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .pg-faq-item summary::-webkit-details-marker { display: none; }
+    .pg-faq-item summary::after { content: '+'; font-size: 1.3rem; color: #8a99a4; flex-shrink: 0; }
+    .pg-faq-item[open] summary::after { content: '−'; }
+    .pg-faq-item p { font-size: 0.85rem; line-height: 1.65; color: #475763; padding-bottom: 18px; margin: 0; }
     .pg-cta { background: linear-gradient(135deg, var(--teal-2), var(--teal-1)); border-radius: 20px; padding: 40px 32px; text-align: center; color: #fff; margin: 56px 0 40px; }
     .pg-cta h3 { font-family: 'Blauer Nue', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
     .pg-cta p { font-size: 0.86rem; color: rgba(255,255,255,0.65); margin-bottom: 22px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; }
@@ -120,6 +127,39 @@
 
     @media (max-width: 560px) { .pg-checklist { grid-template-columns: 1fr; } .pg-body { margin-top: -20px; } .pin-showcase { flex-direction: column; padding: 30px 22px; } .pin-showcase-img { flex: 0 0 auto; width: 62%; max-width: 220px; } }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What sunscreen do I need in Cancún?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Reef-safe sunscreen — specifically formulas free of oxybenzone. Many snorkel excursions and eco-parks require it before you get in the water, because standard sunscreen chemicals damage the reef. Bring it from home rather than planning to buy it there; you'll know it's the right kind, and resort prices are their own problem (see below)." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I pack for afternoon storms in Cancún?",
+        "acceptedAnswer": { "@type": "Answer", "text": "In the wetter months, short, heavy afternoon downpours are a pattern — they arrive fast and usually pass. A light rain jacket or poncho and a dry bag for your phone cover most of it. Plan boat trips and excursions for the morning where you can, and let the storm be your siesta." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I make sure not to forget when packing for Cancún?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Anything you'd hate to replace at resort markup: forgotten essentials in resort shops cost noticeably more than at home. Sunscreen, medication, chargers, swim goggles and your preferred toiletries are the classic casualties. Run the boring checklist before you zip the bag — in Cancún, forgetting is a budget line." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I wear for cenotes and excursion days in Cancún?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Swimwear under light clothes, water shoes for rocky cenote entries and paths, and a dry bag for the boat or tour bus. A change of clothes for the ride back makes the day much more comfortable. Leave valuables at the hotel rather than carrying them between swim stops." }
+      },
+      {
+        "@type": "Question",
+        "name": "How many swimsuits should I pack for Cancún?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Two or three. In the humidity, a suit worn today is still damp tomorrow morning, and rotating means one is always dry. If you're building your list in Packmates AI, the list is sized around your beach and excursion days, so swim gear gets the right weight in the bag instead of an afterthought." }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -206,6 +246,30 @@
         </ul>
       </div>
     </div>
+
+    <section class="pg-faq">
+      <h2 class="pg-h2">Cancún Packing FAQ</h2>
+      <details class="pg-faq-item">
+        <summary>What sunscreen do I need in Cancún?</summary>
+        <p>Reef-safe sunscreen — specifically formulas free of oxybenzone. Many snorkel excursions and eco-parks require it before you get in the water, because standard sunscreen chemicals damage the reef. Bring it from home rather than planning to buy it there; you'll know it's the right kind, and resort prices are their own problem (see below).</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I pack for afternoon storms in Cancún?</summary>
+        <p>In the wetter months, short, heavy afternoon downpours are a pattern — they arrive fast and usually pass. A light rain jacket or poncho and a dry bag for your phone cover most of it. Plan boat trips and excursions for the morning where you can, and let the storm be your siesta.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I make sure not to forget when packing for Cancún?</summary>
+        <p>Anything you'd hate to replace at resort markup: forgotten essentials in resort shops cost noticeably more than at home. Sunscreen, medication, chargers, swim goggles and your preferred toiletries are the classic casualties. Run the boring checklist before you zip the bag — in Cancún, forgetting is a budget line.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>What should I wear for cenotes and excursion days in Cancún?</summary>
+        <p>Swimwear under light clothes, water shoes for rocky cenote entries and paths, and a dry bag for the boat or tour bus. A change of clothes for the ride back makes the day much more comfortable. Leave valuables at the hotel rather than carrying them between swim stops.</p>
+      </details>
+      <details class="pg-faq-item">
+        <summary>How many swimsuits should I pack for Cancún?</summary>
+        <p>Two or three. In the humidity, a suit worn today is still damp tomorrow morning, and rotating means one is always dry. If you're building your list in Packmates AI, the list is sized around your beach and excursion days, so swim gear gets the right weight in the bag instead of an afterthought.</p>
+      </details>
+    </section>
 
     <div class="pg-cta">
       <h3>This list, auto-built for your actual dates</h3>
