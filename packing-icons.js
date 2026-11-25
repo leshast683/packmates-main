@@ -81,6 +81,7 @@ swimsuit:`<svg viewBox="0 0 20 20" fill="none"><rect x="3.5" y="3.5" width="13" 
 underwear:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_underwear.png" x="0" y="0" width="20" height="20"/></svg>`,
 sneaker:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_sneaker.png" x="0" y="0" width="20" height="20"/></svg>`,
 running_shoes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_running_shoes.png" x="0" y="0" width="20" height="20"/></svg>`,
+sports_shoes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_sports_shoes.png" x="0" y="0" width="20" height="20"/></svg>`,
 walking_shoes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/walking_shoes.png" x="0" y="0" width="20" height="20"/></svg>`,
 sandal:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_sandal.png" x="0" y="0" width="20" height="20"/></svg>`,
 boots:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_boots.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -446,7 +447,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('walking shoe'))                        return PACKING_ICONS.walking_shoes;
   if (n.includes('sneaker'))                             return PACKING_ICONS.sneaker;
   if (n.includes('running shoe')) return PACKING_ICONS.running_shoes;
-  if (n.includes('sport') && n.includes('shoe')) return PACKING_ICONS.sneaker;
+  if (n.includes('sport') && n.includes('shoe')) return PACKING_ICONS.sports_shoes;
   // Bags
   if (n.includes('hydration pack'))                      return PACKING_ICONS.hydration_pack;
   if (n.includes('backpack cover') || n.includes('pack cover') || n.includes('waterproof cover')) return PACKING_ICONS.rain_cover;
