@@ -444,7 +444,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('sandal'))                              return PACKING_ICONS.sandal;
   if (n.includes('tennis shoe'))                         return PACKING_ICONS.tennis_shoes;
   if (n.includes('walking shoe'))                        return PACKING_ICONS.walking_shoes;
-  if (n.includes('sneaker'))                             return PACKING_ICONS.canvas_shoes;
+  if (n.includes('sneaker'))                             return PACKING_ICONS.sneaker;
   if (n.includes('running shoe')) return PACKING_ICONS.running_shoes;
   if (n.includes('sport') && n.includes('shoe')) return PACKING_ICONS.sneaker;
   // Bags
