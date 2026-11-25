@@ -526,7 +526,7 @@ body > main {
    as the checkbox, so packing an item doesn't require aiming for the
    smaller checkbox target. */
 .pl-item-icon-wrap {
-  width: 50px; height: 50px;
+  width: 58px; height: 58px;
   border-radius: 12px;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -541,7 +541,7 @@ body > main {
   -webkit-tap-highlight-color: transparent;
 }
 .pl-item-icon-wrap:active, .pl-item-icon-wrap:focus { transform: scale(0.93); outline: none; }
-.pl-item-icon-wrap svg { width: 34px; height: 34px; display: block; }
+.pl-item-icon-wrap svg { width: 40px; height: 40px; display: block; }
 
 /* Item content */
 .packing-item-content { flex: 1; min-width: 0; }
