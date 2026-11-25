@@ -94,9 +94,18 @@
     .pg-universal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
     .pg-universal-chip { font-size: 0.78rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: #475763; }
     .pg-universal-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #7a8a96; margin-bottom: 12px; margin-top: 44px; }
-    .pg-prose { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; }
-    .pg-prose p { font-size: 0.86rem; line-height: 1.75; color: #475763; margin: 0 0 12px; }
-    .pg-prose p:last-child { margin-bottom: 0; }
+    .pg-local { background: linear-gradient(135deg, #ffffff 0%, #eef6f1 100%); border: 1px solid var(--line); border-radius: 18px; padding: 26px 26px 26px 22px; position: relative; overflow: hidden; }
+    .pg-local::before { content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: linear-gradient(180deg, var(--green2), var(--teal-3)); }
+    .pg-local-tip { display: flex; gap: 14px; align-items: flex-start; }
+    .pg-local-tip + .pg-local-tip { margin-top: 18px; }
+    .pg-local-tip-num { flex-shrink: 0; width: 30px; height: 30px; border-radius: 10px; background: var(--teal-2); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 800; font-family: 'Blauer Nue', sans-serif; box-shadow: 0 4px 10px rgba(13,51,71,0.25); }
+    .pg-local-tip p { font-size: 0.86rem; line-height: 1.7; color: #38474f; margin: 0; }
+    .pg-overpack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+    .pg-overpack-card { background: linear-gradient(135deg, #fff7f5 0%, #fdeeea 100%); border: 1px solid #f2d4ca; border-radius: 14px; padding: 16px 18px; }
+    .pg-overpack-card-head { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
+    .pg-overpack-x { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: #d9492f; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; box-shadow: 0 3px 8px rgba(217,73,47,0.35); }
+    .pg-overpack-card-head strong { font-size: 0.85rem; color: var(--teal-2); font-weight: 700; line-height: 1.3; }
+    .pg-overpack-card p { font-size: 0.79rem; line-height: 1.6; color: #7a5a4f; margin: 0; }
     .pg-faq { margin: 0 0 44px; }
     .pg-faq-item { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 4px 22px; margin-bottom: 10px; }
     .pg-faq-item summary { padding: 16px 0; font-weight: 700; font-size: 0.9rem; color: var(--teal-2); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -252,18 +261,42 @@
 
     <section class="pg-section">
       <h2 class="pg-h2">🧳 Pack Like a Local</h2>
-      <div class="pg-prose">
-        <p>Grip matters more than style — Lisbon's calçada cobbles get genuinely slippery when wet, and locals choose shoes with real tread over anything smooth-soled, hills included. A light layer goes on every evening without fail, because the Atlantic breeze cools things down fast once the sun drops, even in the middle of summer.</p>
-        <p>A bag you can actually carry, not just roll, earns its keep on Lisbon's hills and staircases — wheels stop being useful the moment the street tilts upward.</p>
+            <div class="pg-local">
+        <div class="pg-local-tip">
+          <div class="pg-local-tip-num">1</div>
+          <p>Grip matters more than style — Lisbon's calçada cobbles get genuinely slippery when wet, and locals choose shoes with real tread over anything smooth-soled, hills included. A light layer goes on every evening without fail, because the Atlantic breeze cools things down fast once the sun drops, even in the middle of summer.</p>
+        </div>
+        <div class="pg-local-tip">
+          <div class="pg-local-tip-num">2</div>
+          <p>A bag you can actually carry, not just roll, earns its keep on Lisbon's hills and staircases — wheels stop being useful the moment the street tilts upward.</p>
+        </div>
       </div>
     </section>
 
     <section class="pg-section">
       <h2 class="pg-h2">🚫 What Not to Overpack</h2>
-      <div class="pg-prose">
-        <p><strong>Heels.</strong> Calçada cobbles are hard enough in flat shoes.</p>
-        <p><strong>Heavy beach gear for cold water.</strong> The Atlantic stays brisk even in August — swim kit, not a wetsuit you'll never use.</p>
-        <p><strong>A winter coat for Lisbon.</strong> Even winter there is damp and mild, not properly cold — layers beat one heavy coat.</p>
+            <div class="pg-overpack-grid">
+        <div class="pg-overpack-card">
+          <div class="pg-overpack-card-head">
+            <div class="pg-overpack-x">&#10005;</div>
+            <strong>Heels.</strong>
+          </div>
+          <p>Calçada cobbles are hard enough in flat shoes.</p>
+        </div>
+        <div class="pg-overpack-card">
+          <div class="pg-overpack-card-head">
+            <div class="pg-overpack-x">&#10005;</div>
+            <strong>Heavy beach gear for cold water.</strong>
+          </div>
+          <p>The Atlantic stays brisk even in August — swim kit, not a wetsuit you'll never use.</p>
+        </div>
+        <div class="pg-overpack-card">
+          <div class="pg-overpack-card-head">
+            <div class="pg-overpack-x">&#10005;</div>
+            <strong>A winter coat for Lisbon.</strong>
+          </div>
+          <p>Even winter there is damp and mild, not properly cold — layers beat one heavy coat.</p>
+        </div>
       </div>
     </section>
 
