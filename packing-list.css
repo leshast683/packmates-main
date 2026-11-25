@@ -541,7 +541,7 @@ body > main {
   -webkit-tap-highlight-color: transparent;
 }
 .pl-item-icon-wrap:active, .pl-item-icon-wrap:focus { transform: scale(0.93); outline: none; }
-.pl-item-icon-wrap svg { width: 46px; height: 46px; display: block; }
+.pl-item-icon-wrap svg { width: 42px; height: 42px; display: block; }
 
 /* Item content */
 .packing-item-content { flex: 1; min-width: 0; }
