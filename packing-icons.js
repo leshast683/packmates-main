@@ -1,5 +1,5 @@
 const PACKING_ICONS = {
-passport:`<svg viewBox="0 0 20 20" fill="none"><rect x="3.5" y="3.5" width="13" height="13" rx="3.5" fill="#475569" opacity="0.35"/><rect x="3" y="3" width="13" height="13" rx="3.5" fill="#64748b"/><rect x="3" y="3" width="13" height="5" rx="3.5" fill="#94a3b8"/><ellipse cx="5.5" cy="3.8" rx="1.5" ry="0.7" fill="rgba(255,255,255,0.3)"/><line x1="6" y1="11" x2="14" y2="11" stroke="#f1f5f9" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="13.5" x2="11" y2="13.5" stroke="#f1f5f9" stroke-width="1" stroke-linecap="round"/></svg>`,
+passport:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_passport.png" x="0" y="0" width="20" height="20"/></svg>`,
 id_card:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_id_card.png" x="0" y="0" width="20" height="20"/></svg>`,
 cash:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_cash.png" x="0" y="0" width="20" height="20"/></svg>`,
 credit_card:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-xylXWxjRoBYdaH9IPOx1080olvl5Ur.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -43,6 +43,12 @@ band_aids:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image hr
 allergy_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/allergy_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
 prescription_medication:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/prescription_medication.png" x="0" y="0" width="20" height="20"/></svg>`,
 vitamins:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_vitamins.png" x="0" y="0" width="20" height="20"/></svg>`,
+qtips:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_qtips.png" x="0" y="0" width="20" height="20"/></svg>`,
+floss:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_floss.png" x="0" y="0" width="20" height="20"/></svg>`,
+hand_cream:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_hand_cream.png" x="0" y="0" width="20" height="20"/></svg>`,
+hair_dryer:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_hair_dryer.png" x="0" y="0" width="20" height="20"/></svg>`,
+book:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_book.png" x="0" y="0" width="20" height="20"/></svg>`,
+espadrilles:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_espadrilles.png" x="0" y="0" width="20" height="20"/></svg>`,
 prescription_glasses:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_prescription_glasses.png" x="0" y="0" width="20" height="20"/></svg>`,
 spray_bottle:`<svg viewBox="0 0 20 20" fill="none"><rect x="6.5" y="7.5" width="7" height="11" rx="2.5" fill="#14532d" opacity="0.35"/><rect x="7" y="7" width="7" height="11" rx="2.5" fill="#166534"/><rect x="6" y="6.5" width="7" height="11" rx="2.5" fill="#16a34a"/><rect x="6" y="6.5" width="7" height="4.5" rx="2.5" fill="#22c55e"/><path d="M13 8 L16 8 L16 5" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 5 L18.5 5" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round"/><rect x="8.5" y="3.5" width="3" height="3.5" rx="1.5" fill="#14532d"/><rect x="8" y="2.5" width="4" height="1.5" rx="0.5" fill="#4ade80"/><ellipse cx="8" cy="7.5" rx="1.5" ry="0.7" fill="rgba(255,255,255,0.3)"/></svg>`,
 shampoo:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_shampoo.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -296,6 +302,7 @@ function getItemIcon(name, cat, gender) {
   if (n === 'keys' || n === 'key')                       return PACKING_ICONS.keys;
   if (n.includes('guidebook') || n.includes('travel guide'))      return PACKING_ICONS.travel_guidebook;
   if (n.includes('notebook'))                                      return PACKING_ICONS.notebook;
+  if (n.includes('book'))                                          return PACKING_ICONS.book;
   // Electronics
   if (n.includes('laptop charger'))                      return PACKING_ICONS.laptop_charger;
   if (n.includes('laptop'))                              return PACKING_ICONS.laptop;
@@ -314,6 +321,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('tripod'))                              return PACKING_ICONS.tripod;
   if (n.includes('uv protection') || n.includes('uv shirt') || n.includes('rash guard')) return PACKING_ICONS.uv_shirt;
   if (n.includes('selfie stick'))                        return PACKING_ICONS.selfie_stick;
+  if (n.includes('hair dryer') || n.includes('hairdryer')) return PACKING_ICONS.hair_dryer;
   // Toiletries — each item unique
   if (n.includes('toothbrush'))                          return PACKING_ICONS.toothbrush;
   if (n.includes('toothpaste'))                          return PACKING_ICONS.toothpaste;
@@ -454,6 +462,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('tennis shoe'))                         return PACKING_ICONS.tennis_shoes;
   if (n.includes('walking shoe'))                        return PACKING_ICONS.walking_shoes;
   if (n.includes('sneaker'))                             return PACKING_ICONS.sneaker;
+  if (n.includes('espadrille'))                           return PACKING_ICONS.espadrilles;
   if (n.includes('running shoe')) return PACKING_ICONS.running_shoes;
   if (n.includes('sport') && n.includes('shoe')) return PACKING_ICONS.sports_shoes;
   // Bags
@@ -496,6 +505,9 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('prescription glasses'))                return PACKING_ICONS.prescription_glasses;
   if (n.includes('prescription'))                        return PACKING_ICONS.prescription_medication;
   if (n.includes('vitamin'))                              return PACKING_ICONS.vitamins;
+  if (n.includes('q-tip') || n.includes('qtip') || n.includes('cotton swab')) return PACKING_ICONS.qtips;
+  if (n.includes('floss'))                                return PACKING_ICONS.floss;
+  if (n.includes('hand cream'))                           return PACKING_ICONS.hand_cream;
   if (n.includes('firestarter') || n.includes('fire starter') || n.includes('lighter') || n.includes('matches')) return PACKING_ICONS.firestarter;
   if (n.includes('body glitter') || n.includes('glitter'))   return PACKING_ICONS.body_glitter;
   if (n.includes('paper map') || n.includes('map'))          return PACKING_ICONS.paper_map;
