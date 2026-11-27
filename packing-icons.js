@@ -15,6 +15,7 @@ toothpaste:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image h
 conditioner:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_conditioner.png" x="0" y="0" width="20" height="20"/></svg>`,
 body_wash:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_body_wash.png" x="0" y="0" width="20" height="20"/></svg>`,
 moisturizer:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" style="width:34px;height:34px;"><image href="img/item_moisturizer.png" x="0" y="0" width="20" height="20"/></svg>`,
+moisturizing_mist:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_moisturizing_mist.png" x="0" y="0" width="20" height="20"/></svg>`,
 mouthwash:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_mouthwash.png" x="0" y="0" width="20" height="20"/></svg>`,
 makeup_remover:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_makeup_remover.png" x="0" y="0" width="20" height="20"/></svg>`,
 wipes_pack:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_wipes_pack.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -325,6 +326,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('deodorant'))                           return PACKING_ICONS.deodorant;
   if (n.includes('conditioner'))                         return PACKING_ICONS.conditioner;
   if (n.includes('body wash'))                           return PACKING_ICONS.body_wash;
+  if (n.includes('moisturizing mist'))                   return PACKING_ICONS.moisturizing_mist;
   if (n.includes('moistur'))                             return PACKING_ICONS.moisturizer;
   if (n.includes('mouthwash'))                           return PACKING_ICONS.mouthwash;
   if (n.includes('makeup remover'))                      return PACKING_ICONS.makeup_remover;
@@ -333,7 +335,7 @@ function getItemIcon(name, cat, gender) {
   // Checked before the generic 'spray' catch-all below, which would
   // otherwise also match 'hairspray' and win first.
   if (n.includes('hairspray') || n.includes('hair spray'))             return PACKING_ICONS.hairspray;
-  if (n.includes('moisturizing spray') || n.includes('spray')) return PACKING_ICONS.spray_bottle;
+  if (n.includes('spray'))                              return PACKING_ICONS.spray_bottle;
   if (n.includes('shampoo'))                             return PACKING_ICONS.shampoo;
   if (n.includes('perfume') || n.includes('cologne'))    return PACKING_ICONS.perfume;
   if (n.includes('makeup kit') || n.includes('makeup palette') || n.includes('makeup')) return PACKING_ICONS.makeup_palette;
