@@ -135,6 +135,7 @@ raincoat:`<svg viewBox="0 0 20 20" fill="none"><rect x="3.5" y="3.5" width="13" 
 windbreaker:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_windbreaker.png" x="0" y="0" width="20" height="20"/></svg>`,
 puffer_jacket:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_puffer_jacket.png" x="0" y="0" width="20" height="20"/></svg>`,
 sweater:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_sweater.png" x="0" y="0" width="20" height="20"/></svg>`,
+fleece_sweater:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_fleece_sweater.png" x="0" y="0" width="20" height="20"/></svg>`,
 cardigan:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_cardigan.png" x="0" y="0" width="20" height="20"/></svg>`,
 vest:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_vest.png" x="0" y="0" width="20" height="20"/></svg>`,
 jeans:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/jeans.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -397,6 +398,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('hoodie'))                              return PACKING_ICONS.hoodie;
   if (n.includes('fleece vest'))                         return PACKING_ICONS.fleece_vest;
   if (n.includes('puffer vest'))                         return PACKING_ICONS.puffer_vest;
+  if (n.includes('fleece sweater'))                      return PACKING_ICONS.fleece_sweater;
   if (n.includes('sweater') || n.includes('fleece'))     return PACKING_ICONS.sweater;
   if (n.includes('vest'))                                return PACKING_ICONS.vest;
   if (n.includes('dress shirt'))                         return PACKING_ICONS.dress_shirt;
