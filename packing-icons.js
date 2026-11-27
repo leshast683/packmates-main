@@ -232,6 +232,7 @@ panama_hat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image h
 motion_sickness_med:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/motion_sickness_med.png" x="0" y="0" width="20" height="20"/></svg>`,
 matching_set:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_matching_set.png" x="0" y="0" width="20" height="20"/></svg>`,
 cocktail_dress:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_cocktail_dress.png" x="0" y="0" width="20" height="20"/></svg>`,
+fashion_tape:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_fashion_tape.png" x="0" y="0" width="20" height="20"/></svg>`,
 snorkel_set:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_snorkel_set.png" x="0" y="0" width="20" height="20"/></svg>`,
 aqua_shoes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_aqua_shoes.png" x="0" y="0" width="20" height="20"/></svg>`,
 first_aid_kit:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_first_aid_kit.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -465,6 +466,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('jewelry') || n.includes('jewellery') || n.includes('necklace') || n.includes('bracelet') || n.includes('ring')) return PACKING_ICONS.jewelry;
   if (n.includes('smart watch') || n.includes('smartwatch')) return PACKING_ICONS.smart_watch;
   if (n.includes('watch'))                               return PACKING_ICONS.watch;
+  if (n.includes('fashion tape'))                         return PACKING_ICONS.fashion_tape;
   if (n.includes('purse') || n.includes('handbag'))      return PACKING_ICONS.handbag;
   if (n.includes('tote'))                                return PACKING_ICONS.tote_bag;
   if (n.includes('sleeping bag'))                        return PACKING_ICONS.sleeping_bag;
