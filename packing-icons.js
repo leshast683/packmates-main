@@ -231,7 +231,7 @@ beach_kimono:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image
 panama_hat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/panama_hat.png" x="0" y="0" width="20" height="20"/></svg>`,
 motion_sickness_med:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/motion_sickness_med.png" x="0" y="0" width="20" height="20"/></svg>`,
 matching_set:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_matching_set.png" x="0" y="0" width="20" height="20"/></svg>`,
-cocktail_dress:`<svg viewBox="0 0 20 20" fill="none"><rect x="3.5" y="3.5" width="13" height="13" rx="3.5" fill="#475569" opacity="0.35"/><rect x="3" y="3" width="13" height="13" rx="3.5" fill="#64748b"/><rect x="3" y="3" width="13" height="5" rx="3.5" fill="#94a3b8"/><ellipse cx="5.5" cy="3.8" rx="1.5" ry="0.7" fill="rgba(255,255,255,0.3)"/><line x1="6" y1="11" x2="14" y2="11" stroke="#f1f5f9" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="13.5" x2="11" y2="13.5" stroke="#f1f5f9" stroke-width="1" stroke-linecap="round"/></svg>`,
+cocktail_dress:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_cocktail_dress.png" x="0" y="0" width="20" height="20"/></svg>`,
 snorkel_set:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_snorkel_set.png" x="0" y="0" width="20" height="20"/></svg>`,
 aqua_shoes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_aqua_shoes.png" x="0" y="0" width="20" height="20"/></svg>`,
 first_aid_kit:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_first_aid_kit.png" x="0" y="0" width="20" height="20"/></svg>`,
