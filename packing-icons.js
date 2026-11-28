@@ -76,6 +76,7 @@ dress_pants:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image 
 dress:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_dress.png" x="0" y="0" width="20" height="20"/></svg>`,
 skirt:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_skirt.png" x="0" y="0" width="20" height="20"/></svg>`,
 jacket:`<svg viewBox="0 0 20 20" fill="none"><rect x="3.5" y="3.5" width="13" height="13" rx="3.5" fill="#475569" opacity="0.35"/><rect x="3" y="3" width="13" height="13" rx="3.5" fill="#64748b"/><rect x="3" y="3" width="13" height="5" rx="3.5" fill="#94a3b8"/><ellipse cx="5.5" cy="3.8" rx="1.5" ry="0.7" fill="rgba(255,255,255,0.3)"/><line x1="6" y1="11" x2="14" y2="11" stroke="#f1f5f9" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="13.5" x2="11" y2="13.5" stroke="#f1f5f9" stroke-width="1" stroke-linecap="round"/></svg>`,
+leather_jacket:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_leather_jacket.png" x="0" y="0" width="20" height="20"/></svg>`,
 hoodie:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_hoodie.png" x="0" y="0" width="20" height="20"/></svg>`,
 socks:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_socks.png" x="0" y="0" width="20" height="20"/></svg>`,
 wool_socks:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_wool_socks.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -400,7 +401,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('raincoat'))                             return PACKING_ICONS.raincoat;
   if (n.includes('heavy coat'))                           return PACKING_ICONS.heavy_coat;
   if (n.includes('coat'))                                 return PACKING_ICONS.coat;
-  if (n.includes('leather jacket'))                      return PACKING_ICONS.jacket;
+  if (n.includes('leather jacket'))                      return PACKING_ICONS.leather_jacket;
   if (n.includes('bomber'))                              return PACKING_ICONS.bomber_jacket;
   if (n.includes('jacket'))                              return PACKING_ICONS.jacket;
   if (n.includes('jumpsuit'))                            return PACKING_ICONS.jumpsuit;
