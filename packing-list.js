@@ -3,6 +3,17 @@
 // ═══════════════════════════════════════════════════════════════
 const tripData    = JSON.parse(localStorage.getItem('currentTrip') || '{}');
 const profile     = buildTripProfile(tripData);
+
+/* TEMP DEBUG - remove once the Barcelona/Passport report is resolved */
+(function () {
+    try {
+        const el = document.createElement('div');
+        el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#c0392b;color:#fff;font:11px/1.4 monospace;padding:6px 8px;word-break:break-all;';
+        el.textContent = 'DEBUG destinationCountry=' + JSON.stringify(tripData.destinationCountry) + ' isInternational=' + JSON.stringify(profile.isInternational);
+        document.addEventListener('DOMContentLoaded', () => document.body.appendChild(el));
+        if (document.readyState !== 'loading') document.body.appendChild(el);
+    } catch (e) {}
+})();
 const userGender  = (() => { try { return (Auth?.getSession?.()?.gender) || JSON.parse(localStorage.getItem('pm_session') || 'null')?.gender || 'nonbinary'; } catch { return 'nonbinary'; } })();
 const _ALL_P = { hot:true, cold:true, beach:true, gym:true, business:true, hiking:true, camping:true, rainy:true, swimming:true, ski:true, snowy:true, windy:true, citySightseeing:true, dining:true, nightOut:true, baby:true, themePark:true, festival:true, roadTrip:true, cruise:true };
 function getItemGender(cat, name) {
