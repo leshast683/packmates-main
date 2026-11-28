@@ -70,6 +70,13 @@
   window.closeLogoutModal = function () { document.getElementById('logout-modal').classList.remove('active'); };
   window.confirmLogout    = function () {
     closeLogoutModal();
-    setTimeout(() => { Auth.logout(); location.href = 'welcome.html'; }, 200);
+    // window.top, not location: on the native app this page may be running
+    // as one of app-shell.js's background tab iframes, where a plain
+    // location.href only navigates the iframe (not the real top-level
+    // window) - the shell's drift-detection then evicts that iframe and the
+    // user ends up back looking at the still-logged-in app shell, as if
+    // sign-out never took effect. Same fix already used by profile.html's
+    // own confirmLogout and by auth.js's onAuthStateChange redirect.
+    setTimeout(() => { Auth.logout(); window.top.location.href = 'welcome.html'; }, 200);
   };
 })();
