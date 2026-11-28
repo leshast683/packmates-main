@@ -148,6 +148,7 @@ fleece_sweater:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><ima
 cardigan:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_cardigan.png" x="0" y="0" width="20" height="20"/></svg>`,
 vest:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_vest.png" x="0" y="0" width="20" height="20"/></svg>`,
 jeans:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/jeans.png" x="0" y="0" width="20" height="20"/></svg>`,
+denim_jacket:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_denim_jacket.png" x="0" y="0" width="20" height="20"/></svg>`,
 sweatpants:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_sweatpants.png" x="0" y="0" width="20" height="20"/></svg>`,
 leggings:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_leggings.png" x="0" y="0" width="20" height="20"/></svg>`,
 thermal_base_layer:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_thermal_base_layer.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -428,6 +429,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('legging'))                             return PACKING_ICONS.leggings;
   if (n.includes('sweatpant'))                           return PACKING_ICONS.sweatpants;
   if (n.includes('high-waisted jeans') || n.includes('high waisted jeans')) return PACKING_ICONS.high_waisted_jeans;
+  if (n.includes('denim jacket') || n.includes('denim trucker')) return PACKING_ICONS.denim_jacket;
   if (n.includes('jeans') || n.includes('denim'))        return PACKING_ICONS.jeans;
   if (n.includes('dress pant') || n.includes('trouser')) return PACKING_ICONS.dress_pants;
   if (n.includes('chino')) return PACKING_ICONS.chinos;
