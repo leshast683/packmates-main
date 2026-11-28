@@ -159,6 +159,7 @@ dress_shoes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image 
 loafers:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_loafers.png" x="0" y="0" width="20" height="20"/></svg>`,
 ski_boots:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_ski_boots.png" x="0" y="0" width="20" height="20"/></svg>`,
 flip_flops:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_flip_flops.png" x="0" y="0" width="20" height="20"/></svg>`,
+pool_slides:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_pool_slides.png" x="0" y="0" width="20" height="20"/></svg>`,
 usb_drive:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_usb_drive.png" x="0" y="0" width="20" height="20"/></svg>`,
 tripod:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/tripod.png" x="0" y="0" width="20" height="20"/></svg>`,
 uv_shirt:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/uv_shirt.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -458,6 +459,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('platform boot'))                       return PACKING_ICONS.platform_boots;
   if (n.includes('boot'))                                return PACKING_ICONS.boots;
   if (n.includes('heel'))                                return PACKING_ICONS.heels;
+  if (n.includes('pool slide'))                          return PACKING_ICONS.pool_slides;
   if (n.includes('flip flop'))                           return PACKING_ICONS.flip_flops;
   if (n.includes('platform sandal'))                     return PACKING_ICONS.platform_sandals;
   if (n.includes('waterproof sandal'))                   return PACKING_ICONS.waterproof_sandals;
