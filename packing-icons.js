@@ -217,7 +217,7 @@ swimming_trunks:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><im
 bikini:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_bikini.png" x="0" y="0" width="20" height="20"/></svg>`,
 rain_boots:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_rain_boots.png" x="0" y="0" width="20" height="20"/></svg>`,
 lingerie:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_lingerie.png" x="0" y="0" width="20" height="20"/></svg>`,
-high_waisted_jeans:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/jeans.png" x="0" y="0" width="20" height="20"/></svg>`,
+high_waisted_jeans:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/high_waisted_jeans.png" x="0" y="0" width="20" height="20"/></svg>`,
 business_cards:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_business_cards.png" x="0" y="0" width="20" height="20"/></svg>`,
 curling_iron:`<svg viewBox="0 0 20 20" fill="none"><rect x="9" y="1" width="3" height="12" rx="1.5" fill="#7c3aed"/><rect x="9" y="1" width="3" height="5" rx="1.5" fill="#a78bfa"/><path d="M10.5 13 Q14 13 14 16 Q14 19 10.5 19 Q7 19 7 16 Q7 13 10.5 13Z" fill="none" stroke="#7c3aed" stroke-width="1.5"/><circle cx="10.5" cy="16" r="1.5" fill="#c4b5fd"/></svg>`,
 hair_straightener:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_hair_straightener.png" x="0" y="0" width="20" height="20"/></svg>`,
