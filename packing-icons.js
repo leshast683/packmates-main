@@ -34,6 +34,7 @@ face_mask:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image hr
 hand_fan:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_hand_fan.png" x="0" y="0" width="20" height="20"/></svg>`,
 electrolyte_packets:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_electrolyte_packets.png" x="0" y="0" width="20" height="20"/></svg>`,
 gym_bag:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_gym_bag.png" x="0" y="0" width="20" height="20"/></svg>`,
+yoga_mat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_yoga_mat.png" x="0" y="0" width="20" height="20"/></svg>`,
 eye_patches:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_eye_patches.png" x="0" y="0" width="20" height="20"/></svg>`,
 eye_drops:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_eye_drops.png" x="0" y="0" width="20" height="20"/></svg>`,
 contact_lenses:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_contact_lenses.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -480,6 +481,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('fanny pack'))                          return PACKING_ICONS.fanny_pack;
   if (n.includes('diaper bag'))                          return PACKING_ICONS.diaper_bag;
   if (n.includes('beach bag') || n.includes('beach tote') || n.includes('tote bag')) return PACKING_ICONS.beach_bag;
+  if (n.includes('yoga mat'))                            return PACKING_ICONS.yoga_mat;
   if (n.includes('gym bag'))                             return PACKING_ICONS.gym_bag;
   if (n.includes('clutch'))                              return PACKING_ICONS.clutch_purse;
   if (n.includes('jewelry') || n.includes('jewellery') || n.includes('necklace') || n.includes('bracelet') || n.includes('ring')) return PACKING_ICONS.jewelry;
