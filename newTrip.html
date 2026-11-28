@@ -1312,6 +1312,20 @@
        international" downstream rather than silently dropping Passport. */
     let selectedDestinationCountry = null;
 
+    /* Debounce only stops multiple setTimeouts from *queuing* - once a
+       fetch is actually in flight there's no cancelling it. If the user
+       pauses mid-word (e.g. "Barc" ...pause... "Barcelona"), two requests
+       can be in flight at once, and network timing doesn't guarantee the
+       later one resolves last - a slow response for the stale partial
+       query can land after the correct one and silently overwrite the
+       dropdown with results for a different string than what's now in the
+       input. Whoever then taps the (visually identical) top suggestion
+       gets whatever country that stale query happened to return, with no
+       indication anything's wrong. Guarding on a monotonically increasing
+       request id - only the most recently *issued* request is allowed to
+       render - closes that regardless of response order. */
+    let _acReqId = 0;
+
     async function fetchSuggestions(query) {
       try {
         const res  = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=12&language=${getLang()}&format=json`);
@@ -1668,10 +1682,14 @@
       /* autocomplete */
       clearTimeout(acDebounce);
       if (dest.length >= 1) {
+        const reqId = ++_acReqId;
         acDebounce = setTimeout(() => {
-          fetchSuggestions(dest).then(showDropdown);
+          fetchSuggestions(dest).then(results => {
+            if (reqId === _acReqId) showDropdown(results);
+          });
         }, 260);
       } else {
+        _acReqId++; // invalidate any still-in-flight request too
         hideDropdown();
       }
 
