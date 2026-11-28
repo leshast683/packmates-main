@@ -96,7 +96,7 @@ sandal:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href=
 boots:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_boots.png" x="0" y="0" width="20" height="20"/></svg>`,
 heels:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_heels.png" x="0" y="0" width="20" height="20"/></svg>`,
 laptop:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_laptop.png" x="0" y="0" width="20" height="20"/></svg>`,
-e_reader:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_e_reader.png" x="0" y="0" width="20" height="20"/></svg>`,
+e_reader:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="pm-icon-sm"><image href="img/item_e_reader.png" x="0" y="0" width="20" height="20"/></svg>`,
 laptop_charger:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_laptop_charger.png" x="0" y="0" width="20" height="20"/></svg>`,
 camera:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/camera.png" x="0" y="0" width="20" height="20"/></svg>`,
 action_camera:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-AmqZZr6gQE3C9i2NzN6ZywoONrlwQD.png" x="0" y="0" width="20" height="20"/></svg>`,
