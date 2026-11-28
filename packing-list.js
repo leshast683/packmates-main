@@ -4,20 +4,31 @@
 const tripData    = JSON.parse(localStorage.getItem('currentTrip') || '{}');
 const profile     = buildTripProfile(tripData);
 const userGender  = (() => { try { return (Auth?.getSession?.()?.gender) || JSON.parse(localStorage.getItem('pm_session') || 'null')?.gender || 'nonbinary'; } catch { return 'nonbinary'; } })();
-/* "Could this item EVER be suggested" pre-filter (renderList() below) -
-   every profile flag an item's suggest() might check must be true here,
-   or that item silently can't be suggested (and won't even show up via
-   "Show All") no matter what the real trip is. isInternational/
-   springAllergy/sarongDest were added to buildTripProfile() later and
-   missed here, which is exactly why Passport (isInternational),  Allergy
-   Medication (springAllergy), and Sarong (sarongDest) could never be
-   suggested for *any* trip until this was caught. */
+/* "Could this item EVER be suggested" check (renderList()'s pre-filter
+   below, and getItemGender() further down) - a single "every flag true"
+   synthetic profile (_ALL_P) seemed like a reasonable stand-in for "any
+   possible trip" but silently breaks any item whose suggest() requires a
+   flag to be FALSE: an AND of negated conditions (e.g. Jeans' `!p.hot &&
+   !p.beach`) evaluates to false when every flag is forced true, making
+   those items permanently unsuggestable - not just missing a flag (that
+   was the earlier Passport/Allergy Medication/Sarong bug), but wrong for
+   Jeans, Hoodie, Jacket, Leather Jacket, Platform Boots, Heels, and
+   Ballet Flats too. Checking against both an all-true AND an all-false
+   synthetic profile covers positive conditions, negated conditions, and
+   any OR-mix of the two - an item only needs to be reachable at one
+   extreme to prove it's reachable at all. (Robe's `suggest: p => false`
+   is correctly still unreachable either way - it's deliberately
+   disabled, not a bug.) */
 const _ALL_P = { hot:true, cold:true, beach:true, gym:true, business:true, hiking:true, camping:true, rainy:true, swimming:true, ski:true, snowy:true, windy:true, citySightseeing:true, dining:true, nightOut:true, baby:true, themePark:true, festival:true, roadTrip:true, cruise:true, isInternational:true, springAllergy:true, sarongDest:true };
+const _ALL_P_FALSE = Object.fromEntries(Object.keys(_ALL_P).map(k => [k, false]));
+function _couldEverSuggest(item, gender) {
+    return item.suggest(_ALL_P, gender) || item.suggest(_ALL_P_FALSE, gender);
+}
 function getItemGender(cat, name) {
     const item = (ITEM_DB[cat] || []).find(i => i.name === name);
     if (!item) return null;
-    const forMale   = item.suggest(_ALL_P, 'male');
-    const forFemale = item.suggest(_ALL_P, 'female');
+    const forMale   = _couldEverSuggest(item, 'male');
+    const forFemale = _couldEverSuggest(item, 'female');
     if (forMale && !forFemale) return 'male';
     if (!forMale && forFemale) return 'female';
     return null;
@@ -424,7 +435,7 @@ function renderList() {
     Object.entries(ITEM_DB).forEach(([cat, dbItems]) => {
         const entries = dbItems
             .filter(item => {
-                if (!item.suggest(_ALL_P, userGender)) return false;
+                if (!_couldEverSuggest(item, userGender)) return false;
                 const key = getItemKey(cat, item.name);
                 // Essentials & Electronics always count as suggested even if dismissed
                 const alwaysCat = ALWAYS_SUGGEST_CATS.has(cat);
