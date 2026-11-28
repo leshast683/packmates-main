@@ -77,6 +77,10 @@
     // user ends up back looking at the still-logged-in app shell, as if
     // sign-out never took effect. Same fix already used by profile.html's
     // own confirmLogout and by auth.js's onAuthStateChange redirect.
-    setTimeout(() => { Auth.logout(); window.top.location.href = 'welcome.html'; }, 200);
+    // Auth.logout() is awaited, not fired-and-forgotten: on native it clears
+    // the real session from Keychain via an async bridge call, which a
+    // navigation fired right after it used to abandon mid-flight, leaving
+    // Keychain still holding a valid session for the next page to restore.
+    setTimeout(() => { Auth.logout().then(() => { window.top.location.href = 'welcome.html'; }); }, 200);
   };
 })();

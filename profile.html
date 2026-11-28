@@ -1919,7 +1919,7 @@
       document.getElementById('pmTpBackdrop').classList.remove('open');
     }
 
-    function confirmLogout() { closeLogoutModal(); showToast(tr('profile.toast.signingOut')); setTimeout(() => { Auth.logout(); window.top.location.href='welcome.html'; }, 800); }
+    function confirmLogout() { closeLogoutModal(); showToast(tr('profile.toast.signingOut')); setTimeout(() => { Auth.logout().then(() => { window.top.location.href='welcome.html'; }); }, 800); }
 
     function populateLanguageSelect() {
       const select = document.getElementById('languageSelect');

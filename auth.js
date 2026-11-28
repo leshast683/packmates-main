@@ -578,7 +578,7 @@ const Auth = (() => {
     },
 
     /* ── Logout ── */
-    logout() {
+    async logout() {
       window._pm_intentional_signout = true;
       /* Clears _sbCachedUser()'s sync-read cache immediately, synchronously
          - don't wait for signOut()'s async SIGNED_OUT event to do it via
@@ -592,7 +592,16 @@ const Auth = (() => {
          upgrading from a build that stored it here. */
       localStorage.removeItem(_SB_LKEY);
       localStorage.removeItem(_SESS_KEY);
-      if (_sbClient) { _sbClient.auth.signOut().catch(() => {}); }
+      /* Awaited (not fire-and-forget) - on native this is what actually
+         clears Keychain via the configured storage adapter, which is
+         itself an async Capacitor bridge call (see _nativeKeychainStorage
+         above). A caller that navigates away right after calling logout()
+         used to do it before this had a chance to finish: the page unload
+         abandoned the in-flight signOut(), Keychain kept the still-valid
+         session, and the next page's fresh Supabase client silently
+         restored it on init - sign-out looked like it never took effect.
+         Callers must await this before navigating. */
+      if (_sbClient) { try { await _sbClient.auth.signOut(); } catch (e) {} }
     },
 
     /* ── Session (synchronous) ── */
