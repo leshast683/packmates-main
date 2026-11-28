@@ -520,7 +520,12 @@
       background:rgba(12,122,122,.08); border:1px solid rgba(12,122,122,.18);
       color:#0a5050;
     }
-    .ti-pack-chip svg, .ti-pack-chip img { width:14px; height:14px; flex-shrink:0; }
+    /* !important: getItemIcon()'s shared SVG strings (packing-icons.js)
+       occasionally carry their own size class/style for the main packing
+       list page's much bigger icon box - without this, any such override
+       would win here by specificity and blow up that one icon among an
+       otherwise uniform row of 14px chips. */
+    .ti-pack-chip svg, .ti-pack-chip img { width:14px !important; height:14px !important; flex-shrink:0; }
     /* Before You Go briefing card */
     .ti-brief-card {
       margin:0 0 14px;

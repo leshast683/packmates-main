@@ -542,6 +542,15 @@ body > main {
 }
 .pl-item-icon-wrap:active, .pl-item-icon-wrap:focus { transform: scale(0.93); outline: none; }
 .pl-item-icon-wrap svg { width: 39px; height: 39px; display: block; }
+/* Per-item size tweaks (packing-icons.js) - scoped to this page's icon
+   box specifically. These SVG strings are shared with other pages (e.g.
+   discover.html's trip-inspiration chips, which cap icons at 14px via
+   .ti-pack-chip svg) - an inline style="width:...” on the shared markup
+   would win there by specificity too and blow those up, so the override
+   lives here as a class instead, which simply doesn't match outside
+   .pl-item-icon-wrap. */
+.pl-item-icon-wrap svg.pm-icon-sm { width: 34px; height: 34px; }
+.pl-item-icon-wrap svg.pm-icon-xs { width: 30px; height: 30px; }
 
 /* Item content */
 .packing-item-content { flex: 1; min-width: 0; }
