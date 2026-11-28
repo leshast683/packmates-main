@@ -3,19 +3,16 @@
 // ═══════════════════════════════════════════════════════════════
 const tripData    = JSON.parse(localStorage.getItem('currentTrip') || '{}');
 const profile     = buildTripProfile(tripData);
-
-/* TEMP DEBUG - remove once the Barcelona/Passport report is resolved */
-(function () {
-    try {
-        const el = document.createElement('div');
-        el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#c0392b;color:#fff;font:11px/1.4 monospace;padding:6px 8px;word-break:break-all;';
-        el.textContent = 'DEBUG destinationCountry=' + JSON.stringify(tripData.destinationCountry) + ' isInternational=' + JSON.stringify(profile.isInternational);
-        document.addEventListener('DOMContentLoaded', () => document.body.appendChild(el));
-        if (document.readyState !== 'loading') document.body.appendChild(el);
-    } catch (e) {}
-})();
 const userGender  = (() => { try { return (Auth?.getSession?.()?.gender) || JSON.parse(localStorage.getItem('pm_session') || 'null')?.gender || 'nonbinary'; } catch { return 'nonbinary'; } })();
-const _ALL_P = { hot:true, cold:true, beach:true, gym:true, business:true, hiking:true, camping:true, rainy:true, swimming:true, ski:true, snowy:true, windy:true, citySightseeing:true, dining:true, nightOut:true, baby:true, themePark:true, festival:true, roadTrip:true, cruise:true };
+/* "Could this item EVER be suggested" pre-filter (renderList() below) -
+   every profile flag an item's suggest() might check must be true here,
+   or that item silently can't be suggested (and won't even show up via
+   "Show All") no matter what the real trip is. isInternational/
+   springAllergy/sarongDest were added to buildTripProfile() later and
+   missed here, which is exactly why Passport (isInternational),  Allergy
+   Medication (springAllergy), and Sarong (sarongDest) could never be
+   suggested for *any* trip until this was caught. */
+const _ALL_P = { hot:true, cold:true, beach:true, gym:true, business:true, hiking:true, camping:true, rainy:true, swimming:true, ski:true, snowy:true, windy:true, citySightseeing:true, dining:true, nightOut:true, baby:true, themePark:true, festival:true, roadTrip:true, cruise:true, isInternational:true, springAllergy:true, sarongDest:true };
 function getItemGender(cat, name) {
     const item = (ITEM_DB[cat] || []).find(i => i.name === name);
     if (!item) return null;
