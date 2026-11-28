@@ -109,6 +109,7 @@ sun_hat:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href
 backpack:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_backpack.png" x="0" y="0" width="20" height="20"/></svg>`,
 blister_bandages:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_blister_bandages.png" x="0" y="0" width="20" height="20"/></svg>`,
 park_ticket:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_park_ticket.png" x="0" y="0" width="20" height="20"/></svg>`,
+crossbody_bag:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_crossbody_bag.png" x="0" y="0" width="20" height="20"/></svg>`,
 rain_cover:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_rain_cover.png" x="0" y="0" width="20" height="20"/></svg>`,
 towel:`<svg viewBox="0 0 20 20" fill="none"><rect x="3" y="6.5" width="15" height="9.5" fill="#0369a1" opacity="0.3"/><rect x="2.5" y="6" width="15" height="9.5" fill="#0284c7"/><ellipse cx="10" cy="6" rx="7.5" ry="2.5" fill="#38bdf8"/><ellipse cx="10" cy="15.5" rx="7.5" ry="2.5" fill="#0369a1"/><line x1="2.5" y1="9" x2="17.5" y2="9" stroke="#0369a1" stroke-width="1.5"/><line x1="2.5" y1="12.5" x2="17.5" y2="12.5" stroke="#0369a1" stroke-width="1.5"/><ellipse cx="8" cy="6" rx="3" ry="1.2" fill="rgba(255,255,255,0.35)"/></svg>`,
 water_bottle:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_reusable_water_bottle.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -497,6 +498,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('purse') || n.includes('handbag'))      return PACKING_ICONS.handbag;
   if (n.includes('tote'))                                return PACKING_ICONS.tote_bag;
   if (n.includes('sleeping bag'))                        return PACKING_ICONS.sleeping_bag;
+  if (n.includes('crossbody') || n.includes('cross-body') || n.includes('cross body')) return PACKING_ICONS.crossbody_bag;
   if (n.includes('bag'))                                 return PACKING_ICONS.tote_bag;
   // Towels
   if (n.includes('beach towel'))                         return PACKING_ICONS.beach_towel;
