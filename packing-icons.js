@@ -122,6 +122,7 @@ insect_repellent:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><i
 tent:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_tent.png" x="0" y="0" width="20" height="20"/></svg>`,
 sleeping_bag:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_sleeping_bag.png" x="0" y="0" width="20" height="20"/></svg>`,
 fanny_pack:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_fanny_pack.png" x="0" y="0" width="20" height="20"/></svg>`,
+wristband:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_wristband.png" x="0" y="0" width="20" height="20"/></svg>`,
 snacks:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_snacks.png" x="0" y="0" width="20" height="20"/></svg>`,
 baby_bottle:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_baby_bottle.png" x="0" y="0" width="20" height="20"/></svg>`,
 baby_clothes:`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><image href="img/item_baby_clothes.png" x="0" y="0" width="20" height="20"/></svg>`,
@@ -480,6 +481,7 @@ function getItemIcon(name, cat, gender) {
   if (n.includes('clear backpack'))                      return PACKING_ICONS.clear_backpack;
   if (n.includes('backpack'))                            return PACKING_ICONS.backpack;
   if (n.includes('fanny pack'))                          return PACKING_ICONS.fanny_pack;
+  if (n.includes('wristband'))                           return PACKING_ICONS.wristband;
   if (n.includes('diaper bag'))                          return PACKING_ICONS.diaper_bag;
   if (n.includes('beach bag') || n.includes('beach tote') || n.includes('tote bag')) return PACKING_ICONS.beach_bag;
   if (n.includes('yoga mat'))                            return PACKING_ICONS.yoga_mat;
