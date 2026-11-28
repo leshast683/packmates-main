@@ -723,8 +723,10 @@
         <div class="tp-chips tp-places-chips"></div>
         <div class="tp-section-title" data-i18n="discover.favoriteActivities">📈 Favorite Activities</div>
         <div class="tp-chips tp-activities-chips"></div>
-        <div class="tp-section-title" data-i18n="discover.recentPackingLists">🧳 Recent Packing Lists</div>
-        <div class="tp-trips-list tp-packing-list"></div>
+        <div id="tp-packing-section">
+          <div class="tp-section-title" data-i18n="discover.recentPackingLists">🧳 Recent Packing Lists</div>
+          <div class="tp-trips-list tp-packing-list"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1106,20 +1108,49 @@
       const t = tiers.find(t => n >= t[0]);
       return t[1] + ' ' + '⭐'.repeat(t[2]);
     }
+    // Real users can type their display name however they like (lowercase,
+    // ALL CAPS, etc.) - Community Traveler cards should always show it
+    // capitalized the same consistent way regardless.
+    function _capName(s) {
+      return (s || '').replace(/\S+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+    }
+    // Travel Style is a presentation label derived from the real
+    // favorite_activities a user actually picked - never fabricated,
+    // never stored. Maps onto the SAME style vocabulary (and existing
+    // translations) the demo travelers already use, picking the closest
+    // honest fit rather than inventing new, untranslated style names;
+    // activities with no good fit (Baby, Theme Park, Road Trip) simply
+    // don't contribute one.
+    const ACTIVITY_TO_STYLE = {
+      'Beach': 'Beach', 'Swimming': 'Beach', 'Hiking': 'Hiking', 'Camping': 'Off-the-grid',
+      'Snow Sports': 'Sports', 'Gym': 'Sports', 'Business Trip': 'City Break', 'Night Out': 'City Break',
+      'Festival': 'Cultural', 'City Sightseeing': 'Cultural', 'Dining': 'Foodie', 'Cruise': 'Luxury',
+    };
+    function _stylesFromActivities(activities) {
+      const out = [];
+      (activities || []).forEach(a => {
+        const style = ACTIVITY_TO_STYLE[a];
+        if (style && !out.includes(style)) out.push(style);
+      });
+      return out;
+    }
     if (typeof DB !== 'undefined') {
       DB.getDiscoverableTravelers().then(real => {
         real.forEach(r => {
           const idx = TRAVELERS.length;
+          const name = _capName(r.name) || tr('discover.defaultMemberName');
           TRAVELERS.push({
-            name: r.name || tr('discover.defaultMemberName'),
+            name,
             city: r.location || (r.handle ? '@' + r.handle : tr('discover.defaultCommunityCity')),
-            trips: r.trip_count || 0, countries: 0, followers: 0,
-            avatar: (r.name || '?').trim().charAt(0).toUpperCase(), userId: r.user_id,
+            trips: r.trip_count || 0, countries: r.countries || 0, followers: 0,
+            avatar: name.charAt(0).toUpperCase(), userId: r.user_id,
             avatarImg: r.avatar || null, gender: r.gender || '', color: _colorForUser(r.user_id),
             coverDest: _destForUser(r.user_id), memberSince: _fmtMemberSince(r.member_since),
-            level: _realLevelForTrips(r.trip_count || 0), travelStyles: [],
+            level: _realLevelForTrips(r.trip_count || 0),
+            travelStyles: _stylesFromActivities(r.favorite_activities),
             bio: r.bio || '',
-            places: [], activities: r.favorite_activities || [], packingLists: [], recentTrips: [], isReal: true,
+            places: r.favorite_destinations || [], activities: r.favorite_activities || [],
+            packingLists: [], recentTrips: [], itemsPacked: r.items_packed || 0, isReal: true,
           });
           travelersStrip.insertBefore(renderTravelerCard(TRAVELERS[idx], idx), travelersStrip.firstChild);
         });
@@ -1167,12 +1198,16 @@
       m.querySelector('.tp-bio').textContent = (t.bio ? tTravelerBio(t.bio) : '') || (t.isReal ? tr('discover.noBioYet') : '');
       m.querySelector('#tp-stat-trips').textContent = t.trips;
       m.querySelector('#tp-stat-countries').textContent = t.countries;
-      const itemsPacked = (t.packingLists || []).reduce((sum, r) => sum + (parseInt(r.items) || 0), 0);
+      const itemsPacked = t.isReal ? (t.itemsPacked || 0) : (t.packingLists || []).reduce((sum, r) => sum + (parseInt(r.items) || 0), 0);
       m.querySelector('#tp-stat-packed').textContent = (itemsPacked >= 1000 ? (itemsPacked/1000).toFixed(1)+'k' : itemsPacked);
       m.querySelector('.tp-styles-chips').innerHTML = t.travelStyles.map(s => `<span class="tp-chip">${styleIcon(s)} ${tTravelerStyle(s)}</span>`).join('');
       const pinSvg = `<svg viewBox="0 0 24 24" style="width:11px;height:11px;flex-shrink:0" fill="#113a58"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
+      // escapeHtml(p) here is load-bearing, not cosmetic: for real users
+      // this is a trip destination they typed themselves in newTrip.html
+      // (stored, then served back to every other user viewing this
+      // profile) - unescaped, it's a stored-XSS vector.
       m.querySelector('.tp-places-chips').innerHTML = t.places.map(p =>
-        `<span class="tp-chip place"><img class="tp-place-thumb" id="tp-place-${p.replace(/\W+/g,'_')}" alt="">${p}</span>`).join('');
+        `<span class="tp-chip place"><img class="tp-place-thumb" id="tp-place-${p.replace(/\W+/g,'_')}" alt="">${escapeHtml(p)}</span>`).join('');
       t.places.forEach(p => {
         const img = m.querySelector(`#tp-place-${p.replace(/\W+/g,'_')}`);
         if (!img) return;
@@ -1185,6 +1220,12 @@
         });
       });
       m.querySelector('.tp-activities-chips').innerHTML = t.activities.map(a => `<span class="tp-chip activity">${escapeHtml(activityIcon(a))} ${escapeHtml(tTravelerActivity(a))}</span>`).join('');
+      // Real members' packing history was never fetched from anywhere
+      // (packingLists stays []), so this whole section would just show an
+      // empty "Recent Packing Lists" header with nothing under it - hide
+      // it outright instead rather than leave a section that honestly has
+      // nothing real to show.
+      m.querySelector('#tp-packing-section').style.display = t.isReal ? 'none' : '';
       m.querySelector('.tp-packing-list').innerHTML = t.packingLists.map((r, i) => `
         <div class="tp-trip" id="tp-pack-${i}">
           <div class="tp-trip-scrim"></div>
